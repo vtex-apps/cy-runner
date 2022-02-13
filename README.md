@@ -8,7 +8,7 @@ Tool to orchestrate Cypress tests on VTEX.
 
 ## Functionalities
 * Create dynamic workspace
-* Orquestrate test dependency
+* Orquestrate tests dependency
 * Orquestrate tests that can run in parallel
 * Orquestrate witch tests will be reported to Cypres Dashboard
 * Wipe data from tests on MasterData if needed
