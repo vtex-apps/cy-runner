@@ -1,9 +1,0 @@
-.git/
-node_modules/
-service/node_modules/
-render/node_modules/
-.eslintrc
-.gitignore
-package.json
-README.md
-CHANGELOG.md

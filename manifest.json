@@ -1,7 +1,0 @@
-{
-  "name": "cypress-conductor",
-  "vendor": "vtex",
-  "version": "0.0.1",
-  "title": "Cypress Conductor",
-  "description": "Tool to orchestrate Cypress tests on VTEX"
-}
