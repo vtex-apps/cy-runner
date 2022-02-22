@@ -1,3 +1,4 @@
+const cypress = require('cypress')
 const { execSync } = require('child_process')
 const fs = require('fs')
 const { promises: pfs } = require('fs')
@@ -35,8 +36,8 @@ exports.statusMsg = (msg, notr) => {
   return null
 }
 
-exports.crash = () => {
-  process.stderr.write('\n')
+exports.crash = (msg) => {
+  this.errMsg('ERROR: ' + msg + '!\n')
   process.exit(99)
 }
 
@@ -60,6 +61,29 @@ exports.updateCyEnvJson = (data) => {
     let newJson = { ...json, ...data }
     pfs.writeFile(fileName, JSON.stringify(newJson))
   } catch (e) {
-    qe.errMsg(e)
+    this.errMsg(e)
   }
+}
+
+exports.openCypress = async (env = {}) => {
+  await cypress.open({ env: env })
+}
+
+exports.runCypress = async (specFile, stopOnFail, env = {}) => {
+  await cypress
+    .run({ spec: specFile, env: env })
+    .then((result) => {
+      if (result.failures) {
+        this.crash(result.message)
+      }
+      if ((result.totalFailed > 0) & stopOnFail) {
+        this.crash('Test failed and stopOnFail is true, stopping the execution')
+      }
+      this.outMsg(
+        `Test done sucessfully with ${result.totalPassed} passed test(s)!`
+      )
+    })
+    .catch((err) => {
+      this.crash(err.message)
+    })
 }

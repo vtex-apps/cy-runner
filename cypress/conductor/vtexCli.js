@@ -50,7 +50,11 @@ async function vtexCli(config) {
     }
   }
   qe.outMsg('Calling VTEX CLI to warm it up...')
-  qe.exec('vtex-e2e whoami')
+  try {
+    qe.exec('vtex-e2e whoami')
+  } catch (e) {
+    qe.exec('vtex-e2e whoami')
+  }
   qe.outFixMsg('Version: ', true)
   qe.exec('vtex-e2e --version', 'inherit')
   qe.outMsg('Calling VTEX CLI in background... ', true)

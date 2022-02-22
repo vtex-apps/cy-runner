@@ -105,3 +105,5 @@ dist
 .*.json
 .vtex.url
 cypress.env.json
+cypress.json
+*.mp4

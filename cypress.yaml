@@ -28,7 +28,7 @@ secretName: VTEX_QE
 
 # Enabled or disable integrations
 integration:
-  vtexCli: true
+  vtexCli: false
   jira: false
   cypress: false
   slack: false
@@ -37,6 +37,7 @@ configuration:
   vtex:
     account: productusqa
     id: 2001459804
+    domain: myvtex.com
     urlExternalSeller: https://productusqaseller.myvtex.com
   jira:
     account: vtex-dev
@@ -44,6 +45,20 @@ configuration:
     issueType: task
   cypress:
     projectId: xyz
+    video: true
+    videoCompression: false
+    videoUploadOnPasses: false
+    screenshotOnRunFailure: true
+    trashAssetsBeforeRuns: false
+    viewportWidth: 1440
+    viewportHeight: 900
+    defaultCommandTimeout: 25000
+    requestTimeout: 25000
+    watchForFileChanges: false
+    pageLoadTimeout: 45000
+    browser: chrome
+    chromeWebSecurity: false
+
   slack:
     channel: some-channel
   toolbelt:
@@ -51,13 +66,13 @@ configuration:
     branch: qe/cypress
 
 workspace:
+  # If blank, it will be dinamically defined
+  name:
+  devMode: true
   setup:
     enabled: true
-    # If null, it will be dinamically defined
-    # If you want to use one existent, say it
-    name:
     # From integration folder on
-    file: workspace/setup.spec.js
+    file: workspace/hello.spec.js
     sendDashboard: false
     stopOnFail: true
     install:
