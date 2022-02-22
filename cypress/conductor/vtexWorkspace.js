@@ -46,7 +46,7 @@ async function vtexWorkspace(workspace, config, start) {
   // Open or Run cypress
   if (config.devMode) {
     qe.outFixMsg('Running in dev mode')
-    // await qe.openCypress({ workspace: workspace })
+    await qe.openCypress({ workspace: workspace })
     qe.outMsg('Hope you did well on your tests, see you soon!')
   } else {
     if (createWks) {

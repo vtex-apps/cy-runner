@@ -65,7 +65,7 @@ if (fs.existsSync(SECRET_FILE)) {
 const VTEX_ATTRIBUTES = [
   'apiKey',
   'apiToken',
-  'cookieName',
+  'authCookieName',
   'robotMail',
   'robotPassword',
 ]

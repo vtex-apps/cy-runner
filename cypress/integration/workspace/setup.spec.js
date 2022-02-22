@@ -1,4 +1,6 @@
 /// <reference types="cypress" />
+// import Twilio from '../../conductor/twilio'
+// const twilio = new Twilio()
 
 // Get config
 let config = Cypress.env()
@@ -24,12 +26,9 @@ describe('Setting up the environment', () => {
       qs: { user: config.vtex.apiKey, pass: config.vtex.apiToken },
     }).then((response) => {
       expect(response.body).property('authStatus').to.equal('Success')
-      cy.addConfig(
-        stateFile,
-        'vtex',
-        'authCookie',
-        response.body.authCookie.Value
-      )
+      let cookie = 'authCookieValue'
+      config.vtex[cookie] = response.body.authCookie.Value
+      cy.addConfig(stateFile, 'vtex', cookie, config.vtex[cookie])
     })
   })
 
@@ -53,23 +52,20 @@ describe('Setting up the environment', () => {
             .type(`${config.vtex.robotPassword}{enter}`, { log: false })
         }
       })
-      // Sometimes the system ask for SMS Code
-      // You must wait do see if it is the case
+      // Sometimes the system ask for SMS Code, we must wait do see if it is the case
       cy.wait(2000) // eslint-disable-line cypress/no-unnecessary-waiting
       // Fill Robot SMS code
       cy.get('body').then(($body) => {
         if ($body.find(TXT_CODE).length) {
+          let sid = config.twilio.apiUser
+          let token = config.twilio.apiToken
+          let url = `${config.twilio.baseUrl}/${sid}/Messages.json?PageSize=5`
           // Get SMS Code
-          cy.pause()
-          // const OTP = Cypress.env('OTP_SH')
-          // cy.exec(OTP).then((smsCode) => {
-          //   cy.get(TXT_CODE)
-          //     .should('be.visible')
-          //     .type(`${smsCode.stdout}{enter}`)
-          // })
+          cy.getTwilioOTP(url, sid, token, 5000).then((code) => {
+            cy.get(TXT_CODE).should('be.visible').type(`${code}{enter}`)
+          })
         }
       })
-
       // Wait for the authentication process to finish
       cy.get('body').should('contain', 'You may now close this window.')
     })
@@ -90,49 +86,47 @@ describe('Setting up the environment', () => {
       .should('contain', config.workspace.name)
   })
 
-  // Sync of custom-ui rules
-  it(
-    'Syncing Custom-UI configuration',
-    { retries: 9, responseTimeout: 5000, requestTimeout: 5000 },
-    () => {
-      // Define constants
-      const APP_NAME = 'vtex.checkout-ui-custom'
-      const APP_VERSION = '0.x'
-      const APP = `${APP_NAME}@${APP_VERSION}`
-      const CUSTOM_URL = `https://${config.vtex.account}.myvtex.com/_v/private/admin-graphql-ide/v0/${APP}`
-      const GRAPHQL_QUERY =
-        '{getLast(workspace: "master")' +
-        '{email workspace layout javascript css javascriptActive cssActive colors}}'
+  // Install B2B apps
+  config.workspace.setup.install.forEach((app) => {
+    it(`Installing APP ${app}`, () => {
+      cy.vtex(`install ${app}`).its('stdout').should('contains', 'successfully')
+    })
+  })
 
-      const GRAPHQL_MUTATION =
-        'mutation' +
-        '($email: String, $workspace: String, $layout: CustomFields, $javascript: String, $css: String, $javascriptActive: Boolean, $cssActive: Boolean, $colors: CustomFields)' +
-        '{saveChanges(email: $email, workspace: $workspace, layout: $layout, javascript: $javascript, css: $css, javascriptActive: $javascriptActive, cssActive: $cssActive, colors: $colors)}'
+  // Uninstall master's theme
+  config.workspace.setup.uninstall.forEach((app) => {
+    it(`Removing APP ${app}`, () => {
+      cy.vtex(`uninstall ${app}`)
+        .its('stdout')
+        .should('contains', 'successfully')
+    })
+  })
 
-      // Getting master values
+  it.skip('Set roles in organization JSON', { retries: 3 }, () => {
+    cy.setCookie(config.vtex.authCookieName, config.vtex.authCookieValue)
+
+    const roles = Object.keys(ROLE_ID_EMAIL_MAPPING)
+    const APP_NAME = 'vtex.storefront-permissions'
+    const APP_VERSION = '1.x'
+    const APP = `${APP_NAME}@${APP_VERSION}`
+
+    cy.getVtexItems().then((vtex) => {
+      const CUSTOM_URL = `https://${vtex.WORKSPACE}--${vtex.ACCOUNT}.myvtex.com/_v/private/admin-graphql-ide/v0/${APP}`
+      const GRAPHQL_LIST_ROLE_QUERY = 'query' + '{listRoles{id,name}}'
+
       cy.request({
         method: 'POST',
         url: CUSTOM_URL,
-        body: { query: GRAPHQL_QUERY },
+        body: {
+          query: GRAPHQL_LIST_ROLE_QUERY,
+        },
+      }).then((response) => {
+        const rolesObject = response.body.data.listRoles.filter((r) =>
+          roles.includes(r.name)
+        )
+        expect(rolesObject.length).to.equal(3)
+        rolesObject.map((r) => cy.setOrganizationItem(`${r.name}-id`, r.id))
       })
-        .as('GRAPHQL')
-        .its('status')
-        .should('equal', 200)
-
-      // Mutating it to the new workspace
-      cy.get('@GRAPHQL').then((query) => {
-        query.body.data.getLast.workspace = config.vtex.workspace
-        cy.request({
-          method: 'POST',
-          url: CUSTOM_URL,
-          body: {
-            query: GRAPHQL_MUTATION,
-            variables: query.body.data.getLast,
-          },
-        })
-          .its('body.data.saveChanges')
-          .should('contain', 'DocumentId')
-      })
-    }
-  )
+    })
+  })
 })

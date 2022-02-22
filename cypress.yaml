@@ -32,7 +32,7 @@ secretName: VTEX_QE
 
 # Enabled or disable integrations
 integration:
-  vtexCli: false
+  vtexCli: true
   jira: false
   cypress: false
   slack: false
