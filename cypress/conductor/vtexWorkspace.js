@@ -1,3 +1,4 @@
+const fs = require('fs')
 const { promises: pfs } = require('fs')
 const qe = require('./utils')
 
@@ -36,21 +37,35 @@ async function vtexWorkspace(workspace, config, start) {
     qe.outFixMsg("It must exists with apps you'll need!")
   }
   workspace.name = wks
+  workspace.stateFiles = config.stateFiles
 
   let path = 'cypress/integration/'
   let specFile = path + workspace.setup.file
   let stopOnFail = workspace.setup.stopOnFail
 
   // Open or Run cypress
-  if (workspace.devMode) {
+  if (config.devMode) {
     qe.outFixMsg('Running in dev mode')
-    await qe.openCypress(workspace)
+    // await qe.openCypress({ workspace: workspace })
     qe.outMsg('Hope you did well on your tests, see you soon!')
   } else {
     if (createWks) {
       qe.outMsg(`Creating workspace "${wks}"`)
-      await qe.runCypress(specFile, stopOnFail, workspace)
+      await qe.runCypress(specFile, stopOnFail, { workspace: workspace })
     }
+  }
+
+  // Update cypres.env.json with .vtex.json vtex tokens
+  const fileA = 'cypress.env.json'
+  const fileB = config.stateFiles[0]
+  let A = await pfs.readFile(fileA, 'utf8')
+  let B = await pfs.readFile(fileB, 'utf8')
+  A = JSON.parse(A)
+  B = JSON.parse(B)
+  if (typeof B.vtex == 'object') {
+    for (att in B.vtex) A.vtex[att] = B.vtex[att]
+    await pfs.writeFile(fileA, JSON.stringify(A))
+    await pfs.writeFile(fileB, '{}')
   }
   return wks
 }

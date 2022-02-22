@@ -18,6 +18,10 @@ if (!fs.existsSync(YAML_FILE)) {
 try {
   vtex = yaml.load(fs.readFileSync(YAML_FILE, 'utf8'))
   JSON.stringify(vtex)
+  // Add authUrl attribute
+  const ACCOUNT = vtex.configuration.vtex.account
+  const AUTH_URL = `https://${ACCOUNT}.myvtex.com/api/vtexid/pub/authentication`
+  vtex.configuration.vtex['authUrl'] = AUTH_URL
   qe.outMsg(`${YAML_FILE} file loaded sucessfully`)
 } catch (e) {
   qe.errMsg(`Error on load ${YAML_FILE}!`)
@@ -58,40 +62,44 @@ if (fs.existsSync(SECRET_FILE)) {
 }
 
 // Check crucial values on secrets
-const ATTRIBUTES = [
-  'VTEX_API_KEY',
-  'VTEX_API_TOKEN',
-  'VTEX_COOKIE_NAME',
-  'VTEX_ROBOT_MAIL',
-  'VTEX_ROBOT_PASSWORD',
-  'TWILIO_USER',
-  'TWILIO_TOKEN',
+const VTEX_ATTRIBUTES = [
+  'apiKey',
+  'apiToken',
+  'cookieName',
+  'robotMail',
+  'robotPassword',
 ]
+const TWILIO_ATTRIBUTES = ['apiUser', 'apiToken']
+
 try {
-  ATTRIBUTES.forEach((att) => {
-    if (typeof secrets[att] == 'undefined') throw new Error(att)
+  VTEX_ATTRIBUTES.forEach((att) => {
+    if (typeof secrets.vtex[att] == 'undefined')
+      throw new Error(JSON.stringify({ vtex: att }))
+  })
+  TWILIO_ATTRIBUTES.forEach((att) => {
+    if (typeof secrets.twilio[att] == 'undefined')
+      throw new Error(JSON.stringify({ twilio: att }))
   })
 } catch (e) {
-  qe.errMsg(`Crucial value missing on your secrets!`)
-  qe.errFixMsg(e)
-  qe.crash()
+  qe.errMsg('Crucial value missing on your secrets!')
+  qe.crash(e)
 }
 
-// Merge from Secrets and VTEX Configuration section
-for (const key in vtex.configuration.vtex) {
-  const NEW_KEY = 'VTEX_' + key.toLocaleUpperCase()
-  const VALUE = vtex.configuration.vtex[key]
-  const OBJ = { [NEW_KEY]: VALUE }
-  secrets = { ...secrets, ...OBJ }
+// Merge from Secrets with VTEX Configuration section
+for (const KEY in vtex.configuration.vtex) {
+  const VALUE = vtex.configuration.vtex[KEY]
+  secrets.vtex[KEY] = VALUE
 }
 
 // Write cypress.env.json
-let fileName = 'cypress.env.json'
-try {
-  pfs.writeFile(fileName, JSON.stringify(secrets))
-  qe.outMsg(`${fileName} created sucessfully`)
-} catch (e) {
-  qe.errMsg(e)
+if (vtex.configuration.createCypressEnvFile) {
+  let fileName = 'cypress.env.json'
+  try {
+    pfs.writeFile(fileName, JSON.stringify(secrets))
+    qe.outMsg(`${fileName} created sucessfully`)
+  } catch (e) {
+    qe.errMsg(e)
+  }
 }
 
 // Expose

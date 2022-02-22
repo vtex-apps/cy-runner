@@ -5,25 +5,29 @@
 #
 # It must be something like that:
 # {
-#   "VTEX_API_KEY": "xxx",
-#   "VTEX_API_TOKEN": "xxx",
-#   "VTEX_COOKIE_NAME": "xxx",
-#   "VTEX_ROBOT_MAIL": "xxx",
-#   "VTEX_ROBOT_PASSWORD": "xxx",
-#   "VTEX_AVALARA_AUTHORIZATION": "xxx",
-#   "VTEX_AUTHORIZATION": "xxx",
-#   "TWILIO_USER": "xxx",
-#   "TWILIO_TOKEN": "xxx",
-#   "JIRA_AUTHORIZATION": "xxx",
-#   "SLACK_KEY": "xxx"
-#   "CY_DASHBOARD_KEY": "xxx"
+#   "vtex": {
+#     "apiKey": "",
+#     "apiToken": "",
+#     "cookieName": "",
+#     "robotMail": "",
+#     "robotPassword": ""
+#   },
+#   "twilio": {
+#     "apiUser": "",
+#     "apiToken": ""
+#   },
+#   "jira": {
+#     "authorization": ""
+#   },
+#   "cypress": {
+#     "dashboardKey": ""
+#   }
 # }
 #
 # on development mode, please create a file '.[secretName].json'
 # at the same place where cypress.yaml resides to load it
 #
 # Remember to ignore this file on your Git
-
 secretName: VTEX_QE
 
 # Enabled or disable integrations
@@ -34,11 +38,17 @@ integration:
   slack: false
 
 configuration:
+  # If you want to try another secrets on Cypress
+  # set the next to false, you must create a file
+  # cypress.env.json with the secrets
+  createCypressEnvFile: true
+  devMode: true
   vtex:
     account: productusqa
     id: 2001459804
     domain: myvtex.com
     urlExternalSeller: https://productusqaseller.myvtex.com
+    idUrl: https://vtexid.vtex.com.br/api/vtexid/pub/authenticate/default
   jira:
     account: vtex-dev
     board: jira-key
@@ -58,27 +68,48 @@ configuration:
     pageLoadTimeout: 45000
     browser: chrome
     chromeWebSecurity: false
-
   slack:
     channel: some-channel
   toolbelt:
     git: https://github.com/vtex/toolbelt.git
     branch: qe/cypress
+  # The first will be used to store temp credentials
+  stateFiles:
+    - .vtex.json
 
 workspace:
   # If blank, it will be dinamically defined
   name:
-  devMode: true
   setup:
     enabled: true
     # From integration folder on
     file: workspace/hello.spec.js
     sendDashboard: false
     stopOnFail: true
+    # Depdendencies should be first
     install:
-      - productx
-      - producty
-      - productz
+      # App set
+      - vtex.admin-customers
+      - vtex.b2b-checkout-settings
+      - vtex.b2b-orders-history
+      - vtex.b2b-organizations-graphql
+      - vtex.b2b-organizations
+      - vtex.b2b-quotes-graphql
+      - vtex.b2b-quotes
+      - vtex.storefront-permissions
+      - vtex.storefront-permissions-components
+      - vtex.storefront-permissions-ui
+      - vtex.quickorder
+      # Theme
+      - vtex.wish-list@1.x
+      - vtex.location-availability@0.x
+      - vtex.shopper-location@0.x
+      - vtex.wordpress-integration@2.x
+      - vtex.b2bstore@2.x
+    # Apps that should be uninstalled
+    uninstall:
+      - vtex.store-theme
+
   wipe:
     enabled: false
     file: wipe.spec.js
