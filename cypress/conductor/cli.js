@@ -20,44 +20,43 @@ async function vtexCli(config, runSetup) {
     try {
       pfs
         .rm(VTEX_ENV, { recursive: true, force: true })
-        .then(qe.outMsg(`${VTEX_ENV} removed sucessfully`))
-    } catch (error) {
-      qe.errMsg(`Fail to delete ${VTEX_ENV}`)
-      qe.errFixMsg(error)
-      qe.crash()
+        .then(qe.msg(`${VTEX_ENV} removed sucessfully`))
+    } catch (e) {
+      qe.msgErr(`Fail to delete ${VTEX_ENV}`)
+      qe.crash(e)
     }
     // Check if toolbelt is installed already
-    if (fs.existsSync(VTEX_BIN)) qe.outMsg('VTEX CLI installed already')
+    if (fs.existsSync(VTEX_BIN)) qe.msg('VTEX CLI installed already')
     else {
       const VTEX_REPO = config.toolbelt.git
       const VTEX_BRANCH = config.toolbelt.branch
       try {
-        qe.outMsg('Toolbelt not found, installing it...')
+        qe.msg('Toolbelt not found, installing it...')
         if (!fs.existsSync(VTEX_PATH)) pfs.mkdir(VTEX_PATH)
-        qe.outFixMsg('Cloning toolbelt repo...')
+        qe.msgDetail('Cloning toolbelt repo...')
         qe.exec(`cd ${VTEX_PATH} && git clone ${VTEX_REPO}`)
-        qe.outFixMsg('Changing toolbelt branch...')
+        qe.msgDetail('Changing toolbelt branch...')
         qe.exec(`cd ${TOOLBELT_PATH} && git checkout ${VTEX_BRANCH}`)
-        qe.outFixMsg('Installing yarn packages...')
+        qe.msgDetail('Installing yarn packages...')
         qe.exec(`cd ${TOOLBELT_PATH} && yarn`)
-        qe.outFixMsg('Building yarn packages...')
+        qe.msgDetail('Building yarn packages...')
         qe.exec(`cd ${TOOLBELT_PATH} && yarn build`)
-        qe.outFixMsg('Copying binary to vtex-e2e...')
+        qe.msgDetail('Copying binary to vtex-e2e...')
         await pfs.copyFile(path.join(TOOLBELT_PATH, 'bin', 'run'), VTEX_BIN)
-      } catch (e) {
-        qe.errMsg('Error installing Toolbelt!')
-        qe.crash()
+      } catch (ee) {
+        qe.msgErr('Error on installing toolbelt!')
+        qe.crash(ee)
       }
     }
-    qe.outMsg('Calling VTEX CLI to warm it up...')
+    qe.msg('Calling VTEX CLI to warm it up...')
     try {
       qe.exec('vtex-e2e whoami')
     } catch (e) {
       qe.exec('vtex-e2e whoami')
     }
-    qe.outFixMsg('Version: ', true)
+    qe.msgDetail('Version: ', true)
     qe.exec('vtex-e2e --version', 'inherit')
-    qe.outMsg('Calling VTEX CLI in background... ', true)
+    qe.msg('Calling VTEX CLI in background... ', true)
     ACCOUNT = config.vtex.account
     qe.exec(`vtex-e2e login ${ACCOUNT} 1> ${VTEX_URL_FILE} &`)
     var size = 0
@@ -72,10 +71,10 @@ async function vtexCli(config, runSetup) {
     })
     pfs.rm(CY_CACHE, { recursive: true, force: true })
     // Save to use on Cypress calls
-    qe.outMsg('Now you can call Cypress!')
+    qe.msg('Now you can call Cypress!')
   } else {
-    qe.outMsg('VTEX CLI setup skipped')
-    qe.outFixMsg(
+    qe.msg('VTEX CLI setup skipped')
+    qe.msgDetail(
       'Make sure you have "vtex-e2e" on your path if "workspace.setup" is enabled'
     )
   }

@@ -42,7 +42,8 @@ configuration:
   # set the next to false, you must create a file
   # cypress.env.json with the secrets
   createCypressEnvFile: true
-  devMode: true
+  headed: false
+  devMode: false
   vtex:
     account: productusqa
     id: 2001459804
@@ -82,10 +83,11 @@ workspace:
   name:
   setup:
     enabled: true
-    # From integration folder on
-    file: workspace/hello.spec.js
-    sendDashboard: false
     stopOnFail: true
+    # From integration folder on
+    file: workspace/setup.spec.js
+    # The app to be tested, it'll be uninstalled and linked
+    link: vtex.b2b-quotes
     # Depdendencies should be first
     install:
       # App set
@@ -105,11 +107,11 @@ workspace:
       - vtex.location-availability@0.x
       - vtex.shopper-location@0.x
       - vtex.wordpress-integration@2.x
+      - vtex.storefront-permissions-ui@0.x
       - vtex.b2bstore@2.x
     # Apps that should be uninstalled
     uninstall:
       - vtex.store-theme
-
   wipe:
     enabled: false
     file: wipe.spec.js
@@ -117,9 +119,8 @@ workspace:
     stopOnFail: false
   teardown:
     enabled: true
-    file: teardown.spec.js
-    sendDashboard: false
     stopOnFail: false
+    file: workspace/teardown.spec.js
 
 tests:
   - 1.1:

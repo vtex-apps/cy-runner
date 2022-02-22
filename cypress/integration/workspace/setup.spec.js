@@ -1,8 +1,5 @@
 /// <reference types="cypress" />
-// import Twilio from '../../conductor/twilio'
-// const twilio = new Twilio()
 
-// Get config
 let config = Cypress.env()
 let stateFile = config.workspace.stateFiles[0]
 
@@ -18,7 +15,7 @@ describe('Setting up the environment', () => {
   })
 
   // Get Cookie Credential
-  it('Getting Admin auth cookie value', () => {
+  it('Getting admin auth cookie', () => {
     // Get Cookie Credencial
     cy.request({
       method: 'GET',
@@ -33,7 +30,7 @@ describe('Setting up the environment', () => {
   })
 
   // Start VTEX CLI Authentication (the VTEX CLI is a version modified to work that way)
-  it('Autenticating on VTEX CLI', () => {
+  it('Autenticating on vtex cli', () => {
     // Authenticate as Robot
     // Try to load VTEX CLI callback URL
     cy.exec('cat .vtex.url', { timeout: 10000 }).then((callbackUrl) => {
@@ -72,7 +69,7 @@ describe('Setting up the environment', () => {
   })
 
   // Get Robot Cookie and saving it
-  it('Getting Robot cookie value', () => {
+  it('Getting robot cookie', () => {
     cy.vtex('whoami').its('stdout').should('contain', 'Logged into')
     cy.vtex('local token').then((cookie) => {
       cy.addConfig(stateFile, 'vtex', 'robotCookie', cookie.stdout)
@@ -80,53 +77,71 @@ describe('Setting up the environment', () => {
   })
 
   // Create a new workspace
-  it(`Creating the workspace ${config.workspace.name}`, () => {
+  it(`Creating workspace ${config.workspace.name}`, () => {
     cy.vtex(`workspace use ${config.workspace.name}`)
       .its('stdout')
       .should('contain', config.workspace.name)
   })
 
+  const APP_RETRIES = { retries: 2 }
+  const FAIL_TIMEOUT = { timeout: 1000 }
+  const APP_LINK = config.workspace.setup.link
+
   // Install B2B apps
   config.workspace.setup.install.forEach((app) => {
-    it(`Installing APP ${app}`, () => {
-      cy.vtex(`install ${app}`).its('stdout').should('contains', 'successfully')
-    })
-  })
-
-  // Uninstall master's theme
-  config.workspace.setup.uninstall.forEach((app) => {
-    it(`Removing APP ${app}`, () => {
-      cy.vtex(`uninstall ${app}`)
-        .its('stdout')
+    it(`Installing ${app}`, APP_RETRIES, () => {
+      cy.vtex(`install ${app}`)
+        .its('stdout', FAIL_TIMEOUT)
         .should('contains', 'successfully')
     })
   })
 
-  it.skip('Set roles in organization JSON', { retries: 3 }, () => {
-    cy.setCookie(config.vtex.authCookieName, config.vtex.authCookieValue)
+  // Uninstall master's theme and the app to be linked
+  config.workspace.setup.uninstall.push(APP_LINK)
+  config.workspace.setup.uninstall.forEach((app) => {
+    it(`Removing ${app}`, APP_RETRIES, () => {
+      cy.vtex(`uninstall ${app}`)
+        .its('stdout', FAIL_TIMEOUT)
+        .should('contains', 'successfully')
+    })
+  })
 
-    const roles = Object.keys(ROLE_ID_EMAIL_MAPPING)
+  // Link app to test
+  it.skip(`Linking ${APP_LINK}`, APP_RETRIES, () => {
+    cy.vtex('unlink -a')
+    cy.vtex('link')
+  })
+
+  it.skip(`Checking if ${APP_LINK} was linked`, APP_RETRIES, () => {
+    cy.vtex('ls | grep Linked -A 3')
+      .its('stdout', FAIL_TIMEOUT)
+      .should('contains', APP_LINK)
+  })
+
+  it.skip('Set roles in organization JSON', { retries: 3 }, () => {
+    cy.setCookie(vtex.COOKIE_NAME, vtex.API_COOKIE)
+
+    const roles = OTHER_ROLES
     const APP_NAME = 'vtex.storefront-permissions'
     const APP_VERSION = '1.x'
     const APP = `${APP_NAME}@${APP_VERSION}`
+    const CUSTOM_URL = `${
+      Cypress.config().baseUrl
+    }/_v/private/admin-graphql-ide/v0/${APP}`
+    const GRAPHQL_LIST_ROLE_QUERY = 'query' + '{listRoles{id,name}}'
 
-    cy.getVtexItems().then((vtex) => {
-      const CUSTOM_URL = `https://${vtex.WORKSPACE}--${vtex.ACCOUNT}.myvtex.com/_v/private/admin-graphql-ide/v0/${APP}`
-      const GRAPHQL_LIST_ROLE_QUERY = 'query' + '{listRoles{id,name}}'
-
-      cy.request({
-        method: 'POST',
-        url: CUSTOM_URL,
-        body: {
-          query: GRAPHQL_LIST_ROLE_QUERY,
-        },
-      }).then((response) => {
-        const rolesObject = response.body.data.listRoles.filter((r) =>
-          roles.includes(r.name)
-        )
-        expect(rolesObject.length).to.equal(3)
-        rolesObject.map((r) => cy.setOrganizationItem(`${r.name}-id`, r.id))
-      })
+    cy.request({
+      method: 'POST',
+      url: CUSTOM_URL,
+      body: {
+        query: GRAPHQL_LIST_ROLE_QUERY,
+      },
+    }).then((response) => {
+      const rolesObject = response.body.data.listRoles.filter((r) =>
+        roles.includes(r.name)
+      )
+      expect(rolesObject.length).to.equal(3)
+      rolesObject.map((r) => cy.setOrganizationItem(`${r.name}-id`, r.id))
     })
   })
 })

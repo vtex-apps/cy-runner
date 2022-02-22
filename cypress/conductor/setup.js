@@ -1,8 +1,8 @@
-const fs = require('fs')
 const { promises: pfs } = require('fs')
 const qe = require('./utils')
+const { vtexTeardown } = require('./teardown')
 
-async function vtexWorkspace(workspace, config, start) {
+async function vtexSetup(workspace, config, start) {
   let wks = workspace.name
   let createWks = wks == null ? true : false
 
@@ -31,10 +31,10 @@ async function vtexWorkspace(workspace, config, start) {
 
   // Define workspace name
   if (createWks) {
-    qe.outMsg(`Defining workspace name as "${wks}"`)
+    qe.msg(`Defining workspace name as "${wks}"`)
   } else {
-    qe.outMsg(`Using workspace named "${wks}" `)
-    qe.outFixMsg("It must exists with apps you'll need!")
+    qe.msg(`Using workspace named "${wks}" `)
+    qe.msgDetail("It must exists with apps you'll need!")
   }
   workspace.name = wks
   workspace.stateFiles = config.stateFiles
@@ -45,12 +45,14 @@ async function vtexWorkspace(workspace, config, start) {
 
   // Open or Run cypress
   if (config.devMode) {
-    qe.outFixMsg('Running in dev mode')
+    qe.msgDetail('Running in dev mode')
     await qe.openCypress({ workspace: workspace })
-    qe.outMsg('Hope you did well on your tests, see you soon!')
+    if (workspace.teardown.enabled) await vtexTeardown(workspace)
+    qe.msg('Hope you did well on your tests, see you soon!')
+    process.exit(0)
   } else {
     if (createWks) {
-      qe.outMsg(`Creating workspace "${wks}"`)
+      qe.msg(`Creating workspace "${wks}"`)
       await qe.runCypress(specFile, stopOnFail, { workspace: workspace })
     }
   }
@@ -72,5 +74,5 @@ async function vtexWorkspace(workspace, config, start) {
 
 // Expose
 module.exports = {
-  vtexWorkspace: vtexWorkspace,
+  vtexSetup: vtexSetup,
 }

@@ -9,9 +9,8 @@ let secrets = null
 
 // Check if a config file exists
 if (!fs.existsSync(YAML_FILE)) {
-  qe.errMsg(YAML_FILE + ' does not exist!')
-  qe.errFixMsg(`You must create a ${YAML_FILE} on the B2B root first.`)
-  qe.crash()
+  qe.msgErr(YAML_FILE + ' does not exist!')
+  qe.crash(`You must create a ${YAML_FILE} on the app root.`)
 }
 
 // Load YAML configuration
@@ -22,11 +21,10 @@ try {
   const ACCOUNT = vtex.configuration.vtex.account
   const AUTH_URL = `https://${ACCOUNT}.myvtex.com/api/vtexid/pub/authentication`
   vtex.configuration.vtex['authUrl'] = AUTH_URL
-  qe.outMsg(`${YAML_FILE} file loaded sucessfully`)
+  qe.msg(`${YAML_FILE} file loaded sucessfully`)
 } catch (e) {
-  qe.errMsg(`Error on load ${YAML_FILE}!`)
-  qe.errFixMsg(`Please, check if your ${YAML_FILE} well formated.`)
-  qe.crash()
+  qe.msgErr(`Please, check if your ${YAML_FILE} well formated.`)
+  qe.crash(e)
 }
 
 // Load SECRET from file or memory
@@ -36,28 +34,23 @@ if (fs.existsSync(SECRET_FILE)) {
   try {
     secrets = yaml.load(fs.readFileSync(SECRET_FILE, 'utf8'))
     JSON.stringify(secrets)
-    qe.outMsg('Secrets loaded from file sucessfully')
+    qe.msg('Secrets loaded from file sucessfully')
   } catch (e) {
-    qe.errMsg(`Error on load the secrets file!`)
-    qe.errFixMsg('Please, check if your secrets file is well formated.')
-    qe.crash()
+    qe.msg('Please, check if your secrets file is well formated.')
+    qe.crash(e)
   }
 } else {
   try {
     if (typeof process.env[SECRET_NAME] == 'undefined') {
-      qe.errMsg('Secrets not found on file or memory!')
-      qe.errFixMsg(
-        `Please create a file ".${SECRET_NAME}.json" or ENV "${SECRET_NAME}".`
-      )
-      qe.crash()
+      qe.msgErr('Secrets not found on file or memory!')
+      qe.crash(`Missing file ".${SECRET_NAME}.json" and env "${SECRET_NAME}".`)
     }
     secrets = yaml.load(process.env[SECRET_NAME], 'utf8')
     JSON.stringify(secrets)
-    qe.outMsg('Secrets loaded from memory sucessfully')
+    qe.msg('Secrets loaded from memory sucessfully')
   } catch (e) {
-    qe.errMsg(`Error on load the secrets!`)
-    qe.errFixMsg('Please, check if your secrets env is well formated.')
-    qe.crash()
+    qe.msgErr(`Please, check you env secrets!`)
+    qe.crash(e)
   }
 }
 
@@ -81,7 +74,7 @@ try {
       throw new Error(JSON.stringify({ twilio: att }))
   })
 } catch (e) {
-  qe.errMsg('Crucial value missing on your secrets!')
+  qe.msgErr('Crucial value missing on your secrets!')
   qe.crash(e)
 }
 
@@ -96,9 +89,9 @@ if (vtex.configuration.createCypressEnvFile) {
   let fileName = 'cypress.env.json'
   try {
     pfs.writeFile(fileName, JSON.stringify(secrets))
-    qe.outMsg(`${fileName} created sucessfully`)
+    qe.msg(`${fileName} created sucessfully`)
   } catch (e) {
-    qe.errMsg(e)
+    qe.msgErr(e)
   }
 }
 

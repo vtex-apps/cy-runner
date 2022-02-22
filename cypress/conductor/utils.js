@@ -6,38 +6,33 @@ const { promises: pfs } = require('fs')
 const QE = '[QE] ===> '
 const SP = '          '
 
-exports.errMsg = (msg, notr) => {
+exports.msgErr = (msg, notr = false) => {
   let end = notr ? '' : '\n'
   process.stderr.write(QE + msg + end)
-  return null
 }
 
-exports.errFixMsg = (msg, notr) => {
+exports.msgErrDetail = (msg, notr = false) => {
   let end = notr ? '' : '\n'
   process.stderr.write(SP + msg + end)
-  return null
 }
 
-exports.outMsg = (msg, notr) => {
+exports.msg = (msg, notr = false) => {
   let end = notr ? '' : '\n'
   process.stdout.write(QE + msg + end)
-  return null
 }
 
-exports.outFixMsg = (msg, notr) => {
+exports.msgDetail = (msg, notr = false) => {
   let end = notr ? '' : '\n'
   process.stdout.write(SP + msg + end)
-  return null
 }
 
-exports.statusMsg = (msg, notr) => {
+exports.statusMsg = (msg, notr = false) => {
   let end = notr ? '' : '\n'
   process.stdout.write(msg + end)
-  return null
 }
 
 exports.crash = (msg) => {
-  this.errMsg('ERROR: ' + msg + '!\n')
+  this.msgErr('ERROR: ' + msg + '!\n')
   process.exit(99)
 }
 
@@ -61,7 +56,7 @@ exports.updateCyEnvJson = (data) => {
     let newJson = { ...json, ...data }
     pfs.writeFile(fileName, JSON.stringify(newJson))
   } catch (e) {
-    this.errMsg(e)
+    this.msgErr(e)
   }
 }
 
@@ -79,11 +74,16 @@ exports.runCypress = async (specFile, stopOnFail, env = {}) => {
       if ((result.totalFailed > 0) & stopOnFail) {
         this.crash('Test failed and stopOnFail is true, stopping the execution')
       }
-      this.outMsg(
+      this.msg(
         `Test done sucessfully with ${result.totalPassed} passed test(s)!`
       )
+      if (result.totalPassed < result.totalTests) {
+        this.msgDetail(
+          'Some test failed, but you have stopOnFail = false, ignoring it'
+        )
+      }
     })
-    .catch((err) => {
-      this.crash(err.message)
+    .catch((e) => {
+      this.crash(e.message)
     })
 }

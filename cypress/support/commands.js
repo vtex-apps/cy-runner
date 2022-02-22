@@ -10,20 +10,25 @@ Cypress.Commands.add('addConfig', (file, key, item, value) => {
 // Run VTEX CLI commands
 Cypress.Commands.add('vtex', (command) => {
   const VTEX_BIN = 'vtex-e2e'
-  const LONG_TIME_OUT = 120000
-  const SHORT_TIME_OUT = 20000
+  const LONG_TIME_OUT = 100000
+  const SHORT_TIME_OUT = 10000
   switch (command.split(' ')[0]) {
     case 'workspace':
-      return cy.exec(`echo y | ${VTEX_BIN} ${command}`, {
+      return cy.exec(`echo y | ${VTEX_BIN} ${command} --no-color`, {
         timeout: SHORT_TIME_OUT,
       })
     case 'link':
-      return cy.exec(`echo y | ${VTEX_BIN} ${command} --no-watch`, {
+      return cy.exec(`echo y | ${VTEX_BIN} ${command} --no-watch --no-color`, {
         timeout: LONG_TIME_OUT,
       })
-    default:
-      return cy.exec(`${VTEX_BIN} ${command}`, {
+    case 'uninstall':
+      return cy.exec(`echo y | ${VTEX_BIN} ${command} --no-color`, {
         timeout: SHORT_TIME_OUT,
+      })
+    default:
+      return cy.exec(`${VTEX_BIN} ${command} --no-color`, {
+        timeout: SHORT_TIME_OUT,
+        failOnNonZeroExit: false,
       })
   }
 })
