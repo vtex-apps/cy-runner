@@ -14,8 +14,8 @@ const CY_CACHE = path.join(HOME, '.config', 'Cypress', 'cy')
 process.env.IN_CYPRESS = true
 process.env.PATH = `${process.env.PATH}:${TOOLBELT_PATH}/bin`
 
-async function vtexCli(config, runSetup) {
-  if (runSetup) {
+async function vtexCli(config) {
+  if (config.vtexCli) {
     // Clean VTEX env
     try {
       pfs

@@ -1,7 +1,13 @@
 /// <reference types="cypress" />
 
+// Env
 let config = Cypress.env()
 let stateFile = config.workspace.stateFiles[0]
+
+// Constants
+const FAIL_TIMEOUT = { timeout: 1000 }
+const APP_RETRIES = { retries: 2 }
+const APP_LINK = config.workspace.setup.link
 
 // Login page model
 const TXT_EMAIL = '[name = "email"]'
@@ -9,9 +15,22 @@ const TXT_PASSWORD = '[name = "password"]'
 const TXT_CODE = '[name = "code"]'
 
 describe('Setting up the environment', () => {
+  // Fail if any test fail after desired tries
+  // eslint-disable-next-line func-names
+  afterEach(function () {
+    if (
+      this.currentTest.currentRetry() === this.currentTest.retries() &&
+      this.currentTest.state === 'failed'
+    ) {
+      Cypress.runner.stop()
+    }
+  })
+
   // Test if VTEX CLI is installed doing a logout
   it('Checking VTEX CLI', () => {
-    cy.vtex('logout').its('stdout').should('contain', 'See you soon')
+    cy.vtex('logout')
+      .its('stdout', FAIL_TIMEOUT)
+      .should('contain', 'See you soon')
   })
 
   // Get Cookie Credential
@@ -35,8 +54,9 @@ describe('Setting up the environment', () => {
     // Try to load VTEX CLI callback URL
     cy.exec('cat .vtex.url', { timeout: 10000 }).then((callbackUrl) => {
       cy.visit(callbackUrl.stdout)
-      // Intercept doesn't work, you must wait two seconds
-      cy.wait(2000) // eslint-disable-line cypress/no-unnecessary-waiting
+      // Intercept doesn't work, we must wait
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(2000)
       cy.get('body').then(($body) => {
         if ($body.find(TXT_EMAIL).length) {
           // Fill Robot email
@@ -49,8 +69,9 @@ describe('Setting up the environment', () => {
             .type(`${config.vtex.robotPassword}{enter}`, { log: false })
         }
       })
-      // Sometimes the system ask for SMS Code, we must wait do see if it is the case
-      cy.wait(2000) // eslint-disable-line cypress/no-unnecessary-waiting
+      // Sometimes the system ask for SMS Code, we must wait
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(2000)
       // Fill Robot SMS code
       cy.get('body').then(($body) => {
         if ($body.find(TXT_CODE).length) {
@@ -82,10 +103,6 @@ describe('Setting up the environment', () => {
       .its('stdout')
       .should('contain', config.workspace.name)
   })
-
-  const APP_RETRIES = { retries: 2 }
-  const FAIL_TIMEOUT = { timeout: 1000 }
-  const APP_LINK = config.workspace.setup.link
 
   // Install B2B apps
   config.workspace.setup.install.forEach((app) => {

@@ -36,24 +36,25 @@ async function vtexSetup(workspace, config, start) {
     qe.msg(`Using workspace named "${wks}" `)
     qe.msgDetail("It must exists with apps you'll need!")
   }
+
+  // Updanting values to expose to Cypress
   workspace.name = wks
   workspace.stateFiles = config.stateFiles
-
-  let path = 'cypress/integration/'
-  let specFile = path + workspace.setup.file
-  let stopOnFail = workspace.setup.stopOnFail
 
   // Open or Run cypress
   if (config.devMode) {
     qe.msgDetail('Running in dev mode')
     await qe.openCypress({ workspace: workspace })
-    if (workspace.teardown.enabled) await vtexTeardown(workspace)
+    if (workspace.teardown.enabled) await vtexTeardown(workspace, config)
     qe.msg('Hope you did well on your tests, see you soon!')
     process.exit(0)
   } else {
-    if (createWks) {
+    if (workspace.setup.enabled) {
+      let env = { workspace: workspace }
       qe.msg(`Creating workspace "${wks}"`)
-      await qe.runCypress(specFile, stopOnFail, { workspace: workspace })
+      await qe.runCypress(config, workspace.setup, env)
+    } else {
+      qe.msg('Workspace setup is disabled, skipping...')
     }
   }
 

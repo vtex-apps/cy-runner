@@ -32,7 +32,6 @@ secretName: VTEX_QE
 
 # Enabled or disable integrations
 integration:
-  vtexCli: true
   jira: false
   cypress: false
   slack: false
@@ -41,9 +40,11 @@ configuration:
   # If you want to try another secrets on Cypress
   # set the next to false, you must create a file
   # cypress.env.json with the secrets
-  createCypressEnvFile: true
-  headed: false
+  vtexCli: false
   devMode: false
+  headed: false
+  browser: chrome
+  createCypressEnvFile: true
   vtex:
     account: productusqa
     id: 2001459804
@@ -82,10 +83,11 @@ workspace:
   # If blank, it will be dinamically defined
   name:
   setup:
-    enabled: true
+    enabled: false
     stopOnFail: true
-    # From integration folder on
-    file: workspace/setup.spec.js
+    # Must end with /
+    path: cypress/integration/workspace/
+    file: setup.spec.js
     # The app to be tested, it'll be uninstalled and linked
     link: vtex.b2b-quotes
     # Depdendencies should be first
@@ -119,8 +121,10 @@ workspace:
     stopOnFail: false
   teardown:
     enabled: true
-    stopOnFail: false
-    file: workspace/teardown.spec.js
+    stopOnFail: fail
+    # Must end with /
+    path: cypress/integration/workspace/
+    file: teardown.spec.js
 
 tests:
   - 1.1:

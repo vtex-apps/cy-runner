@@ -3,31 +3,32 @@ const { secrets, vtex } = require('./conductor/config')
 const { vtexCli } = require('./conductor/cli')
 const { vtexSetup } = require('./conductor/setup')
 const { vtexTeardown } = require('./conductor/teardown')
-const START = Date.now()
+let timing = { start: qe.tick() }
 
 async function main() {
   // Report integration options
   for (const item in vtex.integration) {
     let status = vtex.integration[item] ? 'enabled' : 'disabled'
     qe.msg(`${item.toUpperCase()} integration is ${status}`)
-    if (!vtex.integration[item] && item == 'vtexCli') {
-      if (!vtex.configuration.devMode) {
-        qe.msgDetail('You are running with vtexCli and devMode disabled')
-        qe.msgDetail('I hope you know what you are doing =D')
-      }
-    }
+  }
+  if (!vtex.configuration.vtexCli && !vtex.configuration.devMode) {
+    qe.msg('You are running with vtexCli and devMode disabled')
+    qe.msgDetail('I hope you know what you are doing =D')
   }
 
   // VTEX CLI
-  const PATH = await vtexCli(vtex.configuration, vtex.integration.vtexCli)
+  const PATH = await vtexCli(vtex.configuration)
   process.env.PAHT = PATH
 
   // Workspace setup
-  const WKS = await vtexSetup(vtex.workspace, vtex.configuration, START)
+  const WKS = await vtexSetup(vtex.workspace, vtex.configuration, timing.start)
   vtex.workspace.setup.name = WKS
+  timing['setup'] = qe.tick()
 
   // Teardown
-  if (vtex.workspace.teardown.enabled) await vtexTeardown(vtex.workspace)
+  if (vtex.workspace.teardown.enabled)
+    await vtexTeardown(vtex.workspace, vtex.configuration)
+  timing['teardown'] = qe.tick()
 }
 
 main()

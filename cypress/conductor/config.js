@@ -84,6 +84,12 @@ for (const KEY in vtex.configuration.vtex) {
   secrets.vtex[KEY] = VALUE
 }
 
+// Propagate configuration settings to workspace
+const KEYS = ['headed']
+KEYS.forEach((value) => {
+  vtex.workspace[value] = vtex.configuration[value]
+})
+
 // Write cypress.env.json
 if (vtex.configuration.createCypressEnvFile) {
   let fileName = 'cypress.env.json'

@@ -60,22 +60,33 @@ exports.updateCyEnvJson = (data) => {
   }
 }
 
+exports.tick = () => {
+  return Date.now()
+}
+
 exports.openCypress = async (env = {}) => {
   await cypress.open({ env: env })
 }
 
-exports.runCypress = async (specFile, stopOnFail, env = {}) => {
+exports.runCypress = async (config, test, env = {}) => {
+  let stopOnFail = test.stopOnFail
+  const options = {
+    spec: test.path + test.file,
+    headed: config.headed,
+    browser: config.browser,
+    env: env,
+  }
   await cypress
-    .run({ spec: specFile, env: env })
+    .run(options)
     .then((result) => {
       if (result.failures) {
         this.crash(result.message)
       }
-      if ((result.totalFailed > 0) & stopOnFail) {
-        this.crash('Test failed and stopOnFail is true, stopping the execution')
+      if (result.totalFailed > 0 && stopOnFail) {
+        this.crash('Test failed and stopOnFail is true, stopping execution')
       }
       this.msg(
-        `Test done sucessfully with ${result.totalPassed} passed test(s)!`
+        `Spec done sucessfully with ${result.totalPassed} passed test(s)!`
       )
       if (result.totalPassed < result.totalTests) {
         this.msgDetail(
