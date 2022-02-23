@@ -116,29 +116,71 @@ workspace:
       - vtex.store-theme
   wipe:
     enabled: false
-    file: wipe.spec.js
-    sendDashboard: false
     stopOnFail: false
+    # Must end with /
+    path: cypress/integration/workspace/
+    file: wipe.spec.js
   teardown:
-    enabled: true
-    stopOnFail: fail
+    enabled: false
+    stopOnFail: false
     # Must end with /
     path: cypress/integration/workspace/
     file: teardown.spec.js
 
-tests:
-  - 1.1:
-      - enabled: true
-        sendDashboard: true
-        stopOnFail: false
-        testFiles:
-          - '**/integration/1.1*'
-          - '**/integration/1.2*'
+testStrategy:
+  # Example on how to run in order
+  - A:
+      enabled: false
+      sendDashboard: false
+      stopOnFail: false
+      # If true, all files will run in one call
+      parallel: false
+      # If you need order, avoid wildcards
+      files:
+        - 'cypress/integration/b2b/b.spec.js'
 
-  - 2.1:
-      - enabled: true
-        depends:
-          - 1.1
-        stopOnFail: false
-        testFiles:
-          - '**/integration/2.1*'
+  # Example on how to run in parallel
+  # Only if Cypress Dashboard is enabled
+  - B:
+      enabled: false
+      sendDashboard: false
+      stopOnFail: true
+      # If true, all files will run in one call
+      parallel: true
+      # If you need order, avoid more than one
+      files:
+        - 'cypress/integration/b2b/b.spec.js'
+        # - 'cypress/integration/b2b/a.spec.js'
+
+  # Example using wild selector
+  - C:
+      enabled: false
+      sendDashboard: false
+      stopOnFail: false
+      parallel: false
+      files:
+        - 'cypress/integration/b2b/b.spec.js'
+
+  # Example with dependency
+  - D:
+      enabled: true
+      sendDashboard: false
+      stopOnFail: false
+      parallel: false
+      files:
+        - '**/b2b/*.spec.js'
+      # Use the same name of earlier test
+      dependency:
+        - A
+        - C
+
+  # Example with fail exit
+  - E:
+      enabled: true
+      sendDashboard: false
+      stopOnFail: false
+      parallel: false
+      files:
+        - 'cypress/integration/b2b/b.spec.js'
+      dependency:
+        - D

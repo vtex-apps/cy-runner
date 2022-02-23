@@ -2,6 +2,7 @@ const cypress = require('cypress')
 const { execSync } = require('child_process')
 const fs = require('fs')
 const { promises: pfs } = require('fs')
+const { vtexTeardown } = require('./teardown')
 
 const QE = '[QE] ===> '
 const SP = '          '
@@ -36,6 +37,20 @@ exports.crash = (msg) => {
   process.exit(99)
 }
 
+exports.report = (msg) => {
+  process.stdout.write('\n[QE] ===> ' + msg + '\n\n')
+}
+
+exports.success = (msg) => {
+  process.stdout.write('\n[QE] ===> SUCCESS: ' + msg + '!\n\n')
+  process.exit(0)
+}
+
+exports.fail = (msg) => {
+  process.stdout.write('\n[QE] ===> FAILED: ' + msg + '!\n\n')
+  process.exit(17)
+}
+
 exports.exec = (cmd, output) => {
   if (typeof output == 'undefined') output = 'ignore'
   execSync(cmd, {
@@ -64,37 +79,63 @@ exports.tick = () => {
   return Date.now()
 }
 
-exports.openCypress = async (env = {}) => {
-  await cypress.open({ env: env })
+exports.openCypress = async (workspace = {}) => {
+  await cypress.open({ env: workspace })
 }
 
-exports.runCypress = async (config, test, env = {}) => {
+exports.runCypress = async (config, test, workspace = {}, group) => {
   let stopOnFail = test.stopOnFail
+  let key
+  let spec =
+    typeof test.files == 'undefined' ? test.path + test.file : test.files
   const options = {
-    spec: test.path + test.file,
+    spec: spec,
     headed: config.headed,
     browser: config.browser,
-    env: env,
+    env: workspace,
   }
-  await cypress
-    .run(options)
-    .then((result) => {
-      if (result.failures) {
-        this.crash(result.message)
-      }
-      if (result.totalFailed > 0 && stopOnFail) {
-        this.crash('Test failed and stopOnFail is true, stopping execution')
-      }
-      this.msg(
-        `Spec done sucessfully with ${result.totalPassed} passed test(s)!`
-      )
-      if (result.totalPassed < result.totalTests) {
-        this.msgDetail(
-          'Some test failed, but you have stopOnFail = false, ignoring it'
-        )
-      }
+
+  // Options tunning
+  if (test.sendDashboard && typeof group == 'undefined')
+    this.crash('Cypress Dashboard enabled without a group name')
+  if (test.parallel) options['paralell'] = true
+  if (typeof group != 'undefined') options['group'] = group
+  if (test.sendDashboard) {
+    key = fs.readFileSync('cypress.env.json')
+    key = JSON.parse(key).cypress.dashboardKey
+    if (typeof key == 'undefined')
+      this.crash('Cypress Dashboard enabled without a key')
+    options['key'] = key
+    options['record'] = true
+  }
+
+  // Run Cypress
+  let testPassed = false
+  let endTests = false
+  let isTeardown = /teardown/.test(spec)
+  try {
+    await cypress.run(options).then((result) => {
+      if (result.failures) this.crash(result.message)
+      if (result.totalFailed > 0 && stopOnFail) endTests = true
+      else this.msg(`Spec done with ${result.totalPassed} passed test(s)!`)
+      if (result.totalPassed < result.totalTests && !endTests)
+        this.msg('Some test failed, but stopOnFail is disabled')
+      else testPassed = true
     })
-    .catch((e) => {
-      this.crash(e.message)
-    })
+  } catch (e) {
+    this.crash(e.message)
+  }
+  if (endTests) {
+    this.msg('Some test failed and stopOnFail is enabled, ending tests')
+    // Reduncing workspace back
+    workspace = workspace.workspace
+    if (!isTeardown && workspace.teardown.enabled) {
+      this.msg('Teardown is enabled, calling it')
+      await vtexTeardown(workspace, config)
+    } else {
+      this.msg('Teardown is disabled, skipping it')
+    }
+    this.crash('Test ended due a stopOnFail strategy')
+  }
+  return testPassed
 }
