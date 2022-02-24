@@ -1,7 +1,7 @@
-# Cypress Conductor
+# Cypress Runner
 
-<img src="cypress-runner/_cy-r.svg" width=25% align="right">
-Tool to orchestrate Cypress tests on VTEX.
+<img src="cy-runner/_cy-r.svg" width=25% align="right">
+Tool to orchestrate Cypress tests at VTEX.
 
 &nbsp;
 
