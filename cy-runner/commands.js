@@ -1,3 +1,8 @@
+// Configure it to preserve cookies
+Cypress.Cookies.defaults({
+  preserve: /VtexIdclientAutCookie/,
+})
+
 // File to save state, must exist beforehand
 Cypress.Commands.add('addConfig', (file, key, item, value) => {
   cy.readFile(file).then((json) => {
