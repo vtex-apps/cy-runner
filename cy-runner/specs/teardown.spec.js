@@ -1,5 +1,7 @@
 /// <reference types="cypress" />
 
+import '../commands'
+
 let config = Cypress.env()
 const WKS = config.workspace.name
 const APP_RETRIES = { retries: 2 }

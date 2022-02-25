@@ -14,8 +14,8 @@ const CY_CACHE = path.join(HOME, '.config', 'Cypress', 'cy')
 process.env.IN_CYPRESS = true
 process.env.PATH = `${process.env.PATH}:${TOOLBELT_PATH}/bin`
 
-async function vtexCli(config) {
-  if (config.vtexCli) {
+exports.authVtexCli = async (config) => {
+  if (config.authVtexCli) {
     // Clean VTEX env
     try {
       pfs
@@ -85,9 +85,4 @@ async function vtexCli(config) {
   })
   // Return path to be added
   return `${process.env.PATH}:${TOOLBELT_PATH}/bin`
-}
-
-// Expose
-module.exports = {
-  vtexCli: vtexCli,
 }

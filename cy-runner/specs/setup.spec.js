@@ -1,6 +1,7 @@
 /// <reference types="cypress" />
 
-// Env
+import '../commands'
+
 let config = Cypress.env()
 let stateFile = config.workspace.stateFiles[0]
 

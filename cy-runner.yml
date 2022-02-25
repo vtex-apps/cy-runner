@@ -1,5 +1,5 @@
 ---
-# SECRETS
+# secretName
 #
 # The name to look for secrets on memory or file
 #
@@ -24,38 +24,31 @@
 #   }
 # }
 #
-# on development mode, please create a file '.[secretName].json'
-# at the same place where cypress.yml resides to load it
-#
-# Remember to ignore this file on your Git
+# At development mode you can use a file called '.[secretName].json'
+# 1. Remember to ignore this file on your Git
+# 2. You can add whatever secrets you want on it
+
 secretName: VTEX_QE
 
-# Enabled or disable integrations
-integration:
-  jira: false
-  cypress: false
-  slack: false
-
-configuration:
-  # If you want to try another secrets on Cypress
-  # set the next to false, you must create a file
-  # cypress.env.json with the secrets
-  authVtexCli: false
+testConfig:
+  # authVtexCli   => Start the vtex auth in background
+  # devMode   => Start the test in GUI mode (manual)
+  # runHeaded:   => Start the test in GUI mode (automatic)
+  # browser:  => Witch browser to use (electron, chrome, firefox)
   devMode: false
   runHeaded: false
-  browser: chrome
-  createCypressEnvFile: true
+  authVtexCli:
+    enabled: false
+    git: https://github.com/vtex/toolbelt.git
+    branch: qe/cypress
   vtex:
     account: productusqa
     id: 2001459804
     domain: myvtex.com
     urlExternalSeller: https://productusqaseller.myvtex.com
     idUrl: https://vtexid.vtex.com.br/api/vtexid/pub/authenticate/default
-  jira:
-    account: vtex-dev
-    board: jira-key
-    issueType: task
   cypress:
+    enabled: false
     projectId: xyz
     video: true
     videoCompression: false
@@ -70,50 +63,51 @@ configuration:
     pageLoadTimeout: 45000
     browser: chrome
     chromeWebSecurity: false
+  jira:
+    enabled: false
+    account: vtex-dev
+    board: jira-key
+    issueType: task
   slack:
+    enabled: false
     channel: some-channel
-  toolbelt:
-    git: https://github.com/vtex/toolbelt.git
-    branch: qe/cypress
   # The first will be used to store temp credentials
   stateFiles:
     - .vtex.json
 
-workspace:
+testWorkspace:
   # If blank, it will be dinamically defined
   name:
   setup:
     enabled: false
     stopOnFail: true
-    # Must end with /
     path: cypress/integration/workspace/
     file: setup.spec.js
-    # The app to be tested, it'll be uninstalled and linked
-    link: vtex.b2b-quotes
-    # Depdendencies should be first
-    install:
-      # App set
-      - vtex.admin-customers
-      - vtex.b2b-checkout-settings
-      - vtex.b2b-orders-history
-      - vtex.b2b-organizations-graphql
-      - vtex.b2b-organizations
-      - vtex.b2b-quotes-graphql
-      - vtex.b2b-quotes
-      - vtex.storefront-permissions
-      - vtex.storefront-permissions-components
-      - vtex.storefront-permissions-ui
-      - vtex.quickorder
-      # Theme
-      - vtex.wish-list@1.x
-      - vtex.location-availability@0.x
-      - vtex.shopper-location@0.x
-      - vtex.wordpress-integration@2.x
-      - vtex.storefront-permissions-ui@0.x
-      - vtex.b2bstore@2.x
-    # Apps that should be uninstalled
-    uninstall:
-      - vtex.store-theme
+    manageApps:
+      enabled: true
+      link: vtex.b2b-quotes
+      install:
+        # App set
+        - vtex.admin-customers
+        - vtex.b2b-checkout-settings
+        - vtex.b2b-orders-history
+        - vtex.b2b-organizations-graphql
+        - vtex.b2b-organizations
+        - vtex.b2b-quotes-graphql
+        - vtex.b2b-quotes
+        - vtex.storefront-permissions
+        - vtex.storefront-permissions-components
+        - vtex.storefront-permissions-ui
+        - vtex.quickorder
+        # Theme
+        - vtex.wish-list@1.x
+        - vtex.location-availability@0.x
+        - vtex.shopper-location@0.x
+        - vtex.wordpress-integration@2.x
+        - vtex.storefront-permissions-ui@0.x
+        - vtex.b2bstore@2.x
+      uninstall:
+        - vtex.store-theme
   wipe:
     enabled: false
     stopOnFail: false

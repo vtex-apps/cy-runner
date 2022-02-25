@@ -1,9 +1,9 @@
-const qe = require('./conductor/utils')
-const { vtex } = require('./conductor/config')
-const { vtexCli } = require('./conductor/cli')
-const { vtexSetup } = require('./conductor/setup')
-const { vtexTest } = require('./conductor/test')
-const { vtexTeardown } = require('./conductor/teardown')
+const qe = require('./cy-runner/utils')
+const { vtex } = require('./cy-runner/config')
+const { authVtexCli } = require('./cy-runner/cli')
+const { vtexSetup } = require('./cy-runner/setup')
+const { vtexTest } = require('./cy-runner/test')
+const { vtexTeardown } = require('./cy-runner/teardown')
 let timing = { start: qe.tick() }
 let failed = []
 let skipped = []
@@ -11,17 +11,18 @@ let success = []
 
 async function main() {
   // Report integration
+  return
   for (const item in vtex.integration) {
     let status = vtex.integration[item] ? 'enabled' : 'disabled'
     qe.msg(`${item.toUpperCase()} integration is ${status}`)
   }
-  if (!vtex.configuration.vtexCli && !vtex.configuration.devMode) {
-    qe.msg('You are running with vtexCli and devMode disabled')
+  if (!vtex.testConfig.authVtexCli && !vtex.testConfig.devMode) {
+    qe.msg('You are running with authVtexCli and devMode disabled')
     qe.msgDetail('I hope you know what you are doing =D')
   }
 
   // Vtex cli
-  const PATH = await vtexCli(vtex.configuration)
+  const PATH = await authVtexCli(vtex.configuration)
   process.env.PAHT = PATH
 
   // Workspace setup

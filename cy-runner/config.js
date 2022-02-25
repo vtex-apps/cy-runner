@@ -2,33 +2,27 @@ const fs = require('fs')
 const { promises: pfs } = require('fs')
 const yaml = require('js-yaml')
 const qe = require('./utils')
-const YAML_FILE = 'cypress.yaml'
 
-let vtex = null
+const CONFIG_FILE = 'cy-runner.yml'
+let config = null
 let secrets = null
 
-// Check if a config file exists
-if (!fs.existsSync(YAML_FILE)) {
-  qe.msgErr(YAML_FILE + ' does not exist!')
-  qe.crash(`You must create a ${YAML_FILE} on the app root.`)
-}
-
-// Load YAML configuration
+// Check config file, parse it and add dynamic settings
+if (!fs.existsSync(CONFIG_FILE)) qe.crash(`${CONFIG_FILE} not found`)
 try {
-  vtex = yaml.load(fs.readFileSync(YAML_FILE, 'utf8'))
-  JSON.stringify(vtex)
-  // Add authUrl attribute
-  const ACCOUNT = vtex.configuration.vtex.account
+  config = yaml.load(fs.readFileSync(CONFIG_FILE, 'utf8'))
+  qe.validate(config)
+  const ACCOUNT = config.testConfig.vtex.account
   const AUTH_URL = `https://${ACCOUNT}.myvtex.com/api/vtexid/pub/authentication`
-  vtex.configuration.vtex['authUrl'] = AUTH_URL
-  qe.msg(`${YAML_FILE} file loaded sucessfully`)
+  config.testConfig.vtex['authUrl'] = AUTH_URL
+  qe.msg(`${CONFIG_FILE} loaded sucessfully`)
 } catch (e) {
-  qe.msgErr(`Please, check if your ${YAML_FILE} well formated.`)
+  qe.msgErr(`Check your ${CONFIG_FILE}.`)
   qe.crash(e)
 }
 
 // Load SECRET from file or memory
-const SECRET_NAME = vtex.secretName
+const SECRET_NAME = config.secretName
 const SECRET_FILE = `.${SECRET_NAME}.json`
 if (fs.existsSync(SECRET_FILE)) {
   try {
@@ -79,19 +73,19 @@ try {
 }
 
 // Merge from Secrets with VTEX Configuration section
-for (const KEY in vtex.configuration.vtex) {
-  const VALUE = vtex.configuration.vtex[KEY]
+for (const KEY in config.testConfig.vtex) {
+  const VALUE = config.testConfig.vtex[KEY]
   secrets.vtex[KEY] = VALUE
 }
 
 // Propagate configuration settings to workspace
-const KEYS = ['headed']
+const KEYS = ['runHeaded']
 KEYS.forEach((value) => {
-  vtex.workspace[value] = vtex.configuration[value]
+  config.workspace[value] = config.configuration[value]
 })
 
 // Write cypress.env.json
-if (vtex.configuration.createCypressEnvFile) {
+if (config.testConfig.createCypressEnvFile) {
   let fileName = 'cypress.env.json'
   try {
     pfs.writeFile(fileName, JSON.stringify(secrets))
@@ -104,5 +98,5 @@ if (vtex.configuration.createCypressEnvFile) {
 // Expose
 module.exports = {
   secrets: secrets,
-  vtex: vtex,
+  vtex: config,
 }

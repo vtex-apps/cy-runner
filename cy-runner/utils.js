@@ -2,6 +2,7 @@ const cypress = require('cypress')
 const { execSync } = require('child_process')
 const fs = require('fs')
 const { promises: pfs } = require('fs')
+const lodash = require('lodash')
 const { vtexTeardown } = require('./teardown')
 
 const QE = '[QE] ===> '
@@ -79,6 +80,107 @@ exports.tick = () => {
   return Date.now()
 }
 
+// TODO: Convert in a schema validator
+exports.validate = (config) => {
+  /* Test only mandatory fields cy-runner works
+     0 = String not null
+     1 = Integer not null
+     2 = Boolean not null
+     3 = String
+     4 = Integer
+     5 = Boolean
+     6 = Not null
+     7 = array
+  */
+  const SCHEMA = {
+    secretName: 0,
+    testConfig: {
+      devMode: 2,
+      runHeaded: 2,
+      authVtexCli: { enabled: 2, git: 0, branch: 0 },
+      browser: 0,
+      vtex: { account: 0, id: 4, domain: 0 },
+      cypress: {
+        enabled: 2,
+        projectId: 0,
+        video: 2,
+        videoCompression: 6,
+        videoUploadOnPasses: 2,
+        screenshotOnRunFailure: 2,
+        trashAssetsBeforeRuns: 2,
+        viewportWidth: 1,
+        viewportHeight: 1,
+        defaultCommandTimeout: 1,
+        requestTimeout: 1,
+        watchForFileChanges: 2,
+        pageLoadTimeout: 1,
+        browser: 0,
+        chromeWebSecurity: 2,
+      },
+      jira: { enabled: 2, account: 0, board: 0, issueType: 0 },
+      slack: { enabled: 2, channel: 3 },
+      stateFiles: 7,
+    },
+    testWorkspace: {
+      name: 3,
+      setup: {
+        enabled: 2,
+        stopOnFail: 2,
+        path: 0,
+        file: 0,
+        manageApps: {
+          enabled: 2,
+          link: 0,
+          install: 0,
+          uninstall: 0,
+        },
+      },
+      wipe: { enabled: 2, stopOnFail: 2, path: 0, file: 0 },
+      teardown: { enabled: 2, stopOnFail: 2, path: 0, file: 0 },
+    },
+    testStrategy: 7,
+  }
+
+  const iterate = (obj) => {
+    Object.keys(obj).forEach((key) => {
+      console.log(`key: ${key}, value: ${obj[key]}`)
+
+      if (typeof obj[key] === 'object' && obj[key] !== null) {
+        iterate(obj[key])
+      }
+    })
+  }
+  let test = []
+  function deepIterator(target) {
+    if (typeof target === 'object') {
+      for (const key in target) {
+        deepIterator(target[key])
+        test.push(Object.keys(target))
+      }
+    } else {
+      console.log(target)
+    }
+  }
+
+  function traverse(result, obj, preKey) {
+    if (!obj) return []
+    if (typeof obj == 'object') {
+      for (var key in obj) {
+        traverse(result, obj[key], (preKey || '') + (preKey ? '.' + key : key))
+      }
+    } else {
+      result.push({
+        key: preKey || '',
+        type: obj,
+      })
+    }
+    return result
+  }
+  console.log(traverse([], SCHEMA))
+
+  process.exit(0)
+}
+
 exports.openCypress = async (workspace = {}) => {
   await cypress.open({ env: workspace })
 }
@@ -90,7 +192,7 @@ exports.runCypress = async (config, test, workspace = {}, group) => {
     typeof test.files == 'undefined' ? test.path + test.file : test.files
   const options = {
     spec: spec,
-    headed: config.headed,
+    runHeaded: config.runHeaded,
     browser: config.browser,
     env: workspace,
   }

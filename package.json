@@ -1,14 +1,14 @@
 {
-  "name": "cypress-conductor",
+  "name": "cypress-cy-runner",
   "version": "1.0.0",
   "description": "Tool to orquestrate tests on B2B applications",
-  "main": "conductor.js",
+  "main": "cy-runner.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vtex-apps/cypress-conductor.git"
+    "url": "git+https://github.com/vtex-apps/cypress-cy-runner.git"
   },
   "keywords": [
     "cypress",
@@ -18,11 +18,12 @@
   "author": "charles.santos@vtex.com.br",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/vtex-apps/cypress-conductor/issues"
+    "url": "https://github.com/vtex-apps/cypress-cy-runner/issues"
   },
-  "homepage": "https://github.com/vtex-apps/cypress-conductor#readme",
+  "homepage": "https://github.com/vtex-apps/cypress-cy-runner#readme",
   "dependencies": {
     "cypress": "^9.5.0",
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.1.0",
+    "lodash": "^4.17.21"
   }
 }
