@@ -35,7 +35,7 @@ testConfig:
   # devMode   => Start the test in GUI mode (manual)
   # runHeaded:   => Start the test in GUI mode (automatic)
   # browser:  => Witch browser to use (electron, chrome, firefox)
-  devMode: false
+  devMode: true
   runHeaded: false
   authVtexCli:
     enabled: false
@@ -111,13 +111,11 @@ testWorkspace:
   wipe:
     enabled: true
     stopOnFail: false
-    # Must end with /
     path: cypress/integration/workspace/
     file: wipe.spec.js
   teardown:
     enabled: false
     stopOnFail: false
-    # Must end with /
     path: cypress/integration/workspace/
     file: teardown.spec.js
 
