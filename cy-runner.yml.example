@@ -5,7 +5,7 @@
 #
 # It must be something like that:
 # {
-#   "vtex": {
+#   "config": {
 #     "apiKey": "",
 #     "apiToken": "",
 #     "cookieName": "",
@@ -45,14 +45,14 @@ configuration:
   runHeaded: false
   browser: chrome
   createCypressEnvFile: true
-  vtex:
+  config:
     account: productusqa
     id: 2001459804
     domain: myvtex.com
     urlExternalSeller: https://productusqaseller.myvtex.com
-    idUrl: https://vtexid.vtex.com.br/api/vtexid/pub/authenticate/default
+    idUrl: https://vtexid.config.com.br/api/vtexid/pub/authenticate/default
   jira:
-    account: vtex-dev
+    account: config-dev
     board: jira-key
     issueType: task
   cypress:
@@ -73,11 +73,11 @@ configuration:
   slack:
     channel: some-channel
   toolbelt:
-    git: https://github.com/vtex/toolbelt.git
+    git: https://github.com/config/toolbelt.git
     branch: qe/cypress
   # The first will be used to store temp credentials
   stateFiles:
-    - .vtex.json
+    - .config.json
 
 workspace:
   # If blank, it will be dinamically defined
@@ -89,31 +89,31 @@ workspace:
     path: cypress/integration/workspace/
     file: setup.spec.js
     # The app to be tested, it'll be uninstalled and linked
-    link: vtex.b2b-quotes
+    link: config.b2b-quotes
     # Depdendencies should be first
     install:
       # App set
-      - vtex.admin-customers
-      - vtex.b2b-checkout-settings
-      - vtex.b2b-orders-history
-      - vtex.b2b-organizations-graphql
-      - vtex.b2b-organizations
-      - vtex.b2b-quotes-graphql
-      - vtex.b2b-quotes
-      - vtex.storefront-permissions
-      - vtex.storefront-permissions-components
-      - vtex.storefront-permissions-ui
-      - vtex.quickorder
+      - config.admin-customers
+      - config.b2b-checkout-settings
+      - config.b2b-orders-history
+      - config.b2b-organizations-graphql
+      - config.b2b-organizations
+      - config.b2b-quotes-graphql
+      - config.b2b-quotes
+      - config.storefront-permissions
+      - config.storefront-permissions-components
+      - config.storefront-permissions-ui
+      - config.quickorder
       # Theme
-      - vtex.wish-list@1.x
-      - vtex.location-availability@0.x
-      - vtex.shopper-location@0.x
-      - vtex.wordpress-integration@2.x
-      - vtex.storefront-permissions-ui@0.x
-      - vtex.b2bstore@2.x
+      - config.wish-list@1.x
+      - config.location-availability@0.x
+      - config.shopper-location@0.x
+      - config.wordpress-integration@2.x
+      - config.storefront-permissions-ui@0.x
+      - config.b2bstore@2.x
     # Apps that should be uninstalled
     uninstall:
-      - vtex.store-theme
+      - config.store-theme
   wipe:
     enabled: false
     stopOnFail: false

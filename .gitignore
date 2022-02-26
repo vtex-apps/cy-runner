@@ -102,10 +102,3 @@ dist
 
 # TernJS port file
 .tern-port
-.*.json
-.vtex.url
-cypress.env.json
-cypress.json
-*.mp4
-cypress/screenshots
-cypress/videos
