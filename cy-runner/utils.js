@@ -2,8 +2,9 @@ const cypress = require('cypress')
 const { execSync } = require('child_process')
 const fs = require('fs')
 const { promises: pfs } = require('fs')
-const lodash = require('lodash')
+const { get } = require('lodash')
 const { vtexTeardown } = require('./teardown')
+const { isNull } = require('util')
 
 const QE = '[QE] ===> '
 const SP = '          '
@@ -98,7 +99,6 @@ exports.validate = (config) => {
       devMode: 2,
       runHeaded: 2,
       authVtexCli: { enabled: 2, git: 0, branch: 0 },
-      browser: 0,
       vtex: { account: 0, id: 4, domain: 0 },
       cypress: {
         enabled: 2,
@@ -131,8 +131,8 @@ exports.validate = (config) => {
         manageApps: {
           enabled: 2,
           link: 0,
-          install: 0,
-          uninstall: 0,
+          install: 7,
+          uninstall: 7,
         },
       },
       wipe: { enabled: 2, stopOnFail: 2, path: 0, file: 0 },
@@ -141,29 +141,8 @@ exports.validate = (config) => {
     testStrategy: 7,
   }
 
-  const iterate = (obj) => {
-    Object.keys(obj).forEach((key) => {
-      console.log(`key: ${key}, value: ${obj[key]}`)
-
-      if (typeof obj[key] === 'object' && obj[key] !== null) {
-        iterate(obj[key])
-      }
-    })
-  }
-  let test = []
-  function deepIterator(target) {
-    if (typeof target === 'object') {
-      for (const key in target) {
-        deepIterator(target[key])
-        test.push(Object.keys(target))
-      }
-    } else {
-      console.log(target)
-    }
-  }
-
-  function traverse(result, obj, preKey) {
-    if (!obj) return []
+  // Tranverse SCHEMA
+  const traverse = (result, obj, preKey) => {
     if (typeof obj == 'object') {
       for (var key in obj) {
         traverse(result, obj[key], (preKey || '') + (preKey ? '.' + key : key))
@@ -176,7 +155,69 @@ exports.validate = (config) => {
     }
     return result
   }
-  console.log(traverse([], SCHEMA))
+  const SCHEMA_TRAVERSED = traverse([], SCHEMA)
+
+  // Validate SCHEMA
+  let skip = []
+  SCHEMA_TRAVERSED.forEach((check) => {
+    let value = get(config, check.key)
+    let crash = false
+    let ignore = false
+    let msg = `Parse cy-runner.yml failed [${check.key} must be `
+    // If element is disabled, no need to check structure
+    if (/\.enabled/.test(check.key) && value == false)
+      skip.push(check.key.split('.enabled')[0])
+    skip.forEach((disabled) => {
+      if (check.key.includes(disabled)) ignore = true
+    })
+    if (ignore) return
+    switch (check.type) {
+      // String not null
+      case 0:
+        msg = msg + 'string not null]'
+        if (value == null || typeof value != 'string') crash = true
+        break
+      // Integer not null
+      case 1:
+        msg = msg + 'number not null]'
+        if (value == null || typeof value != 'number') crash = true
+        break
+      // Boolean not null
+      case 2:
+        msg = msg + 'boolean not null]'
+        if (value == null || typeof value != 'boolean') crash = true
+        break
+      // String
+      case 3:
+        msg = msg + 'string]'
+        if (value != null && typeof value != 'string') crash = true
+        break
+      // Integer
+      case 4:
+        msg = msg + 'number]'
+        if (value != null && typeof value != 'number') crash = true
+        break
+      // Boolean
+      case 5:
+        msg = msg + 'boolean]'
+        if (value != null && typeof value != 'boolean') crash = true
+        break
+      // Not null
+      case 6:
+        msg = msg + 'not null]'
+        if (value == null) crash = true
+        break
+      // Array
+      case 7:
+        msg = msg + 'array]'
+        if (!value.constructor.prototype.hasOwnProperty('push')) crash = true
+        break
+      default:
+        break
+    }
+    if (crash) this.crash(msg)
+  })
+  console.log(skip)
 
   process.exit(0)
 }

@@ -110,7 +110,7 @@ testWorkspace:
         - vtex.store-theme
   wipe:
     enabled: false
-    stopOnFail: false
+    stopOnFail: abc
     # Must end with /
     path: cypress/integration/workspace/
     file: wipe.spec.js
