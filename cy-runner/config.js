@@ -77,7 +77,7 @@ try {
     qe.crash(e)
 }
 
-// Merge from Secrets with config section
+// Merge secrets on config
 Object.entries(secrets).forEach((secret) => {
     let key = secret[0]
     for (let property in secret[1]) {
@@ -94,7 +94,7 @@ try {
 }
 
 // Feedback to user
-qe.msg(`Secrets loaded from ${loadedFrom} successfully`)
+qe.msg(`Secrets loaded (from ${loadedFrom}) and ${cypressEnvFile} created successfully`)
 
 // Expose config
 module.exports = {
