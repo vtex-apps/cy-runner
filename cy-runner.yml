@@ -38,9 +38,12 @@ testConfig:
   devMode: true
   runHeaded: false
   authVtexCli:
-    enabled: false
+    enabled: true
     git: https://github.com/config/toolbelt.git
     branch: qe/cypress
+  # Use Twilio as OPT provider? Don't forget the credentials on secrets.
+  twilio:
+    enabled: true
   vtex:
     account: productusqa
     id: 2001459804
@@ -83,6 +86,7 @@ testWorkspace:
     stopOnFail: true
     path: cypress/integration/workspace/
     file: setup.spec.js
+    # Enable if you want to run integration tests, for only E2E, don't need
     manageApps:
       enabled: true
       link: config.b2b-quotes

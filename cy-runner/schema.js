@@ -75,7 +75,6 @@ function schemaValidator(schema, config, strategy = '') {
         }
         if (crash) qe.crash(`Parse cy-runner.yml failed [${strategy}${item.key} must be ${msg}]`)
     })
-    console.log(skip)
 }
 
 exports.validate = (config) => {
@@ -85,6 +84,7 @@ exports.validate = (config) => {
             devMode: 2,
             runHeaded: 2,
             authVtexCli: {enabled: 2, git: 0, branch: 0},
+            twilio: {enabled: 2},
             vtex: {account: 0, id: 4, domain: 0},
             cypress: {
                 enabled: 2,
@@ -145,6 +145,6 @@ exports.validate = (config) => {
         schemaValidator(STRATEGY_SCHEMA, configSchema[strategy], `${strategy}.`)
     })
 
-
-    process.exit(0)
+    // All set, show the user a positive feedback
+    qe.msg('cy-runner.yml loaded and validated successfully')
 }

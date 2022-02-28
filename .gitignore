@@ -104,3 +104,4 @@ dist
 .tern-port
 /.VTEX_QE.json
 /.idea
+/cypress.env.json

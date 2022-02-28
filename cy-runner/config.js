@@ -4,99 +4,99 @@ const yaml = require('js-yaml')
 const qe = require('./utils')
 const schema = require('./schema')
 const CONFIG_FILE = 'cy-runner.yml'
-let config = null
+let configSet = null
 let secrets = null
 
 // Check config file, parse it and add dynamic settings
 if (!fs.existsSync(CONFIG_FILE)) qe.crash(`${CONFIG_FILE} not found`)
 try {
-    config = yaml.load(fs.readFileSync(CONFIG_FILE, 'utf8'))
-    schema.validate(config)
-    const ACCOUNT = config.testConfig.vtex.account
-    const AUTH_URL = `https://${ACCOUNT}.myvtex.com/api/vtexid/pub/authentication`
-    config.testConfig.vtex['authUrl'] = AUTH_URL
-    qe.msg(`${CONFIG_FILE} loaded successfully`)
+    configSet = yaml.load(fs.readFileSync(CONFIG_FILE, 'utf8'))
+    schema.validate(configSet)
+    const ACCOUNT = configSet.testConfig.vtex.account
+    configSet.testConfig.vtex['authUrl'] = `https://${ACCOUNT}.myvtex.com/api/vtexid/pub/authentication`
 } catch (e) {
     qe.msgErr(`Check your ${CONFIG_FILE}.`)
     qe.crash(e)
 }
 
 // Load SECRET from file or memory
-const SECRET_NAME = config.secretName
+const SECRET_NAME = configSet.secretName
 const SECRET_FILE = `.${SECRET_NAME}.json`
+let loadedFrom = null
 if (fs.existsSync(SECRET_FILE)) {
     try {
         secrets = yaml.load(fs.readFileSync(SECRET_FILE, 'utf8'))
-        JSON.stringify(secrets)
-        qe.msg('Secrets loaded from file sucessfully')
+        loadedFrom = 'file'
     } catch (e) {
-        qe.msg('Please, check if your secrets file is well formated.')
-        qe.crash(e)
+        qe.crash('Check if your secrets file is well formatted')
     }
 } else {
     try {
         if (typeof process.env[SECRET_NAME] == 'undefined') {
-            qe.msgErr('Secrets not found on file or memory!')
-            qe.crash(`Missing file ".${SECRET_NAME}.json" and env "${SECRET_NAME}".`)
+            qe.crash(`Neither ".${SECRET_NAME}.json" or ENV "${SECRET_NAME}" found`)
         }
         secrets = yaml.load(process.env[SECRET_NAME], 'utf8')
-        JSON.stringify(secrets)
-        qe.msg('Secrets loaded from memory sucessfully')
+        loadedFrom = 'memory'
     } catch (e) {
-        qe.msgErr(`Please, check you env secrets!`)
-        qe.crash(e)
+        qe.crash('Check if your secrets ENV is well formatted')
     }
 }
 
-// Check crucial values on secrets
-const VTEX_ATTRIBUTES = [
-    'apiKey',
-    'apiToken',
-    'authCookieName',
-    'robotMail',
-    'robotPassword',
-]
-const TWILIO_ATTRIBUTES = ['apiUser', 'apiToken']
+// Check secrets
+function checkSecret(key, value) {
+    if (typeof value != 'string')
+        qe.crash(`Secret must be string [${key}]`)
+    if (value.length <= 0)
+        qe.crash(`Secret must be string not null [${key}]`)
+}
 
 try {
-    VTEX_ATTRIBUTES.forEach((att) => {
-        if (typeof secrets.vtex[att] == 'undefined')
-            throw new Error(JSON.stringify({vtex: att}))
-    })
-    TWILIO_ATTRIBUTES.forEach((att) => {
-        if (typeof secrets.twilio[att] == 'undefined')
-            throw new Error(JSON.stringify({twilio: att}))
-    })
+    // Check VTEX Cli secrets
+    if (configSet.testConfig.authVtexCli) {
+        const VTEX_ATTRIBUTES = [
+            'apiKey',
+            'apiToken',
+            'authCookieName',
+            'robotMail',
+            'robotPassword',
+        ]
+        VTEX_ATTRIBUTES.forEach((att) => {
+            if (typeof secrets.vtex[att] == 'undefined')
+                checkSecret(`secrets.vtex.${att}`, secrets.vtex[att])
+        })
+    }
+    // Check TWILIO secrets
+    if (configSet.testConfig.twilio) {
+        const TWILIO_ATTRIBUTES = ['apiUser', 'apiToken', 'baseUrl']
+        TWILIO_ATTRIBUTES.forEach((att) => {
+            checkSecret(`secrets.twilio.${att}`, secrets.twilio[att])
+        })
+    }
 } catch (e) {
-    qe.msgErr('Crucial value missing on your secrets!')
+    qe.msgErr('Missing value when reading your secrets!')
     qe.crash(e)
 }
 
-// Merge from Secrets with VTEX Configuration section
-for (const KEY in config.testConfig.vtex) {
-    const VALUE = config.testConfig.vtex[KEY]
-    secrets.vtex[KEY] = VALUE
-}
-
-// Propagate configuration settings to workspace
-const KEYS = ['runHeaded']
-KEYS.forEach((value) => {
-    config.workspace[value] = config.configuration[value]
+// Merge from Secrets with config section
+Object.entries(secrets).forEach((secret) => {
+    let key = secret[0]
+    for (let property in secret[1]) {
+        configSet.testConfig[key][property] = secrets[key][property]
+    }
 })
 
 // Write cypress.env.json
-if (config.testConfig.createCypressEnvFile) {
-    let fileName = 'cypress.env.json'
-    try {
-        pfs.writeFile(fileName, JSON.stringify(secrets))
-        qe.msg(`${fileName} created sucessfully`)
-    } catch (e) {
-        qe.msgErr(e)
-    }
+let cypressEnvFile = 'cypress.env.json'
+try {
+    pfs.writeFile(cypressEnvFile, JSON.stringify(configSet))
+} catch (e) {
+    qe.msgErr(e)
 }
 
-// Expose
+// Feedback to user
+qe.msg(`Secrets loaded from ${loadedFrom} successfully`)
+
+// Expose config
 module.exports = {
-    secrets: secrets,
-    config: config,
+    config: configSet,
 }
