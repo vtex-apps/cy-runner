@@ -148,15 +148,15 @@ exports.runCypress = async (test, config, group) => {
   }
 
   // Run Cypress
-  let testFailed = false
+  let testPassed = true
   try {
     await cypress.open(options).then((result) => {
       if (result.failures) this.crash(result.message)
-      if (result.totalPassed < result.totalTests) testFailed = true
+      if (result.totalPassed < result.totalTests) testPassed = false
       this.msg(`Spec done with ${result.totalPassed} passed and ${result.totalFailed} failed tests`)
     })
   } catch (e) {
     this.crash(e.message)
   }
-  return testFailed
+  return testPassed
 }

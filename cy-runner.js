@@ -23,18 +23,8 @@ async function main() {
   process.env.PATH = await vtexCli(config)
 
   // Setup workspace (create, install apps, etc)
-  let allTestsPassed = await vtexWorkspace(config)
-  let stopOnFail = config.testWorkspace.setup.stopOnFail
-  let doWipe = config.testWorkspace.wipe.enabled
-  let doTeardown = config.testWorkspace.teardown.enabled
+  await vtexWorkspace(config)
   control.timing['setup'] = qe.tick()
-  if (!allTestsPassed && stopOnFail) {
-    qe.msg('Workspace set up failed')
-    qe.msgDetail('[setup.stopOnFail] enabled, stopping the tests')
-    if (doWipe) qe.msgDetail('[wipe] enabled, doing wipe')
-    if (doTeardown) qe.msgDetail('[teardown] enabled, doing teardown')
-    qe.crash('Prematurely exit duo a [setup.stopOnFail]')
-  }
 
   process.exit(0)
   // Tests
