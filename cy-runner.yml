@@ -31,11 +31,10 @@
 secretName: VTEX_QE
 
 testConfig:
+  # devMode       => Start the test in GUI mode (manual)
+  # runHeaded     => Start the test in GUI mode (automatic)
   # authVtexCli   => Start the config auth in background
-  # devMode   => Start the test in GUI mode (manual)
-  # runHeaded:   => Start the test in GUI mode (automatic)
-  # browser:  => Witch browser to use (electron, chrome, firefox)
-  devMode: true
+  devMode: false
   runHeaded: false
   authVtexCli:
     enabled: false
@@ -49,7 +48,7 @@ testConfig:
     id: 2001459804
     domain: myvtex.com
     urlExternalSeller: https://productusqaseller.myvtex.com
-    idUrl: https://vtexid.config.com.br/api/vtexid/pub/authenticate/default
+    idUrl: https://vtexid.vtex.com.br/api/vtexid/pub/authenticate/default
   cypress:
     enabled: false
     projectId: xyza
@@ -84,34 +83,33 @@ testWorkspace:
   setup:
     enabled: false
     stopOnFail: true
-    path: cypress/integration/workspace/
-    file: setup.spec.js
+    spec: cy-runner/specs/setup.spec.js
     # Enable if you want to run integration tests, for only E2E, don't need
     manageApps:
       enabled: true
-      link: config.b2b-quotes
+      link: vtex.b2b-quotes
       install:
         # App set
-        - config.admin-customers
-        - config.b2b-checkout-settings
-        - config.b2b-orders-history
-        - config.b2b-organizations-graphql
-        - config.b2b-organizations
-        - config.b2b-quotes-graphql
-        - config.b2b-quotes
-        - config.storefront-permissions
-        - config.storefront-permissions-components
-        - config.storefront-permissions-ui
-        - config.quickorder
+        - vtex.admin-customers
+        - vtex.b2b-checkout-settings
+        - vtex.b2b-orders-history
+        - vtex.b2b-organizations-graphql
+        - vtex.b2b-organizations
+        - vtex.b2b-quotes-graphql
+        - vtex.b2b-quotes
+        - vtex.storefront-permissions
+        - vtex.storefront-permissions-components
+        - vtex.storefront-permissions-ui
+        - vtex.quickorder
         # Theme
-        - config.wish-list@1.x
-        - config.location-availability@0.x
-        - config.shopper-location@0.x
-        - config.wordpress-integration@2.x
-        - config.storefront-permissions-ui@0.x
-        - config.b2bstore@2.x
+        - vtex.wish-list@1.x
+        - vtex.location-availability@0.x
+        - vtex.shopper-location@0.x
+        - vtex.wordpress-integration@2.x
+        - vtex.storefront-permissions-ui@0.x
+        - vtex.b2bstore@2.x
       uninstall:
-        - config.store-theme
+        - vtex.store-theme
   wipe:
     enabled: false
     stopOnFail: false

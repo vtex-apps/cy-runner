@@ -24,7 +24,7 @@
   "homepage": "https://github.com/vtex-apps/cy-runner#readme",
   "dependencies": {
     "@vtex/prettier-config": "^1.0.0",
-    "cypress": "^9.5.0",
+    "cypress": "^9.5.1",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
     "prettier": "^2.4.0"
