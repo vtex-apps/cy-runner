@@ -1,19 +1,23 @@
-const qe = require('./utils')
 const fs = require('fs')
+const {merge} = require('lodash')
+const qe = require('./utils')
 
 exports.vtexWorkspace = async (config) => {
   const WORKSPACE = config.testWorkspace;
   if (config.testConfig.devMode) {
     // Open Cypress en DEV/GUI mode
     qe.msg('Starting in [devmode], Cypress will be opened in GUI mode')
-    qe.msgDetail('You must run the steps by yourself, including [setup]')
-    qe.msgDetail('[wipe] and [teardown] will be triggered at the end if configured')
+    qe.msgDetail('You must run the steps by yourself [setup], [wipe], and [teardown] if they are enabled')
+    if (WORKSPACE.setup.enabled) await qe.openCypress(WORKSPACE.setup, 'setup')
+    await syncConfig(config) // sync setup env
+    // Call testStrategy
     await qe.openCypress()
-    if (WORKSPACE.wipe.enabled) await vtexWipe(config)
-    if (WORKSPACE.teardown.enabled) await vtexTeardown(config)
+    if (WORKSPACE.wipe.enabled) await qe.openCypress(WORKSPACE.wipe, 'wipe')
+    if (WORKSPACE.teardown.enabled) await qe.openCypress(WORKSPACE.teardown, 'teardown')
     qe.msg('My job finishes here, hope you did well on your tests. See you soon!')
     process.exit(0)
   } else {
+    await syncConfig(config) // sync setup env
     // Run Cypress in automated mode
     if (WORKSPACE.setup.enabled || WORKSPACE.setup.manageApps.enabled) {
       qe.msg(`Creating and/or updating workspace [${WORKSPACE.name}]`)
@@ -22,15 +26,16 @@ exports.vtexWorkspace = async (config) => {
       qe.msg('[setup] and [manageApps] are disabled, skipping workspace set up')
     }
   }
+}
 
-  // Update cypress.env.json with .state.json config tokens and clean .state.json for other users
-  const fileA = 'cypress.env.json'
-  const fileB = config.testConfig.stateFiles[0]
-  let A = JSON.parse(fs.readFileSync(fileA, 'utf-8'))
-  let B = JSON.parse(fs.readFileSync(fileB, 'utf-8'))
-  if (typeof B.vtex == 'object') {
-    for (att in B.vtex) A.vtex[att] = B.vtex[att]
-    fs.writeFileSync(fileA, JSON.stringify(A))
-    fs.writeFileSync(fileB, '{}')
-  }
+// Update cypress.env.json with .state.json config tokens and clean .state.json for other users
+async function syncConfig(config) {
+  const CONFIG_A = 'cypress.env.json'
+  const CONFIG_B = config.testConfig.stateFiles[0]
+  let A = JSON.parse(fs.readFileSync(CONFIG_A, 'utf-8'))
+  let B = JSON.parse(fs.readFileSync(CONFIG_B, 'utf-8'))
+  let C = merge(A, B)
+  console.log(C)
+  fs.writeFileSync(CONFIG_A, JSON.stringify(A))
+  fs.writeFileSync(CONFIG_B, '{}')
 }

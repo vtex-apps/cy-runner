@@ -6,11 +6,13 @@ const {vtexTest} = require('./cy-runner/test')
 const {vtexWipe} = require('./cy-runner/wipe')
 const {vtexTeardown} = require('./cy-runner/teardown')
 
-// Variables to control the overall
-let timing = {start: qe.tick()}
-let failed = []
-let skipped = []
-let success = []
+// Controls test state
+let control = {
+  timing: {start: qe.tick()},
+  testsFailed: [],
+  testsSkipped: [],
+  testsPassed: []
+}
 
 async function main() {
 
@@ -21,18 +23,20 @@ async function main() {
   process.env.PATH = await vtexCli(config)
 
   // Setup workspace (create, install apps, etc)
-  await vtexWorkspace(config)
-  timing['setup'] = qe.tick()
-
-  process.exit(0)
-  // Wipe
-  if (config.workspace.wipe.enabled) {
-    await vtexWipe(config.workspace, config.configuration)
-    timing['wipe'] = qe.tick()
-  } else {
-    qe.msg('Wipe is disabled, skipping...')
+  let allTestsPassed = await vtexWorkspace(config)
+  let stopOnFail = config.testWorkspace.setup.stopOnFail
+  let doWipe = config.testWorkspace.wipe.enabled
+  let doTeardown = config.testWorkspace.teardown.enabled
+  control.timing['setup'] = qe.tick()
+  if (!allTestsPassed && stopOnFail) {
+    qe.msg('Workspace set up failed')
+    qe.msgDetail('[setup.stopOnFail] enabled, stopping the tests')
+    if (doWipe) qe.msgDetail('[wipe] enabled, doing wipe')
+    if (doTeardown) qe.msgDetail('[teardown] enabled, doing teardown')
+    qe.crash('Prematurely exit duo a [setup.stopOnFail]')
   }
 
+  process.exit(0)
   // Tests
   const STRATEGY = config.testStrategy
   for (let item in STRATEGY) {
@@ -52,6 +56,15 @@ async function main() {
   }
   timing['testing'] = qe.tick()
 
+  // Wipe
+  if (config.workspace.wipe.enabled) {
+    await vtexWipe(config.workspace, config.configuration)
+    timing['wipe'] = qe.tick()
+  } else {
+    qe.msg('Wipe is disabled, skipping...')
+  }
+
+
   // Teardown
   if (config.workspace.teardown.enabled) {
     await vtexTeardown(config.workspace, config.configuration)
@@ -67,7 +80,7 @@ async function main() {
   if (failed.length > 0) qe.msgDetail('Failed tests: ' + failed)
   let partialTime = 0
   let lastTime = 0
-  for (item in timing) {
+  for (let item in timing) {
     let seconds = 0
     if (item === 'start') partialTime = timing[item]
     else {

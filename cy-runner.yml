@@ -34,7 +34,7 @@ testConfig:
   # devMode       => Start the test in GUI mode (manual)
   # runHeaded     => Start the test in GUI mode (automatic)
   # authVtexCli   => Start the config auth in background
-  devMode: false
+  devMode: true
   runHeaded: false
   authVtexCli:
     enabled: false
@@ -80,13 +80,16 @@ testConfig:
 testWorkspace:
   # If random, it will be dynamically defined
   name: random
+  # The letters will be appended on random workspaces
+  # If b2b, the name will be something like b2b1234567
+  testPrefix: b2b
   setup:
-    enabled: false
+    enabled: true
     stopOnFail: true
     spec: cy-runner/specs/setup.spec.js
     # Enable if you want to run integration tests, for only E2E, don't need
     manageApps:
-      enabled: true
+      enabled: false
       link: vtex.b2b-quotes
       install:
         # App set
@@ -111,15 +114,13 @@ testWorkspace:
       uninstall:
         - vtex.store-theme
   wipe:
-    enabled: false
+    enabled: true
     stopOnFail: false
-    path: cypress/integration/workspace/
-    file: wipe.spec.js
+    spec: cypress/integration/wipe.spec.js
   teardown:
     enabled: false
     stopOnFail: false
-    path: cypress/integration/workspace/
-    file: teardown.spec.js
+    spec: cy-runner/specs/teardown.spec.js
 
 testStrategy:
   # Example on how to run in order

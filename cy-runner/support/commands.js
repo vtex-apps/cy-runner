@@ -1,8 +1,3 @@
-// Configure it to preserve cookies
-Cypress.Cookies.defaults({
-  preserve: /VtexIdclientAutCookie/,
-})
-
 // File to save state, must exist beforehand
 Cypress.Commands.add('addConfig', (file, section, key, item, value) => {
   cy.readFile(file).then((json) => {
@@ -16,23 +11,20 @@ Cypress.Commands.add('addConfig', (file, section, key, item, value) => {
 // Run VTEX CLI commands
 Cypress.Commands.add('vtex', (command) => {
   let config = Cypress.env()
-  const WORKSPACE = config.testWorkspace
+  let authVtexCli = config.testConfig.authVtexCli
   const LONG_TIME_OUT = 100000
   const SHORT_TIME_OUT = 10000
-  const VTEX_BIN = WORKSPACE.setup.enabled ? 'vtex-e2e' : 'vtex'
+  const VTEX_BIN = authVtexCli.enabled ? 'vtex-e2e' : 'vtex'
 
   switch (command.split(' ')[0]) {
     case 'workspace':
+    case 'uninstall':
       return cy.exec(`echo y | ${VTEX_BIN} ${command} --no-color`, {
         timeout: SHORT_TIME_OUT,
       })
     case 'link':
       return cy.exec(`echo y | ${VTEX_BIN} ${command} --no-watch --no-color`, {
         timeout: LONG_TIME_OUT,
-      })
-    case 'uninstall':
-      return cy.exec(`echo y | ${VTEX_BIN} ${command} --no-color`, {
-        timeout: SHORT_TIME_OUT,
       })
     default:
       return cy.exec(`${VTEX_BIN} ${command} --no-color`, {

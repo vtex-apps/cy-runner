@@ -101,8 +101,28 @@ exports.reportSetup = (config) => {
   this.msg(`Workspace to be used on the tests: ${config.testWorkspace.name}`)
 }
 
-exports.openCypress = async () => {
-  await cypress.open()
+exports.openCypress = async (test, step) => {
+  if (typeof test === 'undefined') {
+    this.msg(`Opening [testStrategy]`)
+    await cypress.open()
+  } else {
+    const spec = path.parse(test.spec)
+    const baseDir = /cy-runner/.test(spec.dir) ? 'cy-runner' : 'cypress'
+    const options = {
+      config: {
+        integrationFolder: spec.dir,
+        supportFile: baseDir + '/support',
+      },
+      spec: `${spec.dir}/${spec.base}`,
+    }
+    // Open Cypress
+    this.msg(`Opening [${step}]`)
+    try {
+      await cypress.open(options)
+    } catch (e) {
+      this.crash(e.message)
+    }
+  }
 }
 
 exports.runCypress = async (test, config, group) => {
@@ -113,8 +133,7 @@ exports.runCypress = async (test, config, group) => {
       integrationFolder: spec.dir,
       supportFile: baseDir + '/support',
     },
-    spec: `${spec.dir}/${spec.name}${spec.ext}`,
-    integrationFolder: spec.dir,
+    spec: `${spec.dir}/${spec.base}`,
     runHeaded: config.testConfig.runHeaded,
     browser: config.testConfig.cypress.browser
   }
@@ -126,7 +145,6 @@ exports.runCypress = async (test, config, group) => {
   if (test.sendDashboard) {
     options['key'] = config.testConfig.cypress.dashboardKey
     options['record'] = true
-    options['integrationFolder'] = "cy-runner/specs"
   }
 
   // Run Cypress

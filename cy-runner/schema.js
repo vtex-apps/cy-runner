@@ -96,6 +96,7 @@ exports.validate = (config) => {
     },
     testWorkspace: {
       name: 3,
+      testPrefix: 0,
       setup: {
         enabled: 2,
         stopOnFail: 2,
