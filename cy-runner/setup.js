@@ -1,13 +1,10 @@
 const {promises: pfs} = require('fs')
 const qe = require('./utils')
 const {vtexTeardown} = require('./teardown')
+const fs = require("fs");
 
-async function vtexSetup(workspace, config, start) {
-    let wks = workspace.name
-    let createWks = wks == null ? true : false
-
+async function vtexSetup(config) {
     // Prepare cypress.json
-    if (createWks) wks = `e2e${start.toString().substr(-7)}`
     const CY_CFG = config.cypress
     const CY_JSON = {
         baseUrl: `https://${wks}--${config.vtex.account}.${config.vtex.domain}`,
@@ -36,6 +33,21 @@ async function vtexSetup(workspace, config, start) {
         qe.msg(`Using workspace named "${wks}" `)
         qe.msgDetail("It must exists with apps you'll need!")
     }
+
+
+    // Empty state files
+    const VTEX_STATE_FILES = config.stateFiles
+    VTEX_STATE_FILES.forEach((file) => {
+        fs.writeFileSync(file, '{}')
+    })
+    fs.rmdirSync(PATH_CACHE_CYPRESS, {recursive: true})
+    // Save to use on Cypress calls
+    qe.msg('Now you can call Cypress!')
+    // Create state files if they not exist
+    // const VTEX_STATE_FILES = cfgVtexCli.stateFiles
+    VTEX_STATE_FILES.forEach((file) => {
+        if (!fs.existsSync(file)) fs.writeFileSync(file, '{}')
+    })
 
     // Updanting values to expose to Cypress
     workspace.name = wks

@@ -1,33 +1,27 @@
 const qe = require('./cy-runner/utils')
 const {config} = require('./cy-runner/config')
-const {authVtexCli} = require('./cy-runner/cli')
+const {vtexCli} = require('./cy-runner/cli')
 const {vtexSetup} = require('./cy-runner/setup')
 const {vtexTest} = require('./cy-runner/test')
+const {vtexWipe} = require('./cy-runner/wipe')
 const {vtexTeardown} = require('./cy-runner/teardown')
+
+// Variables to control the overall
 let timing = {start: qe.tick()}
 let failed = []
 let skipped = []
 let success = []
 
 async function main() {
-    // Report integration
-    return
-    for (const item in config.integration) {
-        let status = config.integration[item] ? 'enabled' : 'disabled'
-        qe.msg(`${item.toUpperCase()} integration is ${status}`)
-    }
-    if (!config.testConfig.authVtexCli && !config.testConfig.devMode) {
-        qe.msg('You are running with authVtexCli and devMode disabled')
-        qe.msgDetail('I hope you know what you are doing =D')
-    }
 
-    // Vtex cli
-    const PATH = await authVtexCli(config.configuration)
-    process.env.PAHT = PATH
+    // Report configuration to help understand that'll run
+    qe.reportSetup(config)
 
-    // Workspace setup
-    const WKS = await vtexSetup(config.workspace, config.configuration, timing.start)
-    config.workspace.setup.name = WKS
+    // Setup and run VTEX CLI on background
+    process.env.PATH = await vtexCli(config)
+
+    // Setup workspace (create, install apps, etc)
+    await vtexSetup(config)
     timing['setup'] = qe.tick()
 
     // Wipe
@@ -40,7 +34,7 @@ async function main() {
 
     // Tests
     const STRATEGY = config.testStrategy
-    for (item in STRATEGY) {
+    for (let item in STRATEGY) {
         let test = STRATEGY[item]
         let result = await vtexTest(
             config.workspace,
@@ -80,7 +74,7 @@ async function main() {
     let lastTime = 0
     for (item in timing) {
         let seconds = 0
-        if (item == 'start') partialTime = timing[item]
+        if (item === 'start') partialTime = timing[item]
         else {
             seconds = (timing[item] - partialTime) / 1000
             qe.msgDetail(`Time on ${item}: ${seconds} seconds`)

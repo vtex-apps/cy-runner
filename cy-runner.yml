@@ -38,8 +38,8 @@ testConfig:
   devMode: true
   runHeaded: false
   authVtexCli:
-    enabled: true
-    git: https://github.com/config/toolbelt.git
+    enabled: false
+    git: https://github.com/vtex/toolbelt.git
     branch: qe/cypress
   # Use Twilio as OPT provider? Don't forget the credentials on secrets.
   twilio:

@@ -13,22 +13,9 @@
 const {get} = require('lodash')
 const qe = require('./utils')
 
-function traverse(result, obj, previousKey) {
-    if (typeof obj == 'object') {
-        for (const key in obj)
-            traverse(result, obj[key], (previousKey || '') + (previousKey ? '.' + key : key))
-    } else {
-        result.push({
-            key: previousKey || '',
-            type: obj,
-        })
-    }
-    return result
-}
-
 function schemaValidator(schema, config, strategy = '') {
     let skip = []
-    let schemaTraversed = traverse([], schema)
+    let schemaTraversed = qe.traverse([], schema)
     const ignore = (key, value) => {
         let byPass = null
         key = strategy + key

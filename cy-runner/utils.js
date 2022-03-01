@@ -78,6 +78,30 @@ exports.tick = () => {
     return Date.now()
 }
 
+exports.traverse = (result, obj, previousKey) => {
+    if (typeof obj == 'object') {
+        for (const key in obj)
+            this.traverse(result, obj[key], (previousKey || '') + (previousKey ? '.' + key : key))
+    } else {
+        result.push({
+            key: previousKey || '',
+            type: obj,
+        })
+    }
+    return result
+}
+
+exports.reportSetup = (config) => {
+    this.msg('Configuration enabled for this Cypress Runner:')
+    this.traverse([], config).forEach(item => {
+        if (/enabled/.test(item.key) && /true/.test(item.type)) {
+            let itemEnabled = item.key.split('.enabled')[0]
+            this.msgDetail('- ' + itemEnabled)
+        }
+    })
+    this.msg(`Workspace will be used [${config.testWorkspace.name}]`)
+}
+
 exports.openCypress = async (workspace = {}) => {
     await cypress.open({env: workspace})
 }

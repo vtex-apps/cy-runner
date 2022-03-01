@@ -1,88 +1,79 @@
 const fs = require('fs')
-const {promises: pfs} = require('fs')
 const qe = require('./utils')
 const path = require('path/posix')
-const HOME = process.env.HOME
-const VTEX_PATH = path.join(HOME, '.cache')
-const VTEX_ENV = path.join(HOME, '.config')
-const TOOLBELT_PATH = path.join(VTEX_PATH, 'toolbelt')
-const VTEX_BIN = path.join(TOOLBELT_PATH, 'bin', 'config-e2e')
-const VTEX_URL_FILE = '.config.url'
-const CY_CACHE = path.join(HOME, '.config', 'Cypress', 'cy')
+const PATH_HOME = process.env.HOME
+const PATH_CACHE = path.join(PATH_HOME, '.cache')
+const PATH_CACHE_VTEX = path.join(PATH_CACHE, 'vtex')
+const PATH_TOOLBELT = path.join(PATH_HOME, '.cache', 'toolbelt')
+const PATH_TOOLBELT_BIN = path.join(PATH_TOOLBELT, 'bin')
+const TOOLBELT_BIN = path.join(PATH_TOOLBELT_BIN, 'vtex-e2e')
+const TOOLBELT_URL_OUTPUT = '.toolbelt.url'
 
-// Config to VTEX CLI on this setup
+// Needed to run vtex cli on patched mode
 process.env.IN_CYPRESS = true
-process.env.PATH = `${process.env.PATH}:${TOOLBELT_PATH}/bin`
 
-exports.authVtexCli = async (config) => {
-    if (config.authVtexCli) {
-        // Clean VTEX env
+exports.vtexCli = async (config) => {
+    const AUTH_VTEX_CLI = config.testConfig.authVtexCli
+    const VTEX = config.testConfig.vtex
+
+    if (AUTH_VTEX_CLI.enabled) {
+        // Try to clean vtex cache state to avoid bugs
         try {
-            pfs
-                .rm(VTEX_ENV, {recursive: true, force: true})
-                .then(qe.msg(`${VTEX_ENV} removed sucessfully`))
+            fs.rmSync(PATH_CACHE_VTEX, {recursive: true})
+            qe.msg(`${PATH_CACHE_VTEX} cleaned successfully`)
         } catch (e) {
-            qe.msgErr(`Fail to delete ${VTEX_ENV}`)
-            qe.crash(e)
+            qe.msg(`${PATH_CACHE_VTEX} doesn't exist, no need to clean it`)
         }
         // Check if toolbelt is installed already
-        if (fs.existsSync(VTEX_BIN)) qe.msg('VTEX CLI installed already')
+        if (fs.existsSync(TOOLBELT_BIN)) qe.msg('The patched version of toolbelt is installed already')
         else {
-            const VTEX_REPO = config.toolbelt.git
-            const VTEX_BRANCH = config.toolbelt.branch
             try {
-                qe.msg('Toolbelt not found, installing it...')
-                if (!fs.existsSync(VTEX_PATH)) pfs.mkdir(VTEX_PATH)
-                qe.msgDetail('Cloning toolbelt repo...')
-                qe.exec(`cd ${VTEX_PATH} && git clone ${VTEX_REPO}`)
-                qe.msgDetail('Changing toolbelt branch...')
-                qe.exec(`cd ${TOOLBELT_PATH} && git checkout ${VTEX_BRANCH}`)
-                qe.msgDetail('Installing yarn packages...')
-                qe.exec(`cd ${TOOLBELT_PATH} && yarn`)
-                qe.msgDetail('Building yarn packages...')
-                qe.exec(`cd ${TOOLBELT_PATH} && yarn build`)
-                qe.msgDetail('Copying binary to config-e2e...')
-                await pfs.copyFile(path.join(TOOLBELT_PATH, 'bin', 'run'), VTEX_BIN)
-            } catch (ee) {
-                qe.msgErr('Error on installing toolbelt!')
-                qe.crash(ee)
+                qe.msg('Patched version of toolbelt not found, deploying it:')
+                if (!fs.existsSync(PATH_CACHE_VTEX)) fs.mkdirSync(PATH_CACHE_VTEX)
+                if (fs.existsSync(PATH_TOOLBELT)) fs.rmSync(PATH_TOOLBELT, {recursive: true})
+                qe.msgDetail(`- Cloning toolbelt from ${AUTH_VTEX_CLI.git}`)
+                qe.exec(`cd ${PATH_CACHE} && git clone ${AUTH_VTEX_CLI.git}`)
+                qe.msgDetail(`- Checking out toolbelt patched branch ${AUTH_VTEX_CLI.branch}`)
+                qe.exec(`cd ${PATH_TOOLBELT} && git checkout ${AUTH_VTEX_CLI.branch}`)
+                qe.msgDetail('- Installing yarn packages')
+                qe.exec(`cd ${PATH_TOOLBELT} && yarn`)
+                qe.msgDetail('- Building patched toolbelt')
+                qe.exec(`cd ${PATH_TOOLBELT} && yarn build`)
+                qe.msgDetail('- Copying binary to vtex-e2e')
+                fs.copyFileSync(path.join(PATH_TOOLBELT_BIN, 'run'), TOOLBELT_BIN)
+                qe.msgDetail('- Calling vtex cli twice to warm it up (autofix bug)')
+                try {
+                    qe.exec(`${TOOLBELT_BIN} whoami`)
+                } catch (_ee) {
+                    qe.exec(`${TOOLBELT_BIN} whoami`)
+                }
+            } catch (e) {
+                qe.crash(e)
             }
         }
-        qe.msg('Calling VTEX CLI to warm it up...')
+        // Start vtex cli in background
+        qe.msg('Toolbelt version: ', true)
+        qe.exec(`${TOOLBELT_BIN} --version`, 'inherit')
+        qe.msg(`Starting login using [${VTEX.account}] account in background... `)
         try {
-            qe.exec('config-e2e whoami')
+            qe.msgDetail(`- Removing old [${TOOLBELT_URL_OUTPUT}], if any`)
+            if (fs.existsSync(TOOLBELT_URL_OUTPUT)) fs.rmSync(TOOLBELT_URL_OUTPUT)
+            qe.msgDetail(`- Calling [vtex-e2e login ${VTEX.account}]`)
+            qe.exec(`${TOOLBELT_BIN} login ${VTEX.account} 1> ${TOOLBELT_URL_OUTPUT} &`)
+            let size = 0
+            while (size < 3) size = qe.fileSize(TOOLBELT_URL_OUTPUT)
+            qe.msgDetail('- Callback url created successfully')
         } catch (e) {
-            qe.exec('config-e2e whoami')
+            qe.crash(e)
         }
-        qe.msgDetail('Version: ', true)
-        qe.exec('config-e2e --version', 'inherit')
-        qe.msg('Calling VTEX CLI in background... ', true)
-        ACCOUNT = config.vtex.account
-        qe.exec(`vtex-e2e login ${ACCOUNT} 1> ${VTEX_URL_FILE} &`)
-        var size = 0
-        while (size < 3) {
-            size = qe.fileSize(VTEX_URL_FILE)
-        }
-        qe.statusMsg('done!')
-        // Empty state files
-        const VTEX_STATE_FILES = config.stateFiles
-        VTEX_STATE_FILES.forEach((file) => {
-            pfs.writeFile(file, '{}')
-        })
-        pfs.rm(CY_CACHE, {recursive: true, force: true})
-        // Save to use on Cypress calls
-        qe.msg('Now you can call Cypress!')
+        // Feedback to user and path to be added returned
+        qe.msg('Toolbelt started in background, now you can call Cypress')
     } else {
-        qe.msg('VTEX CLI setup skipped')
-        qe.msgDetail(
-            'Make sure you have "config-e2e" on your path if "workspace.setup" is enabled'
-        )
+        // Vtex cli disabled, check if it has planned to manage apps
+        if (config.testWorkspace.setup.manageApps.enabled)
+            qe.msg('Make sure you have vtex cli authenticated already as you plan to manage apps')
+        else
+            qe.msg('Start vtex cli in background is disabled')
     }
-    // Create state files if they not exist
-    const VTEX_STATE_FILES = config.stateFiles
-    VTEX_STATE_FILES.forEach((file) => {
-        if (!fs.existsSync(file)) pfs.writeFile(file, '{}')
-    })
-    // Return path to be added
-    return `${process.env.PATH}:${TOOLBELT_PATH}/bin`
+    return `${process.env.PATH}:${PATH_TOOLBELT_BIN}`
 }

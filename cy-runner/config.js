@@ -1,5 +1,4 @@
 const fs = require('fs')
-const {promises: pfs} = require('fs')
 const yaml = require('js-yaml')
 const qe = require('./utils')
 const schema = require('./schema')
@@ -33,7 +32,7 @@ if (fs.existsSync(SECRET_FILE)) {
 } else {
     try {
         if (typeof process.env[SECRET_NAME] == 'undefined') {
-            qe.crash(`Neither ".${SECRET_NAME}.json" or ENV "${SECRET_NAME}" found`)
+            qe.crash(`Neither [.${SECRET_NAME}.json] or ENV [${SECRET_NAME}] found`)
         }
         secrets = yaml.load(process.env[SECRET_NAME], 'utf8')
         loadedFrom = 'memory'
@@ -85,16 +84,21 @@ Object.entries(secrets).forEach((secret) => {
     }
 })
 
+// Create a workspace name if it is defined as random
+if (configSet.testWorkspace.name === 'random') {
+    const SEED = qe.tick()
+    configSet.testWorkspace.name = `e2e${SEED.toString().substring(0, 7)}`
+    qe.msg(`New workspace name generated as [${configSet.testWorkspace.name}]`)
+}
+
 // Write cypress.env.json
 let cypressEnvFile = 'cypress.env.json'
 try {
-    pfs.writeFile(cypressEnvFile, JSON.stringify(configSet))
+    fs.writeFileSync(cypressEnvFile, JSON.stringify(configSet))
+    qe.msg(`Secrets loaded (from ${loadedFrom}) and [${cypressEnvFile}] created successfully`)
 } catch (e) {
     qe.msgErr(e)
 }
-
-// Feedback to user
-qe.msg(`Secrets loaded (from ${loadedFrom}) and ${cypressEnvFile} created successfully`)
 
 // Expose config
 module.exports = {
