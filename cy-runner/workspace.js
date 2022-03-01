@@ -34,8 +34,6 @@ async function syncConfig(config) {
   const CONFIG_B = config.testConfig.stateFiles[0]
   let A = JSON.parse(fs.readFileSync(CONFIG_A, 'utf-8'))
   let B = JSON.parse(fs.readFileSync(CONFIG_B, 'utf-8'))
-  let C = merge(A, B)
-  console.log(C)
-  fs.writeFileSync(CONFIG_A, JSON.stringify(A))
+  fs.writeFileSync(CONFIG_A, JSON.stringify(merge(A, B)))
   fs.writeFileSync(CONFIG_B, '{}')
 }

@@ -114,11 +114,11 @@ testWorkspace:
       uninstall:
         - vtex.store-theme
   wipe:
-    enabled: true
+    enabled: false
     stopOnFail: false
     spec: cypress/integration/wipe.spec.js
   teardown:
-    enabled: false
+    enabled: true
     stopOnFail: false
     spec: cy-runner/specs/teardown.spec.js
 
