@@ -5,7 +5,7 @@ const {promises: pfs} = require('fs')
 const {vtexTeardown} = require('./teardown')
 
 const QE = '[QE] ===> '
-const SP = '          '
+const SP = '          - '
 
 exports.msgErr = (msg, notr = false) => {
     let end = notr ? '' : '\n'
@@ -96,10 +96,10 @@ exports.reportSetup = (config) => {
     this.traverse([], config).forEach(item => {
         if (/enabled/.test(item.key) && /true/.test(item.type)) {
             let itemEnabled = item.key.split('.enabled')[0]
-            this.msgDetail('- ' + itemEnabled)
+            this.msgDetail(itemEnabled)
         }
     })
-    this.msg(`Workspace will be used [${config.testWorkspace.name}]`)
+    this.msg(`Workspace to be used on the tests: ${config.testWorkspace.name}`)
 }
 
 exports.openCypress = async (workspace = {}) => {

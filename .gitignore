@@ -107,3 +107,5 @@ dist
 cypress.env.json
 /.toolbelt.url
 cypress.json
+/.state.json
+/cypress

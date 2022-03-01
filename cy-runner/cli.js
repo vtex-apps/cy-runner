@@ -31,17 +31,17 @@ exports.vtexCli = async (config) => {
                 qe.msg('Patched version of toolbelt not found, deploying it:')
                 if (!fs.existsSync(PATH_CACHE_VTEX)) fs.mkdirSync(PATH_CACHE_VTEX)
                 if (fs.existsSync(PATH_TOOLBELT)) fs.rmSync(PATH_TOOLBELT, {recursive: true})
-                qe.msgDetail(`- Cloning toolbelt from ${AUTH_VTEX_CLI.git}`)
+                qe.msgDetail(`Cloning toolbelt from ${AUTH_VTEX_CLI.git}`)
                 qe.exec(`cd ${PATH_CACHE} && git clone ${AUTH_VTEX_CLI.git}`)
-                qe.msgDetail(`- Checking out toolbelt patched branch ${AUTH_VTEX_CLI.branch}`)
+                qe.msgDetail(`Checking out toolbelt patched branch ${AUTH_VTEX_CLI.branch}`)
                 qe.exec(`cd ${PATH_TOOLBELT} && git checkout ${AUTH_VTEX_CLI.branch}`)
-                qe.msgDetail('- Installing yarn packages')
+                qe.msgDetail('Installing yarn packages')
                 qe.exec(`cd ${PATH_TOOLBELT} && yarn`)
-                qe.msgDetail('- Building patched toolbelt')
+                qe.msgDetail('Building patched toolbelt')
                 qe.exec(`cd ${PATH_TOOLBELT} && yarn build`)
-                qe.msgDetail('- Copying binary to vtex-e2e')
+                qe.msgDetail('Copying binary to vtex-e2e')
                 fs.copyFileSync(path.join(PATH_TOOLBELT_BIN, 'run'), TOOLBELT_BIN)
-                qe.msgDetail('- Calling vtex cli twice to warm it up (autofix bug)')
+                qe.msgDetail('Calling vtex cli twice to warm it up (autofix bug)')
                 try {
                     qe.exec(`${TOOLBELT_BIN} whoami`)
                 } catch (_ee) {
@@ -56,24 +56,20 @@ exports.vtexCli = async (config) => {
         qe.exec(`${TOOLBELT_BIN} --version`, 'inherit')
         qe.msg(`Starting login using [${VTEX.account}] account in background... `)
         try {
-            qe.msgDetail(`- Removing old [${TOOLBELT_URL_OUTPUT}], if any`)
+            qe.msgDetail(`Removing old [${TOOLBELT_URL_OUTPUT}], if any`)
             if (fs.existsSync(TOOLBELT_URL_OUTPUT)) fs.rmSync(TOOLBELT_URL_OUTPUT)
-            qe.msgDetail(`- Calling [vtex-e2e login ${VTEX.account}]`)
+            qe.msgDetail(`Calling [vtex-e2e login ${VTEX.account}]`)
             qe.exec(`${TOOLBELT_BIN} login ${VTEX.account} 1> ${TOOLBELT_URL_OUTPUT} &`)
             let size = 0
             while (size < 3) size = qe.fileSize(TOOLBELT_URL_OUTPUT)
-            qe.msgDetail('- Callback url created successfully')
+            qe.msgDetail('Callback url created successfully')
         } catch (e) {
             qe.crash(e)
         }
         // Feedback to user and path to be added returned
         qe.msg('Toolbelt started in background, now you can call Cypress')
-    } else {
-        // Vtex cli disabled, check if it has planned to manage apps
-        if (config.testWorkspace.setup.manageApps.enabled)
-            qe.msg('Make sure you have vtex cli authenticated already as you plan to manage apps')
-        else
-            qe.msg('Start vtex cli in background is disabled')
-    }
+    } else if (config.testWorkspace.setup.manageApps.enabled)
+        qe.msgDetail('Make sure you have vtex cli authenticated already as you plan to manage apps')
+
     return `${process.env.PATH}:${PATH_TOOLBELT_BIN}`
 }

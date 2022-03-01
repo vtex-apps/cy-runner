@@ -1,7 +1,7 @@
 const qe = require('./cy-runner/utils')
 const {config} = require('./cy-runner/config')
 const {vtexCli} = require('./cy-runner/cli')
-const {vtexSetup} = require('./cy-runner/setup')
+const {vtexWorkspace} = require('./cy-runner/workspace')
 const {vtexTest} = require('./cy-runner/test')
 const {vtexWipe} = require('./cy-runner/wipe')
 const {vtexTeardown} = require('./cy-runner/teardown')
@@ -21,9 +21,10 @@ async function main() {
     process.env.PATH = await vtexCli(config)
 
     // Setup workspace (create, install apps, etc)
-    await vtexSetup(config)
+    await vtexWorkspace(config)
     timing['setup'] = qe.tick()
 
+    process.exit(0)
     // Wipe
     if (config.workspace.wipe.enabled) {
         await vtexWipe(config.workspace, config.configuration)

@@ -52,7 +52,7 @@ testConfig:
     idUrl: https://vtexid.config.com.br/api/vtexid/pub/authenticate/default
   cypress:
     enabled: false
-    projectId: xyz
+    projectId: xyza
     video: true
     videoCompression: false
     videoUploadOnPasses: false
@@ -76,7 +76,7 @@ testConfig:
     channel: some-channel
   # The first will be used to store temp credentials
   stateFiles:
-    - .config.json
+    - .state.json
 
 testWorkspace:
   # If random, it will be dynamically defined
@@ -113,7 +113,7 @@ testWorkspace:
       uninstall:
         - config.store-theme
   wipe:
-    enabled: true
+    enabled: false
     stopOnFail: false
     path: cypress/integration/workspace/
     file: wipe.spec.js

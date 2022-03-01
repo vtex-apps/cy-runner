@@ -92,13 +92,56 @@ if (configSet.testWorkspace.name === 'random') {
 }
 
 // Write cypress.env.json
-let cypressEnvFile = 'cypress.env.json'
+const CYPRESS_ENV_JSON = 'cypress.env.json'
 try {
-    fs.writeFileSync(cypressEnvFile, JSON.stringify(configSet))
-    qe.msg(`Secrets loaded (from ${loadedFrom}) and [${cypressEnvFile}] created successfully`)
+    fs.writeFileSync(CYPRESS_ENV_JSON, JSON.stringify(configSet))
+    qe.msg(`Secrets loaded (from ${loadedFrom}) and [${CYPRESS_ENV_JSON}] created successfully`)
 } catch (e) {
     qe.msgErr(e)
 }
+
+// Write cypress.json
+const CYPRESS_JSON_FILE = 'cypress.json'
+const CYPRESS = configSet.testConfig.cypress
+const WORKSPACE = configSet.testWorkspace.name
+const ACCOUNT = configSet.testConfig.vtex.account
+const DOMAIN = configSet.testConfig.vtex.domain
+try {
+    fs.writeFileSync(CYPRESS_JSON_FILE, JSON.stringify({
+        baseUrl: `https://${WORKSPACE}--${ACCOUNT}.${DOMAIN}`,
+        chromeWebSecurity: CYPRESS.chromeWebSecurity,
+        video: CYPRESS.video,
+        videoCompression: CYPRESS.videoCompression,
+        videoUploadOnPasses: CYPRESS.videoUploadOnPasses,
+        screenshotOnRunFailure: CYPRESS.screenshotOnRunFailure,
+        trashAssetsBeforeRuns: CYPRESS.trashAssetsBeforeRuns,
+        viewportWidth: CYPRESS.viewportWidth,
+        viewportHeight: CYPRESS.viewportHeight,
+        defaultCommandTimeout: CYPRESS.defaultCommandTimeout,
+        requestTimeout: CYPRESS.defaultCommandTimeout,
+        watchForFileChanges: CYPRESS.watchForFileChanges,
+        pageLoadTimeout: CYPRESS.pageLoadTimeout,
+        browser: CYPRESS.browser,
+        projectId: CYPRESS.projectId,
+        retries: 0,
+    }))
+    qe.msg(`[${CYPRESS_JSON_FILE}] created successfully`)
+} catch (e) {
+    qe.crash(e)
+
+}
+
+// Create empty files as asked
+try {
+    let STATE_FILES = configSet.testConfig.stateFiles
+    STATE_FILES.forEach(stateFile => {
+        fs.writeFileSync(stateFile, '{}')
+    })
+    qe.msg(`Empty state files [${STATE_FILES}] create successfully`)
+} catch (e) {
+    qe.crash(e)
+}
+
 
 // Expose config
 module.exports = {
