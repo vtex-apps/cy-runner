@@ -1,5 +1,6 @@
 const fs = require('fs')
 const yaml = require('js-yaml')
+const {merge} = require('lodash')
 const qe = require('./utils')
 const schema = require('./schema')
 const CONFIG_FILE = 'cy-runner.yml'
@@ -77,12 +78,7 @@ try {
 }
 
 // Merge secrets on config
-Object.entries(secrets).forEach((secret) => {
-  let key = secret[0]
-  for (let property in secret[1]) {
-    configSet.testConfig[key][property] = secrets[key][property]
-  }
-})
+merge(configSet.testConfig, secrets)
 
 // Create a workspace name if it is defined as random
 if (configSet.testWorkspace.name === 'random') {
