@@ -150,7 +150,7 @@ testStrategy:
       - A
 
   C:
-    enabled: true
+    enabled: false
     sendDashboard: false
     hardTries: 1
     stopOnFail: false

@@ -1,12 +1,12 @@
 const qe = require('./utils')
 const {intersection} = require('lodash')
-const START = qe.tick()
 let testsFailed = []
 let testsSkipped = []
 let testsPassed = []
 
 module.exports.vtexTestStrategy = async (config) => {
 
+  const START = qe.tick()
   const WORKSPACE = config.testWorkspace
   const STRATEGIES = config.testStrategy
 
