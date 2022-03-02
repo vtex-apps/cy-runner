@@ -108,7 +108,7 @@ cypress.env.json
 /.toolbelt.url
 cypress.json
 /.state.json
-/cypress
+/cypress/*
 /cy-shared/videos
 /cy-shared/screenshots
 /cy-shared/downloads
