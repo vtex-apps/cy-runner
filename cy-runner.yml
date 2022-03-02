@@ -37,7 +37,7 @@ testConfig:
   devMode: false
   runHeaded: false
   authVtexCli:
-    enabled: false
+    enabled: true
     git: https://github.com/vtex/toolbelt.git
     branch: qe/cypress
   # Use Twilio as OPT provider? Don't forget the credentials on secrets.
@@ -79,7 +79,7 @@ testConfig:
 
 testWorkspace:
   # If random, it will be dynamically defined
-  name: b2bsyed
+  name: random
   # The letters will be appended on random workspaces
   # If b2b, the name will be something like b2b1234567
   testPrefix: b2b
@@ -89,21 +89,24 @@ testWorkspace:
     spec: cy-runner/specs/setup.spec.js
     # Enable if you want to run integration tests, for only E2E, don't need
     manageApps:
-      enabled: false
+      enabled: true
       link: vtex.b2b-quotes
       install:
         # App set
-        - vtex.admin-customers
-        - vtex.b2b-checkout-settings
-        - vtex.b2b-orders-history
-        - vtex.b2b-organizations-graphql
-        - vtex.b2b-organizations
-        - vtex.b2b-quotes-graphql
+        - vtex.b2b-suite
         - vtex.b2b-quotes
-        - vtex.storefront-permissions
-        - vtex.storefront-permissions-components
-        - vtex.storefront-permissions-ui
         - vtex.quickorder
+        #        - vtex.admin-customers
+        #        - vtex.b2b-checkout-settings
+        #        - vtex.b2b-orders-history
+        #        - vtex.b2b-organizations-graphql
+        #        - vtex.b2b-organizations
+        #        - vtex.b2b-quotes-graphql
+        #        - vtex.b2b-quotes
+        #        - vtex.storefront-permissions
+        #        - vtex.storefront-permissions-components
+        #        - vtex.storefront-permissions-ui
+        #        - vtex.quickorder
         # Theme
         - vtex.wish-list@1.x
         - vtex.location-availability@0.x
@@ -118,7 +121,7 @@ testWorkspace:
     stopOnFail: false
     spec: cypress/integration/wipe.spec.js
   teardown:
-    enabled: false
+    enabled: true
     stopOnFail: false
     spec: cy-runner/specs/teardown.spec.js
 
