@@ -13,6 +13,7 @@ const TOOLBELT_URL_OUTPUT = '.toolbelt.url'
 process.env.IN_CYPRESS = true
 
 exports.vtexCli = async (config) => {
+  const START = qe.tick()
   const AUTH_VTEX_CLI = config.testConfig.authVtexCli
   const VTEX = config.testConfig.vtex
 
@@ -49,7 +50,7 @@ exports.vtexCli = async (config) => {
     if (config.testWorkspace.setup.manageApps.enabled)
       qe.msgDetail('Make sure you have vtex cli authenticated already as you plan to manage apps')
   }
-  return `${process.env.PATH}:${PATH_TOOLBELT_BIN}`
+  return {path: `${process.env.PATH}:${PATH_TOOLBELT_BIN}`, time: qe.toc(START)}
 }
 
 async function installToolbelt(authVtexCli) {

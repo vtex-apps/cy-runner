@@ -2,13 +2,14 @@ const qe = require('./cy-runner/utils')
 const {config} = require('./cy-runner/config')
 const {vtexCli} = require('./cy-runner/cli')
 const {vtexWorkspace} = require('./cy-runner/workspace')
-const {vtexTest} = require('./cy-runner/test')
+const {vtexTestStrategy} = require('./cy-runner/test')
 const {vtexWipe} = require('./cy-runner/wipe')
 const {vtexTeardown} = require('./cy-runner/teardown')
 
 // Controls test state
 let control = {
-  timing: {start: qe.tick()},
+  start: qe.tick(),
+  timing: {},
   testsFailed: [],
   testsSkipped: [],
   testsPassed: []
@@ -17,34 +18,27 @@ let control = {
 async function main() {
 
   // Report configuration to help understand that'll run
-  qe.reportSetup(config)
+  await qe.reportSetup(config)
 
-  // Setup and run VTEX CLI on background
-  process.env.PATH = await vtexCli(config)
+  // Deploy, start in background, and add VTEX CLI to system PATH
+  let call = await vtexCli(config)
+  process.env.PATH = call.path
+  control.timing['vtexCli'] = call.time
 
-  // Setup workspace (create, install apps, etc)
-  await vtexWorkspace(config)
-  control.timing['setup'] = qe.tick()
+  // Configure workspace (create, install, uninstall, link app)
+  control.timing['vtexWorkspace'] = await vtexWorkspace(config)
 
-  process.exit(0)
   // Tests
-  const STRATEGY = config.testStrategy
-  for (let item in STRATEGY) {
-    let test = STRATEGY[item]
-    let result = await vtexTest(config.workspace, config.configuration, test, failed, skipped)
-    switch (result.testPassed) {
-      case true:
-        success.push(result.key)
-        break
-      case false:
-        failed.push(result.key)
-        break
-      default:
-        skipped.push(result.key)
-        break
-    }
-  }
-  timing['testing'] = qe.tick()
+  call = await vtexTestStrategy(config)
+  control.timing['vtexTestStrategy'] = call.time
+  control.testsFailed = call.testsFailed
+  control.testsSkipped = call.testsSkipped
+  control.testsPassed = call.testsPassed
+
+  control.timing['total'] = qe.toc(control.start)
+
+  console.log(control)
+  process.exit(0)
 
   // Wipe
   if (config.workspace.wipe.enabled) {

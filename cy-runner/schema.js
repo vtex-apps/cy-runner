@@ -118,6 +118,7 @@ exports.validate = (config) => {
     stopOnFail: 2,
     hardTries: 1,
     parallel: 2,
+    runInOrder: 2,
     specs: 7
   }
 

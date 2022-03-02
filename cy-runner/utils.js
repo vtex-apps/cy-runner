@@ -2,9 +2,13 @@ const cypress = require('cypress')
 const {execSync} = require('child_process')
 const fs = require('fs')
 const path = require('path')
+const {merge} = require('lodash')
+const {vtexWipe} = require("./wipe");
+const {vtexTeardown} = require("./teardown");
 
 const QE = '[QE] ===> '
 const SP = '          - '
+const BR = '[QE] =============================================================================================='
 
 exports.msgErr = (msg, notr = false) => {
   let end = notr ? '' : '\n'
@@ -19,6 +23,12 @@ exports.msgErrDetail = (msg, notr = false) => {
 exports.msg = (msg, notr = false) => {
   let end = notr ? '' : '\n'
   process.stdout.write(QE + msg + end)
+}
+
+exports.msgTestStrategy = (msg) => {
+  let end = '\n'
+  process.stdout.write(end + '[QE] ' + msg + end)
+  process.stdout.write(BR + end + end)
 }
 
 exports.msgDetail = (msg, notr = false) => {
@@ -77,6 +87,10 @@ exports.tick = () => {
   return Date.now()
 }
 
+exports.toc = (start) => {
+  return (Date.now() - start) / 1000 + ' seconds'
+}
+
 exports.traverse = (result, obj, previousKey) => {
   if (typeof obj == 'object') {
     for (const key in obj)
@@ -90,7 +104,7 @@ exports.traverse = (result, obj, previousKey) => {
   return result
 }
 
-exports.reportSetup = (config) => {
+exports.reportSetup = async (config) => {
   this.msg('Configuration enabled for this Cypress Runner:')
   this.traverse([], config).forEach(item => {
     if (/enabled/.test(item.key) && /true/.test(item.type)) {
@@ -99,6 +113,14 @@ exports.reportSetup = (config) => {
     }
   })
   this.msg(`Workspace to be used on the tests: ${config.testWorkspace.name}`)
+}
+
+exports.stopOnFail = async (config, step) => {
+  this.msg(`[${step}] failed`)
+  this.msgDetail(`[${step}.stopOnFail] enabled, stopping the tests`)
+  if (config.testWorkspace.wipe.enabled) await vtexWipe(config)
+  if (config.testWorkspace.teardown.enabled) await vtexTeardown(config)
+  this.crash('Prematurely exit duo a [stopOnFail]')
 }
 
 exports.openCypress = async (test, step) => {
@@ -125,35 +147,33 @@ exports.openCypress = async (test, step) => {
   }
 }
 
-exports.runCypress = async (test, config, group) => {
-  const spec = path.parse(test.spec)
+exports.runCypress = async (test, config, addOptions = {}) => {
+  if (typeof test.spec === 'string')
+    test.spec = [test.spec]
+  const spec = path.parse(test.spec[0])
   const baseDir = /cy-runner/.test(spec.dir) ? 'cy-runner' : 'cypress'
   const options = {
     config: {
       integrationFolder: spec.dir,
       supportFile: baseDir + '/support',
     },
-    spec: `${spec.dir}/${spec.base}`,
+    spec: test.spec,
     runHeaded: config.testConfig.runHeaded,
     browser: config.testConfig.cypress.browser
   }
   // Options tuning
-  if (test.sendDashboard && typeof group == 'undefined')
-    this.crash('Cypress Dashboard enabled without a group name')
-  if (typeof group != 'undefined') options['group'] = group
-  if (test.parallel) options['parallel'] = true
   if (test.sendDashboard) {
     options['key'] = config.testConfig.cypress.dashboardKey
     options['record'] = true
+    merge(options, addOptions)
+    console.log(options)
   }
-
   // Run Cypress
   let testPassed = true
   try {
-    await cypress.open(options).then((result) => {
+    await cypress.run(options).then((result) => {
       if (result.failures) this.crash(result.message)
       if (result.totalPassed < result.totalTests) testPassed = false
-      this.msg(`Spec done with ${result.totalPassed} passed and ${result.totalFailed} failed tests`)
     })
   } catch (e) {
     this.crash(e.message)

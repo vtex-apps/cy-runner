@@ -1,9 +1,9 @@
 const fs = require('fs')
+const {merge} = require('lodash')
 const qe = require('./utils')
-const {vtexTeardown} = require('./teardown')
-const {vtexWipe} = require('./wipe')
 
 exports.vtexWorkspace = async (config) => {
+  const START = qe.tick()
   const WORKSPACE = config.testWorkspace
   if (config.testConfig.devMode) {
     // Open Cypress en DEV/GUI mode
@@ -26,6 +26,7 @@ exports.vtexWorkspace = async (config) => {
       qe.msg('[setup] and [manageApps] are disabled, skipping workspace set up')
     }
   }
+  return qe.toc(START)
 }
 
 // Update cypress.env.json with .state.json config tokens and clean .state.json for other users
@@ -40,17 +41,9 @@ async function syncConfig(config) {
 
 // Do setup or install apps
 async function workspaceSetup(config) {
-  qe.msg(`Using workspace [${workspace.name}]`)
   let workspace = config.testWorkspace
   let stopOnFail = config.testWorkspace.setup.stopOnFail
-  let doWipe = config.testWorkspace.wipe.enabled
-  let doTeardown = config.testWorkspace.teardown.enabled
-  let testPassed = await qe.runCypress(workspace.setup.spec, config)
-  if (!testPassed && stopOnFail) {
-    qe.msg('[testWorkspace] failed')
-    qe.msgDetail('[setup.stopOnFail] enabled, stopping the tests')
-    if (doWipe) await vtexWipe(config)
-    if (doTeardown) await vtexTeardown(config)
-    qe.crash('Prematurely exit duo a [setup.stopOnFail]')
-  }
+  qe.msg(`Using workspace [${workspace.name}]`)
+  let testPassed = await qe.runCypress(workspace.setup, config)
+  if (!testPassed && stopOnFail) await qe.stopOnFail(config, 'workspaceSetup')
 }

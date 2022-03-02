@@ -34,10 +34,10 @@ testConfig:
   # devMode       => Start the test in GUI mode (manual)
   # runHeaded     => Start the test in GUI mode (automatic)
   # authVtexCli   => Start the config auth in background
-  devMode: true
+  devMode: false
   runHeaded: false
   authVtexCli:
-    enabled: true
+    enabled: false
     git: https://github.com/vtex/toolbelt.git
     branch: qe/cypress
   # Use Twilio as OPT provider? Don't forget the credentials on secrets.
@@ -84,7 +84,7 @@ testWorkspace:
   # If b2b, the name will be something like b2b1234567
   testPrefix: b2b
   setup:
-    enabled: true
+    enabled: false
     stopOnFail: true
     spec: cy-runner/specs/setup.spec.js
     # Enable if you want to run integration tests, for only E2E, don't need
@@ -118,69 +118,70 @@ testWorkspace:
     stopOnFail: false
     spec: cypress/integration/wipe.spec.js
   teardown:
-    enabled: true
+    enabled: false
     stopOnFail: false
     spec: cy-runner/specs/teardown.spec.js
 
 testStrategy:
-  # Example on how to run in order
+  # The strategies must be in order, with dependent tests last
   A:
     enabled: true
     sendDashboard: false
-    hardTries: 0
+    hardTries: 1
     stopOnFail: false
-    # If true, all files will run in one call
-    parallel: false
-    # If you need order, avoid wildcards
-    specs:
-      - 'cypress/integration/b2b/b.spec.js'
-
-  # Example on how to run in parallel
-  # Only if Cypress Dashboard is enabled
-  B:
-    enabled: false
-    sendDashboard: false
-    hardTries: 0
-    stopOnFail: true
-    # If true, all files will run in one call
     parallel: true
-    # If you need order, avoid more than one
+    # No order guaranteed if parallel = true
+    runInOrder: true
+    # You can use *, but the order will be not guaranteed
     specs:
-      - 'cypress/integration/b2b/b.spec.js'
-      # - 'cypress/integration/b2b/a.spec.js'
+      - cypress/integration/pass.spec.js
+      - cypress/integration/pass.spec.js
 
-  # Example using wild selector
-  C:
-    enabled: false
-    sendDashboard: false
-    stopOnFail: false
-    hardTries: 0
-    parallel: false
-    specs:
-      - 'cypress/integration/b2b/b.spec.js'
-
-  # Example with dependency
-  D:
+  B:
     enabled: true
     sendDashboard: false
+    hardTries: 1
     stopOnFail: false
-    hardTries: 0
     parallel: false
+    runInOrder: false
     specs:
-      - '**/b2b/*.spec.js'
-    # Use the same name of earlier test
+      - cypress/integration/pass.spec.js
+      - cypress/integration/pass.spec.js
     dependency:
       - A
-      - C
 
-  # Example with fail exit
-  E:
+  C:
     enabled: true
     sendDashboard: false
+    hardTries: 1
     stopOnFail: false
-    hardTries: 0
     parallel: false
+    runInOrder: false
     specs:
-      - 'cypress/integration/b2b/b.spec.js'
+      - cypress/integration/*.spec.js
+
+  D:
+    enabled: false
+    sendDashboard: false
+    stopOnFail: true
+    hardTries: 1
+    parallel: false
+    runInOrder: false
+    specs:
+      - cypress/integration/fail.spec.js
     dependency:
-      - D
+      - A
+      - B
+
+  E:
+    enabled: false
+    sendDashboard: false
+    stopOnFail: true
+    hardTries: 1
+    parallel: false
+    runInOrder: false
+    specs:
+      - cypress/integration/fail.spec.js
+    dependency:
+      - A
+      - B
