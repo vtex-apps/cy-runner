@@ -34,7 +34,7 @@ testConfig:
   # devMode       => Start the test in GUI mode (manual)
   # runHeaded     => Start the test in GUI mode (automatic)
   # authVtexCli   => Start the config auth in background
-  devMode: true
+  devMode: false
   runHeaded: false
   authVtexCli:
     enabled: false
@@ -134,7 +134,7 @@ testStrategy:
     runInOrder: true
     # You can use *, but the order will be not guaranteed
     specs:
-      - cypress/integration/pass.spec.js
+      - cy-shared/integration/pass.spec.js
 
   B:
     enabled: true
@@ -157,7 +157,7 @@ testStrategy:
     parallel: false
     runInOrder: false
     specs:
-      - cypress/integration/*.spec.js
+      - cy-shared/integration/*.spec.js
 
   D:
     enabled: false
@@ -167,7 +167,7 @@ testStrategy:
     parallel: false
     runInOrder: false
     specs:
-      - cypress/integration/fail.spec.js
+      - cy-shared/integration/fail.spec.js
     dependency:
       - A
       - B
@@ -180,7 +180,7 @@ testStrategy:
     parallel: false
     runInOrder: false
     specs:
-      - cypress/integration/fail.spec.js
+      - cy-shared/integration/fail.spec.js
     dependency:
       - A
       - B

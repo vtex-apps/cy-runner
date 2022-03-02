@@ -1,14 +1,15 @@
 const cypress = require('cypress')
-const {execSync} = require('child_process')
+const { execSync } = require('child_process')
 const fs = require('fs')
 const path = require('path')
-const {merge} = require('lodash')
-const {vtexWipe} = require("./wipe");
-const {vtexTeardown} = require("./teardown");
+const { merge } = require('lodash')
+const { vtexWipe } = require('./wipe')
+const { vtexTeardown } = require('./teardown')
 
 const QE = '[QE] ===> '
 const SP = '          - '
-const BR = '[QE] ==============================================================================================='
+const BR =
+  '[QE] ==============================================================================================='
 
 exports.msgErr = (msg, notr = false) => {
   let end = notr ? '' : '\n'
@@ -50,13 +51,6 @@ exports.crash = (msg) => {
   process.exit(99)
 }
 
-exports.report = (msg) => {
-  let end = '\n'
-  process.stdout.write(end + '[QE] ' + msg + end)
-  process.stdout.write(BR + end + end)
-
-}
-
 exports.success = (msg) => {
   process.stdout.write('\n[QE] ===> SUCCESS: ' + msg + '!\n\n')
   process.exit(0)
@@ -83,7 +77,7 @@ exports.updateCyEnvJson = (data) => {
   let fileName = 'cypress.env.json'
   try {
     let json = fs.readFileSync(fileName)
-    let newJson = {...json, ...data}
+    let newJson = { ...json, ...data }
     fs.writeFileSync(fileName, JSON.stringify(newJson))
   } catch (e) {
     this.msgErr(e)
@@ -101,7 +95,11 @@ exports.toc = (start) => {
 exports.traverse = (result, obj, previousKey) => {
   if (typeof obj == 'object') {
     for (const key in obj)
-      this.traverse(result, obj[key], (previousKey || '') + (previousKey ? '.' + key : key))
+      this.traverse(
+        result,
+        obj[key],
+        (previousKey || '') + (previousKey ? '.' + key : key)
+      )
   } else {
     result.push({
       key: previousKey || '',
@@ -113,7 +111,7 @@ exports.traverse = (result, obj, previousKey) => {
 
 exports.reportSetup = async (config) => {
   this.msg('Configuration enabled for this Cypress Runner:')
-  this.traverse([], config).forEach(item => {
+  this.traverse([], config).forEach((item) => {
     if (/enabled/.test(item.key) && /true/.test(item.type)) {
       let itemEnabled = item.key.split('.enabled')[0]
       this.msgDetail(itemEnabled)
@@ -155,18 +153,17 @@ exports.openCypress = async (test, step) => {
 }
 
 exports.runCypress = async (test, config, addOptions = {}) => {
-  if (typeof test.spec === 'string')
-    test.spec = [test.spec]
+  if (typeof test.spec === 'string') test.spec = [test.spec]
   const spec = path.parse(test.spec[0])
-  const baseDir = /cy-runner/.test(spec.dir) ? 'cy-runner' : 'cypress'
+  const cyPath = spec.dir.split(path.sep)[0]
   const options = {
     config: {
       integrationFolder: spec.dir,
-      supportFile: baseDir + '/support',
+      supportFile: cyPath + '/support',
     },
     spec: test.spec,
     headed: config.testConfig.runHeaded,
-    browser: config.testConfig.cypress.browser
+    browser: config.testConfig.cypress.browser,
   }
   // Options tuning
   if (test.sendDashboard) {
