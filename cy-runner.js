@@ -44,7 +44,7 @@ async function main() {
 
   // Final Report
   control.timing['total'] = qe.toc(control.start)
-  process.exit(await vtexReport(control))
+  await vtexReport(control)
 }
 
-await main()
+main()

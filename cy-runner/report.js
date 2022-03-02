@@ -8,17 +8,15 @@ module.exports.vtexReport = async (control) => {
   for (let section in control.timing)
     qe.msgDetail(`${section} ran in ${control.timing[section]}`)
 
+  qe.newLine()
+  
   qe.msg('Test strategy')
-  qe.msgDetail(`SUCCESS: ${control.testsPassed}`)
-  qe.msgDetail(`SKIPPED: ${control.testsSkipped}`)
-  qe.msgDetail(`FAILURE: ${control.testsFailed}`)
+  qe.msgDetail(`Success: ${control.testsPassed}`)
+  qe.msgDetail(`Skipped: ${control.testsSkipped}`)
+  qe.msgDetail(`Failure: ${control.testsFailed}`)
 
-  let status = 0
   if (control.testsFailed.length < 1)
     qe.success('The test ran successfully, well done')
-  else {
+  else
     qe.fail(`The test was skipped on ${control.testsSkipped} and failed on ${control.testsFailed}`)
-    status = 99
-  }
-  return status
 }

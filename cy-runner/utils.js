@@ -41,6 +41,10 @@ exports.statusMsg = (msg, notr = false) => {
   process.stdout.write(msg + end)
 }
 
+exports.newLine = () => {
+  process.stdout.write('\n')
+}
+
 exports.crash = (msg) => {
   this.msgErr('ERROR: ' + msg + '!\n')
   process.exit(99)
