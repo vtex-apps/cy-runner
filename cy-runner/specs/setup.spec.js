@@ -6,8 +6,8 @@ const CONFIG = config.testConfig
 const WORKSPACE = config.testWorkspace
 const APPS = WORKSPACE.setup.manageApps
 const STATE_FILE = CONFIG.stateFiles[0]
-const FAIL_TIMEOUT = {timeout: 1000, log: false}
-const APP_RETRIES = {retries: 2}
+const FAIL_TIMEOUT = { timeout: 1000, log: false }
+const APP_RETRIES = { retries: 2 }
 
 // Login page model
 const TXT_EMAIL = '[name = "email"]'
@@ -36,7 +36,7 @@ describe('Setting up the environment', () => {
       })
       // Log in with robot credentials
       it('Authenticating on vtex cli', () => {
-        cy.readFile('.toolbelt.url', FAIL_TIMEOUT).then(callBackUrl => {
+        cy.readFile('.toolbelt.url', FAIL_TIMEOUT).then((callBackUrl) => {
           cy.visit(callBackUrl)
           // Intercept doesn't work, we must wait
           // eslint-disable-next-line cypress/no-unnecessary-waiting
@@ -46,11 +46,11 @@ describe('Setting up the environment', () => {
               // Fill Robot email
               cy.get(TXT_EMAIL)
                 .should('be.visible')
-                .type(`${CONFIG.vtex.robotMail}{enter}`, {log: false})
+                .type(`${CONFIG.vtex.robotMail}{enter}`, { log: false })
               // Fill Robot password
               cy.get(TXT_PASSWORD)
                 .should('be.visible')
-                .type(`${CONFIG.vtex.robotPassword}{enter}`, {log: false})
+                .type(`${CONFIG.vtex.robotPassword}{enter}`, { log: false })
             }
           })
           // Sometimes the system ask for SMS Code, we must wait
@@ -93,12 +93,18 @@ describe('Setting up the environment', () => {
     cy.request({
       method: 'GET',
       url: CONFIG.vtex.idUrl,
-      qs: {user: CONFIG.vtex.apiKey, pass: CONFIG.vtex.apiToken},
+      qs: { user: CONFIG.vtex.apiKey, pass: CONFIG.vtex.apiToken },
     }).then((response) => {
       expect(response.body).property('authStatus').to.equal('Success')
       let cookie = 'authCookieValue'
       CONFIG.vtex[cookie] = response.body.authCookie.Value
-      cy.addConfig(STATE_FILE, 'testConfig', 'vtex', cookie, CONFIG.vtex[cookie])
+      cy.addConfig(
+        STATE_FILE,
+        'testConfig',
+        'vtex',
+        cookie,
+        CONFIG.vtex[cookie]
+      )
     })
   })
 
@@ -106,7 +112,13 @@ describe('Setting up the environment', () => {
   it('Getting robot cookie', () => {
     cy.vtex('local token').then((cookie) => {
       // If we try to write directly on cypress.env.json, Cypress crashes
-      cy.addConfig(STATE_FILE, 'testConfig', 'vtex', 'robotCookie', cookie.stdout)
+      cy.addConfig(
+        STATE_FILE,
+        'testConfig',
+        'vtex',
+        'robotCookie',
+        cookie.stdout
+      )
     })
   })
 

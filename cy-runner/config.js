@@ -1,6 +1,6 @@
 const fs = require('fs')
 const yaml = require('js-yaml')
-const {merge} = require('lodash')
+const { merge } = require('lodash')
 const qe = require('./utils')
 const schema = require('./schema')
 const CONFIG_FILE = 'cy-runner.yml'
@@ -13,7 +13,9 @@ try {
   configSet = yaml.load(fs.readFileSync(CONFIG_FILE, 'utf8'))
   schema.validate(configSet)
   const VTEX_ACCOUNT = configSet.testConfig.vtex.account
-  configSet.testConfig.vtex['authUrl'] = `https://${VTEX_ACCOUNT}.myvtex.com/api/vtexid/pub/authentication`
+  configSet.testConfig.vtex[
+    'authUrl'
+  ] = `https://${VTEX_ACCOUNT}.myvtex.com/api/vtexid/pub/authentication`
 } catch (e) {
   qe.msgErr(`Check your ${CONFIG_FILE}.`)
   qe.crash(e)
@@ -44,10 +46,8 @@ if (fs.existsSync(SECRET_FILE)) {
 
 // Check secrets
 function checkSecret(key, value) {
-  if (typeof value != 'string')
-    qe.crash(`Secret must be string [${key}]`)
-  if (value.length <= 0)
-    qe.crash(`Secret must be string not null [${key}]`)
+  if (typeof value != 'string') qe.crash(`Secret must be string [${key}]`)
+  if (value.length <= 0) qe.crash(`Secret must be string not null [${key}]`)
 }
 
 try {
@@ -92,7 +92,9 @@ if (configSet.testWorkspace.name === 'random') {
 const CYPRESS_ENV_JSON = 'cypress.env.json'
 try {
   fs.writeFileSync(CYPRESS_ENV_JSON, JSON.stringify(configSet))
-  qe.msg(`Secrets loaded (from ${loadedFrom}) and [${CYPRESS_ENV_JSON}] created successfully`)
+  qe.msg(
+    `Secrets loaded (from ${loadedFrom}) and [${CYPRESS_ENV_JSON}] created successfully`
+  )
 } catch (e) {
   qe.msgErr(e)
 }
@@ -104,41 +106,42 @@ const WORKSPACE = configSet.testWorkspace.name
 const ACCOUNT = configSet.testConfig.vtex.account
 const DOMAIN = configSet.testConfig.vtex.domain
 try {
-  fs.writeFileSync(CYPRESS_JSON_FILE, JSON.stringify({
-    baseUrl: `https://${WORKSPACE}--${ACCOUNT}.${DOMAIN}`,
-    chromeWebSecurity: CYPRESS.chromeWebSecurity,
-    video: CYPRESS.video,
-    videoCompression: CYPRESS.videoCompression,
-    videoUploadOnPasses: CYPRESS.videoUploadOnPasses,
-    screenshotOnRunFailure: CYPRESS.screenshotOnRunFailure,
-    trashAssetsBeforeRuns: CYPRESS.trashAssetsBeforeRuns,
-    viewportWidth: CYPRESS.viewportWidth,
-    viewportHeight: CYPRESS.viewportHeight,
-    defaultCommandTimeout: CYPRESS.defaultCommandTimeout,
-    requestTimeout: CYPRESS.defaultCommandTimeout,
-    watchForFileChanges: CYPRESS.watchForFileChanges,
-    pageLoadTimeout: CYPRESS.pageLoadTimeout,
-    browser: CYPRESS.browser,
-    projectId: CYPRESS.projectId,
-    retries: 0,
-  }))
+  fs.writeFileSync(
+    CYPRESS_JSON_FILE,
+    JSON.stringify({
+      baseUrl: `https://${WORKSPACE}--${ACCOUNT}.${DOMAIN}`,
+      chromeWebSecurity: CYPRESS.chromeWebSecurity,
+      video: CYPRESS.video,
+      videoCompression: CYPRESS.videoCompression,
+      videoUploadOnPasses: CYPRESS.videoUploadOnPasses,
+      screenshotOnRunFailure: CYPRESS.screenshotOnRunFailure,
+      trashAssetsBeforeRuns: CYPRESS.trashAssetsBeforeRuns,
+      viewportWidth: CYPRESS.viewportWidth,
+      viewportHeight: CYPRESS.viewportHeight,
+      defaultCommandTimeout: CYPRESS.defaultCommandTimeout,
+      requestTimeout: CYPRESS.defaultCommandTimeout,
+      watchForFileChanges: CYPRESS.watchForFileChanges,
+      pageLoadTimeout: CYPRESS.pageLoadTimeout,
+      browser: CYPRESS.browser,
+      projectId: CYPRESS.projectId,
+      retries: 0,
+    })
+  )
   qe.msg(`[${CYPRESS_JSON_FILE}] created successfully`)
 } catch (e) {
   qe.crash(e)
-
 }
 
 // Create empty files as asked
 try {
   let STATE_FILES = configSet.testConfig.stateFiles
-  STATE_FILES.forEach(stateFile => {
+  STATE_FILES.forEach((stateFile) => {
     fs.writeFileSync(stateFile, '{}')
   })
   qe.msg(`Empty state files [${STATE_FILES}] create successfully`)
 } catch (e) {
   qe.crash(e)
 }
-
 
 // Expose config
 module.exports = {

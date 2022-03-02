@@ -56,12 +56,8 @@ async function createIssue(vtexJson, testErrors) {
 
   // Jira
   const ERRORS = testErrors.join(', ')
-  const {
-    JIRA_ACCOUNT,
-    JIRA_AUTHORIZATION,
-    JIRA_KEY,
-    JIRA_ISSUE_TYPE,
-  } = vtexJson
+  const { JIRA_ACCOUNT, JIRA_AUTHORIZATION, JIRA_KEY, JIRA_ISSUE_TYPE } =
+    vtexJson
 
   const JIRA_SUMMARY = `PR #${GH_PR}: ${GH_PROJECT} E2E test failed`
   const JIRA_JQL =
@@ -109,8 +105,7 @@ async function createIssue(vtexJson, testErrors) {
             content: [
               {
                 type: 'text',
-                text:
-                  'To get more information about the errors, please take a look at ',
+                text: 'To get more information about the errors, please take a look at ',
               },
               {
                 type: 'text',
@@ -167,7 +162,7 @@ async function createIssue(vtexJson, testErrors) {
   }
 
   // Payload for ticket update
-  const dataupdate = JSON.stringify({
+  const dataUpdate = JSON.stringify({
     body: {
       version: 1,
       type: 'doc',
@@ -202,7 +197,7 @@ async function createIssue(vtexJson, testErrors) {
     visibility: null,
   })
 
-  // Config for ticke update
+  // Config for ticket update
   const configUpdate = {
     method: 'post',
     url: `https://${JIRA_ACCOUNT}.atlassian.net/rest/api/3/issue/${JIRA_EXISTENT_KEY}/comment`,
@@ -210,7 +205,7 @@ async function createIssue(vtexJson, testErrors) {
       Authorization: `Basic ${JIRA_AUTHORIZATION}`,
       'Content-Type': 'application/json',
     },
-    data: dataupdate,
+    data: dataUpdate,
   }
 
   process.stdout.write(`[QE] ===> Searching by this issue on Jira...\n`)

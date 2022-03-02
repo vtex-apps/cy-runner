@@ -10,7 +10,8 @@
  6 = Not null
  7 = array
  **********************************************/
-const {get} = require('lodash')
+
+const { get } = require('lodash')
 const qe = require('./utils')
 
 function schemaValidator(schema, config, strategy = '') {
@@ -19,7 +20,7 @@ function schemaValidator(schema, config, strategy = '') {
   const ignore = (key, value) => {
     let byPass = null
     key = strategy + key
-    if (/\.enabled/.test(key) && typeof value == "boolean" && !value) {
+    if (/\.enabled/.test(key) && typeof value == 'boolean' && !value) {
       skip.push(key.split('.enabled')[0])
     }
     skip.forEach((disabled) => {
@@ -60,7 +61,10 @@ function schemaValidator(schema, config, strategy = '') {
       default:
         break
     }
-    if (crash) qe.crash(`Parse cy-runner.yml failed [${strategy}${item.key} must be ${msg}]`)
+    if (crash)
+      qe.crash(
+        `Parse cy-runner.yml failed [${strategy}${item.key} must be ${msg}]`
+      )
   })
 }
 
@@ -70,9 +74,9 @@ exports.validate = (config) => {
     testConfig: {
       devMode: 2,
       runHeaded: 2,
-      authVtexCli: {enabled: 2, git: 0, branch: 0},
-      twilio: {enabled: 2},
-      vtex: {account: 0, id: 4, domain: 0},
+      authVtexCli: { enabled: 2, git: 0, branch: 0 },
+      twilio: { enabled: 2 },
+      vtex: { account: 0, id: 4, domain: 0 },
       cypress: {
         enabled: 2,
         projectId: 0,
@@ -90,8 +94,8 @@ exports.validate = (config) => {
         browser: 0,
         chromeWebSecurity: 2,
       },
-      jira: {enabled: 2, account: 0, board: 0, issueType: 0},
-      slack: {enabled: 2, channel: 3},
+      jira: { enabled: 2, account: 0, board: 0, issueType: 0 },
+      slack: { enabled: 2, channel: 3 },
       stateFiles: 7,
     },
     testWorkspace: {
@@ -108,9 +112,9 @@ exports.validate = (config) => {
           uninstall: 7,
         },
       },
-      wipe: {enabled: 2, stopOnFail: 2, spec: 0},
-      teardown: {enabled: 2, stopOnFail: 2, spec: 0},
-    }
+      wipe: { enabled: 2, stopOnFail: 2, spec: 0 },
+      teardown: { enabled: 2, stopOnFail: 2, spec: 0 },
+    },
   }
   const STRATEGY_SCHEMA = {
     enabled: 2,
@@ -119,7 +123,7 @@ exports.validate = (config) => {
     hardTries: 1,
     parallel: 2,
     runInOrder: 2,
-    specs: 7
+    specs: 7,
   }
 
   // Validate base
@@ -127,10 +131,10 @@ exports.validate = (config) => {
 
   // Validate test strategies
   let configSchema = {}
-  Object.entries(config.testStrategy).forEach(entry => {
+  Object.entries(config.testStrategy).forEach((entry) => {
     configSchema[entry[0]] = entry[1]
   })
-  Object.keys(configSchema).forEach(strategy => {
+  Object.keys(configSchema).forEach((strategy) => {
     schemaValidator(STRATEGY_SCHEMA, configSchema[strategy], `${strategy}.`)
   })
 

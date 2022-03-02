@@ -1,5 +1,5 @@
 const fs = require('fs')
-const {merge} = require('lodash')
+const { merge } = require('lodash')
 const qe = require('./utils')
 
 exports.vtexWorkspace = async (config) => {
@@ -8,14 +8,19 @@ exports.vtexWorkspace = async (config) => {
   if (config.testConfig.devMode) {
     // Open Cypress en DEV/GUI mode
     qe.msg('Starting in [devmode], Cypress will be opened in GUI mode')
-    qe.msgDetail('You must run the steps by yourself [setup], [wipe], and [teardown] if they are enabled')
+    qe.msgDetail(
+      'You must run the steps by yourself [setup], [wipe], and [teardown] if they are enabled'
+    )
     if (WORKSPACE.setup.enabled) await qe.openCypress(WORKSPACE.setup, 'setup')
     await syncConfig(config) // sync setup env
     // Call testStrategy
     await qe.openCypress()
     if (WORKSPACE.wipe.enabled) await qe.openCypress(WORKSPACE.wipe, 'wipe')
-    if (WORKSPACE.teardown.enabled) await qe.openCypress(WORKSPACE.teardown, 'teardown')
-    qe.msg('My job finishes here, hope you did well on your tests. See you soon!')
+    if (WORKSPACE.teardown.enabled)
+      await qe.openCypress(WORKSPACE.teardown, 'teardown')
+    qe.msg(
+      'My job finishes here, hope you did well on your tests. See you soon!'
+    )
     process.exit(0)
   } else {
     // Run Cypress in automated mode

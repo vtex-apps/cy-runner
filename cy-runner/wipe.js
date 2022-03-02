@@ -8,7 +8,6 @@ module.exports.vtexWipe = async (config) => {
     let stopOnFail = wipe.stopOnFail
     let testPassed = await qe.runCypress(wipe, config)
     if (!testPassed && stopOnFail) await qe.stopOnFail(config, 'wipe')
-  } else
-    qe.msg('[testWorkspace.wipe] is disabled')
+  } else qe.msg('[testWorkspace.wipe] is disabled')
   return qe.toc(START)
 }

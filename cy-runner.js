@@ -1,11 +1,11 @@
 const qe = require('./cy-runner/utils')
-const {config} = require('./cy-runner/config')
-const {vtexCli} = require('./cy-runner/cli')
-const {vtexWorkspace} = require('./cy-runner/workspace')
-const {vtexTestStrategy} = require('./cy-runner/test')
-const {vtexWipe} = require('./cy-runner/wipe')
-const {vtexTeardown} = require('./cy-runner/teardown')
-const {vtexReport} = require('./cy-runner/report')
+const { config } = require('./cy-runner/config')
+const { vtexCli } = require('./cy-runner/cli')
+const { vtexWorkspace } = require('./cy-runner/workspace')
+const { vtexTestStrategy } = require('./cy-runner/test')
+const { vtexWipe } = require('./cy-runner/wipe')
+const { vtexTeardown } = require('./cy-runner/teardown')
+const { vtexReport } = require('./cy-runner/report')
 
 // Controls test state
 let control = {
@@ -13,11 +13,10 @@ let control = {
   timing: {},
   testsFailed: [],
   testsSkipped: [],
-  testsPassed: []
+  testsPassed: [],
 }
 
 async function main() {
-
   // Report configuration to help understand that'll run
   await qe.reportSetup(config)
 

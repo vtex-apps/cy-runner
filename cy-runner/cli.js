@@ -10,7 +10,7 @@ const TOOLBELT_BIN = path.join(PATH_TOOLBELT_BIN, 'vtex-e2e')
 const TOOLBELT_URL_OUTPUT = '.toolbelt.url'
 
 // Needed to run vtex cli on patched mode
-process.env.IN_CYPRESS = true
+process.env.IN_CYPRESS = 'true'
 
 exports.vtexCli = async (config) => {
   const START = qe.tick()
@@ -20,7 +20,7 @@ exports.vtexCli = async (config) => {
   if (AUTH_VTEX_CLI.enabled) {
     // Try to clean vtex cache state to avoid bugs
     try {
-      fs.rmSync(PATH_CACHE_VTEX, {recursive: true})
+      fs.rmSync(PATH_CACHE_VTEX, { recursive: true })
       qe.msg(`${PATH_CACHE_VTEX} cleaned successfully`)
     } catch (e) {
       qe.msg(`${PATH_CACHE_VTEX} doesn't exist, no need to clean it`)
@@ -37,7 +37,9 @@ exports.vtexCli = async (config) => {
       qe.msgDetail(`Removing old [${TOOLBELT_URL_OUTPUT}], if any`)
       if (fs.existsSync(TOOLBELT_URL_OUTPUT)) fs.rmSync(TOOLBELT_URL_OUTPUT)
       qe.msgDetail(`Calling [vtex-e2e login ${VTEX.account}]`)
-      qe.exec(`${TOOLBELT_BIN} login ${VTEX.account} 1> ${TOOLBELT_URL_OUTPUT} &`)
+      qe.exec(
+        `${TOOLBELT_BIN} login ${VTEX.account} 1> ${TOOLBELT_URL_OUTPUT} &`
+      )
       let size = 0
       while (size < 3) size = qe.fileSize(TOOLBELT_URL_OUTPUT)
       qe.msgDetail('Callback url created successfully')
@@ -48,16 +50,22 @@ exports.vtexCli = async (config) => {
     qe.msg('Toolbelt started in background, now you can call Cypress')
   } else {
     if (config.testWorkspace.setup.manageApps.enabled)
-      qe.msgDetail('Make sure you have vtex cli authenticated already as you plan to manage apps')
+      qe.msgDetail(
+        'Make sure you have vtex cli authenticated already as you plan to manage apps'
+      )
   }
-  return {path: `${process.env.PATH}:${PATH_TOOLBELT_BIN}`, time: qe.toc(START)}
+  return {
+    path: `${process.env.PATH}:${PATH_TOOLBELT_BIN}`,
+    time: qe.toc(START),
+  }
 }
 
 async function installToolbelt(authVtexCli) {
   try {
     qe.msg('Patched version of toolbelt not found, deploying it:')
     if (!fs.existsSync(PATH_CACHE_VTEX)) fs.mkdirSync(PATH_CACHE_VTEX)
-    if (fs.existsSync(PATH_TOOLBELT)) fs.rmSync(PATH_TOOLBELT, {recursive: true})
+    if (fs.existsSync(PATH_TOOLBELT))
+      fs.rmSync(PATH_TOOLBELT, { recursive: true })
     qe.msgDetail(`Cloning toolbelt from ${authVtexCli.git}`)
     qe.exec(`cd ${PATH_CACHE} && git clone ${authVtexCli.git}`)
     qe.msgDetail(`Checking out toolbelt patched branch ${authVtexCli.branch}`)
