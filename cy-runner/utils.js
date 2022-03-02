@@ -165,7 +165,7 @@ exports.runCypress = async (test, config, addOptions = {}) => {
       supportFile: baseDir + '/support',
     },
     spec: test.spec,
-    runHeaded: config.testConfig.runHeaded,
+    headed: config.testConfig.runHeaded,
     browser: config.testConfig.cypress.browser
   }
   // Options tuning
