@@ -5,6 +5,7 @@ const { vtexWorkspace } = require('./cy-runner/workspace')
 const { vtexTestStrategy } = require('./cy-runner/test')
 const { vtexWipe } = require('./cy-runner/wipe')
 const { vtexTeardown } = require('./cy-runner/teardown')
+const { vtexJira } = require('./cy-runner/jira')
 const { vtexReport } = require('./cy-runner/report')
 
 // Controls test state

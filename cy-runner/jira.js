@@ -258,4 +258,4 @@ async function createIssue(vtexJson, testErrors) {
   }
 }
 
-module.exports = { createIssue }
+module.exports = { vtexJira: createIssue }

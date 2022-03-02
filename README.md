@@ -16,6 +16,11 @@ Tool to orchestrate Cypress tests at VTEX.
 - Wipe data from tests on MasterData if needed
 - Tear down
 
+## Architecture
+
+The start code is `cypress-runner/cy-runner.js`
+<img src="cy-runner/support/cy-r-uml.svg" width=100%>
+
 ## How to use
 
 TODO

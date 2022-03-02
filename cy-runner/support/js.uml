@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JavaScript-modules-diagram</ID>
+  <OriginalElement>/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js;</OriginalElement>
+  <nodes>
+    <node x="40.32031250000023" y="252.0">/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/cli.js#fs#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/cli.js#path#61;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/cli.js#qe#31;</node>
+    <node x="0.0" y="876.0">/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/support/commands.js</node>
+    <node x="1244.5" y="-271.0">/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#fs#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#lodash#75;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#qe#99;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#schema#129;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#yaml#31;</node>
+    <node x="347.5000000000001" y="13.0">/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#cli.js#109;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#config.js#59;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#jira.js#379;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#qe#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#report.js#430;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#teardown.js#326;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#test.js#224;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#wipe.js#273;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#workspace.js#162;</node>
+    <node x="41.0" y="1018.0">/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/support/index.js#commands.js#0;</node>
+    <node x="149.6249999999999" y="-136.00000000000006">/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/jira.js#axios#6;</node>
+    <node x="600.1796875" y="-136.00000000000006">/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/report.js#qe#6;</node>
+    <node x="1094.375" y="-130.00000000000006">/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/schema.js#lodash#320;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/schema.js#qe#344;</node>
+    <node x="669.6796875" y="71.5">/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/teardown.js#qe#6;</node>
+    <node x="347.5000000000001" y="145.5">/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/test.js#lodash#55;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/test.js#qe#6;</node>
+    <node x="949.859375" y="13.0">/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#child_process#56;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#cypress#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#fs#87;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#lodash#153;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#path#112;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#teardown.js#235;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#wipe.js#192;</node>
+    <node x="669.6796875" y="145.5">/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/wipe.js#qe#6;</node>
+    <node x="215.82031250000023" y="252.0">/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/workspace.js#fs#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/workspace.js#lodash#43;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/workspace.js#qe#67;</node>
+    <node x="149.6249999999999" y="13.5">axios</node>
+    <node x="902.5" y="-270.49999999999994">child_process</node>
+    <node x="1047.25" y="-270.5">cypress</node>
+    <node x="1280.375" y="165.00000000000006">fs</node>
+    <node x="1140.0" y="-270.5">js-yaml</node>
+    <node x="1220.375" y="11.499999999999886">lodash</node>
+    <node x="836.6796875" y="-135.50000000000006">path</node>
+    <node x="138.32031250000023" y="176.0">posix</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#cli.js#109;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#config.js#59;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#jira.js#379;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#qe#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#report.js#430;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#teardown.js#326;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#test.js#224;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#wipe.js#273;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#workspace.js#162;" target="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/test.js#lodash#55;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/test.js#qe#6;" relationship="">
+      <point x="0.0" y="17.0" />
+      <point x="481.0000000000001" y="118.24999999999997" />
+      <point x="369.0000000000001" y="118.24999999999997" />
+      <point x="-66.5" y="5.000000000000057" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/jira.js#axios#6;" target="axios" relationship="">
+      <point x="-54.124999999999886" y="17.500000000000114" />
+      <point x="180.0" y="-45.50000000000006" />
+      <point x="180.6249999999999" y="-45.50000000000006" />
+      <point x="0.0" y="-16.5" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#cli.js#109;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#config.js#59;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#jira.js#379;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#qe#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#report.js#430;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#teardown.js#326;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#test.js#224;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#wipe.js#273;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#workspace.js#162;" target="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/wipe.js#qe#6;" relationship="">
+      <point x="73.49999999999989" y="16.500000000000057" />
+      <point x="554.5" y="162.5" />
+      <point x="761.1796875" y="162.5" />
+      <point x="0.0" y="-17.0" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#child_process#56;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#cypress#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#fs#87;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#lodash#153;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#path#112;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#teardown.js#235;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#wipe.js#192;" target="lodash" relationship="">
+      <point x="77.640625" y="-0.49999999999994316" />
+      <point x="1141.0" y="29.500000000000057" />
+      <point x="1141.0" y="30.0" />
+      <point x="-17.375" y="2.0000000000001137" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/schema.js#lodash#320;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/schema.js#qe#344;" target="lodash" relationship="">
+      <point x="59.625" y="15.500000000000114" />
+      <point x="1257.0" y="-68.50000000000006" />
+      <point x="1257.375" y="-68.50000000000006" />
+      <point x="0.0" y="-16.5" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#fs#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#lodash#75;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#qe#99;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#schema#129;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#yaml#31;" target="js-yaml" relationship="">
+      <point x="-81.5" y="-0.49999999999994316" />
+      <point x="1225.0" y="-254.49999999999994" />
+      <point x="1225.0" y="-253.9999999999999" />
+      <point x="3.0" y="1.1368683772161603E-13" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#child_process#56;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#cypress#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#fs#87;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#lodash#153;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#path#112;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#teardown.js#235;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#wipe.js#192;" target="fs" relationship="">
+      <point x="64.25" y="13.500000000000057" />
+      <point x="1103.609375" y="113.50000000000006" />
+      <point x="1296.875" y="113.50000000000006" />
+      <point x="0.0" y="-16.5" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/workspace.js#fs#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/workspace.js#lodash#43;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/workspace.js#qe#67;" target="lodash" relationship="">
+      <point x="101.5" y="9.000000000000057" />
+      <point x="1252.0" y="278.00000000000006" />
+      <point x="-5.375" y="14.000000000000114" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#fs#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#lodash#75;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#qe#99;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#schema#129;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#yaml#31;" target="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#child_process#56;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#cypress#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#fs#87;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#lodash#153;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#path#112;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#teardown.js#235;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#wipe.js#192;" relationship="">
+      <point x="-84.5" y="7.500000000000057" />
+      <point x="1258.0" y="-159.0" />
+      <point x="1077.0" y="-159.0" />
+      <point x="37.640625" y="-6.499999999999943" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#cli.js#109;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#config.js#59;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#jira.js#379;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#qe#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#report.js#430;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#teardown.js#326;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#test.js#224;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#wipe.js#273;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#workspace.js#162;" target="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/workspace.js#fs#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/workspace.js#lodash#43;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/workspace.js#qe#67;" relationship="">
+      <point x="-78.50000000000011" y="5.500000000000057" />
+      <point x="402.5" y="90.24999999999994" />
+      <point x="332.3203125000002" y="90.24999999999994" />
+      <point x="0.0" y="-17.0" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/cli.js#fs#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/cli.js#path#61;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/cli.js#qe#31;" target="posix" relationship="">
+      <point x="53.0" y="5.000000000000057" />
+      <point x="169.82031250000023" y="274.00000000000006" />
+      <point x="0.0" y="-16.5" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#child_process#56;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#cypress#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#fs#87;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#lodash#153;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#path#112;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#teardown.js#235;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#wipe.js#192;" target="path" relationship="">
+      <point x="-79.359375" y="-3.499999999999943" />
+      <point x="968.5" y="26.500000000000057" />
+      <point x="968.5" y="-119.00000000000006" />
+      <point x="885.3359375" y="-119.00000000000006" />
+      <point x="19.65625" y="13.500000000000114" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/support/index.js#commands.js#0;" target="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/support/commands.js" relationship="">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#fs#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#lodash#75;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#qe#99;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#schema#129;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#yaml#31;" target="fs" relationship="">
+      <point x="91.5" y="-5.499999999999943" />
+      <point x="1365.5" y="-259.49999999999994" />
+      <point x="1365.5" y="181.50000000000006" />
+      <point x="1307.0" y="181.50000000000006" />
+      <point x="10.125" y="5.000000000000057" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/cli.js#fs#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/cli.js#path#61;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/cli.js#qe#31;" target="fs" relationship="">
+      <point x="54.0" y="22.000000000000057" />
+      <point x="174.82031250000023" y="339.50000000000006" />
+      <point x="1304.0" y="339.50000000000006" />
+      <point x="7.125" y="-1.0" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#cli.js#109;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#config.js#59;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#jira.js#379;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#qe#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#report.js#430;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#teardown.js#326;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#test.js#224;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#wipe.js#273;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#workspace.js#162;" target="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#child_process#56;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#cypress#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#fs#87;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#lodash#153;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#path#112;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#teardown.js#235;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#wipe.js#192;" relationship="">
+      <point x="23.999999999999886" y="4.500000000000057" />
+      <point x="505.0" y="39.50000000000006" />
+      <point x="977.0" y="39.50000000000006" />
+      <point x="-62.359375" y="-15.499999999999943" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#cli.js#109;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#config.js#59;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#jira.js#379;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#qe#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#report.js#430;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#teardown.js#326;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#test.js#224;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#wipe.js#273;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#workspace.js#162;" target="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/report.js#qe#6;" relationship="">
+      <point x="64.99999999999989" y="-3.499999999999943" />
+      <point x="546.0" y="-125.0" />
+      <point x="-1.5" y="-5.999999999999943" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#fs#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#lodash#75;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#qe#99;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#schema#129;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#yaml#31;" target="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/schema.js#lodash#320;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/schema.js#qe#344;" relationship="">
+      <point x="-62.5" y="8.500000000000057" />
+      <point x="1280.0" y="-213.5" />
+      <point x="1279.0" y="-213.5" />
+      <point x="1279.0" y="-119.49999999999994" />
+      <point x="67.625" y="-6.499999999999886" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#cli.js#109;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#config.js#59;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#jira.js#379;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#qe#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#report.js#430;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#teardown.js#326;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#test.js#224;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#wipe.js#273;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#workspace.js#162;" target="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/cli.js#fs#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/cli.js#path#61;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/cli.js#qe#31;" relationship="">
+      <point x="-93.50000000000011" y="7.500000000000057" />
+      <point x="387.5" y="70.5" />
+      <point x="120.82031250000023" y="70.5" />
+      <point x="0.0" y="-17.0" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#cli.js#109;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#config.js#59;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#jira.js#379;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#qe#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#report.js#430;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#teardown.js#326;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#test.js#224;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#wipe.js#273;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#workspace.js#162;" target="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#fs#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#lodash#75;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#qe#99;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#schema#129;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#yaml#31;" relationship="">
+      <point x="-26.000000000000114" y="-7.499999999999943" />
+      <point x="455.0" y="-298.00000000000006" />
+      <point x="1342.5" y="-298.00000000000006" />
+      <point x="0.0" y="-17.0" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/test.js#lodash#55;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/test.js#qe#6;" target="lodash" relationship="">
+      <point x="-13.500000000000114" y="-1.9999999999999432" />
+      <point x="422.0" y="223.0" />
+      <point x="1231.0" y="223.0" />
+      <point x="-26.375" y="3.0000000000001137" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#child_process#56;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#cypress#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#fs#87;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#lodash#153;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#path#112;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#teardown.js#235;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#wipe.js#192;" target="child_process" relationship="">
+      <point x="0.0" y="17.0" />
+      <point x="1039.359375" y="-11.0" />
+      <point x="1008.0" y="-11.0" />
+      <point x="39.5" y="-13.5" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/teardown.js#qe#6;" target="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#child_process#56;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#cypress#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#fs#87;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#lodash#153;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#path#112;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#teardown.js#235;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#wipe.js#192;" relationship="">
+      <point x="0.0" y="0.0" />
+      <point x="599.9002327967945" y="394.1142890599479" />
+      <point x="583.5108404002822" y="401.24387992669773" />
+      <point x="567.7643428386289" y="410.5245950501606" />
+      <point x="553.9182289823071" y="422.0849590074418" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#child_process#56;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#cypress#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#fs#87;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#lodash#153;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#path#112;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#teardown.js#235;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#wipe.js#192;" target="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/teardown.js#qe#6;" relationship="">
+      <point x="-57.359375" y="4.500000000000057" />
+      <point x="982.0" y="88.5" />
+      <point x="812.1796875" y="88.5" />
+      <point x="30.0" y="-12.999999999999943" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/test.js#lodash#55;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/test.js#qe#6;" target="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#child_process#56;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#cypress#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#fs#87;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#lodash#153;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#path#112;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#teardown.js#235;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#wipe.js#192;" relationship="">
+      <point x="69.49999999999989" y="16.000000000000057" />
+      <point x="505.0" y="198.24999999999994" />
+      <point x="1021.0" y="198.24999999999994" />
+      <point x="-18.359375" y="-1.4999999999999432" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#fs#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#lodash#75;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#qe#99;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#schema#129;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/config.js#yaml#31;" target="lodash" relationship="">
+      <point x="-0.5" y="21.500000000000057" />
+      <point x="1342.0" y="27.999999999999886" />
+      <point x="1342.5" y="27.999999999999886" />
+      <point x="1342.5" y="28.500000000000057" />
+      <point x="15.625" y="0.5000000000001705" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#cli.js#109;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#config.js#59;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#jira.js#379;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#qe#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#report.js#430;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#teardown.js#326;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#test.js#224;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#wipe.js#273;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#workspace.js#162;" target="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/jira.js#axios#6;" relationship="">
+      <point x="-82.00000000000011" y="-4.499999999999943" />
+      <point x="399.0" y="-119.00000000000006" />
+      <point x="234.1249999999999" y="-119.00000000000006" />
+      <point x="0.0" y="-17.0" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/wipe.js#qe#6;" target="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#child_process#56;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#cypress#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#fs#87;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#lodash#153;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#path#112;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#teardown.js#235;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#wipe.js#192;" relationship="">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#child_process#56;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#cypress#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#fs#87;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#lodash#153;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#path#112;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#teardown.js#235;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#wipe.js#192;" target="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/wipe.js#qe#6;" relationship="">
+      <point x="-38.359375" y="13.500000000000057" />
+      <point x="1001.0" y="162.5" />
+      <point x="788.6796875" y="162.5" />
+      <point x="27.5" y="-15.999999999999943" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#child_process#56;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#cypress#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#fs#87;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#lodash#153;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#path#112;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#teardown.js#235;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#wipe.js#192;" target="cypress" relationship="">
+      <point x="13.640625" y="-6.499999999999943" />
+      <point x="1053.0" y="-200.0" />
+      <point x="1087.25" y="-200.0" />
+      <point x="0.0" y="-16.5" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/report.js#qe#6;" target="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#child_process#56;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#cypress#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#fs#87;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#lodash#153;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#path#112;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#teardown.js#235;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#wipe.js#192;" relationship="">
+      <point x="28.0" y="0.5000000000000568" />
+      <point x="726.1796875" y="21.500000000000057" />
+      <point x="-40.359375" y="-8.499999999999943" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/schema.js#lodash#320;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/schema.js#qe#344;" target="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#child_process#56;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#cypress#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#fs#87;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#lodash#153;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#path#112;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#teardown.js#235;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#wipe.js#192;" relationship="">
+      <point x="-98.375" y="8.500000000000114" />
+      <point x="1104.0" y="-104.49999999999994" />
+      <point x="64.640625" y="-2.499999999999943" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/workspace.js#fs#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/workspace.js#lodash#43;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/workspace.js#qe#67;" target="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#child_process#56;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#cypress#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#fs#87;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#lodash#153;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#path#112;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#teardown.js#235;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#wipe.js#192;" relationship="">
+      <point x="55.5" y="-6.999999999999943" />
+      <point x="387.8203125000002" y="241.5" />
+      <point x="1039.359375" y="241.5" />
+      <point x="0.0" y="-17.0" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/cli.js#fs#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/cli.js#path#61;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/cli.js#qe#31;" target="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#child_process#56;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#cypress#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#fs#87;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#lodash#153;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#path#112;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#teardown.js#235;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/utils.js#wipe.js#192;" relationship="">
+      <point x="-55.0" y="1.0000000000000568" />
+      <point x="65.82031250000023" y="-159.0" />
+      <point x="993.0" y="-159.0" />
+      <point x="-46.359375" y="-17.499999999999943" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#cli.js#109;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#config.js#59;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#jira.js#379;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#qe#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#report.js#430;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#teardown.js#326;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#test.js#224;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#wipe.js#273;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner.js#workspace.js#162;" target="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/teardown.js#qe#6;" relationship="">
+      <point x="96.49999999999989" y="17.500000000000057" />
+      <point x="577.5" y="88.5" />
+      <point x="782.1796875" y="88.5" />
+      <point x="0.0" y="-17.0" />
+    </edge>
+    <edge source="/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/workspace.js#fs#6;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/workspace.js#lodash#43;/media/thyarles/LinuxData/vtex/cypress-runner/cy-runner/workspace.js#qe#67;" target="fs" relationship="">
+      <point x="17.5" y="16.000000000000057" />
+      <point x="349.8203125000002" y="313.00000000000006" />
+      <point x="1287.375" y="313.00000000000006" />
+      <point x="-9.5" y="-15.999999999999943" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="1.0" showDependencies="false" x="920.0" y="246.00000000000006" />
+  <SelectedNodes />
+  <Categories>
+    <Category>All</Category>
+  </Categories>
+  <VISIBILITY>Overview</VISIBILITY>
+</Diagram>
+
