@@ -1,5 +1,5 @@
 ---
-# SECRETS
+# secretName
 #
 # The name to look for secrets on memory or file
 #
@@ -24,39 +24,34 @@
 #   }
 # }
 #
-# on development mode, please create a file '.[secretName].json'
-# at the same place where cypress.yml resides to load it
-#
-# Remember to ignore this file on your Git
+# At development mode you can use a file called '.[secretName].json'
+# 1. Remember to ignore this file on your Git
+# 2. You can add whatever secrets you want on it
+
 secretName: VTEX_QE
 
-# Enabled or disable integrations
-integration:
-  jira: false
-  cypress: false
-  slack: false
-
-configuration:
-  # If you want to try another secrets on Cypress
-  # set the next to false, you must create a file
-  # cypress.env.json with the secrets
-  authVtexCli: false
+testConfig:
+  # devMode       => Start the test in GUI mode (manual)
+  # runHeaded     => Start the test in GUI mode (automatic)
+  # authVtexCli   => Start the config auth in background
   devMode: false
   runHeaded: false
-  browser: chrome
-  createCypressEnvFile: true
-  config:
+  authVtexCli:
+    enabled: false
+    git: https://github.com/vtex/toolbelt.git
+    branch: qe/cypress
+  # Use Twilio as OPT provider? Don't forget the credentials on secrets.
+  twilio:
+    enabled: true
+  vtex:
     account: productusqa
     id: 2001459804
     domain: myvtex.com
     urlExternalSeller: https://productusqaseller.myvtex.com
-    idUrl: https://vtexid.config.com.br/api/vtexid/pub/authenticate/default
-  jira:
-    account: config-dev
-    board: jira-key
-    issueType: task
+    idUrl: https://vtexid.vtex.com.br/api/vtexid/pub/authenticate/default
   cypress:
-    projectId: xyz
+    enabled: false
+    projectId: xyza
     video: true
     videoCompression: false
     videoUploadOnPasses: false
@@ -70,117 +65,122 @@ configuration:
     pageLoadTimeout: 45000
     browser: chrome
     chromeWebSecurity: false
+  jira:
+    enabled: false
+    account: config-dev
+    board: jira-key
+    issueType: task
   slack:
+    enabled: false
     channel: some-channel
-  toolbelt:
-    git: https://github.com/config/toolbelt.git
-    branch: qe/cypress
   # The first will be used to store temp credentials
   stateFiles:
-    - .config.json
+    - .state.json
 
-workspace:
-  # If blank, it will be dinamically defined
-  name:
+testWorkspace:
+  # If random, it will be dynamically defined
+  name: random
+  # The letters will be appended on random workspaces
+  # If b2b, the name will be something like b2b1234567
+  testPrefix: b2b
   setup:
     enabled: false
     stopOnFail: true
-    # Must end with /
-    path: cypress/integration/workspace/
-    file: setup.spec.js
-    # The app to be tested, it'll be uninstalled and linked
-    link: config.b2b-quotes
-    # Depdendencies should be first
-    install:
-      # App set
-      - config.admin-customers
-      - config.b2b-checkout-settings
-      - config.b2b-orders-history
-      - config.b2b-organizations-graphql
-      - config.b2b-organizations
-      - config.b2b-quotes-graphql
-      - config.b2b-quotes
-      - config.storefront-permissions
-      - config.storefront-permissions-components
-      - config.storefront-permissions-ui
-      - config.quickorder
-      # Theme
-      - config.wish-list@1.x
-      - config.location-availability@0.x
-      - config.shopper-location@0.x
-      - config.wordpress-integration@2.x
-      - config.storefront-permissions-ui@0.x
-      - config.b2bstore@2.x
-    # Apps that should be uninstalled
-    uninstall:
-      - config.store-theme
+    spec: cy-runner/specs/setup.spec.js
+    # Enable if you want to run integration tests, for only E2E, don't need
+    manageApps:
+      enabled: false
+      link: vtex.b2b-quotes
+      install:
+        # App set
+        - vtex.admin-customers
+        - vtex.b2b-checkout-settings
+        - vtex.b2b-orders-history
+        - vtex.b2b-organizations-graphql
+        - vtex.b2b-organizations
+        - vtex.b2b-quotes-graphql
+        - vtex.b2b-quotes
+        - vtex.storefront-permissions
+        - vtex.storefront-permissions-components
+        - vtex.storefront-permissions-ui
+        - vtex.quickorder
+        # Theme
+        - vtex.wish-list@1.x
+        - vtex.location-availability@0.x
+        - vtex.shopper-location@0.x
+        - vtex.wordpress-integration@2.x
+        - vtex.storefront-permissions-ui@0.x
+        - vtex.b2bstore@2.x
+      uninstall:
+        - vtex.store-theme
   wipe:
     enabled: false
     stopOnFail: false
-    # Must end with /
-    path: cypress/integration/workspace/
-    file: wipe.spec.js
+    spec: cypress/integration/wipe.spec.js
   teardown:
     enabled: false
     stopOnFail: false
-    # Must end with /
-    path: cypress/integration/workspace/
-    file: teardown.spec.js
+    spec: cy-runner/specs/teardown.spec.js
 
 testStrategy:
-  # Example on how to run in order
-  - A:
-      enabled: false
-      sendDashboard: false
-      stopOnFail: false
-      # If true, all files will run in one call
-      parallel: false
-      # If you need order, avoid wildcards
-      files:
-        - 'cypress/integration/b2b/b.spec.js'
+  # The strategies must be in order, with dependent tests last
+  A:
+    enabled: true
+    sendDashboard: false
+    hardTries: 1
+    stopOnFail: false
+    parallel: true
+    # No order guaranteed if parallel = true
+    runInOrder: true
+    # You can use *, but the order will be not guaranteed
+    specs:
+      - cypress/integration/pass.spec.js
 
-  # Example on how to run in parallel
-  # Only if Cypress Dashboard is enabled
-  - B:
-      enabled: false
-      sendDashboard: false
-      stopOnFail: true
-      # If true, all files will run in one call
-      parallel: true
-      # If you need order, avoid more than one
-      files:
-        - 'cypress/integration/b2b/b.spec.js'
-        # - 'cypress/integration/b2b/a.spec.js'
+  B:
+    enabled: true
+    sendDashboard: false
+    hardTries: 1
+    stopOnFail: false
+    parallel: false
+    runInOrder: false
+    specs:
+      - cypress/integration/pass.spec.js
+      - cypress/integration/pass.spec.js
+    dependency:
+      - A
 
-  # Example using wild selector
-  - C:
-      enabled: false
-      sendDashboard: false
-      stopOnFail: false
-      parallel: false
-      files:
-        - 'cypress/integration/b2b/b.spec.js'
+  C:
+    enabled: true
+    sendDashboard: false
+    hardTries: 1
+    stopOnFail: false
+    parallel: false
+    runInOrder: false
+    specs:
+      - cypress/integration/*.spec.js
 
-  # Example with dependency
-  - D:
-      enabled: true
-      sendDashboard: false
-      stopOnFail: false
-      parallel: false
-      files:
-        - '**/b2b/*.spec.js'
-      # Use the same name of earlier test
-      dependency:
-        - A
-        - C
+  D:
+    enabled: false
+    sendDashboard: false
+    stopOnFail: true
+    hardTries: 1
+    parallel: false
+    runInOrder: false
+    specs:
+      - cypress/integration/fail.spec.js
+    dependency:
+      - A
+      - B
 
-  # Example with fail exit
-  - E:
-      enabled: true
-      sendDashboard: false
-      stopOnFail: false
-      parallel: false
-      files:
-        - 'cypress/integration/b2b/b.spec.js'
-      dependency:
-        - D
+  E:
+    enabled: false
+    sendDashboard: false
+    stopOnFail: true
+    hardTries: 1
+    parallel: false
+    runInOrder: false
+    specs:
+      - cypress/integration/fail.spec.js
+    dependency:
+      - A
+      - B
