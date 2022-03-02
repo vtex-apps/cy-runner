@@ -1,13 +1,11 @@
 const qe = require('./utils')
 
 module.exports.vtexTeardown = async (config) => {
-  qe.msg(`Teardown workspace "${config.testWorkspace.name}"`)
-  let teardown = config.testWorkspace.teardown
-  let stopOnFail = teardown.stopOnFail
-  let testPassed = await qe.runCypress(teardown.spec, config)
-  if (!testPassed && stopOnFail) {
-    qe.msg('[testWorkspace] failed')
-    qe.msgDetail('[teardown.stopOnFail] enabled, stopping the tests')
-    qe.crash('Prematurely exit duo a [stopOnFail]')
-  }
+  const START = qe.tick()
+  if (config.testWorkspace.teardown.enabled) {
+    qe.msg(`Removing workspace [${config.testWorkspace.name}]`)
+    await qe.runCypress(config.testWorkspace.teardown, config)
+  } else
+    qe.msg('[testWorkspace.teardown] is disabled')
+  return qe.toc(START)
 }

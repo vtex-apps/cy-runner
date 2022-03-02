@@ -1,13 +1,14 @@
 const qe = require('./utils')
 
 module.exports.vtexWipe = async (config) => {
-  qe.msg(`Wipe workspace "${config.testWorkspace.name}"`)
-  let wipe = config.testWorkspace.wipe
-  let stopOnFail = wipe.stopOnFail
-  let testPassed = await qe.runCypress(wipe.spec, config)
-  if (!testPassed && stopOnFail) {
-    qe.msg('[testWorkspace] failed')
-    qe.msgDetail('[wipe.stopOnFail] enabled, stopping the tests')
-    qe.crash('Prematurely exit duo a [stopOnFail]')
-  }
+  const START = qe.tick()
+  if (config.testWorkspace.wipe.enabled) {
+    qe.msg(`Wiping workspace [${config.testWorkspace.name}]`)
+    let wipe = config.testWorkspace.wipe
+    let stopOnFail = wipe.stopOnFail
+    let testPassed = await qe.runCypress(wipe, config)
+    if (!testPassed && stopOnFail) await qe.stopOnFail(config, 'wipe')
+  } else
+    qe.msg('[testWorkspace.wipe] is disabled')
+  return qe.toc(START)
 }

@@ -8,7 +8,7 @@ const {vtexTeardown} = require("./teardown");
 
 const QE = '[QE] ===> '
 const SP = '          - '
-const BR = '[QE] =============================================================================================='
+const BR = '[QE] ==============================================================================================='
 
 exports.msgErr = (msg, notr = false) => {
   let end = notr ? '' : '\n'
@@ -47,7 +47,10 @@ exports.crash = (msg) => {
 }
 
 exports.report = (msg) => {
-  process.stdout.write('\n[QE] ===> ' + msg + '\n\n')
+  let end = '\n'
+  process.stdout.write(end + '[QE] ' + msg + end)
+  process.stdout.write(BR + end + end)
+
 }
 
 exports.success = (msg) => {

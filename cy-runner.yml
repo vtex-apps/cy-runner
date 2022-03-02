@@ -135,7 +135,6 @@ testStrategy:
     # You can use *, but the order will be not guaranteed
     specs:
       - cypress/integration/pass.spec.js
-      - cypress/integration/pass.spec.js
 
   B:
     enabled: true
