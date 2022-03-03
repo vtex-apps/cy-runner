@@ -1,6 +1,5 @@
 # Cypress Runner
 
-<img src="node/cy-r.svg" width=25% align="right">
 Tool to orchestrate Cypress tests at VTEX.
 
 &nbsp;
