@@ -1,7 +1,7 @@
 const qe = require('./utils')
 
 // TODO: Fix this code
-module.exports.vtexTeardown = async (config) => {
+module.exports.teardown = async (config) => {
   const START = qe.tick()
   if (config.workspace.teardown.enabled) {
     qe.msg(`Removing workspace [${config.workspace.name}]`)

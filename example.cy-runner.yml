@@ -1,18 +1,18 @@
 ---
-config:
+base:
   secrets:
     enabled: true
     name: VTEX_QE
-  authVtexCli:
-    enabled: false
-    git: https://github.com/vtex/toolbelt.git
-    branch: qe/cypress
   vtex:
     account: productusqa
     id: 2001459804
     domain: myvtex.com
     urlExternalSeller: https://productusqaseller.myvtex.com
     idUrl: https://vtexid.vtex.com.br/api/vtexid/pub/authenticate/default
+    deployCli:
+      enabled: false
+      git: https://github.com/vtex/toolbelt.git
+      branch: qe/cypress
   twilio:
     enabled: true
   jira:
@@ -106,7 +106,7 @@ strategy:
   #
   # It must be something like that:
   # {
-  #   "config": {
+  #   "vtex": {
   #     "apiKey": "",
   #     "apiToken": "",
   #     "cookieName": "",

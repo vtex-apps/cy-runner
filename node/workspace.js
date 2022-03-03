@@ -2,7 +2,7 @@ const fs = require('fs')
 const { merge } = require('lodash')
 const qe = require('./utils')
 
-exports.vtexWorkspace = async (config) => {
+exports.workspace = async (config) => {
   const START = qe.tick()
   const WORKSPACE = config.workspace
   if (config.workspace.runInDevMode) {
@@ -39,7 +39,7 @@ exports.vtexWorkspace = async (config) => {
 // Update cypress.env.json with .state.json config tokens and clean .state.json for other users
 async function syncConfig(config) {
   const CONFIG_A = 'cypress.env.json'
-  const CONFIG_B = config.config.stateFiles[0]
+  const CONFIG_B = config.base.stateFiles[0]
   let A = JSON.parse(fs.readFileSync(CONFIG_A, 'utf-8'))
   let B = JSON.parse(fs.readFileSync(CONFIG_B, 'utf-8'))
   fs.writeFileSync(CONFIG_A, JSON.stringify(merge(A, B)))

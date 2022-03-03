@@ -14,8 +14,8 @@ process.env.IN_CYPRESS = 'true'
 
 exports.vtexCli = async (config) => {
   const START = qe.tick()
-  const AUTH_VTEX_CLI = config.config.authVtexCli
-  const VTEX = config.config.vtex
+  const AUTH_VTEX_CLI = config.base.vtex.deployCli
+  const VTEX = config.base.vtex
 
   if (AUTH_VTEX_CLI.enabled) {
     // Try to clean vtex cache state to avoid bugs
@@ -64,16 +64,16 @@ exports.vtexCli = async (config) => {
   }
 }
 
-async function installToolbelt(authVtexCli) {
+async function installToolbelt(deployCli) {
   try {
     qe.msg('Patched version of toolbelt not found, deploying it:')
     if (!fs.existsSync(PATH_CACHE_VTEX)) fs.mkdirSync(PATH_CACHE_VTEX)
     if (fs.existsSync(PATH_TOOLBELT))
       fs.rmSync(PATH_TOOLBELT, { recursive: true })
-    qe.msgDetail(`Cloning toolbelt from ${authVtexCli.git}`)
-    qe.exec(`cd ${PATH_CACHE} && git clone ${authVtexCli.git}`)
-    qe.msgDetail(`Checking out toolbelt patched branch ${authVtexCli.branch}`)
-    qe.exec(`cd ${PATH_TOOLBELT} && git checkout ${authVtexCli.branch}`)
+    qe.msgDetail(`Cloning toolbelt from ${deployCli.git}`)
+    qe.exec(`cd ${PATH_CACHE} && git clone ${deployCli.git}`)
+    qe.msgDetail(`Checking out toolbelt patched branch ${deployCli.branch}`)
+    qe.exec(`cd ${PATH_TOOLBELT} && git checkout ${deployCli.branch}`)
     qe.msgDetail('Installing yarn packages')
     qe.exec(`cd ${PATH_TOOLBELT} && yarn`)
     qe.msgDetail('Building patched toolbelt')

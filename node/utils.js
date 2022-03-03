@@ -3,8 +3,8 @@ const { execSync } = require('child_process')
 const fs = require('fs')
 const path = require('path')
 const { merge } = require('lodash')
-const { vtexWipe } = require('./wipe')
-const { vtexTeardown } = require('./teardown')
+const { wipe } = require('./wipe')
+const { teardown } = require('./teardown')
 
 const QE = '[QE] ===> '
 const SP = '- '.padStart(12)
@@ -122,8 +122,8 @@ exports.reportSetup = async (config) => {
 exports.stopOnFail = async (config, step) => {
   this.msg(`[${step}] failed`)
   this.msgDetail(`[${step}.stopOnFail] enabled, stopping the tests`)
-  if (config.workspace.wipe.enabled) await vtexWipe(config)
-  if (config.workspace.teardown.enabled) await vtexTeardown(config)
+  if (config.workspace.wipe.enabled) await wipe(config)
+  if (config.workspace.teardown.enabled) await teardown(config)
   this.crash('Prematurely exit duo a [stopOnFail]')
 }
 
@@ -162,11 +162,11 @@ exports.runCypress = async (test, config, addOptions = {}) => {
     },
     spec: test.spec,
     headed: config.workspace.runHeaded,
-    browser: config.config.cypress.browser,
+    browser: config.base.cypress.browser,
   }
   // Options tuning
   if (test.sendDashboard) {
-    options['key'] = config.config.cypress.dashboardKey
+    options['key'] = config.base.cypress.dashboardKey
     options['record'] = true
     merge(options, addOptions)
     console.log(options)

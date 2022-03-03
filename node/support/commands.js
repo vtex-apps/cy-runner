@@ -11,10 +11,10 @@ Cypress.Commands.add('addConfig', (file, section, key, item, value) => {
 // Run VTEX CLI commands
 Cypress.Commands.add('vtex', (command) => {
   let config = Cypress.env()
-  let authVtexCli = config.config.authVtexCli
+  let deployCli = config.base.vtex.deployCli
   const LONG_TIME_OUT = 100000
   const SHORT_TIME_OUT = 10000
-  const VTEX_BIN = authVtexCli.enabled ? 'vtex-e2e' : 'vtex'
+  const VTEX_BIN = deployCli.enabled ? 'vtex-e2e' : 'vtex'
 
   switch (command.split(' ')[0]) {
     case 'workspace':

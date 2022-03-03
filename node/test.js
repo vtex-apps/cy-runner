@@ -4,7 +4,7 @@ let testsFailed = []
 let testsSkipped = []
 let testsPassed = []
 
-module.exports.vtexStrategy = async (config) => {
+module.exports.strategy = async (config) => {
   const START = qe.tick()
   const WORKSPACE = config.workspace
   const STRATEGIES = config.strategy

@@ -1,6 +1,6 @@
 const qe = require('./utils')
 
-module.exports.vtexWipe = async (config) => {
+module.exports.wipe = async (config) => {
   const START = qe.tick()
   if (config.workspace.wipe.enabled) {
     qe.msg(`Wiping workspace [${config.workspace.name}]`)

@@ -2,7 +2,7 @@
 let config = Cypress.env()
 
 // Constants
-const CONFIG = config.config
+const CONFIG = config.base
 const WORKSPACE = config.workspace
 const APPS = WORKSPACE.setup.manageApps
 const STATE_FILE = CONFIG.stateFiles[0]
@@ -27,7 +27,7 @@ describe('Setting up the environment', () => {
   })
 
   if (WORKSPACE.setup.enabled) {
-    if (CONFIG.authVtexCli.enabled) {
+    if (CONFIG.vtex.deployCli.enabled) {
       // Log out to ensure the start point
       it('Logging out from vtex cli', () => {
         cy.vtex('logout')

@@ -12,8 +12,8 @@ if (!fs.existsSync(CONFIG_FILE)) qe.crash(`${CONFIG_FILE} not found`)
 try {
   configSet = yaml.load(fs.readFileSync(CONFIG_FILE, 'utf8'))
   schema.validate(configSet)
-  const VTEX_ACCOUNT = configSet.config.vtex.account
-  configSet.config.vtex[
+  const VTEX_ACCOUNT = configSet.base.vtex.account
+  configSet.base.vtex[
     'authUrl'
   ] = `https://${VTEX_ACCOUNT}.myvtex.com/api/vtexid/pub/authentication`
 } catch (e) {
@@ -23,7 +23,7 @@ try {
 
 // Load SECRET from file or memory
 // TODO: Fix this code
-const SECRET_NAME = configSet.config.secrets.name
+const SECRET_NAME = configSet.base.secrets.name
 const SECRET_FILE = `.${SECRET_NAME}.json`
 let loadedFrom = null
 if (fs.existsSync(SECRET_FILE)) {
@@ -53,7 +53,7 @@ function checkSecret(key, value) {
 
 try {
   // Check VTEX Cli secrets
-  if (configSet.config.authVtexCli) {
+  if (configSet.base.vtex.deployCli) {
     const VTEX_ATTRIBUTES = [
       'apiKey',
       'apiToken',
@@ -67,7 +67,7 @@ try {
     })
   }
   // Check TWILIO secrets
-  if (configSet.config.twilio) {
+  if (configSet.base.twilio) {
     const TWILIO_ATTRIBUTES = ['apiUser', 'apiToken', 'baseUrl']
     TWILIO_ATTRIBUTES.forEach((att) => {
       checkSecret(`secrets.twilio.${att}`, secrets.twilio[att])
@@ -79,7 +79,7 @@ try {
 }
 
 // Merge secrets on config
-merge(configSet.config, secrets)
+merge(configSet.base, secrets)
 
 // Create a workspace name if it is defined as random
 if (configSet.workspace.name === 'random') {
@@ -102,10 +102,10 @@ try {
 
 // Write cypress.json
 const CYPRESS_JSON_FILE = 'cypress.json'
-const CYPRESS = configSet.config.cypress
+const CYPRESS = configSet.base.cypress
 const WORKSPACE = configSet.workspace.name
-const ACCOUNT = configSet.config.vtex.account
-const DOMAIN = configSet.config.vtex.domain
+const ACCOUNT = configSet.base.vtex.account
+const DOMAIN = configSet.base.vtex.domain
 try {
   fs.writeFileSync(
     CYPRESS_JSON_FILE,
@@ -135,7 +135,7 @@ try {
 
 // Create empty files as asked
 try {
-  let STATE_FILES = configSet.config.stateFiles
+  let STATE_FILES = configSet.base.stateFiles
   STATE_FILES.forEach((stateFile) => {
     fs.writeFileSync(stateFile, '{}')
   })

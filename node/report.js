@@ -1,6 +1,6 @@
 const qe = require('./utils')
 
-module.exports.vtexReport = async (control) => {
+module.exports.report = async (control) => {
   qe.msgStrategy('Execution report')
 
   qe.msg('Execution time')

@@ -70,14 +70,18 @@ function schemaValidator(schema, config, strategy = '') {
 
 exports.validate = (config) => {
   const BASE_SCHEMA = {
-    config: {
+    base: {
       secrets: {
         enabled: 2,
         name: 0,
       },
-      authVtexCli: { enabled: 2, git: 0, branch: 0 },
       twilio: { enabled: 2 },
-      vtex: { account: 0, id: 4, domain: 0 },
+      vtex: {
+        account: 0,
+        id: 4,
+        domain: 0,
+        deployCli: { enabled: 2, git: 0, branch: 0 },
+      },
       cypress: {
         enabled: 2,
         projectId: 0,
