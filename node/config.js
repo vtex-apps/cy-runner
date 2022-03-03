@@ -22,7 +22,7 @@ try {
 }
 
 // Load SECRET from file or memory
-const SECRET_NAME = configSet.secretName
+const SECRET_NAME = configSet.secret.name
 const SECRET_FILE = `.${SECRET_NAME}.json`
 let loadedFrom = null
 if (fs.existsSync(SECRET_FILE)) {

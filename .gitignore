@@ -109,6 +109,6 @@ cypress.env.json
 cypress.json
 /.state.json
 /cypress/*
-/cy-shared/videos
-/cy-shared/screenshots
-/cy-shared/downloads
+/cypress-shared/videos
+/cypress-shared/screenshots
+/cypress-shared/downloads

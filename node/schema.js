@@ -70,7 +70,10 @@ function schemaValidator(schema, config, strategy = '') {
 
 exports.validate = (config) => {
   const BASE_SCHEMA = {
-    secretName: 0,
+    secret: {
+      enabled: 2,
+      name: 0,
+    },
     testConfig: {
       devMode: 2,
       runHeaded: 2,

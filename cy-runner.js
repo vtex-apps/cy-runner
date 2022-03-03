@@ -1,12 +1,12 @@
-const qe = require('./cy-runner/utils')
-const { config } = require('./cy-runner/config')
-const { vtexCli } = require('./cy-runner/cli')
-const { vtexWorkspace } = require('./cy-runner/workspace')
-const { vtexTestStrategy } = require('./cy-runner/test')
-const { vtexWipe } = require('./cy-runner/wipe')
-const { vtexTeardown } = require('./cy-runner/teardown')
-const { vtexJira } = require('./cy-runner/jira')
-const { vtexReport } = require('./cy-runner/report')
+const qe = require('./node/utils')
+const { config } = require('./node/config')
+const { vtexCli } = require('./node/cli')
+const { vtexWorkspace } = require('./node/workspace')
+const { vtexTestStrategy } = require('./node/test')
+const { vtexWipe } = require('./node/wipe')
+const { vtexTeardown } = require('./node/teardown')
+const { vtexJira } = require('./node/jira')
+const { vtexReport } = require('./node/report')
 
 // Controls test state
 let control = {

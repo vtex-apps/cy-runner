@@ -134,7 +134,7 @@ exports.openCypress = async (test, step) => {
     await cypress.open()
   } else {
     const spec = path.parse(test.spec)
-    const baseDir = /cy-runner/.test(spec.dir) ? 'cy-runner' : 'cypress'
+    const baseDir = /node/.test(spec.dir) ? 'node' : 'cypress'
     const options = {
       config: {
         integrationFolder: spec.dir,

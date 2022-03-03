@@ -1,5 +1,5 @@
 ---
-# secretName
+# secret.name
 #
 # The name to look for secrets on memory or file
 #
@@ -24,11 +24,13 @@
 #   }
 # }
 #
-# At development mode you can use a file called '.[secretName].json'
+# At development mode you can use a file called '.[secret.name].json'
 # 1. Remember to ignore this file on your Git
 # 2. You can add whatever secrets you want on it
 
-secretName: VTEX_QE
+secret:
+  enabled: true
+  name: VTEX_QE
 
 testConfig:
   # devMode       => Start the test in GUI mode (manual)
