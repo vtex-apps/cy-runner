@@ -2,8 +2,8 @@
 let config = Cypress.env()
 
 // Constants
-const CONFIG = config.testConfig
-const WORKSPACE = config.testWorkspace
+const CONFIG = config.config
+const WORKSPACE = config.workspace
 const APPS = WORKSPACE.setup.manageApps
 const STATE_FILE = CONFIG.stateFiles[0]
 const FAIL_TIMEOUT = { timeout: 1000, log: false }
@@ -98,13 +98,7 @@ describe('Setting up the environment', () => {
       expect(response.body).property('authStatus').to.equal('Success')
       let cookie = 'authCookieValue'
       CONFIG.vtex[cookie] = response.body.authCookie.Value
-      cy.addConfig(
-        STATE_FILE,
-        'testConfig',
-        'vtex',
-        cookie,
-        CONFIG.vtex[cookie]
-      )
+      cy.addConfig(STATE_FILE, 'config', 'vtex', cookie, CONFIG.vtex[cookie])
     })
   })
 
@@ -112,13 +106,7 @@ describe('Setting up the environment', () => {
   it('Getting robot cookie', () => {
     cy.vtex('local token').then((cookie) => {
       // If we try to write directly on cypress.env.json, Cypress crashes
-      cy.addConfig(
-        STATE_FILE,
-        'testConfig',
-        'vtex',
-        'robotCookie',
-        cookie.stdout
-      )
+      cy.addConfig(STATE_FILE, 'config', 'vtex', 'robotCookie', cookie.stdout)
     })
   })
 

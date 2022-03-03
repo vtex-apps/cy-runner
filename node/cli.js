@@ -14,8 +14,8 @@ process.env.IN_CYPRESS = 'true'
 
 exports.vtexCli = async (config) => {
   const START = qe.tick()
-  const AUTH_VTEX_CLI = config.testConfig.authVtexCli
-  const VTEX = config.testConfig.vtex
+  const AUTH_VTEX_CLI = config.config.authVtexCli
+  const VTEX = config.config.vtex
 
   if (AUTH_VTEX_CLI.enabled) {
     // Try to clean vtex cache state to avoid bugs
@@ -49,7 +49,11 @@ exports.vtexCli = async (config) => {
     // Feedback to user and path to be added returned
     qe.msg('Toolbelt started in background, now you can call Cypress')
   } else {
-    if (config.testWorkspace.setup.manageApps.enabled)
+    if (
+      typeof config.workspace.linkApp != 'undefined' ||
+      typeof config.workspace.removeApps != 'undefined' ||
+      typeof config.workspace.installApps != 'undefined'
+    )
       qe.msgDetail(
         'Make sure you have vtex cli authenticated already as you plan to manage apps'
       )

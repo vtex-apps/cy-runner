@@ -2,7 +2,7 @@ const qe = require('./node/utils')
 const { config } = require('./node/config')
 const { vtexCli } = require('./node/cli')
 const { vtexWorkspace } = require('./node/workspace')
-const { vtexTestStrategy } = require('./node/test')
+const { vtexStrategy } = require('./node/test')
 const { vtexWipe } = require('./node/wipe')
 const { vtexTeardown } = require('./node/teardown')
 const { vtexJira } = require('./node/jira')
@@ -30,8 +30,8 @@ async function main() {
   control.timing['vtexWorkspace'] = await vtexWorkspace(config)
 
   // Tests
-  call = await vtexTestStrategy(config)
-  control.timing['vtexTestStrategy'] = call.time
+  call = await vtexStrategy(config)
+  control.timing['vtexStrategy'] = call.time
   control.testsFailed = call.testsFailed
   control.testsSkipped = call.testsSkipped
   control.testsPassed = call.testsPassed

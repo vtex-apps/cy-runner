@@ -12,8 +12,8 @@ if (!fs.existsSync(CONFIG_FILE)) qe.crash(`${CONFIG_FILE} not found`)
 try {
   configSet = yaml.load(fs.readFileSync(CONFIG_FILE, 'utf8'))
   schema.validate(configSet)
-  const VTEX_ACCOUNT = configSet.testConfig.vtex.account
-  configSet.testConfig.vtex[
+  const VTEX_ACCOUNT = configSet.config.vtex.account
+  configSet.config.vtex[
     'authUrl'
   ] = `https://${VTEX_ACCOUNT}.myvtex.com/api/vtexid/pub/authentication`
 } catch (e) {
@@ -22,7 +22,8 @@ try {
 }
 
 // Load SECRET from file or memory
-const SECRET_NAME = configSet.secret.name
+// TODO: Fix this code
+const SECRET_NAME = configSet.config.secrets.name
 const SECRET_FILE = `.${SECRET_NAME}.json`
 let loadedFrom = null
 if (fs.existsSync(SECRET_FILE)) {
@@ -52,7 +53,7 @@ function checkSecret(key, value) {
 
 try {
   // Check VTEX Cli secrets
-  if (configSet.testConfig.authVtexCli) {
+  if (configSet.config.authVtexCli) {
     const VTEX_ATTRIBUTES = [
       'apiKey',
       'apiToken',
@@ -66,7 +67,7 @@ try {
     })
   }
   // Check TWILIO secrets
-  if (configSet.testConfig.twilio) {
+  if (configSet.config.twilio) {
     const TWILIO_ATTRIBUTES = ['apiUser', 'apiToken', 'baseUrl']
     TWILIO_ATTRIBUTES.forEach((att) => {
       checkSecret(`secrets.twilio.${att}`, secrets.twilio[att])
@@ -78,14 +79,14 @@ try {
 }
 
 // Merge secrets on config
-merge(configSet.testConfig, secrets)
+merge(configSet.config, secrets)
 
 // Create a workspace name if it is defined as random
-if (configSet.testWorkspace.name === 'random') {
+if (configSet.workspace.name === 'random') {
   const SEED = qe.tick()
-  const PREFIX = configSet.testWorkspace.testPrefix
-  configSet.testWorkspace.name = `${PREFIX}${SEED.toString().substring(0, 7)}`
-  qe.msg(`New workspace name generated as [${configSet.testWorkspace.name}]`)
+  const PREFIX = configSet.workspace.prefix
+  configSet.workspace.name = `${PREFIX}${SEED.toString().substring(0, 7)}`
+  qe.msg(`New workspace name generated as [${configSet.workspace.name}]`)
 }
 
 // Write cypress.env.json
@@ -101,10 +102,10 @@ try {
 
 // Write cypress.json
 const CYPRESS_JSON_FILE = 'cypress.json'
-const CYPRESS = configSet.testConfig.cypress
-const WORKSPACE = configSet.testWorkspace.name
-const ACCOUNT = configSet.testConfig.vtex.account
-const DOMAIN = configSet.testConfig.vtex.domain
+const CYPRESS = configSet.config.cypress
+const WORKSPACE = configSet.workspace.name
+const ACCOUNT = configSet.config.vtex.account
+const DOMAIN = configSet.config.vtex.domain
 try {
   fs.writeFileSync(
     CYPRESS_JSON_FILE,
@@ -134,7 +135,7 @@ try {
 
 // Create empty files as asked
 try {
-  let STATE_FILES = configSet.testConfig.stateFiles
+  let STATE_FILES = configSet.config.stateFiles
   STATE_FILES.forEach((stateFile) => {
     fs.writeFileSync(stateFile, '{}')
   })

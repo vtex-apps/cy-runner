@@ -70,13 +70,11 @@ function schemaValidator(schema, config, strategy = '') {
 
 exports.validate = (config) => {
   const BASE_SCHEMA = {
-    secret: {
-      enabled: 2,
-      name: 0,
-    },
-    testConfig: {
-      devMode: 2,
-      runHeaded: 2,
+    config: {
+      secrets: {
+        enabled: 2,
+        name: 0,
+      },
       authVtexCli: { enabled: 2, git: 0, branch: 0 },
       twilio: { enabled: 2 },
       vtex: { account: 0, id: 4, domain: 0 },
@@ -101,22 +99,16 @@ exports.validate = (config) => {
       slack: { enabled: 2, channel: 3 },
       stateFiles: 7,
     },
-    testWorkspace: {
+    workspace: {
       name: 3,
-      testPrefix: 0,
-      setup: {
-        enabled: 2,
-        stopOnFail: 2,
-        spec: 0,
-        manageApps: {
-          enabled: 2,
-          link: 0,
-          install: 7,
-          uninstall: 7,
-        },
-      },
+      runHeaded: 2,
+      runInDevMode: 2,
+      prefix: 0,
+      linkApp: 2,
+      installApps: 7,
+      removeApps: 7,
       wipe: { enabled: 2, stopOnFail: 2, spec: 0 },
-      teardown: { enabled: 2, stopOnFail: 2, spec: 0 },
+      teardown: { enabled: 2 },
     },
   }
   const STRATEGY_SCHEMA = {
@@ -134,7 +126,7 @@ exports.validate = (config) => {
 
   // Validate test strategies
   let configSchema = {}
-  Object.entries(config.testStrategy).forEach((entry) => {
+  Object.entries(config.strategy).forEach((entry) => {
     configSchema[entry[0]] = entry[1]
   })
   Object.keys(configSchema).forEach((strategy) => {

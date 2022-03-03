@@ -1,18 +1,18 @@
 const qe = require('./utils')
 
 module.exports.vtexReport = async (control) => {
-  qe.msgTestStrategy('Execution report')
+  qe.msgStrategy('Execution report')
 
-  qe.msg('Timings')
+  qe.msg('Execution time')
   for (let section in control.timing)
-    qe.msgDetail(`${section} ran in ${control.timing[section]}`)
+    qe.msgDetail(`${section.padEnd(30, '.')} ${control.timing[section]}`)
 
   qe.newLine()
 
-  qe.msg('Test strategy')
-  qe.msgDetail(`Success: ${control.testsPassed}`)
-  qe.msgDetail(`Skipped: ${control.testsSkipped}`)
-  qe.msgDetail(`Failure: ${control.testsFailed}`)
+  qe.msg('Strategy status')
+  qe.msgDetail('Success'.padEnd(30, '.') + ' ' + control.testsPassed)
+  qe.msgDetail('Skipped'.padEnd(30, '.') + ' ' + control.testsSkipped)
+  qe.msgDetail('Failure'.padEnd(30, '.') + ' ' + control.testsFailed)
 
   if (control.testsFailed.length < 1)
     qe.success('The test ran successfully, well done')

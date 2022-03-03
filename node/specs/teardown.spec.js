@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 let config = Cypress.env()
-const WORKSPACE = config.testWorkspace
+const WORKSPACE = config.workspace
 const APP_RETRIES = { retries: 2 }
 const FAIL_TIMEOUT = { timeout: 1000 }
 

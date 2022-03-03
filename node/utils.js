@@ -7,9 +7,7 @@ const { vtexWipe } = require('./wipe')
 const { vtexTeardown } = require('./teardown')
 
 const QE = '[QE] ===> '
-const SP = '          - '
-const BR =
-  '[QE] ==============================================================================================='
+const SP = '- '.padStart(12)
 
 exports.msgErr = (msg, notr = false) => {
   let end = notr ? '' : '\n'
@@ -26,10 +24,11 @@ exports.msg = (msg, notr = false) => {
   process.stdout.write(QE + msg + end)
 }
 
-exports.msgTestStrategy = (msg) => {
+exports.msgStrategy = (msg) => {
   let end = '\n'
-  process.stdout.write(end + '[QE] ' + msg + end)
-  process.stdout.write(BR + end + end)
+  msg = `${QE}${msg} `.padEnd(100, '=')
+  process.stdout.write(end + msg + end)
+  process.stdout.write(''.padStart(5, ' ').padEnd(100, '=') + end + end)
 }
 
 exports.msgDetail = (msg, notr = false) => {
@@ -117,20 +116,20 @@ exports.reportSetup = async (config) => {
       this.msgDetail(itemEnabled)
     }
   })
-  this.msg(`Workspace to be used on the tests: ${config.testWorkspace.name}`)
+  this.msg(`Workspace to be used on the tests: ${config.workspace.name}`)
 }
 
 exports.stopOnFail = async (config, step) => {
   this.msg(`[${step}] failed`)
   this.msgDetail(`[${step}.stopOnFail] enabled, stopping the tests`)
-  if (config.testWorkspace.wipe.enabled) await vtexWipe(config)
-  if (config.testWorkspace.teardown.enabled) await vtexTeardown(config)
+  if (config.workspace.wipe.enabled) await vtexWipe(config)
+  if (config.workspace.teardown.enabled) await vtexTeardown(config)
   this.crash('Prematurely exit duo a [stopOnFail]')
 }
 
 exports.openCypress = async (test, step) => {
   if (typeof test === 'undefined') {
-    this.msg(`Opening [testStrategy]`)
+    this.msg(`Opening [strategy]`)
     await cypress.open()
   } else {
     const spec = path.parse(test.spec)
@@ -162,12 +161,12 @@ exports.runCypress = async (test, config, addOptions = {}) => {
       supportFile: cyPath + '/support',
     },
     spec: test.spec,
-    headed: config.testConfig.runHeaded,
-    browser: config.testConfig.cypress.browser,
+    headed: config.workspace.runHeaded,
+    browser: config.config.cypress.browser,
   }
   // Options tuning
   if (test.sendDashboard) {
-    options['key'] = config.testConfig.cypress.dashboardKey
+    options['key'] = config.config.cypress.dashboardKey
     options['record'] = true
     merge(options, addOptions)
     console.log(options)

@@ -1,10 +1,11 @@
 const qe = require('./utils')
 
+// TODO: Fix this code
 module.exports.vtexTeardown = async (config) => {
   const START = qe.tick()
-  if (config.testWorkspace.teardown.enabled) {
-    qe.msg(`Removing workspace [${config.testWorkspace.name}]`)
-    await qe.runCypress(config.testWorkspace.teardown, config)
-  } else qe.msg('[testWorkspace.teardown] is disabled')
+  if (config.workspace.teardown.enabled) {
+    qe.msg(`Removing workspace [${config.workspace.name}]`)
+    await qe.runCypress(config.workspace.teardown, config)
+  } else qe.msg('[workspace.teardown] is disabled')
   return qe.toc(START)
 }
