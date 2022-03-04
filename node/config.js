@@ -18,8 +18,7 @@ exports.getConfig = async (configFile) => {
       'authUrl'
     ] = `https://${VTEX_ACCOUNT}.myvtex.com/api/vtexid/pub/authentication`
   } catch (e) {
-    qe.err(`Check your ${configFile}.`)
-    qe.crash(e)
+    qe.crash(`Check your ${configFile}.\n` + e)
   }
 
   // Load SECRET from file or memory
@@ -75,8 +74,7 @@ exports.getConfig = async (configFile) => {
       })
     }
   } catch (e) {
-    qe.err('Missing value when reading your secrets!')
-    qe.crash(e)
+    qe.crash(`Missing [${e}] on your secrets!`)
   }
 
   // Merge secrets on config
@@ -98,7 +96,7 @@ exports.getConfig = async (configFile) => {
       `Secrets loaded (from ${loadedFrom}) and [${CYPRESS_ENV_JSON}] created successfully`
     )
   } catch (e) {
-    qe.err(e)
+    qe.crash(e)
   }
 
   // Write cypress.json
@@ -129,7 +127,7 @@ exports.getConfig = async (configFile) => {
         retries: 0,
       })
     )
-    qe.msg(`[${CYPRESS_JSON_FILE}] created successfully`)
+    qe.msg(`${CYPRESS_JSON_FILE} created successfully`)
   } catch (e) {
     qe.crash(e)
   }

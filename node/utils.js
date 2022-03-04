@@ -2,65 +2,50 @@ const cypress = require('cypress')
 const { execSync } = require('child_process')
 const fs = require('fs')
 const path = require('path')
+const axios = require('axios')
 const { merge } = require('lodash')
 const { wipe } = require('./wipe')
 const { teardown } = require('./teardown')
 
 const QE = '[QE] === '
 const SP = ''.padStart(9)
-const NM = '- '.padStart(7)
-const PNM = '- '.padStart(12)
-const SM = '[✓] '.padStart(9)
-const PSM = '[✓] '.padStart(14)
-const FM = '[✗] '.padStart(9)
-const PFM = '[✗] '.padStart(14)
-const END = '\n'
 
-exports.err = (msg, noNewLine = false) => {
-  let end = noNewLine ? '' : '\n'
-  process.stderr.write(QE + msg + end)
+function icon(type) {
+  switch (type) {
+    case 'warn':
+      return '[!]'
+    case 'error':
+      return '[✗]'
+    case 'ok':
+      return '[✓]'
+    default:
+      return '- '
+  }
 }
 
-exports.msgErrDetail = (msg, noNewLine = false) => {
-  let end = noNewLine ? '' : '\n'
-  process.stderr.write(FM + msg + end)
-}
-
-exports.msg = (msg, noNewLine = false) => {
-  let end = noNewLine ? '' : '\n'
-  process.stdout.write(NM + msg + end)
-}
-
-exports.msgOk = (msg) => {
-  process.stdout.write(SM + msg + END)
-}
-
-exports.msgErr = (msg) => {
-  process.stdout.write(FM + msg + END)
+exports.msg = (msg, type = 'ok', pad = false, wait = false) => {
+  const ICO = pad ? icon().padStart(8) : icon(type).padStart(8)
+  const MSG = `${ICO} ${msg}${wait ? '... ' : '\n'}`
+  process.stdout.write(MSG)
 }
 
 exports.msgSection = (msg) => {
-  let end = '\n'
+  const END = '\n'
   msg = `${QE}${msg} `.padEnd(100, '=')
-  process.stdout.write(end + msg + end)
-  process.stdout.write(''.padStart(5, ' ').padEnd(100, '=') + end + end)
+  process.stdout.write(END + msg + END)
+  process.stdout.write(''.padStart(5, ' ').padEnd(100, '=') + END + END)
 }
 
 exports.msgEnd = (msg) => {
-  let end = '\n'
+  const END = '\n'
   msg = `${QE}${msg} `.padEnd(100, '=')
-  process.stdout.write(''.padStart(5, ' ').padEnd(100, '=') + end)
-  process.stdout.write(end + msg + end + end)
+  process.stdout.write(''.padStart(5, ' ').padEnd(100, '=') + END)
+  process.stdout.write(END + msg + END + END)
 }
 
 exports.msgDetail = (msg, noNewLine = false) => {
   let end = noNewLine ? '' : '\n'
   process.stdout.write(SP + msg + end)
-}
-
-exports.statusMsg = (msg, noNewLine = false) => {
-  let end = noNewLine ? '' : '\n'
-  process.stdout.write(msg + end)
 }
 
 exports.newLine = () => {
@@ -69,21 +54,21 @@ exports.newLine = () => {
 
 exports.crash = (msg) => {
   this.msgEnd('ERROR')
-  this.msgErr(msg)
+  this.msg(msg, 'error')
   this.newLine()
   process.exit(99)
 }
 
 exports.success = (msg) => {
   this.msgEnd('SUCCESS')
-  this.msgOk(msg)
+  this.msg(msg)
   this.newLine()
   process.exit(0)
 }
 
 exports.fail = (msg) => {
   this.msgEnd('FAIL')
-  this.msgErr(msg)
+  this.msg(msg, 'error')
   this.newLine()
   process.exit(17)
 }
@@ -107,7 +92,7 @@ exports.updateCyEnvJson = (data) => {
     let newJson = { ...json, ...data }
     fs.writeFileSync(fileName, JSON.stringify(newJson))
   } catch (e) {
-    this.msgErr(e)
+    this.catch(e)
   }
 }
 
@@ -137,15 +122,15 @@ exports.traverse = (result, obj, previousKey) => {
 }
 
 exports.sectionsToRun = async (config) => {
-  this.msgSection('Sections to run')
+  this.msgSection('Sections enabled/disabled')
   this.traverse([], config).forEach((item) => {
     if (/enabled/.test(item.key) && /true/.test(item.type)) {
       let itemEnabled = item.key.split('.enabled')[0]
-      this.msgOk(itemEnabled)
+      this.msg(itemEnabled)
     }
     if (/enabled/.test(item.key) && /false/.test(item.type)) {
       let itemEnabled = item.key.split('.enabled')[0]
-      this.msgErr(itemEnabled)
+      this.msg(itemEnabled, 'error')
     }
   })
 }
@@ -183,10 +168,10 @@ exports.openCypress = async (test, step) => {
 }
 
 exports.runCypress = async (test, config, addOptions = {}) => {
-  if (typeof test.spec === 'string') test.spec = [test.spec]
-  const spec = path.parse(test.spec[0])
-  const cyPath = spec.dir.split(path.sep)[0]
-  const options = {
+  // If for authentication, run in most basic way
+  let spec = path.parse(test.spec[0])
+  let cyPath = spec.dir.split(path.sep)[0]
+  let options = {
     config: {
       integrationFolder: spec.dir,
       supportFile: cyPath + '/support',
@@ -200,7 +185,6 @@ exports.runCypress = async (test, config, addOptions = {}) => {
     options['key'] = config.base.cypress.dashboardKey
     options['record'] = true
     merge(options, addOptions)
-    console.log(options)
   }
   // Run Cypress
   let testPassed = true
@@ -213,4 +197,18 @@ exports.runCypress = async (test, config, addOptions = {}) => {
     this.crash(e.message)
   }
   return testPassed
+}
+
+exports.request = async (header, payload) => {
+  payload = JSON.stringify(payload)
+  const config = merge(payload, header)
+  let response
+  await axios(config)
+    .then((result) => {
+      response = result
+    })
+    .catch((e) => {
+      this.crash('Request failed\n' + e)
+    })
+  return response
 }

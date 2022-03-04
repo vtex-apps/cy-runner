@@ -105,10 +105,10 @@ dist
 /.VTEX_QE.json
 /.idea
 cypress.env.json
-/.toolbelt.url
 cypress.json
 /.state.json
 /cypress/*
 /cypress-shared/videos
 /cypress-shared/screenshots
 /cypress-shared/downloads
+**/.toolbelt.url

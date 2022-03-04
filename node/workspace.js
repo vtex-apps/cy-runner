@@ -1,5 +1,3 @@
-const fs = require('fs')
-const { merge } = require('lodash')
 const qe = require('./utils')
 
 exports.workspace = async (config) => {
@@ -8,7 +6,7 @@ exports.workspace = async (config) => {
   if (config.workspace.runInDevMode) {
     // Open Cypress en DEV/GUI mode
     qe.msgSection('Development mode')
-    qe.msgOk('You must run the steps wipe by yourself')
+    qe.msg('You must run the steps wipe by yourself')
     // Install, remove or link apps
     await manageApps(config)
     // Sync credentials
@@ -48,7 +46,7 @@ async function manageApps(config) {
     if (toInstall === 'object') {
       qe.msgSection('Apps management')
       toInstall.forEach((app) => {
-        qe.msgOk('Installing ' + app)
+        qe.msg('Installing ' + app)
         try {
           qe.exec(`${vtex} install app`)
         } catch (e) {
@@ -58,7 +56,7 @@ async function manageApps(config) {
     }
     if (toRemove === 'object') {
       toRemove.forEach((app) => {
-        qe.msgOk('Removing ' + app)
+        qe.msg('Removing ' + app)
         try {
           qe.exec(`echo y | ${vtex} uninstall app`)
         } catch (e) {
@@ -67,7 +65,7 @@ async function manageApps(config) {
       })
     }
     if (toLink) {
-      qe.msgOk('Linking app to be tested')
+      qe.msg('Linking app to be tested')
       try {
         qe.exec(`cd .. && echo y | ${vtex} link --no-watch`)
       } catch (e) {
@@ -75,23 +73,4 @@ async function manageApps(config) {
       }
     }
   }
-}
-
-// Update cypress.env.json with .state.json config tokens and clean .state.json for other users
-async function syncConfig(config) {
-  const CONFIG_A = 'cypress.env.json'
-  const CONFIG_B = config.base.stateFiles[0]
-  let A = JSON.parse(fs.readFileSync(CONFIG_A, 'utf-8'))
-  let B = JSON.parse(fs.readFileSync(CONFIG_B, 'utf-8'))
-  fs.writeFileSync(CONFIG_A, JSON.stringify(merge(A, B)))
-  fs.writeFileSync(CONFIG_B, '{}')
-}
-
-// Do setup or install apps
-async function workspaceSetup(config) {
-  let workspace = config.workspace
-  let stopOnFail = config.workspace.setup.stopOnFail
-  qe.msg(`Using workspace [${workspace.name}]`)
-  let testPassed = await qe.runCypress(workspace.setup, config)
-  if (!testPassed && stopOnFail) await qe.stopOnFail(config, 'workspaceSetup')
 }
