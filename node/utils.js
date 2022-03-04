@@ -6,38 +6,60 @@ const { merge } = require('lodash')
 const { wipe } = require('./wipe')
 const { teardown } = require('./teardown')
 
-const QE = '[QE] ===> '
-const SP = '- '.padStart(12)
+const QE = '[QE] === '
+const SP = ''.padStart(9)
+const NM = '- '.padStart(7)
+const PNM = '- '.padStart(12)
+const SM = '[✓] '.padStart(9)
+const PSM = '[✓] '.padStart(14)
+const FM = '[✗] '.padStart(9)
+const PFM = '[✗] '.padStart(14)
+const END = '\n'
 
-exports.msgErr = (msg, notr = false) => {
-  let end = notr ? '' : '\n'
+exports.err = (msg, noNewLine = false) => {
+  let end = noNewLine ? '' : '\n'
   process.stderr.write(QE + msg + end)
 }
 
-exports.msgErrDetail = (msg, notr = false) => {
-  let end = notr ? '' : '\n'
-  process.stderr.write(SP + msg + end)
+exports.msgErrDetail = (msg, noNewLine = false) => {
+  let end = noNewLine ? '' : '\n'
+  process.stderr.write(FM + msg + end)
 }
 
-exports.msg = (msg, notr = false) => {
-  let end = notr ? '' : '\n'
-  process.stdout.write(QE + msg + end)
+exports.msg = (msg, noNewLine = false) => {
+  let end = noNewLine ? '' : '\n'
+  process.stdout.write(NM + msg + end)
 }
 
-exports.msgStrategy = (msg) => {
+exports.msgOk = (msg) => {
+  process.stdout.write(SM + msg + END)
+}
+
+exports.msgErr = (msg) => {
+  process.stdout.write(FM + msg + END)
+}
+
+exports.msgSection = (msg) => {
   let end = '\n'
   msg = `${QE}${msg} `.padEnd(100, '=')
   process.stdout.write(end + msg + end)
   process.stdout.write(''.padStart(5, ' ').padEnd(100, '=') + end + end)
 }
 
-exports.msgDetail = (msg, notr = false) => {
-  let end = notr ? '' : '\n'
+exports.msgEnd = (msg) => {
+  let end = '\n'
+  msg = `${QE}${msg} `.padEnd(100, '=')
+  process.stdout.write(''.padStart(5, ' ').padEnd(100, '=') + end)
+  process.stdout.write(end + msg + end + end)
+}
+
+exports.msgDetail = (msg, noNewLine = false) => {
+  let end = noNewLine ? '' : '\n'
   process.stdout.write(SP + msg + end)
 }
 
-exports.statusMsg = (msg, notr = false) => {
-  let end = notr ? '' : '\n'
+exports.statusMsg = (msg, noNewLine = false) => {
+  let end = noNewLine ? '' : '\n'
   process.stdout.write(msg + end)
 }
 
@@ -46,17 +68,23 @@ exports.newLine = () => {
 }
 
 exports.crash = (msg) => {
-  this.msgErr('ERROR: ' + msg + '!\n')
+  this.msgEnd('ERROR')
+  this.msgErr(msg)
+  this.newLine()
   process.exit(99)
 }
 
 exports.success = (msg) => {
-  process.stdout.write('\n[QE] ===> SUCCESS: ' + msg + '!\n\n')
+  this.msgEnd('SUCCESS')
+  this.msgOk(msg)
+  this.newLine()
   process.exit(0)
 }
 
 exports.fail = (msg) => {
-  process.stdout.write('\n[QE] ===> FAILED: ' + msg + '!\n\n')
+  this.msgEnd('FAIL')
+  this.msgErr(msg)
+  this.newLine()
   process.exit(17)
 }
 
@@ -108,15 +136,18 @@ exports.traverse = (result, obj, previousKey) => {
   return result
 }
 
-exports.reportSetup = async (config) => {
-  this.msg('Configuration enabled for this Cypress Runner:')
+exports.sectionsToRun = async (config) => {
+  this.msgSection('Sections to run')
   this.traverse([], config).forEach((item) => {
     if (/enabled/.test(item.key) && /true/.test(item.type)) {
       let itemEnabled = item.key.split('.enabled')[0]
-      this.msgDetail(itemEnabled)
+      this.msgOk(itemEnabled)
+    }
+    if (/enabled/.test(item.key) && /false/.test(item.type)) {
+      let itemEnabled = item.key.split('.enabled')[0]
+      this.msgErr(itemEnabled)
     }
   })
-  this.msg(`Workspace to be used on the tests: ${config.workspace.name}`)
 }
 
 exports.stopOnFail = async (config, step) => {

@@ -10,7 +10,9 @@ base:
     urlExternalSeller: https://productusqaseller.myvtex.com
     idUrl: https://vtexid.vtex.com.br/api/vtexid/pub/authenticate/default
     deployCli:
-      enabled: false
+      # Implies login with credentials from base.secrets.name
+      # If you want to use the current vtex login, disable it
+      enabled: true
       git: https://github.com/vtex/toolbelt.git
       branch: qe/cypress
   twilio:
@@ -53,19 +55,19 @@ workspace:
   # List of apps will be installed, if not empty and config.vtexCli disabled,
   # you must ensure your vtex cli is authenticated already
   installApps:
-    - vtex.b2b-suite
-    - vtex.b2b-quotes
-    - vtex.quickorder
-    # Theme
-    - vtex.wish-list@1.x
-    - vtex.location-availability@0.x
-    - vtex.shopper-location@0.x
-    - vtex.wordpress-integration@2.x
-    - vtex.storefront-permissions-ui@0.x
-    - vtex.b2bstore@2.x
+  #    - vtex.b2b-suite
+  #    - vtex.b2b-quotes
+  #    - vtex.quickorder
+  #    # Theme
+  #    - vtex.wish-list@1.x
+  #    - vtex.location-availability@0.x
+  #    - vtex.shopper-location@0.x
+  #    - vtex.wordpress-integration@2.x
+  #    - vtex.storefront-permissions-ui@0.x
+  #    - vtex.b2bstore@2.x
   # It is a good idea remove, at least, the app you want to test integration on workspace.linkApp
   removeApps:
-    - vtex.store-theme
+  #    - vtex.store-theme
   wipe:
     enabled: false
     stopOnFail: false

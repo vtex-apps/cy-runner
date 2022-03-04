@@ -14,47 +14,26 @@ process.env.IN_CYPRESS = 'true'
 
 exports.vtexCli = async (config) => {
   const START = qe.tick()
-  const AUTH_VTEX_CLI = config.base.vtex.deployCli
-  const VTEX = config.base.vtex
+  const deployCli = config.base.vtex.deployCli
+  const workspace = config.workspace
 
-  if (AUTH_VTEX_CLI.enabled) {
+  if (deployCli.enabled) {
+    qe.msgSection('Toolbelt deployment')
     // Try to clean vtex cache state to avoid bugs
-    try {
-      fs.rmSync(PATH_CACHE_VTEX, { recursive: true })
-      qe.msg(`${PATH_CACHE_VTEX} cleaned successfully`)
-    } catch (e) {
-      qe.msg(`${PATH_CACHE_VTEX} doesn't exist, no need to clean it`)
-    }
+    await cleanCache()
     // Check if toolbelt is installed already
     if (fs.existsSync(TOOLBELT_BIN))
-      qe.msg('The patched version of toolbelt is installed already')
-    else await installToolbelt(AUTH_VTEX_CLI)
+      qe.msgOk('Patched version of toolbelt is installed already')
+    else await installToolbelt(deployCli)
     // Start vtex cli in background
-    qe.msg('Toolbelt version: ', true)
-    qe.exec(`${TOOLBELT_BIN} --version`, 'inherit')
-    qe.msg(`Starting login using [${VTEX.account}] account in background... `)
-    try {
-      qe.msgDetail(`Removing old [${TOOLBELT_URL_OUTPUT}], if any`)
-      if (fs.existsSync(TOOLBELT_URL_OUTPUT)) fs.rmSync(TOOLBELT_URL_OUTPUT)
-      qe.msgDetail(`Calling [vtex-e2e login ${VTEX.account}]`)
-      qe.exec(
-        `${TOOLBELT_BIN} login ${VTEX.account} 1> ${TOOLBELT_URL_OUTPUT} &`
-      )
-      let size = 0
-      while (size < 3) size = qe.fileSize(TOOLBELT_URL_OUTPUT)
-      qe.msgDetail('Callback url created successfully')
-    } catch (e) {
-      qe.crash(e)
-    }
-    // Feedback to user and path to be added returned
-    qe.msg('Toolbelt started in background, now you can call Cypress')
+    await startBackground(config.base.vtex)
   } else {
     if (
-      typeof config.workspace.linkApp != 'undefined' ||
-      typeof config.workspace.removeApps != 'undefined' ||
-      typeof config.workspace.installApps != 'undefined'
+      typeof workspace.linkApp != 'undefined' ||
+      typeof workspace.removeApps != 'undefined' ||
+      typeof workspace.installApps != 'undefined'
     )
-      qe.msgDetail(
+      qe.msgErr(
         'Make sure you have vtex cli authenticated already as you plan to manage apps'
       )
   }
@@ -64,9 +43,37 @@ exports.vtexCli = async (config) => {
   }
 }
 
+async function cleanCache() {
+  try {
+    fs.rmSync(PATH_CACHE_VTEX, { recursive: true })
+    qe.msgOk(`${PATH_CACHE_VTEX} cleaned successfully`)
+  } catch (e) {
+    qe.msgErr(`${PATH_CACHE_VTEX} doesn't exist, no need to clean it`)
+  }
+}
+
+async function startBackground(vtex) {
+  qe.msgDetail('Version: ', true)
+  qe.exec(`${TOOLBELT_BIN} --version`, 'inherit')
+  qe.msgOk(`Start login with ${vtex.account} in background `)
+  try {
+    qe.msgOk(`Removing old ${TOOLBELT_URL_OUTPUT}, if any`)
+    if (fs.existsSync(TOOLBELT_URL_OUTPUT)) fs.rmSync(TOOLBELT_URL_OUTPUT)
+    qe.msgOk(`Calling vtex login ${vtex.account}`)
+    qe.exec(`${TOOLBELT_BIN} login ${vtex.account} 1> ${TOOLBELT_URL_OUTPUT} &`)
+    let size = 0
+    while (size < 3) size = qe.fileSize(TOOLBELT_URL_OUTPUT)
+    qe.msgOk('Callback file created successfully')
+  } catch (e) {
+    qe.crash(e)
+  }
+  // Feedback to user and path to be added returned
+  qe.msgOk('Toolbelt started in background successfully')
+}
+
 async function installToolbelt(deployCli) {
   try {
-    qe.msg('Patched version of toolbelt not found, deploying it:')
+    qe.msgErr('Patched version of toolbelt not found, deploying it')
     if (!fs.existsSync(PATH_CACHE_VTEX)) fs.mkdirSync(PATH_CACHE_VTEX)
     if (fs.existsSync(PATH_TOOLBELT))
       fs.rmSync(PATH_TOOLBELT, { recursive: true })

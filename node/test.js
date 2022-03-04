@@ -15,7 +15,7 @@ module.exports.strategy = async (config) => {
     let group = `${WORKSPACE.name}/${strategy}`
     if (test.enabled) {
       let dependency = test.dependency
-      qe.msgStrategy(`Processing [strategy.${strategy}]`)
+      qe.msgSection(`Processing [strategy.${strategy}]`)
       if (typeof dependency != 'undefined') {
         let check = intersection(dependency, testsPassed)
         if (check.length === dependency.length) {

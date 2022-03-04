@@ -1,7 +1,7 @@
 const qe = require('./utils')
 
 module.exports.report = async (control) => {
-  qe.msgStrategy('Execution report')
+  qe.msgSection('Execution report')
 
   qe.msg('Execution time')
   for (let section in control.timing)

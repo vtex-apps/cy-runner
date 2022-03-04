@@ -1,5 +1,5 @@
 const qe = require('./node/utils')
-const { config } = require('./node/config')
+const { getConfig } = require('./node/config')
 const { vtexCli } = require('./node/cli')
 const { workspace } = require('./node/workspace')
 const { strategy } = require('./node/test')
@@ -17,8 +17,14 @@ let control = {
 }
 
 async function main() {
+  // Welcome message
+  qe.msgSection('Cypress Runner')
+
+  // Read cy-runner.yml configuration
+  let config = await getConfig('cy-runner.yml')
+
   // Report configuration to help understand that'll run
-  await qe.reportSetup(config)
+  await qe.sectionsToRun(config)
 
   // Deploy, start in background, and add VTEX CLI to system PATH
   let call = await vtexCli(config)
@@ -26,7 +32,7 @@ async function main() {
   control.timing['vtexCli'] = call.time
 
   // Configure workspace (create, install, uninstall, link app)
-  control.timing['vtexWorkspace'] = await workspace(config)
+  control.timing['workspace'] = await workspace(config)
 
   // Tests
   call = await strategy(config)

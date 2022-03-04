@@ -3,148 +3,146 @@ const yaml = require('js-yaml')
 const { merge } = require('lodash')
 const qe = require('./utils')
 const schema = require('./schema')
-const CONFIG_FILE = 'cy-runner.yml'
-let configSet = null
-let secrets = null
 
-// Check config file, parse it and add dynamic settings
-if (!fs.existsSync(CONFIG_FILE)) qe.crash(`${CONFIG_FILE} not found`)
-try {
-  configSet = yaml.load(fs.readFileSync(CONFIG_FILE, 'utf8'))
-  schema.validate(configSet)
-  const VTEX_ACCOUNT = configSet.base.vtex.account
-  configSet.base.vtex[
-    'authUrl'
-  ] = `https://${VTEX_ACCOUNT}.myvtex.com/api/vtexid/pub/authentication`
-} catch (e) {
-  qe.msgErr(`Check your ${CONFIG_FILE}.`)
-  qe.crash(e)
-}
+exports.getConfig = async (configFile) => {
+  let config = null
+  let secrets = null
 
-// Load SECRET from file or memory
-// TODO: Fix this code
-const SECRET_NAME = configSet.base.secrets.name
-const SECRET_FILE = `.${SECRET_NAME}.json`
-let loadedFrom = null
-if (fs.existsSync(SECRET_FILE)) {
+  // Check config file, parse it and add dynamic settings
+  if (!fs.existsSync(configFile)) qe.crash(`${configFile} not found`)
   try {
-    secrets = yaml.load(fs.readFileSync(SECRET_FILE, 'utf8'))
-    loadedFrom = 'file'
+    config = yaml.load(fs.readFileSync(configFile, 'utf8'))
+    schema.validate(config)
+    const VTEX_ACCOUNT = config.base.vtex.account
+    config.base.vtex[
+      'authUrl'
+    ] = `https://${VTEX_ACCOUNT}.myvtex.com/api/vtexid/pub/authentication`
   } catch (e) {
-    qe.crash('Check if your secrets file is well formatted')
+    qe.err(`Check your ${configFile}.`)
+    qe.crash(e)
   }
-} else {
-  try {
-    if (typeof process.env[SECRET_NAME] == 'undefined') {
-      qe.crash(`Neither [.${SECRET_NAME}.json] or ENV [${SECRET_NAME}] found`)
+
+  // Load SECRET from file or memory
+  // TODO: Fix this code
+  const SECRET_NAME = config.base.secrets.name
+  const SECRET_FILE = `.${SECRET_NAME}.json`
+  let loadedFrom = null
+  if (fs.existsSync(SECRET_FILE)) {
+    try {
+      secrets = yaml.load(fs.readFileSync(SECRET_FILE, 'utf8'))
+      loadedFrom = 'file'
+    } catch (e) {
+      qe.crash('Check if your secrets file is well formatted')
     }
-    secrets = yaml.load(process.env[SECRET_NAME], 'utf8')
-    loadedFrom = 'memory'
+  } else {
+    try {
+      if (typeof process.env[SECRET_NAME] == 'undefined') {
+        qe.crash(`Neither [.${SECRET_NAME}.json] or ENV [${SECRET_NAME}] found`)
+      }
+      secrets = yaml.load(process.env[SECRET_NAME], 'utf8')
+      loadedFrom = 'memory'
+    } catch (e) {
+      qe.crash('Check if your secrets ENV is well formatted')
+    }
+  }
+
+  // Check secrets
+  function checkSecret(key, value) {
+    if (typeof value != 'string') qe.crash(`Secret must be string [${key}]`)
+    if (value.length <= 0) qe.crash(`Secret must be string not null [${key}]`)
+  }
+
+  try {
+    // Check VTEX Cli secrets
+    if (config.base.vtex.deployCli) {
+      const VTEX_ATTRIBUTES = [
+        'apiKey',
+        'apiToken',
+        'authCookieName',
+        'robotMail',
+        'robotPassword',
+      ]
+      VTEX_ATTRIBUTES.forEach((att) => {
+        if (typeof secrets.vtex[att] == 'undefined')
+          checkSecret(`secrets.vtex.${att}`, secrets.vtex[att])
+      })
+    }
+    // Check TWILIO secrets
+    if (config.base.twilio) {
+      const TWILIO_ATTRIBUTES = ['apiUser', 'apiToken', 'baseUrl']
+      TWILIO_ATTRIBUTES.forEach((att) => {
+        checkSecret(`secrets.twilio.${att}`, secrets.twilio[att])
+      })
+    }
   } catch (e) {
-    qe.crash('Check if your secrets ENV is well formatted')
+    qe.err('Missing value when reading your secrets!')
+    qe.crash(e)
   }
-}
 
-// Check secrets
-function checkSecret(key, value) {
-  if (typeof value != 'string') qe.crash(`Secret must be string [${key}]`)
-  if (value.length <= 0) qe.crash(`Secret must be string not null [${key}]`)
-}
+  // Merge secrets on config
+  merge(config.base, secrets)
 
-try {
-  // Check VTEX Cli secrets
-  if (configSet.base.vtex.deployCli) {
-    const VTEX_ATTRIBUTES = [
-      'apiKey',
-      'apiToken',
-      'authCookieName',
-      'robotMail',
-      'robotPassword',
-    ]
-    VTEX_ATTRIBUTES.forEach((att) => {
-      if (typeof secrets.vtex[att] == 'undefined')
-        checkSecret(`secrets.vtex.${att}`, secrets.vtex[att])
-    })
+  // Create a workspace name if it is defined as random
+  if (config.workspace.name === 'random') {
+    const SEED = qe.tick()
+    const PREFIX = config.workspace.prefix
+    config.workspace.name = `${PREFIX}${SEED.toString().substring(0, 7)}`
+    qe.msg(`New workspace name generated as [${config.workspace.name}]`)
   }
-  // Check TWILIO secrets
-  if (configSet.base.twilio) {
-    const TWILIO_ATTRIBUTES = ['apiUser', 'apiToken', 'baseUrl']
-    TWILIO_ATTRIBUTES.forEach((att) => {
-      checkSecret(`secrets.twilio.${att}`, secrets.twilio[att])
-    })
+
+  // Write cypress.env.json
+  const CYPRESS_ENV_JSON = 'cypress.env.json'
+  try {
+    fs.writeFileSync(CYPRESS_ENV_JSON, JSON.stringify(config))
+    qe.msg(
+      `Secrets loaded (from ${loadedFrom}) and [${CYPRESS_ENV_JSON}] created successfully`
+    )
+  } catch (e) {
+    qe.err(e)
   }
-} catch (e) {
-  qe.msgErr('Missing value when reading your secrets!')
-  qe.crash(e)
-}
 
-// Merge secrets on config
-merge(configSet.base, secrets)
+  // Write cypress.json
+  const CYPRESS_JSON_FILE = 'cypress.json'
+  const CYPRESS = config.base.cypress
+  const WORKSPACE = config.workspace.name
+  const ACCOUNT = config.base.vtex.account
+  const DOMAIN = config.base.vtex.domain
+  try {
+    fs.writeFileSync(
+      CYPRESS_JSON_FILE,
+      JSON.stringify({
+        baseUrl: `https://${WORKSPACE}--${ACCOUNT}.${DOMAIN}`,
+        chromeWebSecurity: CYPRESS.chromeWebSecurity,
+        video: CYPRESS.video,
+        videoCompression: CYPRESS.videoCompression,
+        videoUploadOnPasses: CYPRESS.videoUploadOnPasses,
+        screenshotOnRunFailure: CYPRESS.screenshotOnRunFailure,
+        trashAssetsBeforeRuns: CYPRESS.trashAssetsBeforeRuns,
+        viewportWidth: CYPRESS.viewportWidth,
+        viewportHeight: CYPRESS.viewportHeight,
+        defaultCommandTimeout: CYPRESS.defaultCommandTimeout,
+        requestTimeout: CYPRESS.defaultCommandTimeout,
+        watchForFileChanges: CYPRESS.watchForFileChanges,
+        pageLoadTimeout: CYPRESS.pageLoadTimeout,
+        browser: CYPRESS.browser,
+        projectId: CYPRESS.projectId,
+        retries: 0,
+      })
+    )
+    qe.msg(`[${CYPRESS_JSON_FILE}] created successfully`)
+  } catch (e) {
+    qe.crash(e)
+  }
 
-// Create a workspace name if it is defined as random
-if (configSet.workspace.name === 'random') {
-  const SEED = qe.tick()
-  const PREFIX = configSet.workspace.prefix
-  configSet.workspace.name = `${PREFIX}${SEED.toString().substring(0, 7)}`
-  qe.msg(`New workspace name generated as [${configSet.workspace.name}]`)
-}
-
-// Write cypress.env.json
-const CYPRESS_ENV_JSON = 'cypress.env.json'
-try {
-  fs.writeFileSync(CYPRESS_ENV_JSON, JSON.stringify(configSet))
-  qe.msg(
-    `Secrets loaded (from ${loadedFrom}) and [${CYPRESS_ENV_JSON}] created successfully`
-  )
-} catch (e) {
-  qe.msgErr(e)
-}
-
-// Write cypress.json
-const CYPRESS_JSON_FILE = 'cypress.json'
-const CYPRESS = configSet.base.cypress
-const WORKSPACE = configSet.workspace.name
-const ACCOUNT = configSet.base.vtex.account
-const DOMAIN = configSet.base.vtex.domain
-try {
-  fs.writeFileSync(
-    CYPRESS_JSON_FILE,
-    JSON.stringify({
-      baseUrl: `https://${WORKSPACE}--${ACCOUNT}.${DOMAIN}`,
-      chromeWebSecurity: CYPRESS.chromeWebSecurity,
-      video: CYPRESS.video,
-      videoCompression: CYPRESS.videoCompression,
-      videoUploadOnPasses: CYPRESS.videoUploadOnPasses,
-      screenshotOnRunFailure: CYPRESS.screenshotOnRunFailure,
-      trashAssetsBeforeRuns: CYPRESS.trashAssetsBeforeRuns,
-      viewportWidth: CYPRESS.viewportWidth,
-      viewportHeight: CYPRESS.viewportHeight,
-      defaultCommandTimeout: CYPRESS.defaultCommandTimeout,
-      requestTimeout: CYPRESS.defaultCommandTimeout,
-      watchForFileChanges: CYPRESS.watchForFileChanges,
-      pageLoadTimeout: CYPRESS.pageLoadTimeout,
-      browser: CYPRESS.browser,
-      projectId: CYPRESS.projectId,
-      retries: 0,
+  // Create empty files as asked
+  try {
+    let STATE_FILES = config.base.stateFiles
+    STATE_FILES.forEach((stateFile) => {
+      fs.writeFileSync(stateFile, '{}')
     })
-  )
-  qe.msg(`[${CYPRESS_JSON_FILE}] created successfully`)
-} catch (e) {
-  qe.crash(e)
-}
-
-// Create empty files as asked
-try {
-  let STATE_FILES = configSet.base.stateFiles
-  STATE_FILES.forEach((stateFile) => {
-    fs.writeFileSync(stateFile, '{}')
-  })
-  qe.msg(`Empty state files [${STATE_FILES}] create successfully`)
-} catch (e) {
-  qe.crash(e)
-}
-
-// Expose config
-module.exports = {
-  config: configSet,
+    qe.msg(`Empty state files [${STATE_FILES}] create successfully`)
+  } catch (e) {
+    qe.crash(e)
+  }
+  return config
 }
