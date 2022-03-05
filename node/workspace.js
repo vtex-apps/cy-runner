@@ -15,6 +15,10 @@ exports.workspace = async (config) => {
     await qe.openCypress()
     if (WORKSPACE.wipe.enabled) await qe.openCypress(WORKSPACE.wipe, 'wipe')
     // TODO: Fix this code
+    // // Use workspace
+    // await useWorkspace(config.workspace)
+    // // Manage Apps
+    // await manageApps(config.workspace)
     if (WORKSPACE.teardown.enabled)
       await qe.openCypress(WORKSPACE.teardown, 'teardown')
     qe.msg(
@@ -74,3 +78,4 @@ async function manageApps(config) {
     }
   }
 }
+

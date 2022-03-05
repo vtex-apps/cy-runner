@@ -15,10 +15,10 @@ process.env.IN_CYPRESS = 'true'
 exports.vtexCli = async (config) => {
   const START = qe.tick()
   const deployCli = config.base.vtex.deployCli
-  const workspace = config.workspace
+  const secrets = config.base.secrets
 
-  qe.msgSection('Toolbelt deployment and authentication')
   if (deployCli.enabled) {
+    qe.msgSection('Toolbelt deployment and authentication')
     // Try to clean vtex cache state to avoid bugs
     await cleanCache()
     // Check if toolbelt is installed already
@@ -31,24 +31,9 @@ exports.vtexCli = async (config) => {
     )
     // Authenticate in background
     await startBackground(config.base.vtex)
-  } else {
-    if (
-      typeof workspace.linkApp != 'undefined' ||
-      typeof workspace.removeApps != 'undefined' ||
-      typeof workspace.installApps != 'undefined'
-    )
-      qe.msg(
-        'Your vtex cli must be authenticated because deployCli is disabled',
-        'warn'
-      )
   }
   // Get user and robot credentials
-  await getCredentials(config.base.vtex)
-  process.exit(0)
-  // Use workspace
-  await useWorkspace(config.workspace)
-  // Manage Apps
-  await manageApps(config.workspace)
+  if (secrets.enabled) await getCredentials(config.base.vtex)
   return {
     path: `${process.env.PATH}:${PATH_TOOLBELT_BIN}`,
     time: qe.toc(START),
@@ -116,18 +101,21 @@ async function startBackground(vtex) {
 }
 
 async function getCredentials(vtex) {
-  const header = {
-    method: 'GET',
-    url: vtex.idUrl,
-    qs: { user: vtex.apiKey, pass: vtex.apiToken },
+  const encodedBase64Token = Buffer.from(
+    `${vtex.apiKey}:${vtex.apiToken}`
+  ).toString('base64')
+  const authorization = 'Bearer ' + encodedBase64Token
+  const axiosConfig = {
+    url: vtex.vtexIdUrl,
+    method: 'get',
+    headers: {
+      Authorization: authorization,
+    },
+    data: {},
   }
-  let response = await qe.request(header, {})
-  console.log(response)
+  const TOKEN = await qe.request(axiosConfig)
+  qe.crash(TOKEN)
 }
-
-async function useWorkspace(workspace) {}
-
-async function manageApps(workspace) {}
 
 // async function syncConfig(config) {
 //   const CONFIG_A = 'cypress.env.json'
@@ -143,7 +131,7 @@ async function manageApps(workspace) {}
 //   // Get Cookie Credential
 //   cy.request({
 //     method: 'GET',
-//     url: CONFIG.vtex.idUrl,
+//     url: CONFIG.vtex.vtexIdUrl,
 //     qs: { user: CONFIG.vtex.apiKey, pass: CONFIG.vtex.apiToken },
 //   }).then((response) => {
 //     expect(response.body).property('authStatus').to.equal('Success')

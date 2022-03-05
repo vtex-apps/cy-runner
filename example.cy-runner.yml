@@ -8,7 +8,7 @@ base:
     id: 2001459804
     domain: myvtex.com
     urlExternalSeller: https://productusqaseller.myvtex.com
-    idUrl: https://vtexid.vtex.com.br/api/vtexid/pub/authenticate/default
+    vtexIdUrl: https://vtexid.vtex.com.br/api/vtexid/pub/authenticate/default
     deployCli:
       # Implies login with credentials from base.secrets.name
       # If you want to use the current vtex login, disable it

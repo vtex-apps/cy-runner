@@ -39,7 +39,6 @@ exports.msgSection = (msg) => {
 exports.msgEnd = (msg) => {
   const END = '\n'
   msg = `${QE}${msg} `.padEnd(100, '=')
-  process.stdout.write(''.padStart(5, ' ').padEnd(100, '=') + END)
   process.stdout.write(END + msg + END + END)
 }
 
@@ -52,9 +51,10 @@ exports.newLine = () => {
   process.stdout.write('\n')
 }
 
-exports.crash = (msg) => {
-  this.msgEnd('ERROR')
+exports.crash = (msg, e) => {
+  this.msgEnd('Error')
   this.msg(msg, 'error')
+  if (typeof e != 'undefined') this.msg(e, true, true)
   this.newLine()
   process.exit(99)
 }
@@ -199,16 +199,14 @@ exports.runCypress = async (test, config, addOptions = {}) => {
   return testPassed
 }
 
-exports.request = async (header, payload) => {
-  payload = JSON.stringify(payload)
-  const config = merge(payload, header)
+exports.request = async (config) => {
   let response
   await axios(config)
     .then((result) => {
       response = result
     })
     .catch((e) => {
-      this.crash('Request failed\n' + e)
+      this.crash('Request failed', e)
     })
   return response
 }
