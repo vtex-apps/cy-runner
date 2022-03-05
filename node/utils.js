@@ -6,6 +6,8 @@ const axios = require('axios')
 const { merge } = require('lodash')
 const { wipe } = require('./wipe')
 const { teardown } = require('./teardown')
+const yaml = require('js-yaml')
+const schema = require('./schema')
 
 const QE = '[QE] === '
 const SP = ''.padStart(9)
@@ -52,7 +54,7 @@ exports.newLine = () => {
 }
 
 exports.crash = (msg, e) => {
-  this.msgEnd('Error')
+  this.msgEnd('ERROR')
   this.msg(msg, 'error')
   if (typeof e != 'undefined') this.msg(e, true, true)
   this.newLine()
@@ -85,14 +87,156 @@ exports.fileSize = (file) => {
   return stats.size
 }
 
-exports.updateCyEnvJson = (data) => {
-  let fileName = 'cypress.env.json'
+exports.fileExists = (file) => {
   try {
-    let json = fs.readFileSync(fileName)
-    let newJson = { ...json, ...data }
-    fs.writeFileSync(fileName, JSON.stringify(newJson))
+    return fs.existsSync(file)
   } catch (e) {
-    this.catch(e)
+    this.crash(`Fail to check if file ${file} exists`, e)
+  }
+}
+
+exports.readFile = (file) => {
+  try {
+    return fs.readFileSync(file, { encoding: 'utf-8' })
+  } catch (e) {
+    this.crash(`Fail to read file ${file}`, e)
+  }
+}
+
+exports.readSecrets = (config) => {
+  let secretName = config.base.secrets.name
+  let secretFile = `.${secretName}.json`
+  let secrets = null
+  let loadedFrom = null
+  if (this.fileExists(secretFile)) {
+    try {
+      secrets = yaml.load(this.readFile(secretFile), 'utf-8')
+    } catch (e) {
+      this.crash(`Check if your JSON secrets ${secretFile} is well formatted`)
+    }
+    loadedFrom = 'file ' + secretFile
+  } else {
+    if (typeof process.env[secretName] == 'undefined') {
+      this.crash(`Neither ${secretFile} or ${secretName} env found`)
+    }
+    try {
+      secrets = yaml.load(process.env[secretName], 'utf-8')
+      loadedFrom = 'env variable ' + secretName
+    } catch (e) {
+      this.crash(`Check if your env variable ${secretName} is well formatted`)
+    }
+  }
+  schema.validateSecrets(secrets, config)
+  this.msg(`Secrets loaded from ${loadedFrom} successfully`)
+  return secrets
+}
+
+exports.loadYmlConfig = (file) => {
+  if (!this.fileExists(file)) this.crash(`File ${file} not found`)
+  try {
+    let ymlFile = this.readFile(file)
+    let ymlConfig = yaml.load(ymlFile)
+    schema.validateConfig(ymlConfig, file)
+    return ymlConfig
+  } catch (e) {
+    this.crash(`Fail to validate ${file} file`, e)
+  }
+}
+
+exports.loadSecrets = (config) => {
+  if (config.base.vtex.deployCli.enabled) {
+    if (!config.base.secrets.enabled || !config.base.twilio.enabled) {
+      this.msg('base.vtex.deployCli is enabled, but', 'warn')
+      if (!config.base.secrets.enabled)
+        this.msg('base.secrets is disabled', true, true)
+      if (!config.base.twilio.enabled)
+        this.msg('base.twilio is disabled', true, true)
+      this.msg("Hope you know what you're doing ;)", true, true)
+    }
+  }
+  if (config.base.secrets.enabled) return this.readSecrets(config)
+  this.msg('base.secrets is disabled, in this mode you can not', 'warn')
+  this.msg('Automate auth on vtex cli', true, true)
+  this.msg('Login on frontend portal', true, true)
+  this.msg('Login on admin portal', true, true)
+  if (config.base.twilio.enabled) {
+    this.msg('base.twilio is enabled, loading secrets for it', 'warn')
+    return this.readSecrets(config)
+  }
+  return false
+}
+
+exports.mergeSecrets = (config, secrets) => {
+  merge(config.base, secrets)
+  return config
+}
+
+exports.getWorkspaceName = (config) => {
+  let workspace = config.workspace.name
+  if (workspace === 'random') {
+    let seed = this.tick()
+    let prefix = config.workspace.prefix
+    workspace = `${prefix}${seed.toString().substring(0, 7)}`
+    this.msg(`Workspace to be used on this run: ${workspace}`)
+  }
+  return workspace
+}
+
+exports.writeEnvJson = (config) => {
+  const ENV_FILE = 'cypress.env.json'
+  try {
+    fs.writeFileSync(ENV_FILE, JSON.stringify(config))
+    this.msg(`${ENV_FILE} created successfully`)
+  } catch (e) {
+    this.crash('Fail to create Cypress env file', e)
+  }
+}
+
+exports.writeCypressJson = (config) => {
+  const CYPRESS_JSON_FILE = 'cypress.json'
+  const CYPRESS = config.base.cypress
+  const WORKSPACE = config.workspace.name
+  const ACCOUNT = config.base.vtex.account
+  const DOMAIN = config.base.vtex.domain
+  try {
+    fs.writeFileSync(
+      CYPRESS_JSON_FILE,
+      JSON.stringify({
+        baseUrl: `https://${WORKSPACE}--${ACCOUNT}.${DOMAIN}`,
+        chromeWebSecurity: CYPRESS.chromeWebSecurity,
+        video: CYPRESS.video,
+        videoCompression: CYPRESS.videoCompression,
+        videoUploadOnPasses: CYPRESS.videoUploadOnPasses,
+        screenshotOnRunFailure: CYPRESS.screenshotOnRunFailure,
+        trashAssetsBeforeRuns: CYPRESS.trashAssetsBeforeRuns,
+        viewportWidth: CYPRESS.viewportWidth,
+        viewportHeight: CYPRESS.viewportHeight,
+        defaultCommandTimeout: CYPRESS.defaultCommandTimeout,
+        requestTimeout: CYPRESS.defaultCommandTimeout,
+        watchForFileChanges: CYPRESS.watchForFileChanges,
+        pageLoadTimeout: CYPRESS.pageLoadTimeout,
+        browser: CYPRESS.browser,
+        projectId: CYPRESS.projectId,
+        retries: 0,
+      })
+    )
+    this.msg(`${CYPRESS_JSON_FILE} created successfully`)
+  } catch (e) {
+    this.crash('Fail to create Cypress JSON file', e)
+  }
+}
+
+exports.createStateFiles = (config) => {
+  try {
+    const STATE_FILES = config.base.stateFiles
+    const SIZE = STATE_FILES.length
+    let plural = SIZE > 1 ? 'files' : 'file'
+    STATE_FILES.forEach((stateFile) => {
+      fs.writeFileSync(stateFile, '{}')
+    })
+    this.msg(`${SIZE} empty state ${plural} created successfully`)
+  } catch (e) {
+    this.crash('Fail to create a empty state file', e)
   }
 }
 

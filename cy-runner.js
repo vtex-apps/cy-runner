@@ -22,6 +22,7 @@ async function main() {
 
   // Read cy-runner.yml configuration
   let config = await getConfig('cy-runner.yml')
+  qe.success('PartbyPart')
 
   // Report configuration to help understand that'll run
   await qe.sectionsToRun(config)

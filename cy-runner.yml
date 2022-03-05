@@ -1,1 +1,132 @@
-example.cy-runner.yml
+---
+base:
+  secrets:
+    enabled: true
+    name: VTEX_QE
+  vtex:
+    account: productusqa
+    id: 2001459804
+    domain: myvtex.com
+    urlExternalSeller: https://productusqaseller.myvtex.com
+    vtexIdUrl: https://vtexid.vtex.com.br/api/vtexid/pub/authenticate/default
+    deployCli:
+      # Implies login with credentials from base.secrets.name
+      # If you want to use the current vtex login, disable it
+      enabled: false
+      git: https://github.com/vtex/toolbelt.git
+      branch: qe/cypress
+  twilio:
+    enabled: true
+  jira:
+    enabled: false
+    account: config-dev
+    board: jira-key
+    issueType: task
+  slack:
+    enabled: false
+    channel: some-channel
+  cypress:
+    enabled: false
+    projectId: xyza
+    video: true
+    videoCompression: false
+    videoUploadOnPasses: false
+    screenshotOnRunFailure: true
+    trashAssetsBeforeRuns: false
+    viewportWidth: 1440
+    viewportHeight: 900
+    defaultCommandTimeout: 25000
+    requestTimeout: 25000
+    watchForFileChanges: false
+    pageLoadTimeout: 45000
+    browser: chrome
+    chromeWebSecurity: false
+  stateFiles:
+    - .state.json
+
+workspace:
+  # If random a new name will be generated with prefix (ie b2b1234567)
+  name: random
+  prefix: b2b
+  runInDevMode: false
+  runHeaded: false
+  # If enabled it'll link the app for integration tests with PR code
+  linkApp: false
+  # List of apps will be installed, if not empty and config.vtexCli disabled,
+  # you must ensure your vtex cli is authenticated already
+  installApps:
+  #    - vtex.b2b-suite
+  #    - vtex.b2b-quotes
+  #    - vtex.quickorder
+  #    # Theme
+  #    - vtex.wish-list@1.x
+  #    - vtex.location-availability@0.x
+  #    - vtex.shopper-location@0.x
+  #    - vtex.wordpress-integration@2.x
+  #    - vtex.storefront-permissions-ui@0.x
+  #    - vtex.b2bstore@2.x
+  # It is a good idea remove, at least, the app you want to test integration on workspace.linkApp
+  removeApps:
+  #    - vtex.store-theme
+  wipe:
+    enabled: false
+    stopOnFail: false
+    spec: cypress/integration/wipe.spec.js
+  teardown:
+    enabled: false
+
+strategy:
+  # The strategies must be in order, with dependent tests last
+  A:
+    enabled: false
+    sendDashboard: false
+    hardTries: 1
+    stopOnFail: false
+    parallel: true
+    # No order guaranteed if parallel = true
+    runInOrder: true
+    # You can use *, but the order will be not guaranteed
+    specs:
+      - cypress-shared/integration/pass.spec.js
+
+  B:
+    enabled: false
+    sendDashboard: false
+    hardTries: 1
+    stopOnFail: false
+    parallel: false
+    runInOrder: false
+    specs:
+      - cypress/integration/pass.spec.js
+      - cypress/integration/pass.spec.js
+    dependency:
+      - A
+
+  # secrets
+  #
+  # The name to look for secrets on memory or file
+  #
+  # It must be something like that:
+  # {
+  #   "vtex": {
+  #     "apiKey": "",
+  #     "apiToken": "",
+  #     "cookieName": "",
+  #     "robotMail": "",
+  #     "robotPassword": ""
+  #   },
+  #   "twilio": {
+  #     "apiUser": "",
+  #     "apiToken": ""
+  #   },
+  #   "jira": {
+  #     "authorization": ""
+  #   },
+  #   "cypress": {
+  #     "dashboardKey": ""
+  #   }
+  # }
+  #
+  # At development mode you can use a file called '.[secrets.name].json'
+  # 1. Remember to ignore this file on your Git
+  # 2. You can add whatever secrets you want on it

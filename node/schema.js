@@ -63,12 +63,12 @@ function schemaValidator(schema, config, strategy = '') {
     }
     if (crash)
       qe.crash(
-        `Parse cy-runner.yml failed [${strategy}${item.key} must be ${msg}]`
+        `Parse config file failed: ${strategy}${item.key} must be ${msg}`
       )
   })
 }
 
-exports.validate = (config) => {
+exports.validateConfig = (config, file) => {
   const BASE_SCHEMA = {
     base: {
       secrets: {
@@ -138,5 +138,38 @@ exports.validate = (config) => {
   })
 
   // All set, show the user a positive feedback
-  qe.msg('cy-runner.yml loaded and validated successfully')
+  qe.msg(file + ' loaded and validated successfully')
+}
+
+exports.validateSecrets = (secrets, config) => {
+  try {
+    if (config.base.vtex.deployCli.enabled) {
+      const VTEX_ATTRIBUTES = [
+        'apiKey',
+        'apiToken',
+        'authCookieName',
+        'robotMail',
+        'robotPassword',
+      ]
+      VTEX_ATTRIBUTES.forEach((att) => {
+        checkSecret(`secrets.vtex.${att}`, secrets.vtex[att])
+      })
+    }
+    // Check TWILIO secrets
+    if (config.base.twilio.enabled) {
+      const TWILIO_ATTRIBUTES = ['apiUser', 'apiToken', 'baseUrl']
+      TWILIO_ATTRIBUTES.forEach((att) => {
+        checkSecret(`secrets.twilio.${att}`, secrets.twilio[att])
+      })
+    }
+  } catch (e) {
+    qe.crash('You must set this property on your secrets', e)
+  }
+}
+
+// Check secrets
+function checkSecret(key, value) {
+  key = key.split('secrets.')[1]
+  if (typeof value != 'string') qe.crash('Secret must be string: ' + key)
+  if (value.length <= 0) qe.crash('Secret can not be null: ' + key)
 }
