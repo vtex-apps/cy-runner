@@ -1,4 +1,3 @@
-const fs = require('fs')
 const qe = require('./utils')
 
 exports.getConfig = async (configFile) => {

@@ -22,7 +22,6 @@ async function main() {
 
   // Read cy-runner.yml configuration
   let config = await getConfig('cy-runner.yml')
-  qe.success('PartbyPart')
 
   // Report configuration to help understand that'll run
   await qe.sectionsToRun(config)
@@ -31,6 +30,7 @@ async function main() {
   let call = await vtexCli(config)
   process.env.PATH = call.path
   control.timing['vtexCli'] = call.time
+  qe.success('PartbyPart')
 
   // Configure workspace (create, install, uninstall, link app)
   control.timing['workspace'] = await workspace(config)

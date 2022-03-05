@@ -28,7 +28,9 @@ function icon(type) {
 exports.msg = (msg, type = 'ok', pad = false, wait = false) => {
   const ICO = pad ? icon().padStart(8) : icon(type).padStart(8)
   const MSG = `${ICO} ${msg}${wait ? '... ' : '\n'}`
-  process.stdout.write(MSG)
+  type === 'complete'
+    ? process.stdout.write(msg + '\n')
+    : process.stdout.write(MSG)
 }
 
 exports.msgSection = (msg) => {

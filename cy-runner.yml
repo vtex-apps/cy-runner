@@ -12,7 +12,7 @@ base:
     deployCli:
       # Implies login with credentials from base.secrets.name
       # If you want to use the current vtex login, disable it
-      enabled: false
+      enabled: true
       git: https://github.com/vtex/toolbelt.git
       branch: qe/cypress
   twilio:

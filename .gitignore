@@ -112,3 +112,6 @@ cypress.json
 /cypress-shared/screenshots
 /cypress-shared/downloads
 **/.toolbelt.url
+/node/cypress/fixtures
+
+

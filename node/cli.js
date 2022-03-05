@@ -1,6 +1,6 @@
 const fs = require('fs')
 const qe = require('./utils')
-const path = require('path/posix')
+const path = require('path')
 const PATH_HOME = process.env.HOME
 const PATH_CACHE = path.join(PATH_HOME, '.cache')
 const PATH_CACHE_VTEX = path.join(PATH_CACHE, 'vtex')
@@ -19,21 +19,18 @@ exports.vtexCli = async (config) => {
 
   if (deployCli.enabled) {
     qe.msgSection('Toolbelt deployment and authentication')
-    // Try to clean vtex cache state to avoid bugs
+    // Clean vtex cache state to avoid bugs
     await cleanCache()
     // Check if toolbelt is installed already
     if (fs.existsSync(TOOLBELT_BIN))
       qe.msg('Patched version of toolbelt is installed already')
     else await installToolbelt(deployCli)
-    qe.msg(
-      `Starting login process using ${config.base.vtex.account} ...`,
-      'warn'
-    )
+    qe.msg(`Starting login process using ${config.base.vtex.account}`, 'warn')
     // Authenticate in background
     await startBackground(config.base.vtex)
   }
   // Get user and robot credentials
-  if (secrets.enabled) await getCredentials(config.base.vtex)
+  if (secrets.enabled) await getVtexCredentials(config.base.vtex)
   return {
     path: `${process.env.PATH}:${PATH_TOOLBELT_BIN}`,
     time: qe.toc(START),
@@ -82,16 +79,21 @@ async function installToolbelt(deployCli) {
 
 async function startBackground(vtex) {
   try {
+    let envFile = 'cypress.env.json'
+    let envPath = path.join('node', 'cypress.env.json')
     qe.msg('Toolbelt version', true, true, true)
     qe.exec(`${TOOLBELT_BIN} --version`, 'inherit')
     qe.msg(`Removing old ${TOOLBELT_URL_OUTPUT}, if any`, true, true)
     if (fs.existsSync(TOOLBELT_URL_OUTPUT)) fs.rmSync(TOOLBELT_URL_OUTPUT)
     qe.msg('Logging out from any other sessions', true, true)
     await qe.exec(`${TOOLBELT_BIN} logout`)
-    qe.msg(`Trying to login on ${vtex.account}`, true, true)
+    qe.msg(`Calling toolbelt`, true, true, true)
     qe.exec(`${TOOLBELT_BIN} login ${vtex.account} 1> ${TOOLBELT_URL_OUTPUT} &`)
     let size = 0
     while (size < 3) size = qe.fileSize(TOOLBELT_URL_OUTPUT)
+    qe.msg(`callback file created`, 'complete', true)
+    qe.msg(`Trying to login on ${vtex.account}`, true, true)
+    if (!fs.existsSync(envPath)) fs.linkSync(envFile, envPath)
     qe.exec('yarn cypress run -P node')
   } catch (e) {
     qe.crash('Failed to authenticate using toolbelt\n' + e)
@@ -100,7 +102,7 @@ async function startBackground(vtex) {
   qe.msg(`Login on ${vtex.account} completed successfully`)
 }
 
-async function getCredentials(vtex) {
+async function getVtexCredentials(vtex) {
   const encodedBase64Token = Buffer.from(
     `${vtex.apiKey}:${vtex.apiToken}`
   ).toString('base64')
