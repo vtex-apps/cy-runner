@@ -113,5 +113,6 @@ cypress.json
 /cypress-shared/downloads
 **/.toolbelt.url
 /node/cypress/fixtures
+/node/cypress/plugins
 
 

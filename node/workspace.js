@@ -19,6 +19,8 @@ exports.workspace = async (config) => {
     // await useWorkspace(config.workspace)
     // // Manage Apps
     // await manageApps(config.workspace)
+    // Get user and robot credentials
+    // if (secrets.enabled) await getVtexCredentials(config.base.vtex)
     if (WORKSPACE.teardown.enabled)
       await qe.openCypress(WORKSPACE.teardown, 'teardown')
     qe.msg(
@@ -79,3 +81,19 @@ async function manageApps(config) {
   }
 }
 
+async function getVtexCredentials(vtex) {
+  const encodedBase64Token = Buffer.from(
+    `${vtex.apiKey}:${vtex.apiToken}`
+  ).toString('base64')
+  const authorization = 'Bearer ' + encodedBase64Token
+  const axiosConfig = {
+    url: vtex.vtexIdUrl,
+    method: 'get',
+    headers: {
+      Authorization: authorization,
+    },
+    data: {},
+  }
+  const TOKEN = await qe.request(axiosConfig)
+  qe.crash(TOKEN)
+}

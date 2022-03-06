@@ -30,7 +30,7 @@ async function main() {
   let call = await vtexCli(config)
   process.env.PATH = call.path
   control.timing['vtexCli'] = call.time
-  qe.success('PartbyPart')
+  qe.success('AFter vtexcli')
 
   // Configure workspace (create, install, uninstall, link app)
   control.timing['workspace'] = await workspace(config)

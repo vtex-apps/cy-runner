@@ -84,24 +84,31 @@ exports.exec = (cmd, output) => {
   })
 }
 
-exports.fileSize = (file) => {
-  let stats = fs.statSync(file)
-  return stats.size
-}
-
-exports.fileExists = (file) => {
+exports.storage = (source, action, destination = null) => {
   try {
-    return fs.existsSync(file)
+    switch (action) {
+      case 'read':
+        return fs.readFileSync(source, { encoding: 'utf-8' })
+      case 'size':
+        let stats = fs.statSync(source)
+        return stats.size
+      case 'copy':
+        if (destination == null) this.crash('You must pass copy destination')
+        return fs.copyFileSync(source, destination)
+      case 'link':
+        if (destination == null) this.crash('You must pass link destination')
+        return fs.linkSync(source, destination)
+      case 'rm':
+        if (fs.existsSync(source)) return fs.rmSync(source, { recursive: true })
+        return false
+      case 'mkdir':
+        return fs.mkdirSync(source)
+      default:
+        // Default: test if file or dir exists
+        return fs.existsSync(source)
+    }
   } catch (e) {
-    this.crash(`Fail to check if file ${file} exists`, e)
-  }
-}
-
-exports.readFile = (file) => {
-  try {
-    return fs.readFileSync(file, { encoding: 'utf-8' })
-  } catch (e) {
-    this.crash(`Fail to read file ${file}`, e)
+    this.crash(`Fail to ${action} ${source}`, e)
   }
 }
 
@@ -110,9 +117,9 @@ exports.readSecrets = (config) => {
   let secretFile = `.${secretName}.json`
   let secrets = null
   let loadedFrom = null
-  if (this.fileExists(secretFile)) {
+  if (this.storage(secretFile)) {
     try {
-      secrets = yaml.load(this.readFile(secretFile), 'utf-8')
+      secrets = yaml.load(this.storage(secretFile, 'read'), 'utf-8')
     } catch (e) {
       this.crash(`Check if your JSON secrets ${secretFile} is well formatted`)
     }
@@ -134,9 +141,9 @@ exports.readSecrets = (config) => {
 }
 
 exports.loadYmlConfig = (file) => {
-  if (!this.fileExists(file)) this.crash(`File ${file} not found`)
+  if (!this.storage(file)) this.crash(`File ${file} not found`)
   try {
-    let ymlFile = this.readFile(file)
+    let ymlFile = this.storage(file, 'read')
     let ymlConfig = yaml.load(ymlFile)
     schema.validateConfig(ymlConfig, file)
     return ymlConfig
