@@ -11,6 +11,10 @@ exports.getConfig = async (configFile) => {
   if (secrets) config = qe.mergeSecrets(config, secrets)
   // Get workspace to run tests
   config.workspace.name = qe.getWorkspaceName(config)
+  // Set right vtex cli to be used in further calls
+  config.base.vtex['bin'] = config.base.vtex.deployCli.enabled
+    ? 'vtex-e2e'
+    : 'vtex'
   // Write cypress.env.json
   qe.writeEnvJson(config)
   // Write cypress.json

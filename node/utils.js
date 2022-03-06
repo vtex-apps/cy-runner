@@ -79,9 +79,68 @@ exports.fail = (msg) => {
 
 exports.exec = (cmd, output) => {
   if (typeof output == 'undefined') output = 'ignore'
-  execSync(cmd, {
-    stdio: output,
-  })
+  try {
+    return execSync(cmd, {
+      stdio: output,
+    })
+  } catch (e) {
+    this.crash('Fail to exec ' + cmd, e)
+  }
+}
+
+exports.toolbelt = async (bin, cmd, linkApp) => {
+  const MAX_TRIES = 5
+  let stdout
+  let check = false
+  let thisTry = 0
+  switch (cmd.split(' ')[0]) {
+    case 'whoami':
+      stdout = this.exec(`${bin} ${cmd}`, 'pipe').toString()
+      return /Logged/.test(stdout) ? stdout.split(' ')[7] : false
+    case 'workspace':
+      stdout = this.exec(`echo y | ${bin} ${cmd}`, 'pipe').toString()
+      check = /Workspace change|deleted/.test(stdout)
+      break
+    case 'install':
+    case 'uninstall':
+      while (!check && thisTry < MAX_TRIES) {
+        thisTry++
+        stdout = this.exec(`echo y | ${bin} ${cmd}`, 'pipe').toString()
+        check = /successfully|App not installed/.test(stdout)
+      }
+      break
+    case 'unlink':
+      while (!check && thisTry < MAX_TRIES) {
+        thisTry++
+        stdout = this.exec(`echo y | ${bin} ${cmd}`, 'pipe').toString()
+        check = /Successfully unlinked|No linked apps/.test(stdout)
+      }
+      break
+    case 'link':
+      if (/no-watch/.test(cmd)) {
+        stdout = this.exec(`echo y | ${bin} ${cmd}`, 'pipe').toString()
+        check = /build finished successfully/.test(stdout)
+      } else {
+        linkApp = new RegExp(linkApp)
+        this.exec(`echo y | ${bin} ${cmd}`)
+        while (!check && thisTry < MAX_TRIES) {
+          thisTry++
+          await new Promise((resolve) => setTimeout(resolve, 10000))
+          stdout = this.exec(`${bin} ls`, 'pipe').toString()
+          check = linkApp.test(stdout)
+        }
+      }
+      break
+  }
+  if (!check) this.crash('Toolbelt command failed', `${bin} ${cmd}`)
+}
+
+exports.vtexCliInstallApp = (bin) => {
+  let stdout = this.exec(`${bin} whoami`, 'pipe').toString()
+  let isLogged = /Logged/.test(stdout)
+  let user = null
+  if (isLogged) user = stdout.split(' ')[7]
+  return { isLogged: isLogged, user: user }
 }
 
 exports.storage = (source, action, destination = null) => {
@@ -98,8 +157,15 @@ exports.storage = (source, action, destination = null) => {
       case 'link':
         if (destination == null) this.crash('You must pass link destination')
         return fs.linkSync(source, destination)
+      case 'append':
+        if (destination == null) this.crash('You must inform what to add')
+        if (!this.storage(source, 'exists')) fs.writeFileSync(source, ' ')
+        return fs.appendFileSync(source, destination)
       case 'rm':
-        if (fs.existsSync(source)) return fs.rmSync(source, { recursive: true })
+        if (fs.existsSync(source)) {
+          fs.rmSync(source, { recursive: true })
+          return true
+        }
         return false
       case 'mkdir':
         return fs.mkdirSync(source)
@@ -182,12 +248,14 @@ exports.mergeSecrets = (config, secrets) => {
 
 exports.getWorkspaceName = (config) => {
   let workspace = config.workspace.name
+  config.workspace['random'] = false
   if (workspace === 'random') {
     let seed = this.tick()
     let prefix = config.workspace.prefix
-    workspace = `${prefix}${seed.toString().substring(0, 7)}`
-    this.msg(`Workspace to be used on this run: ${workspace}`)
+    config.workspace['random'] = true
+    workspace = `${prefix}${seed.toString().substring(6, 13)}`
   }
+  this.msg(`Workspace to be used on this run: ${workspace}`)
   return workspace
 }
 
@@ -276,10 +344,16 @@ exports.traverse = (result, obj, previousKey) => {
 
 exports.sectionsToRun = async (config) => {
   this.msgSection('Sections enabled/disabled')
+  let linkApp = false
   this.traverse([], config).forEach((item) => {
     if (/enabled/.test(item.key) && /true/.test(item.type)) {
       let itemEnabled = item.key.split('.enabled')[0]
-      this.msg(itemEnabled)
+      if (itemEnabled === 'workspace.linkApp') linkApp = true
+      if (linkApp && itemEnabled === 'workspace.linkApp.logOutput') {
+        this.msg(itemEnabled)
+        this.msg('This output may contain credentials', true, true)
+        this.msg('Never enable it on CI environments', true, true)
+      } else this.msg(itemEnabled)
     }
     if (/enabled/.test(item.key) && /false/.test(item.type)) {
       let itemEnabled = item.key.split('.enabled')[0]

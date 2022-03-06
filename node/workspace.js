@@ -2,98 +2,88 @@ const qe = require('./utils')
 
 exports.workspace = async (config) => {
   const START = qe.tick()
-  const WORKSPACE = config.workspace
-  if (config.workspace.runInDevMode) {
-    // Open Cypress en DEV/GUI mode
-    qe.msgSection('Development mode')
-    qe.msg('You must run the steps wipe by yourself')
-    // Install, remove or link apps
-    await manageApps(config)
-    // Sync credentials
-    await syncConfig(config) // sync setup env
-    // Call strategy
-    await qe.openCypress()
-    if (WORKSPACE.wipe.enabled) await qe.openCypress(WORKSPACE.wipe, 'wipe')
-    // TODO: Fix this code
-    // // Use workspace
-    // await useWorkspace(config.workspace)
-    // // Manage Apps
-    // await manageApps(config.workspace)
-    // Get user and robot credentials
-    // if (secrets.enabled) await getVtexCredentials(config.base.vtex)
-    if (WORKSPACE.teardown.enabled)
-      await qe.openCypress(WORKSPACE.teardown, 'teardown')
-    qe.msg(
-      'My job finishes here, hope you did well on your tests. See you soon!'
-    )
-    process.exit(0)
-  } else {
-    // Run Cypress in automated mode
-    // TODO: FIx this code
-    if (WORKSPACE.setup.enabled || WORKSPACE.setup.manageApps.enabled) {
-      await workspaceSetup(config)
-      await syncConfig(config) // sync setup env
+  let wrk = config.workspace
+  let linkApp = wrk.linkApp
+  let installApps = wrk.installApps
+  let removeApps = wrk.removeApps
+  let wipe = wrk.wipe
+  let teardown = wrk.teardown
+  let manageWorkspace =
+    wrk.random ||
+    linkApp.enabled ||
+    installApps.length > 0 ||
+    removeApps.length > 0 ||
+    wipe.enabled ||
+    teardown.enabled
+  let vtexBin = config.base.vtex.bin
+
+  if (manageWorkspace) {
+    qe.msgSection('Workspace preparation')
+    // Check if vtex cli is logged
+    let toolbelt = await qe.toolbelt(vtexBin, 'whoami')
+    if (typeof toolbelt === 'string') {
+      // Feedback with actual user
+      qe.msg('Toolbelt logged as ' + toolbelt)
+      // Change workspace
+      await qe.toolbelt(vtexBin, `workspace use ${wrk.name}`)
+      // Install apps
+      if (installApps.length > 0) {
+        qe.msg('Installing apps', 'warn', false)
+        installApps.forEach((app) => {
+          qe.msg(app, true, true)
+          qe.toolbelt(vtexBin, `install ${app}`)
+        })
+        qe.msg('Apps installed successfully')
+      }
+      // Uninstall apps
+      if (removeApps.length > 0) {
+        qe.msg('Uninstalling apps', 'warn', false)
+        removeApps.forEach((app) => {
+          qe.msg(app, true, true)
+          qe.toolbelt(vtexBin, `uninstall ${app}`)
+        })
+        qe.msg('Apps uninstalled successfully')
+      }
+      // Link app
+      await doLinkApp(config)
     } else {
-      qe.msg('[setup] and [manageApps] are disabled, skipping workspace set up')
+      if (!config.base.vtex.deployCli.enabled)
+        qe.crash(
+          'deployCli is disabled, you must be logged on your system toolbelt to manage workspace'
+        )
+      qe.crash('You have deployCli enabled, but something goes wrong')
     }
   }
+
+  qe.success('here')
+
   return qe.toc(START)
 }
 
-// Manage Apps
-async function manageApps(config) {
-  let vtex = config.base.vtex.deployCli.enabled ? 'vtex-e2e' : 'vtex'
-  let toInstall = config.workspace.installApps
-  let toRemove = config.workspace.removeApps
-  let toLink = config.workspace.linkApp
-  let manageApps =
-    typeof toInstall === 'object' || typeof toRemove === 'object' || toLink
-  if (manageApps) {
-    if (toInstall === 'object') {
-      qe.msgSection('Apps management')
-      toInstall.forEach((app) => {
-        qe.msg('Installing ' + app)
-        try {
-          qe.exec(`${vtex} install app`)
-        } catch (e) {
-          qe.crash(e)
-        }
-      })
-    }
-    if (toRemove === 'object') {
-      toRemove.forEach((app) => {
-        qe.msg('Removing ' + app)
-        try {
-          qe.exec(`echo y | ${vtex} uninstall app`)
-        } catch (e) {
-          qe.crash(e)
-        }
-      })
-    }
-    if (toLink) {
-      qe.msg('Linking app to be tested')
-      try {
-        qe.exec(`cd .. && echo y | ${vtex} link --no-watch`)
-      } catch (e) {
-        qe.crash(e)
-      }
-    }
+async function doLinkApp(config) {
+  if (config.workspace.linkApp.enabled) {
+    qe.msg('Linking app', 'warn', false)
+    qe.msg('Reading manifest.json', true, true)
+    let testApp = qe.storage('manifest.json', 'read')
+    testApp = JSON.parse(testApp)
+    let app = `${testApp.vendor}.${testApp.name}`
+    let version = testApp.version.split('.')[0]
+    qe.msg(`Uninstalling ${app}`, true, true)
+    await qe.toolbelt(config.base.vtex.bin, `uninstall ${app}`)
+    qe.msg(`Unlinking ${app}`, true, true)
+    await qe.toolbelt(config.base.vtex.bin, `unlink ${app}@${version}.x`)
+    let ignoreFile = '.vtexignore'
+    let exclusions = ['cypress', 'cy-runner', 'cypress-shared']
+    qe.msg(`Adding cy-runner exclusions to ` + ignoreFile, true, true)
+    exclusions.forEach((line) => {
+      qe.storage(ignoreFile, 'append', line + '.*\n')
+      qe.storage(ignoreFile, 'append', '/' + line + '\n')
+    })
+    qe.msg(`Linking ${app}`, true, true)
+    let logOutput = config.workspace.linkApp.logOutput.enabled
+      ? '1> cy-runner.log &'
+      : '--no-watch'
+    await qe.toolbelt(config.base.vtex.bin, `link ${logOutput}`, app)
+    qe.msg('App linked successfully')
   }
-}
-
-async function getVtexCredentials(vtex) {
-  const encodedBase64Token = Buffer.from(
-    `${vtex.apiKey}:${vtex.apiToken}`
-  ).toString('base64')
-  const authorization = 'Bearer ' + encodedBase64Token
-  const axiosConfig = {
-    url: vtex.vtexIdUrl,
-    method: 'get',
-    headers: {
-      Authorization: authorization,
-    },
-    data: {},
-  }
-  const TOKEN = await qe.request(axiosConfig)
-  qe.crash(TOKEN)
 }

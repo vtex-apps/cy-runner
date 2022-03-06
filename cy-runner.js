@@ -24,16 +24,16 @@ async function main() {
   let config = await getConfig('cy-runner.yml')
 
   // Report configuration to help understand that'll run
-  await qe.sectionsToRun(config)
+  // await qe.sectionsToRun(config)
 
   // Deploy, start in background, and add VTEX CLI to system PATH
   let call = await vtexCli(config)
   process.env.PATH = call.path
   control.timing['vtexCli'] = call.time
-  qe.success('AFter vtexcli')
 
   // Configure workspace (create, install, uninstall, link app)
   control.timing['workspace'] = await workspace(config)
+  qe.success('After workspace')
 
   // Tests
   call = await strategy(config)

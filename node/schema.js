@@ -53,11 +53,13 @@ function schemaValidator(schema, config, strategy = '') {
         msg = 'boolean'
         if (value != null && typeof value != 'boolean') crash = true
         break
-      // // Array
-      // case 7:
-      //     msg = msg + 'array]'
-      //     if (!value.constructor.prototype.hasOwnProperty('push')) crash = true
-      //     break
+      // Array
+      case 7:
+        msg = 'array'
+        if (value === null) crash = true
+        else if (!value.constructor.prototype.hasOwnProperty('push'))
+          crash = true
+        break
       default:
         break
     }
@@ -108,7 +110,12 @@ exports.validateConfig = (config, file) => {
       runHeaded: 2,
       runInDevMode: 2,
       prefix: 0,
-      linkApp: 2,
+      linkApp: {
+        enabled: 2,
+        logOutput: {
+          enabled: 2,
+        },
+      },
       installApps: 7,
       removeApps: 7,
       wipe: { enabled: 2, stopOnFail: 2, spec: 0 },
