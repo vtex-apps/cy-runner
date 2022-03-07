@@ -1,12 +1,11 @@
-const qe = require('./cy-runner/utils')
-const { config } = require('./cy-runner/config')
-const { vtexCli } = require('./cy-runner/cli')
-const { vtexWorkspace } = require('./cy-runner/workspace')
-const { vtexTestStrategy } = require('./cy-runner/test')
-const { vtexWipe } = require('./cy-runner/wipe')
-const { vtexTeardown } = require('./cy-runner/teardown')
-const { vtexJira } = require('./cy-runner/jira')
-const { vtexReport } = require('./cy-runner/report')
+const qe = require('./node/utils')
+const { getConfig } = require('./node/config')
+const { vtexCli } = require('./node/cli')
+const { workspace } = require('./node/workspace')
+const { credentials } = require('./node/credential')
+const { strategy } = require('./node/test')
+const { teardown } = require('./node/teardown')
+const { report } = require('./node/report')
 
 // Controls test state
 let control = {
@@ -18,8 +17,14 @@ let control = {
 }
 
 async function main() {
+  // Welcome message
+  qe.msgSection('Cypress Runner')
+
+  // Read cy-runner.yml configuration
+  let config = await getConfig('cy-runner.yml')
+
   // Report configuration to help understand that'll run
-  await qe.reportSetup(config)
+  await qe.sectionsToRun(config)
 
   // Deploy, start in background, and add VTEX CLI to system PATH
   let call = await vtexCli(config)
@@ -27,24 +32,26 @@ async function main() {
   control.timing['vtexCli'] = call.time
 
   // Configure workspace (create, install, uninstall, link app)
-  control.timing['vtexWorkspace'] = await vtexWorkspace(config)
+  control.timing['workspace'] = await workspace(config)
+
+  // Get credentials
+  call = await credentials(config)
+  config = call.config
+  control.timing['credentials'] = call.time
 
   // Tests
-  call = await vtexTestStrategy(config)
-  control.timing['vtexTestStrategy'] = call.time
+  call = await strategy(config)
+  control.timing['vtexStrategy'] = call.time
   control.testsFailed = call.testsFailed
   control.testsSkipped = call.testsSkipped
   control.testsPassed = call.testsPassed
 
-  // Wipe
-  control.timing['vtexWipe'] = await vtexWipe(config)
-
   // Teardown
-  control.timing['vtexTeardown'] = await vtexTeardown(config)
+  control.timing['vtexTeardown'] = await teardown(config)
 
   // Final Report
   control.timing['total'] = qe.toc(control.start)
-  await vtexReport(control)
+  await report(control)
 }
 
 main()

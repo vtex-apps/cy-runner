@@ -1,7 +1,7 @@
 ---
 base:
   secrets:
-    enabled: false
+    enabled: true
     name: VTEX_QE
   vtex:
     account: productusqa
@@ -46,7 +46,7 @@ base:
 
 workspace:
   # If random a new name will be generated with prefix (ie b2b1234567)
-  name: b2b5416444
+  name: random
   prefix: b2b
   runInDevMode: false
   runHeaded: false
@@ -57,7 +57,7 @@ workspace:
       enabled: false
   # List of apps will be installed, if not empty and config.vtexCli disabled,
   # you must ensure your vtex cli is authenticated already
-  installApps: [ ]
+  installApps:
   #    - vtex.b2b-suite
   #    - vtex.b2b-quotes
   #    - vtex.quickorder
@@ -69,19 +69,19 @@ workspace:
   #    - vtex.storefront-permissions-ui@0.x
   #    - vtex.b2bstore@2.x
   # It is a good idea remove, at least, the app you want to test integration on workspace.linkApp
-  removeApps: [ ]
+  removeApps:
   #    - vtex.store-theme
   wipe:
-    enabled: true
+    enabled: false
     stopOnFail: false
-    spec: cypress-shared/integration/pass.spec.js
+    spec: cypress/integration/wipe.spec.js
   teardown:
-    enabled: true
+    enabled: false
 
 strategy:
   # The strategies must be in order, with dependent tests last
   A:
-    enabled: true
+    enabled: false
     sendDashboard: false
     hardTries: 1
     stopOnFail: false
@@ -90,17 +90,18 @@ strategy:
     runInOrder: true
     # You can use *, but the order will be not guaranteed
     specs:
-      - cypress-shared/integration/fail.spec.js
+      - cypress-shared/integration/pass.spec.js
 
   B:
-    enabled: true
+    enabled: false
     sendDashboard: false
     hardTries: 1
-    stopOnFail: true
+    stopOnFail: false
     parallel: false
     runInOrder: false
     specs:
-      - cypress-shared/integration/pass.spec.js
+      - cypress/integration/pass.spec.js
+      - cypress/integration/pass.spec.js
     dependency:
       - A
 

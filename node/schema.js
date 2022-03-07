@@ -53,30 +53,37 @@ function schemaValidator(schema, config, strategy = '') {
         msg = 'boolean'
         if (value != null && typeof value != 'boolean') crash = true
         break
-      // // Array
-      // case 7:
-      //     msg = msg + 'array]'
-      //     if (!value.constructor.prototype.hasOwnProperty('push')) crash = true
-      //     break
+      // Array
+      case 7:
+        msg = 'array'
+        if (value === null) crash = true
+        else if (!value.constructor.prototype.hasOwnProperty('push'))
+          crash = true
+        break
       default:
         break
     }
     if (crash)
       qe.crash(
-        `Parse cy-runner.yml failed [${strategy}${item.key} must be ${msg}]`
+        `Parse config file failed: ${strategy}${item.key} must be ${msg}`
       )
   })
 }
 
-exports.validate = (config) => {
+exports.validateConfig = (config, file) => {
   const BASE_SCHEMA = {
-    secretName: 0,
-    testConfig: {
-      devMode: 2,
-      runHeaded: 2,
-      authVtexCli: { enabled: 2, git: 0, branch: 0 },
+    base: {
+      secrets: {
+        enabled: 2,
+        name: 0,
+      },
       twilio: { enabled: 2 },
-      vtex: { account: 0, id: 4, domain: 0 },
+      vtex: {
+        account: 0,
+        id: 4,
+        domain: 0,
+        deployCli: { enabled: 2, git: 0, branch: 0 },
+      },
       cypress: {
         enabled: 2,
         projectId: 0,
@@ -98,22 +105,21 @@ exports.validate = (config) => {
       slack: { enabled: 2, channel: 3 },
       stateFiles: 7,
     },
-    testWorkspace: {
+    workspace: {
       name: 3,
-      testPrefix: 0,
-      setup: {
+      runHeaded: 2,
+      runInDevMode: 2,
+      prefix: 0,
+      linkApp: {
         enabled: 2,
-        stopOnFail: 2,
-        spec: 0,
-        manageApps: {
+        logOutput: {
           enabled: 2,
-          link: 0,
-          install: 7,
-          uninstall: 7,
         },
       },
+      installApps: 7,
+      removeApps: 7,
       wipe: { enabled: 2, stopOnFail: 2, spec: 0 },
-      teardown: { enabled: 2, stopOnFail: 2, spec: 0 },
+      teardown: { enabled: 2 },
     },
   }
   const STRATEGY_SCHEMA = {
@@ -131,7 +137,7 @@ exports.validate = (config) => {
 
   // Validate test strategies
   let configSchema = {}
-  Object.entries(config.testStrategy).forEach((entry) => {
+  Object.entries(config.strategy).forEach((entry) => {
     configSchema[entry[0]] = entry[1]
   })
   Object.keys(configSchema).forEach((strategy) => {
@@ -139,5 +145,38 @@ exports.validate = (config) => {
   })
 
   // All set, show the user a positive feedback
-  qe.msg('cy-runner.yml loaded and validated successfully')
+  qe.msg(file + ' loaded and validated successfully')
+}
+
+exports.validateSecrets = (secrets, config) => {
+  try {
+    if (config.base.vtex.deployCli.enabled) {
+      const VTEX_ATTRIBUTES = [
+        'apiKey',
+        'apiToken',
+        'authCookieName',
+        'robotMail',
+        'robotPassword',
+      ]
+      VTEX_ATTRIBUTES.forEach((att) => {
+        checkSecret(`secrets.vtex.${att}`, secrets.vtex[att])
+      })
+    }
+    // Check TWILIO secrets
+    if (config.base.twilio.enabled) {
+      const TWILIO_ATTRIBUTES = ['apiUser', 'apiToken', 'baseUrl']
+      TWILIO_ATTRIBUTES.forEach((att) => {
+        checkSecret(`secrets.twilio.${att}`, secrets.twilio[att])
+      })
+    }
+  } catch (e) {
+    qe.crash('You must set this property on your secrets', e)
+  }
+}
+
+// Check secrets
+function checkSecret(key, value) {
+  key = key.split('secrets.')[1]
+  if (typeof value != 'string') qe.crash('Secret must be string: ' + key)
+  if (value.length <= 0) qe.crash('Secret can not be null: ' + key)
 }
