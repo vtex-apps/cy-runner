@@ -204,6 +204,8 @@ exports.readSecrets = (config) => {
 }
 
 exports.loadYmlConfig = (file) => {
+  let parentFile = path.join('..', file)
+  if (this.storage(parentFile)) file = parentFile
   if (!this.storage(file)) this.crash(`File ${file} not found`)
   try {
     let ymlFile = this.storage(file, 'read')
