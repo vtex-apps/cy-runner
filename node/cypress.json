@@ -1,0 +1,10 @@
+{
+  "chromeWebSecurity": false,
+  "video": false,
+  "videoCompression": false,
+  "videoUploadOnPasses": false,
+  "screenshotOnRunFailure": false,
+  "trashAssetsBeforeRuns": false,
+  "watchForFileChanges": false,
+  "pluginsFile": false
+}
