@@ -1,11 +1,11 @@
 const qe = require('./node/utils')
-const { getConfig } = require('./node/config')
-const { vtexCli } = require('./node/cli')
-const { workspace } = require('./node/workspace')
-const { credentials } = require('./node/credential')
-const { strategy } = require('./node/test')
-const { teardown } = require('./node/teardown')
-const { report } = require('./node/report')
+const {getConfig} = require('./node/config')
+const {vtexCli} = require('./node/cli')
+const {workspace} = require('./node/workspace')
+const {credentials} = require('./node/credential')
+const {strategy} = require('./node/test')
+const {teardown} = require('./node/teardown')
+const {report} = require('./node/report')
 
 // Controls test state
 let control = {
@@ -40,18 +40,24 @@ async function main() {
   control.timing['credentials'] = call.time
 
   // Tests
-  call = await strategy(config)
-  control.timing['vtexStrategy'] = call.time
-  control.testsFailed = call.testsFailed
-  control.testsSkipped = call.testsSkipped
-  control.testsPassed = call.testsPassed
+  if (config.workspace.runInDevMode) {
+    qe.msgSection('Running in dev mode')
+    qe.msg('When you finish, please wait the process flow', 'warn')
+    await qe.openCypress()
+  } else {
+    call = await strategy(config)
+    control.timing['strategy'] = call.time
+    control.testsFailed = call.testsFailed
+    control.testsSkipped = call.testsSkipped
+    control.testsPassed = call.testsPassed
+  }
 
   // Teardown
-  control.timing['vtexTeardown'] = await teardown(config)
+  control.timing['teardown'] = await teardown(config)
 
   // Final Report
   control.timing['total'] = qe.toc(control.start)
-  await report(control)
+  await report(control, config)
 }
 
 main()

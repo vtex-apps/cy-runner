@@ -4,7 +4,7 @@ let config = Cypress.env()
 // Constants
 const vtex = config.base.vtex
 const twilio = config.base.twilio
-const FAIL_TIMEOUT = { retries: 3, timeout: 1000, log: false }
+const FAIL_TIMEOUT = { retries: 5, timeout: 1000, log: false }
 const TXT_EMAIL = '[name = "email"]'
 const TXT_PASSWORD = '[name = "password"]'
 const TXT_CODE = '[name = "code"]'

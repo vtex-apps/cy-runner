@@ -1,10 +1,10 @@
 const cy = require('cypress')
-const { execSync } = require('child_process')
+const {execSync} = require('child_process')
 const fs = require('fs')
 const path = require('path')
 const axios = require('axios')
-const { merge } = require('lodash')
-const { teardown } = require('./teardown')
+const {merge} = require('lodash')
+const {teardown} = require('./teardown')
 const yaml = require('js-yaml')
 const schema = require('./schema')
 
@@ -73,11 +73,9 @@ exports.fail = (msg) => {
 exports.exec = (cmd, output) => {
   if (typeof output == 'undefined') output = 'ignore'
   try {
-    return execSync(cmd, {
-      stdio: output,
-    })
-  } catch (_e) {
-    return false
+    return execSync(cmd, {stdio: output,})
+  } catch (e) {
+    this.crash('Fail to exec ' + cmd, e)
   }
 }
 
@@ -137,14 +135,14 @@ exports.vtexCliInstallApp = (bin) => {
   let isLogged = /Logged/.test(stdout)
   let user = null
   if (isLogged) user = stdout.split(' ')[7]
-  return { isLogged: isLogged, user: user }
+  return {isLogged: isLogged, user: user}
 }
 
 exports.storage = (source, action, destination = null) => {
   try {
     switch (action) {
       case 'read':
-        return fs.readFileSync(source, { encoding: 'utf-8' })
+        return fs.readFileSync(source, {encoding: 'utf-8'})
       case 'size':
         let stats = fs.statSync(source)
         return stats.size
@@ -160,7 +158,7 @@ exports.storage = (source, action, destination = null) => {
         return fs.appendFileSync(source, destination)
       case 'rm':
         if (fs.existsSync(source)) {
-          fs.rmSync(source, { recursive: true })
+          fs.rmSync(source, {recursive: true})
           return true
         }
         return false
@@ -262,7 +260,7 @@ exports.writeEnvJson = (config) => {
   const ENV_FILE = 'cypress.env.json'
   try {
     fs.writeFileSync(ENV_FILE, JSON.stringify(config))
-    this.msg(`${ENV_FILE} updated successfully`)
+    this.msg(`${ENV_FILE} updated`)
   } catch (e) {
     this.crash('Fail to create Cypress env file', e)
   }
@@ -294,6 +292,8 @@ exports.writeCypressJson = (config) => {
         browser: CYPRESS.browser,
         projectId: CYPRESS.projectId,
         retries: 0,
+        screenshotsFolder: "logs/screenshots",
+        videosFolder: "logs/videos",
       })
     )
     this.msg(`${CYPRESS_JSON_FILE} created successfully`)
@@ -367,22 +367,20 @@ exports.stopOnFail = async (config, step) => {
   this.crash('Prematurely exit duo a stopOnFail for ' + step)
 }
 
-exports.openCypress = async (test) => {
-  const spec = path.parse(test.spec)
-  const baseDir = /node/.test(spec.dir) ? 'node' : 'cypress'
+exports.openCypress = async () => {
+  let baseDir = 'cypress-shared'
+  if (this.storage(path.join('cypress', 'integration'))) baseDir = 'cypress'
   const options = {
     config: {
-      integrationFolder: spec.dir,
+      integrationFolder: baseDir + '/integration',
       supportFile: baseDir + '/support',
     },
-    spec: `${spec.dir}/${spec.base}`,
   }
   // Open Cypress
-  this.msg(`Opening ${test}`)
   try {
     await cy.open(options)
   } catch (e) {
-    this.crash(e.message)
+    this.crash('Fail to open Cypress', e.message)
   }
 }
 

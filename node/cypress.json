@@ -6,5 +6,6 @@
   "screenshotOnRunFailure": false,
   "trashAssetsBeforeRuns": false,
   "watchForFileChanges": false,
-  "pluginsFile": false
+  "pluginsFile": false,
+  "retries": 5
 }

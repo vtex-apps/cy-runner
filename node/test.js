@@ -1,5 +1,5 @@
 const qe = require('./utils')
-const { intersection } = require('lodash')
+const {intersection} = require('lodash')
 let testsFailed = []
 let testsSkipped = []
 let testsPassed = []

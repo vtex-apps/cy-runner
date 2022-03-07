@@ -1,4 +1,5 @@
 const qe = require('./utils')
+const path = require('path')
 
 exports.workspace = async (config) => {
   const START = qe.tick()
@@ -61,8 +62,9 @@ exports.workspace = async (config) => {
 async function doLinkApp(config) {
   if (config.workspace.linkApp.enabled) {
     qe.msg('Linking app', 'warn', false)
-    qe.msg('Reading ../manifest.json', true, true)
-    let testApp = qe.storage('../manifest.json', 'read')
+    let manifestFile = path.join('..', 'manifest.json')
+    qe.msg('Reading ' + manifestFile, true, true)
+    let testApp = qe.storage(manifestFile, 'read')
     testApp = JSON.parse(testApp)
     let app = `${testApp.vendor}.${testApp.name}`
     let version = testApp.version.split('.')[0]
@@ -70,17 +72,19 @@ async function doLinkApp(config) {
     await qe.toolbelt(config.base.vtex.bin, `uninstall ${app}`)
     qe.msg(`Unlinking ${app}`, true, true)
     await qe.toolbelt(config.base.vtex.bin, `unlink ${app}@${version}.x`)
-    let ignoreFile = '../.vtexignore'
+    let ignoreFile = path.join('..', '.vtexignore')
     let exclusions = ['cypress', 'cy-runner', 'cypress-shared']
     qe.msg(`Adding cy-runner exclusions to ` + ignoreFile, true, true)
     exclusions.forEach((line) => {
-      qe.storage(ignoreFile, 'append', line + '.*\n')
-      qe.storage(ignoreFile, 'append', '/' + line + '\n')
+      qe.storage(ignoreFile, 'append', path.join('/', line) + '\n')
     })
     qe.msg(`Linking ${app}`, true, true)
+    let logFolder = 'logs'
+    let outFile = path.join('cy-runner', logFolder, 'link.log')
     let logOutput = config.workspace.linkApp.logOutput.enabled
-      ? '1> cy-runner.log &'
+      ? `1> ${outFile} &`
       : '--no-watch'
+    if (!qe.storage(logFolder, 'exists')) qe.storage(logFolder, 'mkdir')
     await qe.toolbelt(config.base.vtex.bin, `link ${logOutput}`, app)
     qe.msg('App linked successfully')
   }

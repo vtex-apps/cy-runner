@@ -1,7 +1,7 @@
 ---
 base:
   secrets:
-    enabled: false
+    enabled: true
     name: VTEX_QE
   vtex:
     account: productusqa
@@ -12,7 +12,7 @@ base:
     deployCli:
       # Implies login with credentials from base.secrets.name
       # If you want to use the current vtex login, disable it
-      enabled: false
+      enabled: true
       git: https://github.com/vtex/toolbelt.git
       branch: qe/cypress
   twilio:
@@ -46,31 +46,30 @@ base:
 
 workspace:
   # If random a new name will be generated with prefix (ie b2b1234567)
-  name: b2b5416444
+  name: random
   prefix: b2b
   runInDevMode: false
   runHeaded: false
   # If enabled it'll link the app for integration tests with PR code
   linkApp:
-    enabled: false
+    enabled: true
     logOutput:
       enabled: false
   # List of apps will be installed, if not empty and config.vtexCli disabled,
   # you must ensure your vtex cli is authenticated already
-  installApps: [ ]
-  #    - vtex.b2b-suite
-  #    - vtex.b2b-quotes
-  #    - vtex.quickorder
-  #    # Theme
-  #    - vtex.wish-list@1.x
-  #    - vtex.location-availability@0.x
-  #    - vtex.shopper-location@0.x
-  #    - vtex.wordpress-integration@2.x
-  #    - vtex.storefront-permissions-ui@0.x
-  #    - vtex.b2bstore@2.x
-  # It is a good idea remove, at least, the app you want to test integration on workspace.linkApp
-  removeApps: [ ]
-  #    - vtex.store-theme
+  installApps:
+    - vtex.b2b-suite
+    - vtex.b2b-quotes
+    - vtex.quickorder
+    # Theme
+    - vtex.wish-list@1.x
+    - vtex.location-availability@0.x
+    - vtex.shopper-location@0.x
+    - vtex.wordpress-integration@2.x
+    - vtex.storefront-permissions-ui@0.x
+    - vtex.b2bstore@2.x
+  removeApps:
+    - vtex.store-theme
   wipe:
     enabled: true
     stopOnFail: false

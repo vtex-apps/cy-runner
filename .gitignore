@@ -102,17 +102,18 @@ dist
 
 # TernJS port file
 .tern-port
+
+# cy-runner
 /.VTEX_QE.json
 /.idea
 cypress.env.json
 cypress.json
-/.state.json
-/cypress/*
+.state.json
+/cypress
 /cypress-shared/videos
 /cypress-shared/screenshots
 /cypress-shared/downloads
-**/.toolbelt.url
+.toolbelt.url
 /node/cypress/fixtures
 /node/cypress/plugins
-
-
+/cy-runner-logs

@@ -17,6 +17,17 @@ module.exports.teardown = async (config) => {
       qe.msg(`Removing workspace ${config.workspace.name}`, 'ok', false, true)
       await qe.toolbelt(config.base.vtex.bin, `workspace delete -f ${wrk.name}`)
       qe.msg('done', 'complete', true)
+      qe.msg('Removing temporary files', 'warn')
+      let tempFiles = ['cypress.env.json', 'cypress.json']
+      tempFiles.forEach(file => {
+        qe.msg(file, true, true)
+        qe.storage(file, 'rm')
+      })
+      config.base.stateFiles.forEach(file => {
+        qe.msg(file, true, true)
+        qe.storage(file, 'rm')
+      })
+      qe.msg('Temporary files removed')
     }
   }
   return qe.toc(START)
