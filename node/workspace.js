@@ -25,6 +25,7 @@ exports.workspace = async (config) => {
       // Feedback with actual user
       qe.msg('Toolbelt logged as ' + toolbelt)
       // Change workspace
+      qe.msg('Changing workspace to ' + wrk.name)
       await qe.toolbelt(vtexBin, `workspace use ${wrk.name}`)
       // Install apps
       if (installApps.length > 0) {
@@ -54,17 +55,14 @@ exports.workspace = async (config) => {
       qe.crash('You have deployCli enabled, but something goes wrong')
     }
   }
-
-  qe.success('here')
-
   return qe.toc(START)
 }
 
 async function doLinkApp(config) {
   if (config.workspace.linkApp.enabled) {
     qe.msg('Linking app', 'warn', false)
-    qe.msg('Reading manifest.json', true, true)
-    let testApp = qe.storage('manifest.json', 'read')
+    qe.msg('Reading ../manifest.json', true, true)
+    let testApp = qe.storage('../manifest.json', 'read')
     testApp = JSON.parse(testApp)
     let app = `${testApp.vendor}.${testApp.name}`
     let version = testApp.version.split('.')[0]
@@ -72,7 +70,7 @@ async function doLinkApp(config) {
     await qe.toolbelt(config.base.vtex.bin, `uninstall ${app}`)
     qe.msg(`Unlinking ${app}`, true, true)
     await qe.toolbelt(config.base.vtex.bin, `unlink ${app}@${version}.x`)
-    let ignoreFile = '.vtexignore'
+    let ignoreFile = '../.vtexignore'
     let exclusions = ['cypress', 'cy-runner', 'cypress-shared']
     qe.msg(`Adding cy-runner exclusions to ` + ignoreFile, true, true)
     exclusions.forEach((line) => {
@@ -83,7 +81,7 @@ async function doLinkApp(config) {
     let logOutput = config.workspace.linkApp.logOutput.enabled
       ? '1> cy-runner.log &'
       : '--no-watch'
-    await qe.toolbelt(config.base.vtex.bin, `link ${logOutput}`, app)
+    await qe.toolbelt(config.base.vtex.bin, `cd .. && link ${logOutput}`, app)
     qe.msg('App linked successfully')
   }
 }

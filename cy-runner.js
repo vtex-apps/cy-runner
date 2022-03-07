@@ -2,6 +2,7 @@ const qe = require('./node/utils')
 const { getConfig } = require('./node/config')
 const { vtexCli } = require('./node/cli')
 const { workspace } = require('./node/workspace')
+const { credentials } = require('./node/credential')
 const { strategy } = require('./node/test')
 const { wipe } = require('./node/wipe')
 const { teardown } = require('./node/teardown')
@@ -24,7 +25,7 @@ async function main() {
   let config = await getConfig('cy-runner.yml')
 
   // Report configuration to help understand that'll run
-  // await qe.sectionsToRun(config)
+  await qe.sectionsToRun(config)
 
   // Deploy, start in background, and add VTEX CLI to system PATH
   let call = await vtexCli(config)
@@ -33,7 +34,13 @@ async function main() {
 
   // Configure workspace (create, install, uninstall, link app)
   control.timing['workspace'] = await workspace(config)
-  qe.success('After workspace')
+
+  // Get credentials
+  call = await credentials(config)
+  config = call.config
+  control.timing['credentials'] = call.time
+
+  qe.success('After credentials')
 
   // Tests
   call = await strategy(config)

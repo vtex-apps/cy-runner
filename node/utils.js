@@ -131,8 +131,12 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
         }
       }
       break
+    case 'local':
+      stdout = this.exec(`echo y | ${bin} ${cmd}`, 'pipe').toString()
+      check = !/error/.test(stdout)
   }
   if (!check) this.crash('Toolbelt command failed', `${bin} ${cmd}`)
+  return stdout
 }
 
 exports.vtexCliInstallApp = (bin) => {
@@ -263,7 +267,7 @@ exports.writeEnvJson = (config) => {
   const ENV_FILE = 'cypress.env.json'
   try {
     fs.writeFileSync(ENV_FILE, JSON.stringify(config))
-    this.msg(`${ENV_FILE} created successfully`)
+    this.msg(`${ENV_FILE} updated successfully`)
   } catch (e) {
     this.crash('Fail to create Cypress env file', e)
   }
