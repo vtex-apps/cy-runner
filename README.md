@@ -2,10 +2,6 @@
 
 Tool to orchestrate Cypress tests at VTEX.
 
-&nbsp;
-
-&nbsp;
-
 ## Functionalities
 
 - Create dynamic workspace
@@ -18,3 +14,7 @@ Tool to orchestrate Cypress tests at VTEX.
 ## How to use
 
 TODO
+
+## Architecture
+
+<img alt="diagram" src="diagram.png">
