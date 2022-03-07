@@ -1,4 +1,4 @@
-const cypress = require('cypress')
+const cy = require('cypress')
 const { execSync } = require('child_process')
 const fs = require('fs')
 const path = require('path')
@@ -83,8 +83,8 @@ exports.exec = (cmd, output) => {
     return execSync(cmd, {
       stdio: output,
     })
-  } catch (e) {
-    this.crash('Fail to exec ' + cmd, e)
+  } catch (_e) {
+    return false
   }
 }
 
@@ -122,7 +122,7 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
         check = /build finished successfully/.test(stdout)
       } else {
         linkApp = new RegExp(linkApp)
-        this.exec(`echo y | ${bin} ${cmd}`)
+        this.exec(`cd .. && echo y | ${bin} ${cmd}`)
         while (!check && thisTry < MAX_TRIES) {
           thisTry++
           await new Promise((resolve) => setTimeout(resolve, 10000))
@@ -374,32 +374,32 @@ exports.stopOnFail = async (config, step) => {
   this.crash('Prematurely exit duo a [stopOnFail]')
 }
 
-exports.openCypress = async (test, step) => {
-  if (typeof test === 'undefined') {
-    this.msg(`Opening [strategy]`)
-    await cypress.open()
-  } else {
-    const spec = path.parse(test.spec)
-    const baseDir = /node/.test(spec.dir) ? 'node' : 'cypress'
-    const options = {
-      config: {
-        integrationFolder: spec.dir,
-        supportFile: baseDir + '/support',
-      },
-      spec: `${spec.dir}/${spec.base}`,
-    }
-    // Open Cypress
-    this.msg(`Opening [${step}]`)
-    try {
-      await cypress.open(options)
-    } catch (e) {
-      this.crash(e.message)
-    }
+exports.openCypress = async (test) => {
+  const spec = path.parse(test.spec)
+  const baseDir = /node/.test(spec.dir) ? 'node' : 'cypress'
+  const options = {
+    config: {
+      integrationFolder: spec.dir,
+      supportFile: baseDir + '/support',
+    },
+    spec: `${spec.dir}/${spec.base}`,
+  }
+  // Open Cypress
+  this.msg(`Opening ${test}`)
+  try {
+    await cy.open(options)
+  } catch (e) {
+    this.crash(e.message)
   }
 }
 
-exports.runCypress = async (test, config, addOptions = {}) => {
-  // If for authentication, run in most basic way
+exports.runCypress = async (
+  test,
+  config,
+  addOptions = {},
+  noOutput = false
+) => {
+  if (typeof test.spec === 'string') test.spec = [test.spec]
   let spec = path.parse(test.spec[0])
   let cyPath = spec.dir.split(path.sep)[0]
   let options = {
@@ -420,12 +420,23 @@ exports.runCypress = async (test, config, addOptions = {}) => {
   // Run Cypress
   let testPassed = true
   try {
-    await cypress.run(options).then((result) => {
-      if (result.failures) this.crash(result.message)
-      if (result.totalPassed < result.totalTests) testPassed = false
-    })
+    if (noOutput) {
+      let cfg =
+        `integrationFolder='${options.config.integrationFolder}',` +
+        `supportFile='${options.config.supportFile}'`
+      let stdout = this.exec(
+        `yarn cypress run -s ${config.workspace.wipe.spec} -c ${cfg}`,
+        'pipe'
+      ).toString()
+      testPassed = /All specs passed/.test(stdout)
+    } else {
+      await cypress.run(options).then((result) => {
+        if (result.failures) this.crash(result.message)
+        if (result.totalPassed < result.totalTests) testPassed = false
+      })
+    }
   } catch (e) {
-    this.crash(e.message)
+    this.crash('Fail to run Cypress', e.message)
   }
   return testPassed
 }

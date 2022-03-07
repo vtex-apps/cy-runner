@@ -6,13 +6,14 @@ let testsPassed = []
 
 module.exports.strategy = async (config) => {
   const START = qe.tick()
-  const WORKSPACE = config.workspace
-  const STRATEGIES = config.strategy
+  let wrk = config.workspace
+  let strategies = config.strategy
 
-  for (let strategy in STRATEGIES) {
-    const test = STRATEGIES[strategy]
+  qe.msgSection('Test strategy')
+  for (let strategy in strategies) {
+    const test = strategies[strategy]
     test['name'] = strategy
-    let group = `${WORKSPACE.name}/${strategy}`
+    let group = `${wrk.name}/${strategy}`
     if (test.enabled) {
       let dependency = test.dependency
       qe.msgSection(`Processing [strategy.${strategy}]`)

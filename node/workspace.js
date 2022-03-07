@@ -81,7 +81,7 @@ async function doLinkApp(config) {
     let logOutput = config.workspace.linkApp.logOutput.enabled
       ? '1> cy-runner.log &'
       : '--no-watch'
-    await qe.toolbelt(config.base.vtex.bin, `cd .. && link ${logOutput}`, app)
+    await qe.toolbelt(config.base.vtex.bin, `link ${logOutput}`, app)
     qe.msg('App linked successfully')
   }
 }

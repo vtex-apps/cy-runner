@@ -4,7 +4,6 @@ const { vtexCli } = require('./node/cli')
 const { workspace } = require('./node/workspace')
 const { credentials } = require('./node/credential')
 const { strategy } = require('./node/test')
-const { wipe } = require('./node/wipe')
 const { teardown } = require('./node/teardown')
 const { report } = require('./node/report')
 
@@ -40,17 +39,12 @@ async function main() {
   config = call.config
   control.timing['credentials'] = call.time
 
-  qe.success('After credentials')
-
   // Tests
   call = await strategy(config)
   control.timing['vtexStrategy'] = call.time
   control.testsFailed = call.testsFailed
   control.testsSkipped = call.testsSkipped
   control.testsPassed = call.testsPassed
-
-  // Wipe
-  control.timing['vtexWipe'] = await wipe(config)
 
   // Teardown
   control.timing['vtexTeardown'] = await teardown(config)
