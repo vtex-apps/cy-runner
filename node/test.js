@@ -9,24 +9,22 @@ module.exports.strategy = async (config) => {
   let wrk = config.workspace
   let strategies = config.strategy
 
-  qe.msgSection('Test strategy')
   for (let strategy in strategies) {
     const test = strategies[strategy]
     test['name'] = strategy
     let group = `${wrk.name}/${strategy}`
     if (test.enabled) {
       let dependency = test.dependency
-      qe.msgSection(`Processing [strategy.${strategy}]`)
+      qe.msgSection(`Strategy ${strategy}`)
       if (typeof dependency != 'undefined') {
         let check = intersection(dependency, testsPassed)
         if (check.length === dependency.length) {
-          qe.msg(
-            `As strategy [${check}] passed, running [strategy.${strategy}]`
-          )
+          qe.msg(`As strategy ${check} passed, running strategy ${strategy}`)
           await runTest(test, config, group)
         } else {
           qe.msg(
-            `One of its dependencies [${dependency}] not pass, skipping [strategy.${strategy}]`
+            `As strategy ${dependency} not pass, skipping strategy ${strategy}`,
+            'warn'
           )
           testsSkipped.push(strategy)
         }
@@ -34,7 +32,6 @@ module.exports.strategy = async (config) => {
         await runTest(test, config, group)
       }
     } else {
-      qe.msg(`[strategy.${strategy}] is disabled`)
       testsSkipped.push(strategy)
     }
   }
@@ -55,9 +52,9 @@ async function runTest(test, config, group) {
   for (let ht = 0; ht <= test.hardTries; ht++) {
     if (!testPassed) {
       qe.msg(
-        `Running try [${ht + 1}] of [${test.hardTries + 1}] for [strategy.${
+        `Running try ${ht + 1} of ${test.hardTries + 1} for strategy ${
           test.name
-        }]`
+        }`
       )
       if (test.runInOrder) {
         let passSpec = []
@@ -75,11 +72,11 @@ async function runTest(test, config, group) {
     }
   }
   if (!testPassed) {
-    qe.msg(`[strategy.${test.name}] failed`)
+    qe.msg(`strategy ${test.name} failed`)
     testsFailed.push(test.name)
-    if (test.stopOnFail) await qe.stopOnFail(config, `strategy.${test.name}`)
+    if (test.stopOnFail) await qe.stopOnFail(config, `strategy ${test.name}`)
   } else {
-    qe.msg(`[strategy.${test.name}] succeeded`)
+    qe.msg(`strategy ${test.name} succeeded`)
     testsPassed.push(test.name)
   }
 }

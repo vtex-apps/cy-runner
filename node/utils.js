@@ -4,13 +4,11 @@ const fs = require('fs')
 const path = require('path')
 const axios = require('axios')
 const { merge } = require('lodash')
-const { wipe } = require('./wipe')
 const { teardown } = require('./teardown')
 const yaml = require('js-yaml')
 const schema = require('./schema')
 
 const QE = '[QE] === '
-const SP = ''.padStart(9)
 
 function icon(type) {
   switch (type) {
@@ -44,11 +42,6 @@ exports.msgEnd = (msg) => {
   const END = '\n'
   msg = `${QE}${msg} `.padEnd(100, '=')
   process.stdout.write(END + msg + END + END)
-}
-
-exports.msgDetail = (msg, noNewLine = false) => {
-  let end = noNewLine ? '' : '\n'
-  process.stdout.write(SP + msg + end)
 }
 
 exports.newLine = () => {
@@ -367,11 +360,9 @@ exports.sectionsToRun = async (config) => {
 }
 
 exports.stopOnFail = async (config, step) => {
-  this.msg(`[${step}] failed`)
-  this.msgDetail(`[${step}.stopOnFail] enabled, stopping the tests`)
-  if (config.workspace.wipe.enabled) await wipe(config)
-  if (config.workspace.teardown.enabled) await teardown(config)
-  this.crash('Prematurely exit duo a [stopOnFail]')
+  this.msg(`stopOnFail enabled, stopping the test`, true, true)
+  await teardown(config)
+  this.crash('Prematurely exit duo a stopOnFail for ' + step)
 }
 
 exports.openCypress = async (test) => {
@@ -430,7 +421,7 @@ exports.runCypress = async (
       ).toString()
       testPassed = /All specs passed/.test(stdout)
     } else {
-      await cypress.run(options).then((result) => {
+      await cy.run(options).then((result) => {
         if (result.failures) this.crash(result.message)
         if (result.totalPassed < result.totalTests) testPassed = false
       })

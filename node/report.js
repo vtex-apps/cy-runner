@@ -5,19 +5,19 @@ module.exports.report = async (control) => {
 
   qe.msg('Execution time')
   for (let section in control.timing)
-    qe.msgDetail(`${section.padEnd(30, '.')} ${control.timing[section]}`)
+    qe.msg(`${section.padEnd(30, '.')} ${control.timing[section]}`, true, true)
 
   qe.newLine()
 
   qe.msg('Strategy status')
-  qe.msgDetail('Success'.padEnd(30, '.') + ' ' + control.testsPassed)
-  qe.msgDetail('Skipped'.padEnd(30, '.') + ' ' + control.testsSkipped)
-  qe.msgDetail('Failure'.padEnd(30, '.') + ' ' + control.testsFailed)
+  if (control.testsPassed.length > 0)
+    qe.msg('Success'.padEnd(30, '.') + ' ' + control.testsPassed, true, true)
+  if (control.testsSkipped.length > 0)
+    qe.msg('Skipped'.padEnd(30, '.') + ' ' + control.testsSkipped, true, true)
+  if (control.testsFailed.length > 0)
+    qe.msg('Failure'.padEnd(30, '.') + ' ' + control.testsFailed, true, true)
 
   if (control.testsFailed.length < 1)
     qe.success('The test ran successfully, well done')
-  else
-    qe.fail(
-      `The test was skipped on ${control.testsSkipped} and failed on ${control.testsFailed}`
-    )
+  else qe.fail(`The test failed`)
 }

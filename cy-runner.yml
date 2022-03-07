@@ -81,7 +81,7 @@ workspace:
 strategy:
   # The strategies must be in order, with dependent tests last
   A:
-    enabled: false
+    enabled: true
     sendDashboard: false
     hardTries: 1
     stopOnFail: false
@@ -90,18 +90,17 @@ strategy:
     runInOrder: true
     # You can use *, but the order will be not guaranteed
     specs:
-      - cypress-shared/integration/pass.spec.js
+      - cypress-shared/integration/fail.spec.js
 
   B:
-    enabled: false
+    enabled: true
     sendDashboard: false
     hardTries: 1
-    stopOnFail: false
+    stopOnFail: true
     parallel: false
     runInOrder: false
     specs:
-      - cypress/integration/pass.spec.js
-      - cypress/integration/pass.spec.js
+      - cypress-shared/integration/pass.spec.js
     dependency:
       - A
 
