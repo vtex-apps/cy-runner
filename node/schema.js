@@ -11,7 +11,7 @@
  7 = array
  **********************************************/
 
-const { get } = require('lodash')
+const {get} = require('lodash')
 const qe = require('./utils')
 
 function schemaValidator(schema, config, strategy = '') {
@@ -39,26 +39,29 @@ function schemaValidator(schema, config, strategy = '') {
       case 0:
       case 3:
         msg = 'string'
-        if (value != null && typeof value != 'string') crash = true
+        crash = typeof value !== msg
         break
       // Integer
       case 1:
       case 4:
         msg = 'number'
-        if (value != null && typeof value != 'number') crash = true
+        crash = typeof value !== msg
         break
       // Boolean
       case 2:
       case 5:
         msg = 'boolean'
-        if (value != null && typeof value != 'boolean') crash = true
+        crash = typeof value !== msg
         break
       // Array
       case 7:
         msg = 'array'
-        if (value === null) crash = true
-        else if (!value.constructor.prototype.hasOwnProperty('push'))
+        try {
+          if (!value.constructor.prototype.hasOwnProperty('push'))
+            crash = true
+        } catch (e) {
           crash = true
+        }
         break
       default:
         break
@@ -77,12 +80,12 @@ exports.validateConfig = (config, file) => {
         enabled: 2,
         name: 0,
       },
-      twilio: { enabled: 2 },
+      twilio: {enabled: 2},
       vtex: {
         account: 0,
         id: 4,
         domain: 0,
-        deployCli: { enabled: 2, git: 0, branch: 0 },
+        deployCli: {enabled: 2, git: 0, branch: 0},
       },
       cypress: {
         enabled: 2,
@@ -101,8 +104,8 @@ exports.validateConfig = (config, file) => {
         browser: 0,
         chromeWebSecurity: 2,
       },
-      jira: { enabled: 2, account: 0, board: 0, issueType: 0 },
-      slack: { enabled: 2, channel: 3 },
+      jira: {enabled: 2, account: 0, board: 0, issueType: 0},
+      slack: {enabled: 2, channel: 3},
       stateFiles: 7,
     },
     workspace: {
@@ -118,8 +121,8 @@ exports.validateConfig = (config, file) => {
       },
       installApps: 7,
       removeApps: 7,
-      wipe: { enabled: 2, stopOnFail: 2, spec: 0 },
-      teardown: { enabled: 2 },
+      wipe: {enabled: 2, stopOnFail: 2, spec: 0},
+      teardown: {enabled: 2},
     },
   }
   const STRATEGY_SCHEMA = {
