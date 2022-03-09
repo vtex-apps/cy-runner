@@ -22,6 +22,7 @@ exports.credentials = async (config) => {
     let cookieValue = response.data.authCookie.Value
     config.base.vtex['authCookieName'] = cookieName
     config.base.vtex['adminAuthCookieValue'] = cookieValue
+    config.base.vtex['baseUrl'] = qe.generateBaseUrl(config)
     // User cookie
     qe.msg('Requesting user cookie', true, true)
     let vtexBin = config.base.vtex.bin
