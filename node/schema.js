@@ -33,7 +33,7 @@ function schemaValidator(schema, config, strategy = '') {
     let crash = false
     let msg = 'not null'
     if (ignore(item.key, value)) return
-    if (item.type in [0, 1, 2, 6] && value == null) crash = true
+    if (/[0126]/.test(item.type) && value == null) crash = true
     switch (item.type) {
       // String
       case 0:
