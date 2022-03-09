@@ -54,7 +54,7 @@ async function runTest(test, config, group) {
       qe.msg(
         `Running try ${ht + 1} of ${test.hardTries + 1} for strategy ${
           test.name
-        }`
+        },`, 'warn'
       )
       if (test.runInOrder) {
         let passSpec = []
@@ -72,7 +72,7 @@ async function runTest(test, config, group) {
     }
   }
   if (!testPassed) {
-    qe.msg(`strategy ${test.name} failed`)
+    qe.msg(`strategy ${test.name} failed`, 'error')
     testsFailed.push(test.name)
     if (test.stopOnFail) await qe.stopOnFail(config, `strategy ${test.name}`)
   } else {

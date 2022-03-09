@@ -423,7 +423,7 @@ exports.runCypress = async (
     } else {
       await cy.run(options).then((result) => {
         if (result.failures) this.crash(result.message)
-        if (result.totalPassed < result.totalTests) testPassed = false
+        if (result.totalPassed < (result.totalTests - result.skipped)) testPassed = false
       })
     }
   } catch (e) {
