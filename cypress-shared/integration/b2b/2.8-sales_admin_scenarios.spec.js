@@ -28,7 +28,7 @@ import {
 } from '../../support/b2b_checkout_testcase.js'
 
 describe('Sales Admin Scenarios', () => {
-  testSetup(false, false)
+  testSetup(false)
 
   const {
     organizationName,
@@ -45,26 +45,26 @@ describe('Sales Admin Scenarios', () => {
   loginToStoreFront(users.SalesAdmin, roleObject.SalesAdmin.role)
   verifySession(b2b.OrganizationA)
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
-  quoteShouldbeVisibleTestCase(
-    organizationName,
-    quotes.Buyer2.quotes1,
-    organizationName
-  )
-  quoteShouldbeVisibleTestCase(
-    organizationName,
-    organizationBQuote.OrganizationAdmin.quotes1,
-    organizationB
-  )
-  searchQuote(quotes.Buyer.quotes1)
-  filterQuote(costCenter1.name, organizationB)
+  // quoteShouldbeVisibleTestCase(
+  //   organizationName,
+  //   quotes.Buyer2.quotes1,
+  //   organizationName
+  // )
+  // quoteShouldbeVisibleTestCase(
+  //   organizationName,
+  //   organizationBQuote.OrganizationAdmin.quotes1,
+  //   organizationB
+  // )
+  // searchQuote(quotes.Buyer.quotes1)
+  // filterQuote(costCenter1.name, organizationB)
 
-  updateQuote(quotes.Buyer.quotes1, { discount: '10' })
-  updateQuote(quotes.Buyer.quotes2, { notes: 'Notes' })
-  const price = '30.00'
-  const quantity = '10'
-  updateQuote(quotes.Buyer.quotes6, { price, quantity })
-  rejectQuote(quotes.Buyer.quotes3, roleObject.SalesAdmin.role)
-  filterQuoteByStatus(STATUSES.ready, STATUSES.declined)
+  // updateQuote(quotes.Buyer.quotes1, { discount: '10' })
+  // updateQuote(quotes.Buyer.quotes2, { notes: 'Notes' })
+  // const price = '30.00'
+  // const quantity = '10'
+  // updateQuote(quotes.Buyer.quotes6, { price, quantity })
+  // rejectQuote(quotes.Buyer.quotes3, roleObject.SalesAdmin.role)
+  // filterQuoteByStatus(STATUSES.ready, STATUSES.declined)
   checkoutProduct(product)
   fillContactInfo()
   verifyAddress(costCenter1.addresses)

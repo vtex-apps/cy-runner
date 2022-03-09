@@ -29,7 +29,7 @@ import {
 } from '../../support/b2b_quick_order_testcase.js'
 
 describe('Organization A - Cost Center A1 - Buyer Scenarios', () => {
-  testSetup(false, false)
+  testSetup(false)
 
   const {
     organizationName,
@@ -57,56 +57,56 @@ describe('Organization A - Cost Center A1 - Buyer Scenarios', () => {
     costCenter1.name,
     role.Buyer1
   )
-  quoteShouldbeVisibleTestCase(
-    organizationName,
-    quotes.OrganizationAdmin.quotes1,
-    organizationName
-  )
-  quoteShouldNotBeVisibleTestCase(
-    organizationName,
-    organizationBQuote.OrganizationAdmin.quotes1,
-    organizationB
-  )
-  searchQuote(quotes.OrganizationAdmin.quotes1)
-  createQuote({
-    product,
-    quoteEnv: quotes.Buyer.quotes1,
-    role: ROLE_DROP_DOWN.Buyer,
-  })
-  createQuote(
-    {
-      product,
-      quoteEnv: quotes.Buyer.quotes2,
-      role: ROLE_DROP_DOWN.Buyer,
-    },
-    false
-  )
-  createQuote({
-    product,
-    quoteEnv: quotes.Buyer.quotes3,
-    role: ROLE_DROP_DOWN.Buyer,
-  })
-  createQuote({
-    product,
-    quoteEnv: quotes.Buyer.quotes4,
-    role: ROLE_DROP_DOWN.Buyer,
-  })
-  createQuote({
-    product,
-    quoteEnv: quotes.Buyer.quotes5,
-    role: ROLE_DROP_DOWN.Buyer,
-  })
-  quickOrderByOneByOneTestCase(
-    ROLE_DROP_DOWN.Buyer,
-    product2,
-    quotes.Buyer.quotes6
-  )
-  quickOrderByOneByOneNegativeTestCase(
-    ROLE_DROP_DOWN.Buyer,
-    product2,
-    quotes.Buyer.quotes7
-  )
-  filterQuoteByStatus(STATUSES.revised)
+  // quoteShouldbeVisibleTestCase(
+  //   organizationName,
+  //   quotes.OrganizationAdmin.quotes1,
+  //   organizationName
+  // )
+  // quoteShouldNotBeVisibleTestCase(
+  //   organizationName,
+  //   organizationBQuote.OrganizationAdmin.quotes1,
+  //   organizationB
+  // )
+  // searchQuote(quotes.OrganizationAdmin.quotes1)
+  // createQuote({
+  //   product,
+  //   quoteEnv: quotes.Buyer.quotes1,
+  //   role: ROLE_DROP_DOWN.Buyer,
+  // })
+  // createQuote(
+  //   {
+  //     product,
+  //     quoteEnv: quotes.Buyer.quotes2,
+  //     role: ROLE_DROP_DOWN.Buyer,
+  //   },
+  //   false
+  // )
+  // createQuote({
+  //   product,
+  //   quoteEnv: quotes.Buyer.quotes3,
+  //   role: ROLE_DROP_DOWN.Buyer,
+  // })
+  // createQuote({
+  //   product,
+  //   quoteEnv: quotes.Buyer.quotes4,
+  //   role: ROLE_DROP_DOWN.Buyer,
+  // })
+  // createQuote({
+  //   product,
+  //   quoteEnv: quotes.Buyer.quotes5,
+  //   role: ROLE_DROP_DOWN.Buyer,
+  // })
+  // quickOrderByOneByOneTestCase(
+  //   ROLE_DROP_DOWN.Buyer,
+  //   product2,
+  //   quotes.Buyer.quotes6
+  // )
+  // quickOrderByOneByOneNegativeTestCase(
+  //   ROLE_DROP_DOWN.Buyer,
+  //   product2,
+  //   quotes.Buyer.quotes7
+  // )
+  // filterQuoteByStatus(STATUSES.revised)
   buyNowProductTestCase(product)
   preserveCookie()
 })

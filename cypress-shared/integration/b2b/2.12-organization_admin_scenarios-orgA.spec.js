@@ -34,7 +34,7 @@ import {
 import { organizationAdminShouldNotAbleToEditSalesUsers } from '../../support/b2b_organization_request_testcase.js'
 
 describe('Sales Rep Scenarios', () => {
-  testSetup(false, false)
+  testSetup(false)
 
   const {
     organizationName,
@@ -57,34 +57,34 @@ describe('Sales Rep Scenarios', () => {
   verifySession(b2b.OrganizationA)
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
   organizationAdminShouldNotAbleToEditSalesUsers()
-  quoteShouldbeVisibleTestCase(
-    organizationName,
-    quotes.OrganizationAdmin.quotes1,
-    organizationName
-  )
-  quoteShouldbeVisibleTestCase(
-    organizationName,
-    quotes.Buyer2.quotes1,
-    organizationName
-  )
-  quoteShouldNotBeVisibleTestCase(
-    organizationName,
-    organizationBQuote.OrganizationAdmin.quotes1,
-    organizationB
-  )
-  searchQuote(quotes.OrganizationAdmin2.quotes1)
+  // quoteShouldbeVisibleTestCase(
+  //   organizationName,
+  //   quotes.OrganizationAdmin.quotes1,
+  //   organizationName
+  // )
+  // quoteShouldbeVisibleTestCase(
+  //   organizationName,
+  //   quotes.Buyer2.quotes1,
+  //   organizationName
+  // )
+  // quoteShouldNotBeVisibleTestCase(
+  //   organizationName,
+  //   organizationBQuote.OrganizationAdmin.quotes1,
+  //   organizationB
+  // )
+  // searchQuote(quotes.OrganizationAdmin2.quotes1)
   // TODO: Raised issue for this ticket
   // rejectQuote(
   //   quotes.OrganizationAdmin2.declineQuote,
   //   ROLE_DROP_DOWN.OrganizationAdmin
   // )
-  quickOrderBySkuAndQuantityTestCase1(
-    ROLE_DROP_DOWN.OrganizationAdmin,
-    quotes.OrganizationAdmin2.quotes1
-  )
-  quickOrderBySkuAndQuantityTestCase2(ROLE_DROP_DOWN.OrganizationAdmin)
-  quickOrderBySkuAnd51QuantityTestCase(ROLE_DROP_DOWN.OrganizationAdmin)
-  filterQuoteByStatus(STATUSES.declined)
+  // quickOrderBySkuAndQuantityTestCase1(
+  //   ROLE_DROP_DOWN.OrganizationAdmin,
+  //   quotes.OrganizationAdmin2.quotes1
+  // )
+  // quickOrderBySkuAndQuantityTestCase2(ROLE_DROP_DOWN.OrganizationAdmin)
+  // quickOrderBySkuAnd51QuantityTestCase(ROLE_DROP_DOWN.OrganizationAdmin)
+  // filterQuoteByStatus(STATUSES.declined)
   checkoutProduct(product)
   fillContactInfo()
   verifyAddress(costCenter1.addresses[0])

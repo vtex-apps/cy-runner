@@ -20,7 +20,7 @@ import {
 import { buyNowProductTestCase } from '../../support/b2b_checkout_testcase.js'
 
 describe('Buyer Scenarios Organization B', () => {
-  testSetup(false, false)
+  testSetup(false)
 
   const { organizationName, product, quotes, users, nonAvailableProduct } =
     b2b.OrganizationB
@@ -29,21 +29,21 @@ describe('Buyer Scenarios Organization B', () => {
   loginToStoreFront(users.Buyer1, ROLE_DROP_DOWN.Buyer)
   verifySession(b2b.OrganizationB)
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
-  quoteShouldbeVisibleTestCase(
-    organizationName,
-    quotes.OrganizationAdmin.quotes1,
-    organizationName
-  )
-  quoteShouldNotBeVisibleTestCase(
-    organizationName,
-    organizationAQuotes.OrganizationAdmin.quotes1,
-    organizationA
-  )
-  createQuote({
-    product,
-    quoteEnv: quotes.Buyer.quotes1,
-    role: ROLE_DROP_DOWN.Buyer,
-  })
+  // quoteShouldbeVisibleTestCase(
+  //   organizationName,
+  //   quotes.OrganizationAdmin.quotes1,
+  //   organizationName
+  // )
+  // quoteShouldNotBeVisibleTestCase(
+  //   organizationName,
+  //   organizationAQuotes.OrganizationAdmin.quotes1,
+  //   organizationA
+  // )
+  // createQuote({
+  //   product,
+  //   quoteEnv: quotes.Buyer.quotes1,
+  //   role: ROLE_DROP_DOWN.Buyer,
+  // })
   buyNowProductTestCase(product)
   preserveCookie()
 })

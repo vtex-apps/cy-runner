@@ -32,7 +32,7 @@ import {
 } from '../../support/b2b_checkout_testcase.js'
 
 describe('Approver Scenarios Organization A', () => {
-  testSetup(false, false)
+  testSetup(false)
 
   const { organizationName, quotes, costCenter1, nonAvailableProduct, users } =
     b2b.OrganizationA
@@ -43,25 +43,25 @@ describe('Approver Scenarios Organization A', () => {
   loginToStoreFront(users.Approver1, ROLE_DROP_DOWN.Approver)
   verifySession(b2b.OrganizationA)
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
-  quoteShouldbeVisibleTestCase(
-    organizationName,
-    quotes.OrganizationAdmin.quotes1,
-    organizationName
-  )
-  quoteShouldNotBeVisibleTestCase(
-    organizationName,
-    organizationBquotes.OrganizationAdmin.quotes1,
-    organizationB
-  )
-  quickOrderByXLS(quotes.Approver.quotes1)
-  quickOrderByXLSNegativeTestCase(quotes.Approver.quotes2)
-  searchQuote(quotes.Buyer.quotes6)
-  rejectQuote(quotes.Buyer.quotes6, role.Approver1.dropDownText)
-  rejectQuote(quotes.Buyer.quotes4, role.Approver1.dropDownText)
-  filterQuoteByStatus(STATUSES.declined)
-  useQuoteForPlacingTheOrder(quotes.Buyer.quotes1, role.Approver1.dropDownText)
-  fillContactInfo()
-  verifyAddress(costCenter1.addresses[0])
-  verifyPayment()
+  // quoteShouldbeVisibleTestCase(
+  //   organizationName,
+  //   quotes.OrganizationAdmin.quotes1,
+  //   organizationName
+  // )
+  // quoteShouldNotBeVisibleTestCase(
+  //   organizationName,
+  //   organizationBquotes.OrganizationAdmin.quotes1,
+  //   organizationB
+  // )
+  // quickOrderByXLS(quotes.Approver.quotes1)
+  // quickOrderByXLSNegativeTestCase(quotes.Approver.quotes2)
+  // searchQuote(quotes.Buyer.quotes6)
+  // rejectQuote(quotes.Buyer.quotes6, role.Approver1.dropDownText)
+  // rejectQuote(quotes.Buyer.quotes4, role.Approver1.dropDownText)
+  // filterQuoteByStatus(STATUSES.declined)
+  // useQuoteForPlacingTheOrder(quotes.Buyer.quotes1, role.Approver1.dropDownText)
+  // fillContactInfo()
+  // verifyAddress(costCenter1.addresses[0])
+  // verifyPayment()
   preserveCookie()
 })

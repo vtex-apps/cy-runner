@@ -24,7 +24,7 @@ import {
 } from '../../support/b2b_checkout_testcase.js'
 
 describe('Approver Scenarios Organization B', () => {
-  testSetup(false, false)
+  testSetup(false)
 
   const {
     organizationName,

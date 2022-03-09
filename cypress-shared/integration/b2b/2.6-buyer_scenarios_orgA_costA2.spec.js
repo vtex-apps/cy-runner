@@ -25,7 +25,7 @@ import {
 } from '../../support/b2b_quick_order_testcase.js'
 
 describe('Organization A - Cost Center A2 - Buyer Scenarios', () => {
-  testSetup(false, false)
+  testSetup(false)
   const { organizationName, nonAvailableProduct, quotes, users } =
     b2b.OrganizationA
   const { organizationName: organizationB, quotes: organizationBQuote } =
@@ -33,22 +33,22 @@ describe('Organization A - Cost Center A2 - Buyer Scenarios', () => {
   loginToStoreFront(users.Buyer2, ROLE_DROP_DOWN.Buyer)
   verifySession(b2b.OrganizationA)
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
-  quoteShouldNotBeVisibleTestCase(
-    organizationName,
-    quotes.OrganizationAdmin.quotes1,
-    organizationName
-  )
-  quoteShouldNotBeVisibleTestCase(
-    organizationName,
-    organizationBQuote.OrganizationAdmin.quotes1,
-    organizationB
-  )
-  searchQuote(quotes.OrganizationAdmin.quotes1)
-  quickOrderByCategory(ROLE_DROP_DOWN.Buyer, quotes.Buyer2.quotes1)
-  quickOrderByCategoryNegativeTestCase(
-    ROLE_DROP_DOWN.Buyer,
-    quotes.Buyer2.quotes2
-  )
-  filterQuoteByStatus(STATUSES.pending)
+  // quoteShouldNotBeVisibleTestCase(
+  //   organizationName,
+  //   quotes.OrganizationAdmin.quotes1,
+  //   organizationName
+  // )
+  // quoteShouldNotBeVisibleTestCase(
+  //   organizationName,
+  //   organizationBQuote.OrganizationAdmin.quotes1,
+  //   organizationB
+  // )
+  // searchQuote(quotes.OrganizationAdmin.quotes1)
+  // quickOrderByCategory(ROLE_DROP_DOWN.Buyer, quotes.Buyer2.quotes1)
+  // quickOrderByCategoryNegativeTestCase(
+  //   ROLE_DROP_DOWN.Buyer,
+  //   quotes.Buyer2.quotes2
+  // )
+  // filterQuoteByStatus(STATUSES.pending)
   preserveCookie()
 })

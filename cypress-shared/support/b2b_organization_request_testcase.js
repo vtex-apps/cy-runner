@@ -3,6 +3,7 @@ import { generateEmailId, ROLE_DROP_DOWN_EMAIL_MAPPING } from './b2b_utils.js'
 import { GRAPHL_OPERATIONS } from './graphql_utils.js'
 import { OTHER_ROLES } from './b2b_utils.js'
 import { BUTTON_LABEL } from './validation_text.js'
+import { FAIL_ON_STATUS_CODE } from './cypress-template/common_constants.js'
 
 // Define constants
 const APP_NAME = 'vtex.b2b-organizations-graphql'
@@ -45,7 +46,9 @@ function verifyOrganizationData(
   invalidEmail = false
 ) {
   const { firstName, lastName, email } = b2bCustomerAdmin
-  cy.get(selectors.OrganisationSignup).should('be.visible').click()
+  cy.get(selectors.OrganisationSignup, { timeout: 40000 })
+    .should('be.visible')
+    .click()
   organizationName
     ? cy
         .get(selectors.OrganizationName)
@@ -80,7 +83,6 @@ export function createAndApproveOrganizationRequestTestCase(
   email
 ) {
   it(`Creating ${organization} via storefront & Approving ${organization} via graphql`, () => {
-    cy.clearLocalStorage()
     cy.get('body').then(($body) => {
       if ($body.find(selectors.PopupMsg).length)
         cy.get('button > div')
@@ -123,6 +125,7 @@ export function createAndApproveOrganizationRequestTestCase(
               query: GRAPHQL_ORAGANIZATION_APPROVAL_MUTATION,
               variables: variables,
             },
+            ...FAIL_ON_STATUS_CODE,
           }).then(() => {
             cy.reload(true).contains('created')
           })
