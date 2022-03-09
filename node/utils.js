@@ -94,17 +94,12 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
       break
     case 'install':
     case 'uninstall':
-      while (!check && thisTry < MAX_TRIES) {
-        thisTry++
-        stdout = this.exec(`echo y | ${bin} ${cmd}`, 'pipe').toString()
-        check = /successfully|App not installed/.test(stdout)
-      }
-      break
     case 'unlink':
       while (!check && thisTry < MAX_TRIES) {
         thisTry++
         stdout = this.exec(`echo y | ${bin} ${cmd}`, 'pipe').toString()
-        check = /Successfully unlinked|No linked apps/.test(stdout)
+        check = /uccessfully|App not installed| unlinked|No linked apps/.test(stdout)
+        console.log(stdout)
       }
       break
     case 'link':
