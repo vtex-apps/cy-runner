@@ -26,6 +26,7 @@
     "@vtex/prettier-config": "^1.0.0",
     "axios": "^0.26.0",
     "cypress": "^9.5.1",
+    "cypress-file-upload": "^5.0.8",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
     "prettier": "^2.4.0"
