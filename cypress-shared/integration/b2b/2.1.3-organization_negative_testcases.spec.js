@@ -7,7 +7,7 @@ import {
 } from '../../support/b2b_organization_request_testcase.js'
 import b2b from '../../support/b2b_constants.js'
 
-describe('Create & Approve OrganizationA', () => {
+describe('Organization Negative TestCases', () => {
   testSetup(false)
   setupForOrganizationRequest()
   const emailId = b2b.OrganizationA.users.OrganizationAdmin1

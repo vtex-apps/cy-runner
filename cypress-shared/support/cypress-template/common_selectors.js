@@ -175,7 +175,7 @@ export default {
   MyOrganization: 'a[href*=organization]',
   MyOrganizationCostCenterUserDiv:
     '.ReactVirtualized__Grid__innerScrollContainer',
-  ProductNotFound: 'div[class*=notFound]',
+  PageNotFound: 'div[class*=notFound]',
 
   // *************B2B Account: My Organization - Add Cost Center Constants start here************ //
   AddCostCenter:

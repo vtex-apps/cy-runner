@@ -27,6 +27,7 @@ export function fillContactInfo() {
         cy.get(selectors.ReceiverName, { timeout: 5000 }).type('Syed')
       }
     })
+    cy.get(selectors.GotoPaymentBtn, { timeout: 5000 }).should('be.visible')
   })
 }
 
@@ -40,11 +41,6 @@ export function verifyAddress(address) {
       cy.get(selectors.PostalCodeText).contains(postalCode).click()
       cy.get(selectors.GotoPaymentBtn).should('be.visible')
     }
-    cy.log(address.slice[-1])
-    // cy.get(selectors.PostalCodeText).should(
-    //   'have.text',
-    //   address.slice[-1].postalCode
-    // )
     cy.get('body').then(($body) => {
       if ($body.find(selectors.GotoPaymentBtn).length)
         cy.get(selectors.GotoPaymentBtn).should('be.visible').click()

@@ -33,7 +33,7 @@ import {
 } from '../../support/b2b_checkout_testcase.js'
 import { organizationAdminShouldNotAbleToEditSalesUsers } from '../../support/b2b_organization_request_testcase.js'
 
-describe('Sales Rep Scenarios', () => {
+describe('Organization A - Cost Center A1 - Organization Admin2 Scenario', () => {
   testSetup(false)
 
   const {
@@ -48,11 +48,6 @@ describe('Sales Rep Scenarios', () => {
   const { organizationName: organizationB, quotes: organizationBQuote } =
     b2b.OrganizationB
 
-  loginToStoreFront(
-    organizationName,
-    ROLE_DROP_DOWN.OrganizationAdmin,
-    role.OrganizationAdmin2.email
-  )
   loginToStoreFront(users.OrganizationAdmin2, ROLE_DROP_DOWN.OrganizationAdmin)
   verifySession(b2b.OrganizationA)
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
@@ -87,8 +82,8 @@ describe('Sales Rep Scenarios', () => {
   // filterQuoteByStatus(STATUSES.declined)
   checkoutProduct(product)
   fillContactInfo()
-  verifyAddress(costCenter1.addresses[0])
-  verifyPayment()
-  ordertheProduct(ROLE_DROP_DOWN.OrganizationAdmin)
+  verifyAddress(costCenter1.addresses)
+  verifyPayment(false)
+  // ordertheProduct(ROLE_DROP_DOWN.OrganizationAdmin)
   preserveCookie()
 })

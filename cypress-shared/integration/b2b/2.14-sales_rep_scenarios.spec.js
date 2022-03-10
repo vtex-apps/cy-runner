@@ -20,7 +20,7 @@ import {
 //   filterQuoteByStatus,
 // } from '../../support/b2b_quotes_testcase.js'
 
-describe('Sales Rep Scenarios', () => {
+describe('Organization A - Cost Center A1 - Sales Rep Scenario', () => {
   testSetup(false)
 
   const { organizationName, nonAvailableProduct, quotes, users } =

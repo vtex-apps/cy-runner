@@ -31,7 +31,7 @@ import {
   verifyPayment,
 } from '../../support/b2b_checkout_testcase.js'
 
-describe('Approver Scenarios Organization A', () => {
+describe('Organization A - Cost Center A1 - Approver Scenario', () => {
   testSetup(false)
 
   const { organizationName, quotes, costCenter1, nonAvailableProduct, users } =

@@ -23,7 +23,7 @@ import {
   verifyPayment,
 } from '../../support/b2b_checkout_testcase.js'
 
-describe('Approver Scenarios Organization B', () => {
+describe('Organization B - Cost Center B1 - Approver Scenario', () => {
   testSetup(false)
 
   const {
@@ -51,7 +51,7 @@ describe('Approver Scenarios Organization B', () => {
   //   )
   checkoutProduct(product)
   fillContactInfo()
-  verifyAddress(costCenter1.addresses[0])
+  verifyAddress(costCenter1.addresses)
   verifyPayment(false)
   preserveCookie()
 })

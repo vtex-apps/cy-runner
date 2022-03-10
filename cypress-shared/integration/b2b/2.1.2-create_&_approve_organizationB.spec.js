@@ -5,7 +5,7 @@ import {
 } from '../../support/b2b_organization_request_testcase.js'
 import b2b from '../../support/b2b_constants.js'
 
-describe('Create & Approve OrganizationA', () => {
+describe('Create & Approve OrganizationB', () => {
   testSetup(false)
   setupForOrganizationRequest()
 

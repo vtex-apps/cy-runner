@@ -27,7 +27,7 @@ import {
   verifyPayment,
 } from '../../support/b2b_checkout_testcase.js'
 
-describe('Sales Admin Scenarios', () => {
+describe('Organization A - Cost Center A1 - Sales Admin Scenario', () => {
   testSetup(false)
 
   const {

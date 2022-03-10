@@ -46,9 +46,10 @@ function verifyOrganizationData(
   invalidEmail = false
 ) {
   const { firstName, lastName, email } = b2bCustomerAdmin
-  cy.get(selectors.OrganisationSignup, { timeout: 40000 })
+  cy.get(selectors.OrganisationSignup, { timeout: 60000 })
     .should('be.visible')
     .click()
+  cy.get(selectors.PageNotFound, { timeout: 10000 }).should('not.exist')
   organizationName
     ? cy
         .get(selectors.OrganizationName)

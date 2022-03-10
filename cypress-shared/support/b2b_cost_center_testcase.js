@@ -101,20 +101,21 @@ export function addAddressinCostCenter(
         if (updatedAddressLoc != -1) {
           cy.log('Address already updated')
         }
-      }
-      if (currentAddressLoc == -1) {
-        cy.get(selectors.PostalCodeInAddressList)
-          .last()
-          .invoke('text')
-          .then((code) => {
-            if (code === postalCode) {
-              cy.log('Address already added in CostCenter')
-            } else {
-              cy.get(selectors.AddAddress).click()
-              cy.fillAddressInCostCenter(costCenterAddress)
-              submitAddressInCostCenter(postalCode)
-            }
-          })
+      } else {
+        if (currentAddressLoc == -1) {
+          cy.get(selectors.PostalCodeInAddressList)
+            .last()
+            .invoke('text')
+            .then((code) => {
+              if (code === postalCode) {
+                cy.log('Address already added in CostCenter')
+              } else {
+                cy.get(selectors.AddAddress).click()
+                cy.fillAddressInCostCenter(costCenterAddress)
+                submitAddressInCostCenter(postalCode)
+              }
+            })
+        }
       }
     })
   })

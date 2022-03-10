@@ -19,7 +19,7 @@ import {
 } from '../../support/b2b_quotes_testcase.js'
 import { buyNowProductTestCase } from '../../support/b2b_checkout_testcase.js'
 
-describe('Buyer Scenarios Organization B', () => {
+describe('Organization B - Cost Center B1 - Buyer Scenario', () => {
   testSetup(false)
 
   const { organizationName, product, quotes, users, nonAvailableProduct } =

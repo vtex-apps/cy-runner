@@ -101,7 +101,7 @@ export function productShouldNotbeAvailableTestCase(product) {
     { retries: 2 },
     () => {
       cy.searchProduct(product)
-      cy.get(selectors.ProductNotFound).should('be.visible')
+      cy.get(selectors.PageNotFound).should('be.visible')
     }
   )
 }
