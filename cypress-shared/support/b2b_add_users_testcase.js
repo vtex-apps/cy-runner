@@ -12,9 +12,6 @@ export function addUserFn({ userName, emailId }, costCenter, dropDownText) {
   cy.gotoMyOrganization()
   cy.get(selectors.AddUser).should('be.visible')
   cy.get('body').then(($body) => {
-    //TODO: Based on Arthur decision, decide whether to include below if or not
-    // if user can add same user with different / same role again and again then below if not needed
-    // else ensure that we get update error popup
     if ($body.text().includes(emailId)) {
       cy.log('User already added')
     } else {
@@ -107,8 +104,6 @@ export function addAnddeleteUser(organization, costCenter, role) {
       .last()
       .should('be.visible')
       .click()
-    // TODO: uncomment below line once they fix delete user
-    // cy.get(selectors.ToastMsgInB2B).contains(TOAST_MSG.deleted)
     cy.get('body').then(($body) => {
       if ($body.find(selectors.ModalClose).length) {
         cy.get(selectors.ModalConfirmation)
@@ -165,17 +160,6 @@ export function updateCostCenterOftheUser(
       cy.get(selectors.ToastMsgInB2B).contains(TOAST_MSG.updated)
     }
   )
-}
-
-export function ReloadForCostCenter() {
-  it('Reload', { retries: 3 }, () => {
-    cy.getVtexItems().then((vtex) => {
-      // cy.visit('/')
-      cy.reload(true).get(selectors.ProfileLabel).should('be.visible')
-      // cy.get(selectors.ProfileLabel).should('be.visible')
-      // cy.waitForSession();
-    })
-  })
 }
 
 export function addUserViaGraphql(roleKey) {

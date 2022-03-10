@@ -58,7 +58,6 @@ export function deleteCostCenter(costcenter) {
       .should('be.visible')
       .click()
     cy.get(selectors.MyOrganizationCostCenterUserDiv).should('have.length', 4)
-    // TODO: Remove this timeout once they enable auto load
     cy.contains(costcenter, { timeout: 5000 }).should('not.exist')
   })
 }

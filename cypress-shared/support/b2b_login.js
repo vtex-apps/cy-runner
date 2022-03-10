@@ -1,4 +1,3 @@
-import { generateEmailId } from './b2b_utils.js'
 import { getAccessToken } from './extract.js'
 import selectors from './cypress-template/common_selectors.js'
 

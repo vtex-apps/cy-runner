@@ -1,5 +1,5 @@
 import selectors from './cypress-template/common_selectors.js'
-import { getCostCenterName, STATUSES } from './b2b_utils.js'
+import { STATUSES } from './b2b_utils.js'
 import { GRAPHL_OPERATIONS } from './graphql_utils.js'
 import { BUTTON_LABEL } from './validation_text.js'
 
@@ -10,7 +10,6 @@ export function fillQuoteInformation(
   requestQuote = true,
   notes = false
 ) {
-  const expectedStatus = requestQuote ? STATUSES.pending : STATUSES.ready
   cy.getVtexItems().then((vtex) => {
     cy.get(selectors.ItemsPriceInCart).then(($div) => {
       const price = $div.text()
@@ -40,16 +39,6 @@ export function fillQuoteInformation(
           ''
         )
         cy.get(selectors.ToggleFields).should('be.visible')
-        // TODO: If quote is shown immediately after creation then uncomment below lines
-        // cy.get(selectors.QuoteStatusInMyQuotesPage)
-        //   .first()
-        //   .should('have.text', expectedStatus)
-        // cy.get(selectors.QuoteFromMyQuotesPage)
-        //   .eq(1)
-        //   .should('have.text', quoteEnv)
-        // cy.get(selectors.CurrencyContainer)
-        //   .first()
-        //   .should('have.text', price)
         cy.setQuoteItem(`${quoteEnv}-price`, price)
         cy.setQuoteItem(quoteEnv, quoteId)
       })

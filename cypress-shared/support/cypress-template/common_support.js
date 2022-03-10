@@ -252,17 +252,6 @@ export function ordertheProduct(refundEnv = false, externalSeller = false) {
   })
 }
 
-// preserveAllCookies
-export function preserveAllCookiesOnce() {
-  // Code to Handle the Sesssions in cypress.
-  // Keep the Session alive when you jump to another test
-  cy.getCookies().then((cookies) => {
-    const namesOfCookies = cookies.map((c) => c.name)
-
-    Cypress.Cookies.preserveOnce(...namesOfCookies)
-  })
-}
-
 // Do promissory payment
 export function promissoryPayment() {
   cy.get(selectors.PromissoryPayment).click()
@@ -326,11 +315,12 @@ export function testSetup(storeFrontCookie = true, stop = true) {
 }
 
 export function preserveCookie() {
-  afterEach(() => {
-    cy.getCookies().then((cookies) => {
-      const namesOfCookies = cookies.map((c) => c.name)
-      Cypress.Cookies.preserveOnce(...namesOfCookies)
-    })
+  // Code to Handle the Sesssions in cypress.
+  // Keep the Session alive when you jump to another test
+  cy.getCookies().then((cookies) => {
+    const namesOfCookies = cookies.map((c) => c.name)
+
+    Cypress.Cookies.preserveOnce(...namesOfCookies)
   })
 }
 

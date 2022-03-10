@@ -1,7 +1,6 @@
 import selectors from './cypress-template/common_selectors.js'
-import { generateEmailId, ROLE_DROP_DOWN_EMAIL_MAPPING } from './b2b_utils.js'
-import { GRAPHL_OPERATIONS } from './graphql_utils.js'
 import { OTHER_ROLES } from './b2b_utils.js'
+import { GRAPHL_OPERATIONS } from './graphql_utils.js'
 import { BUTTON_LABEL } from './validation_text.js'
 import { FAIL_ON_STATUS_CODE } from './cypress-template/common_constants.js'
 
