@@ -3,7 +3,7 @@ import { updateRetry } from './common_support.js'
 
 export function configureTargetWorkspace(app, version, workspace = 'master') {
   it(
-    `Configure target workspace as ${workspace} in ${app}`,
+    `Configuring target workspace as ${workspace} in ${app}`,
     updateRetry(2),
     () => {
       cy.getVtexItems().then((vtex) => {
@@ -11,7 +11,7 @@ export function configureTargetWorkspace(app, version, workspace = 'master') {
         const APP_NAME = 'vtex.apps-graphql'
         const APP_VERSION = '3.x'
         const APP = `${APP_NAME}@${APP_VERSION}`
-        const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${APP}`
+        const CUSTOM_URL = `https://${vtex.ACCOUNT}.myvtex.com/_v/private/admin-graphql-ide/v0/${APP}`
 
         const GRAPHQL_MUTATION =
           'mutation' +
@@ -41,15 +41,13 @@ export function configureTargetWorkspace(app, version, workspace = 'master') {
   )
 }
 
-export function configureWorkspaceInOrderForm(workspace = 'master') {
-  it(`Configure workspace as ${workspace} in Order Configuration API`, () => {
-    const URL_REGEX = /(.*)--/
-
+export function configureTaxConfigurationInOrderForm(workspace = null) {
+  it(`Configuring tax configuration in Order Form Configuration API`, () => {
     cy.getVtexItems().then((vtex) => {
       cy.request({
         method: 'GET',
-        url: vtex.orderFormConfig,
-        headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
+        url: vtex.ORDER_FORM_CONFIG,
+        headers: VTEX_AUTH_HEADER(vtex.API_KEY, vtex.API_TOKEN),
         ...FAIL_ON_STATUS_CODE,
       })
         .as('ORDERFORM')
@@ -57,17 +55,19 @@ export function configureWorkspaceInOrderForm(workspace = 'master') {
         .should('equal', 200)
 
       cy.get('@ORDERFORM').then((response) => {
-        cy.log(JSON.stringify(response))
-        const taxConfigurationUrl = response.body.taxConfiguration.url
-
-        response.body.taxConfiguration.url = taxConfigurationUrl.replace(
-          URL_REGEX,
-          `https://${workspace}--`
-        )
+        response.body.taxConfiguration = workspace
+          ? {
+              url: `https://${workspace}--${vtex.ACCOUNT}.myvtex.com/avalara/checkout/order-tax`,
+              authorizationHeader: vtex.AUTHORIZATION,
+              allowExecutionAfterErrors: false,
+              integratedAuthentication: false,
+              appId: null,
+            }
+          : {}
         cy.request({
           method: 'POST',
-          url: vtex.orderFormConfig,
-          headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
+          url: vtex.ORDER_FORM_CONFIG,
+          headers: VTEX_AUTH_HEADER(vtex.API_KEY, vtex.API_TOKEN),
           ...FAIL_ON_STATUS_CODE,
           body: response.body,
         })
