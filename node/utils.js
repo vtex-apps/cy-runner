@@ -99,7 +99,6 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
         thisTry++
         stdout = this.exec(`echo y | ${bin} ${cmd}`, 'pipe').toString()
         check = /uccessfully|App not installed| unlinked|No linked apps/.test(stdout)
-        console.log(stdout)
       }
       break
     case 'link':
@@ -121,7 +120,7 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
       stdout = this.exec(`echo y | ${bin} ${cmd}`, 'pipe').toString()
       check = !/error/.test(stdout)
   }
-  if (!check) this.crash('Toolbelt command failed', `${bin} ${cmd}`)
+  if (!check) this.crash(`Toolbelt command failed: ${bin} ${cmd}`, stdout)
   return stdout
 }
 
