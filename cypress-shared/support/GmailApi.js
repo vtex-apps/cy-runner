@@ -3,7 +3,9 @@ const qs = require('qs')
 
 async function getHeaders(accessToken) {
   return {
-    Authorization: `Bearer ${await accessToken} `,
+    headers: {
+      Authorization: `Bearer ${await accessToken}`,
+    },
   }
 }
 
@@ -47,8 +49,9 @@ class GmailAPI {
       method: 'get',
       url:
         'https://www.googleapis.com/gmail/v1/users/me/messages?q=' + searchItem,
-      headers: getHeaders(this.accessToken),
+      ...(await getHeaders(this.accessToken)),
     }
+
     let threadId = ''
 
     await axios(config1)
@@ -66,9 +69,7 @@ class GmailAPI {
     let config = {
       method: 'get',
       url: `https://gmail.googleapis.com/gmail/v1/users/me/messages/${messageId}`,
-      headers: {
-        Authorization: getHeaders(this.accessToken),
-      },
+      ...(await getHeaders(this.accessToken)),
     }
 
     let data = {}

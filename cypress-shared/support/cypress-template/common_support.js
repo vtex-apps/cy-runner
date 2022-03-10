@@ -315,12 +315,14 @@ export function testSetup(storeFrontCookie = true, stop = true) {
 }
 
 export function preserveCookie() {
-  // Code to Handle the Sesssions in cypress.
-  // Keep the Session alive when you jump to another test
-  cy.getCookies().then((cookies) => {
-    const namesOfCookies = cookies.map((c) => c.name)
+  afterEach(() => {
+    // Code to Handle the Sesssions in cypress.
+    // Keep the Session alive when you jump to another test
+    cy.getCookies().then((cookies) => {
+      const namesOfCookies = cookies.map((c) => c.name)
 
-    Cypress.Cookies.preserveOnce(...namesOfCookies)
+      Cypress.Cookies.preserveOnce(...namesOfCookies)
+    })
   })
 }
 
