@@ -1,6 +1,5 @@
 import { testSetup } from '../../support/cypress-template/common_support.js'
 import {
-  setupForOrganizationRequest,
   createOrganizationWithInvalidEmail,
   createOrganizationWithoutName,
   createOrganizationWithoutCostCenterNameAndAddress,
@@ -9,7 +8,6 @@ import b2b from '../../support/b2b_constants.js'
 
 describe('Organization Negative TestCases', () => {
   testSetup(false)
-  setupForOrganizationRequest()
   const emailId = b2b.OrganizationA.users.OrganizationAdmin1
   createOrganizationWithoutCostCenterNameAndAddress(
     b2b.OrganizationA.organizationName,

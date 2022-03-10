@@ -9,16 +9,6 @@ const APP_NAME = 'vtex.b2b-organizations-graphql'
 const APP_VERSION = '0.x'
 const APP = `${APP_NAME}@${APP_VERSION}`
 
-export function setupForOrganizationRequest() {
-  before(() => {
-    // Local storage holds previous organization request information. So, Clear Local Storage
-    cy.clearLocalStorage()
-    cy.visit('/')
-    cy.intercept('POST', 'https://rc.vtex.com.br/api/events').as('EVENTS')
-    cy.wait('@EVENTS')
-  })
-}
-
 function getOrganisationPayload(
   organisation,
   { costCenterName, costCenterAddress },
@@ -44,8 +34,28 @@ function verifyOrganizationData(
   defaultCostCenter,
   invalidEmail = false
 ) {
+  cy.url().then((url) => {
+    if (url.includes('blank')) {
+      // Local storage holds previous organization request information. So, Clear Local Storage
+      cy.clearLocalStorage()
+      cy.visit('/', {
+        retryOnStatusCodeFailure: true,
+        retryOnNetworkFailure: true,
+      })
+      cy.intercept('POST', 'https://rc.vtex.com.br/api/events').as('EVENTS')
+      cy.wait('@EVENTS')
+    }
+  })
+  cy.get('body').then(($body) => {
+    if ($body.find(selectors.PopupMsg).length)
+      cy.get('button > div')
+        .contains(BUTTON_LABEL.create)
+        .should('be.visible')
+        .click()
+  })
+
   const { firstName, lastName, email } = b2bCustomerAdmin
-  cy.get(selectors.OrganisationSignup, { timeout: 60000 })
+  cy.get(selectors.OrganisationSignup, { timeout: 25000 })
     .should('be.visible')
     .click()
   cy.get(selectors.PageNotFound, { timeout: 10000 }).should('not.exist')
@@ -82,14 +92,10 @@ export function createAndApproveOrganizationRequestTestCase(
   { costCenterName, costCenterAddress },
   email
 ) {
-  it(`Creating ${organization} via storefront & Approving ${organization} via graphql`, () => {
-    cy.get('body').then(($body) => {
-      if ($body.find(selectors.PopupMsg).length)
-        cy.get('button > div')
-          .contains(BUTTON_LABEL.create)
-          .should('be.visible')
-          .click()
-
+  it(
+    `Creating ${organization} via storefront & Approving ${organization} via graphql`,
+    { retries: 3 },
+    () => {
       cy.getVtexItems().then((vtex) => {
         const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${APP}`
         const { name, b2bCustomerAdmin, defaultCostCenter } =
@@ -131,8 +137,8 @@ export function createAndApproveOrganizationRequestTestCase(
           })
         })
       })
-    })
-  })
+    }
+  )
 }
 
 export function createOrganizationWithInvalidEmail(
