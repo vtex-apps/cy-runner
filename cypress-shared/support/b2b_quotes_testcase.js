@@ -241,8 +241,8 @@ export function updateQuote(
           }
         )
       }
-      cy.get(`@${saveQuote}`).then((saveQuote) => {
-        if (saveQuote) {
+      cy.get(`@${saveQuote}`).then((response) => {
+        if (response) {
           cy.waitForGraphql(GRAPHL_OPERATIONS.UpdateQuote, selectors.SaveQuote)
         } else cy.log('Quote already got updated')
         cy.get(selectors.QuoteStatus)
@@ -315,6 +315,16 @@ export function searchQuote(quote) {
   })
 }
 
+function getPosition() {
+  if (organization) {
+    return 2
+  } else if (multi) {
+    return 3
+  } else {
+    return 2
+  }
+}
+
 function fillFilterBy(data, organization = false, multi = false) {
   cy.getVtexItems().then((vtex) => {
     const filterBy = organization ? 'Organization' : 'Cost Center'
@@ -336,7 +346,7 @@ function fillFilterBy(data, organization = false, multi = false) {
     }).as(GRAPHL_OPERATIONS.GetQuotes)
     cy.get('button > div').contains('Apply').click()
     cy.wait(`@${GRAPHL_OPERATIONS.GetQuotes}`)
-    const position = organization ? 2 : multi ? 3 : 2
+    const position = getPosition(organization, multi)
     cy.get(`.ma2:nth-child(${position}) span.nowrap`)
       .invoke('text')
       .should('contain', `${data}`)
@@ -388,14 +398,9 @@ export function filterQuoteByStatus(expectedStatus1, expectedStatus2 = null) {
         .invoke('prop', 'checked')
         .then((checked) => {
           if (
-            !checked &&
-            (status === expectedStatus1 || status === expectedStatus2)
-          ) {
-            cy.get(checkBoxSelector).click()
-          } else if (
-            checked &&
-            status != expectedStatus1 &&
-            status != expectedStatus2
+            (!checked &&
+              (status === expectedStatus1 || status === expectedStatus2)) ||
+            (checked && status != expectedStatus1 && status != expectedStatus2)
           ) {
             cy.get(checkBoxSelector).click()
           }
