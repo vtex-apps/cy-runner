@@ -4,15 +4,15 @@ base:
     enabled: true
     name: VTEX_QE
   vtex:
-    account: productusqa
+    account: account
     id: 2001459804
     domain: myvtex.com
-    urlExternalSeller: https://productusqaseller.myvtex.com
+    urlExternalSeller: https://accountqaseller.myvtex.com
     vtexIdUrl: https://vtexid.vtex.com.br/api/vtexid/pub/authenticate/default
     deployCli:
       # Implies login with credentials from base.secrets.name
       # If you want to use the current vtex login, disable it
-      enabled: false
+      enabled: true
       git: https://github.com/vtex/toolbelt.git
       branch: qe/cypress
   twilio:
@@ -57,31 +57,30 @@ workspace:
       enabled: false
   # List of apps will be installed, if not empty and config.vtexCli disabled,
   # you must ensure your vtex cli is authenticated already
-  installApps:
-  #    - vtex.b2b-suite
-  #    - vtex.b2b-quotes
-  #    - vtex.quickorder
-  #    # Theme
-  #    - vtex.wish-list@1.x
-  #    - vtex.location-availability@0.x
-  #    - vtex.shopper-location@0.x
-  #    - vtex.wordpress-integration@2.x
-  #    - vtex.storefront-permissions-ui@0.x
-  #    - vtex.b2bstore@2.x
-  # It is a good idea remove, at least, the app you want to test integration on workspace.linkApp
-  removeApps:
-  #    - vtex.store-theme
+  installApps: []
+#     - vtex.b2b-suite
+#     - vtex.b2b-quotes
+#     - vtex.quickorder
+#     # Theme
+#     - vtex.wish-list@1.x
+#     - vtex.location-availability@0.x
+#     - vtex.shopper-location@0.x
+#     - vtex.wordpress-integration@2.x
+#     - vtex.storefront-permissions-ui@0.x
+#     - vtex.b2bstore@2.x
+  removeApps: []
+#     - vtex.store-theme
   wipe:
     enabled: false
     stopOnFail: false
-    spec: cypress/integration/wipe.spec.js
+    spec: cypress-shared/integration/pass.spec.js
   teardown:
-    enabled: false
+    enabled: true
 
 strategy:
   # The strategies must be in order, with dependent tests last
   A:
-    enabled: false
+    enabled: true
     sendDashboard: false
     hardTries: 1
     stopOnFail: false
@@ -90,18 +89,17 @@ strategy:
     runInOrder: true
     # You can use *, but the order will be not guaranteed
     specs:
-      - cypress-shared/integration/pass.spec.js
+      - cypress-shared/integration/fail.spec.js
 
   B:
-    enabled: false
+    enabled: true
     sendDashboard: false
     hardTries: 1
-    stopOnFail: false
+    stopOnFail: true
     parallel: false
     runInOrder: false
     specs:
-      - cypress/integration/pass.spec.js
-      - cypress/integration/pass.spec.js
+      - cypress-shared/integration/pass.spec.js
     dependency:
       - A
 

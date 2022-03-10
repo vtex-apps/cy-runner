@@ -16,8 +16,13 @@ exports.credentials = async (config) => {
     }
     qe.msg('Requesting admin cookie', true, true)
     const response = await qe.request(axiosConfig)
-    if (response.data.authStatus !== 'Success')
-      qe.crash('Failed to get admin credentials')
+    try {
+      if (response.data.authStatus !== 'Success')
+        qe.crash('Failed to get credentials',
+          'Check your secrets vtex.apiToken and vtex.apiKey')
+    } catch (e) {
+      qe.crash('Fail on axios', e)
+    }
     let cookieName = response.data.authCookie.Name
     let cookieValue = response.data.authCookie.Value
     config.base.vtex['authCookieName'] = cookieName
@@ -31,7 +36,6 @@ exports.credentials = async (config) => {
     qe.writeEnvJson(config)
   }
   return {
-    config: config,
-    time: qe.toc(START),
+    config: config, time: qe.toc(START),
   }
 }

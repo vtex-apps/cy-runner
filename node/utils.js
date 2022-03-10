@@ -94,17 +94,11 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
       break
     case 'install':
     case 'uninstall':
-      while (!check && thisTry < MAX_TRIES) {
-        thisTry++
-        stdout = this.exec(`echo y | ${bin} ${cmd}`, 'pipe').toString()
-        check = /successfully|App not installed/.test(stdout)
-      }
-      break
     case 'unlink':
       while (!check && thisTry < MAX_TRIES) {
         thisTry++
         stdout = this.exec(`echo y | ${bin} ${cmd}`, 'pipe').toString()
-        check = /Successfully unlinked|No linked apps/.test(stdout)
+        check = /uccessfully|App not installed| unlinked|No linked apps/.test(stdout)
       }
       break
     case 'link':
@@ -126,7 +120,7 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
       stdout = this.exec(`echo y | ${bin} ${cmd}`, 'pipe').toString()
       check = !/error/.test(stdout)
   }
-  if (!check) this.crash('Toolbelt command failed', `${bin} ${cmd}`)
+  if (!check) this.crash(`Toolbelt command failed: ${bin} ${cmd}`, stdout)
   return stdout
 }
 
@@ -431,7 +425,7 @@ exports.runCypress = async (
     } else {
       await cy.run(options).then((result) => {
         if (result.failures) this.crash(result.message)
-        if (result.totalPassed < result.totalTests) testPassed = false
+        if (result.totalPassed < (result.totalTests - result.skipped)) testPassed = false
       })
     }
   } catch (e) {
