@@ -17,7 +17,8 @@ module.exports.strategy = async (config) => {
       let dependency = test.dependency
       qe.msgSection(`Strategy ${strategy}`)
       if (typeof dependency != 'undefined') {
-        let check = intersection(dependency, testsPassed)
+        // Convert all to string to avoid compare string to number
+        let check = intersection(dependency.toString().split(','), testsPassed.toString().split(','))
         if (check.length === dependency.length) {
           qe.msg(`As strategy ${check} passed, running strategy ${strategy}`)
           await runTest(test, config, group)
