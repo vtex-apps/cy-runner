@@ -10,42 +10,26 @@ import {
 import {
   addAddressinCostCenter,
   deleteCostCenter,
-  deleteAddressFromCostCenter,
   addCostCenter,
   updateCostCenter,
-  updateAddress,
   updatePaymentTermsinCostCenter,
 } from '../../support/b2b_cost_center_testcase.js'
 import { loginToStoreFront } from '../../support/b2b_login.js'
 import {
   addUser,
   addAndupdateUser,
-  addAnddeleteUser,
-  addSameUserAgainInOrganization,
 } from '../../support/b2b_add_users_testcase.js'
 import {
   ROLE_DROP_DOWN,
   ROLE_DROP_DOWN_EMAIL_MAPPING as role,
   PAYMENT_TERMS,
 } from '../../support/b2b_utils.js'
-import {
-  createQuote,
-  filterQuote,
-  searchQuote,
-} from '../../support/b2b_quotes_testcase.js'
 
 describe('OrganizationA - Create a Buyer and Approver, associate Cost Center and assign payment terms', () => {
   testSetup(false)
 
-  const {
-    organizationName,
-    costCenter1,
-    costCenter2,
-    costCenter3,
-    product,
-    quotes,
-    users,
-  } = b2b.OrganizationA
+  const { organizationName, costCenter1, costCenter2, costCenter3, users } =
+    b2b.OrganizationA
 
   loginToStoreFront(users.OrganizationAdmin1, ROLE_DROP_DOWN.OrganizationAdmin)
 
@@ -61,20 +45,6 @@ describe('OrganizationA - Create a Buyer and Approver, associate Cost Center and
   )
   addAddressinCostCenter(costCenter2.name, costCenter2.addresses[1])
 
-  // Holding this because of react issues
-  // addAddressinCostCenter(
-  //   costCenter2.name,
-  //   costCenter2.temporaryAddress,
-  //   costCenter2.addresses[1]
-  // )
-  // updateAddress(
-  //   costCenter2.name,
-  //   costCenter2.temporaryAddress,
-  //   costCenter2.addresses[1]
-  // )
-  // addAddressinCostCenter(costCenter2.name, costCenter2.deleteAddress)
-  // deleteAddressFromCostCenter(costCenter2.name, costCenter2.deleteAddress)
-
   // Cost Center 3 - Scenarios
   addCostCenter(
     organizationName,
@@ -87,14 +57,6 @@ describe('OrganizationA - Create a Buyer and Approver, associate Cost Center and
   // Add/Delete users in costcenter1
   addUser(organizationName, costCenter1.name, role.Buyer1)
   addUser(organizationName, costCenter1.name, role.Approver1)
-  // addAnddeleteUser(organizationName, costCenter1.name, role.Buyer3)
-
-  //  Add Organization Admin
-  // TODO: Once dev fix this then revisit
-  // addSameUserAgainInOrganization(organizationName, costCenter2.name, {
-  //   currentRole: role.Buyer3,
-  //   updatedRole: role.OrganizationAdmin3,
-  // })
 
   // Add/Update users for costcenter2
   addAndupdateUser(
@@ -105,12 +67,5 @@ describe('OrganizationA - Create a Buyer and Approver, associate Cost Center and
   addUser(organizationName, costCenter2.name, role.OrganizationAdmin2)
   addUser(organizationName, costCenter2.name, role.Approver2)
 
-  // createQuote({
-  //   product,
-  //   quoteEnv: quotes.OrganizationAdmin.quotes1,
-  //   role: ROLE_DROP_DOWN.OrganizationAdmin,
-  // })
-  // searchQuote(quotes.OrganizationAdmin.quotes1)
-  // filterQuote(costCenter1.name)
   preserveCookie()
 })

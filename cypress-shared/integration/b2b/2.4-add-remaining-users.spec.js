@@ -7,7 +7,6 @@ describe('Add Sales Users via Graphql', () => {
 
   it('Set roles in organization JSON', { retries: 3 }, () => {
     cy.getVtexItems().then((vtex) => {
-      const roles = OTHER_ROLES
       const APP_NAME = 'vtex.storefront-permissions'
       const APP_VERSION = '1.x'
       const APP = `${APP_NAME}@${APP_VERSION}`
@@ -23,7 +22,7 @@ describe('Add Sales Users via Graphql', () => {
         },
       }).then((response) => {
         const rolesObject = response.body.data.listRoles.filter((r) =>
-          roles.includes(r.name)
+          OTHER_ROLES.includes(r.name)
         )
         expect(rolesObject.length).to.equal(3)
         rolesObject.map((r) => cy.setOrganizationItem(`${r.name}-id`, r.id))

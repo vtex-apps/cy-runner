@@ -3,19 +3,13 @@ import {
   preserveCookie,
 } from '../../support/cypress-template/common_support.js'
 import b2b from '../../support/b2b_constants.js'
-import {
-  ROLE_DROP_DOWN_EMAIL_MAPPING as role,
-  ROLE_DROP_DOWN,
-} from '../../support/b2b_utils.js'
+import { ROLE_DROP_DOWN } from '../../support/b2b_utils.js'
 import { loginToStoreFront } from '../../support/b2b_login.js'
 import {
   productShouldNotbeAvailableTestCase,
   verifySession,
 } from '../../support/b2b_common_testcase.js'
-import {
-  quoteShouldbeVisibleTestCase,
-  quoteShouldNotBeVisibleTestCase,
-} from '../../support/b2b_quotes_testcase.js'
+
 import {
   checkoutProduct,
   fillContactInfo,
@@ -26,29 +20,10 @@ import {
 describe('Organization B - Cost Center B1 - Approver Scenario', () => {
   testSetup(false)
 
-  const {
-    organizationName,
-    product,
-    quotes,
-    nonAvailableProduct,
-    costCenter1,
-    users,
-  } = b2b.OrganizationB
-  const { organizationName: organizationA, quotes: organizationAQuotes } =
-    b2b.OrganizationA
+  const { product, nonAvailableProduct, costCenter1, users } = b2b.OrganizationB
   loginToStoreFront(users.Approver1, ROLE_DROP_DOWN.Approver)
   verifySession(b2b.OrganizationB)
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
-  //   quoteShouldbeVisibleTestCase(
-  //     organizationName,
-  //     quotes.OrganizationAdmin.quotes1,
-  //     organizationName
-  //   )
-  //   quoteShouldNotBeVisibleTestCase(
-  //     organizationName,
-  //     organizationAQuotes.OrganizationAdmin.quotes1,
-  //     organizationA
-  //   )
   checkoutProduct(product)
   fillContactInfo()
   verifyAddress(costCenter1.addresses)
