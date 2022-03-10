@@ -6,7 +6,10 @@ export function loginToStoreFront(emailId, role) {
     `Logging in to storefront as ${role}`,
     { defaultCommandTimeout: 60000, retries: 3 },
     () => {
-      cy.visit('/')
+      cy.visit('/', {
+        retryOnStatusCodeFailure: true,
+        retryOnNetworkFailure: true,
+      })
       cy.intercept('POST', 'https://rc.vtex.com.br/api/events').as('EVENTS')
       cy.wait('@EVENTS').then(() => {
         cy.getVtexItems().then((vtex) => {
