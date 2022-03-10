@@ -111,7 +111,7 @@ Cypress.Commands.add('checkStatusAndReject', (expectedStatus) => {
     .first()
     .invoke('text')
     .then((currentStatus) => {
-      if (currentStatus === expectedStatus) return cy.wrap(false)
+      if (currentStatus == expectedStatus) return cy.wrap(false)
       return cy.wrap(true)
     })
 })

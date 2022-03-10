@@ -2,7 +2,7 @@ export default {
   // *************HomePage Constants start here************ //
 
   SignInBtn: '.vtex-login-2-x-container > div >button',
-  Email: '[class*=emailVerifi] > form > div input[type=text]',
+  Email: 'input[name=email]',
   Password: '[class*=emailVerifi] > form > div input[type=password]',
   ForgotPassword: 'a[class*=forgot]',
   PasswordValidation: '.w-80',
@@ -146,7 +146,6 @@ export default {
   OrganisationSignup: 'a[href*=request] > span',
   AccessCode: 'div[class*=access]',
   Header: 'h3[class*=Title]',
-  Email: 'input[name=email]',
   Submit: 'div[class*=login] > button[type=submit]',
   Token: 'input[name=token]',
   OrganizationName: 'div.layout__container > div:nth-child(1) input[type=text]',
