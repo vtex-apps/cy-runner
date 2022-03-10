@@ -1,8 +1,8 @@
-import selectors from './cypress-template/common_selectors.js'
+import selectors from '../../cypress-template/common_selectors.js'
 import { OTHER_ROLES } from './b2b_utils.js'
 import { GRAPHL_OPERATIONS } from './graphql_utils.js'
 import { BUTTON_LABEL } from './validation_text.js'
-import { FAIL_ON_STATUS_CODE } from './cypress-template/common_constants.js'
+import { FAIL_ON_STATUS_CODE } from '../../cypress-template/common_constants.js'
 
 // Define constants
 const APP_NAME = 'vtex.b2b-organizations-graphql'

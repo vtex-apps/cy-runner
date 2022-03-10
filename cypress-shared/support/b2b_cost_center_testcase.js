@@ -1,5 +1,5 @@
-import selectors from './cypress-template/common_selectors.js'
-import { getCostCenterName } from './b2b_utils.js'
+import selectors from '../../cypress-template/common_selectors.js'
+import { getCostCenterName, validateToastMsg } from './b2b_utils.js'
 import { GRAPHL_OPERATIONS } from './graphql_utils.js'
 import { BUTTON_LABEL, TOAST_MSG } from './validation_text.js'
 
@@ -80,7 +80,7 @@ function submitAddressInCostCenter(postalCode) {
       .contains(BUTTON_LABEL.save)
       .click()
     cy.wait(`@${GRAPHL_OPERATIONS.GetCostCenterStorefront}`)
-    cy.get(selectors.ToastMsgInB2B).contains(TOAST_MSG.updated)
+    validateToastMsg(TOAST_MSG.updated)
   })
 }
 
@@ -199,7 +199,7 @@ export function updatePaymentTermsinCostCenter(
         GRAPHL_OPERATIONS.GetCostCenterStorefront,
         selectors.SaveChangesInCostCenter
       )
-      cy.get(selectors.ToastMsgInB2B).contains(TOAST_MSG.updated)
+      validateToastMsg(TOAST_MSG.updated)
     }
   )
 }

@@ -241,13 +241,11 @@ export function ordertheProduct(refundEnv = false, externalSeller = false) {
     }
 
     if (externalSeller) {
-      cy.getVtexItems().then((vtex) => {
-        cy.setOrderItem(externalSeller.directSaleEnv, orderId)
-        cy.setOrderItem(
-          externalSeller.externalSaleEnv,
-          `${orderId.slice(0, -1)}2`
-        )
-      })
+      cy.setOrderItem(externalSeller.directSaleEnv, orderId)
+      cy.setOrderItem(
+        externalSeller.externalSaleEnv,
+        `${orderId.slice(0, -1)}2`
+      )
     }
   })
 }

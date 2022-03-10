@@ -1,6 +1,6 @@
 import { getCostCenterName } from '../../support/b2b_utils.js'
 import b2b from '../../support/b2b_constants.js'
-import { ENTITIES } from '../../support/cypress-template/common_constants.js'
+import { ENTITIES } from '../../../cypress-template/common_constants.js'
 
 // Define constants
 const APP_NAME = 'vtex.b2b-organizations-graphql'
@@ -68,12 +68,10 @@ function deleteCostCenter(organization, costCenter) {
 
 function deleteUsersFromMasterData() {
   it('Delete Users from master data', () => {
-    cy.getVtexItems().then((vtex) => {
-      cy.searchInMasterData(ENTITIES.CLIENTS, '*syedbitcot*').then((datas) => {
-        for (const { id } of datas) {
-          cy.deleteDocumentInMasterData(ENTITIES.CLIENTS, id)
-        }
-      })
+    cy.searchInMasterData(ENTITIES.CLIENTS, '*syedbitcot*').then((datas) => {
+      for (const { id } of datas) {
+        cy.deleteDocumentInMasterData(ENTITIES.CLIENTS, id)
+      }
     })
   })
 }

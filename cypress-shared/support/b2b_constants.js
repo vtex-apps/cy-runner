@@ -1,4 +1,4 @@
-import { PRODUCTS } from './cypress-template/utils.js'
+import { PRODUCTS } from '../../cypress-template/utils.js'
 import {
   ROLE_DROP_DOWN_EMAIL_MAPPING,
   ROLE_ID_EMAIL_MAPPING,

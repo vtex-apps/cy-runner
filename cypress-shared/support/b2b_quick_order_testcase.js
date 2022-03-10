@@ -1,7 +1,8 @@
-import selectors from './cypress-template/common_selectors.js'
+import selectors from '../../cypress-template/common_selectors.js'
 import { fillQuoteInformation } from './b2b_quotes_testcase.js'
 import { BUTTON_LABEL, TOAST_MSG } from './validation_text.js'
 import { GRAPHL_OPERATIONS } from './graphql_utils.js'
+import { validateToastMsg } from './b2b_utils.js'
 
 const POPUP_MSG = "You can't have more than 50 items"
 
@@ -40,7 +41,7 @@ export function quickOrderBySkuAndQuantityTestCase1(role, quoteEnv) {
     cy.get(content).clear().type('880270a,2{enter}').focus()
     cy.get(invalid).click()
     cy.waitForGraphql(GRAPHL_OPERATIONS.addToCart, addtoCart)
-    cy.get(selectors.ToastMsgInB2B).contains(TOAST_MSG.addedToTheCart)
+    validateToastMsg(TOAST_MSG.addedToTheCart)
     cy.get(selectors.OpenCart).first().should('be.visible').click()
     fillQuoteInformation(quoteEnv)
   })
@@ -54,7 +55,7 @@ export function quickOrderBySkuAnd51QuantityTestCase(role) {
     cy.get(button).contains(BUTTON_LABEL.back).click()
     fillSkuAndQuantity(textArea, validate, '880270a,51{enter}')
     cy.waitForGraphql(GRAPHL_OPERATIONS.addToCart, addtoCart)
-    cy.get(selectors.ToastMsgInB2B).contains(POPUP_MSG)
+    validateToastMsg(POPUP_MSG)
     cy.get(selectors.OpenCart).first().should('be.visible').click()
     cy.get(selectors.QuantityInCart).should('have.value', 50)
     cy.get(remove).click()

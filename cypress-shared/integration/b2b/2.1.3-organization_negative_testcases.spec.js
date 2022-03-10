@@ -1,4 +1,4 @@
-import { testSetup } from '../../support/cypress-template/common_support.js'
+import { testSetup } from '../../../cypress-template/common_support.js'
 import {
   createOrganizationWithInvalidEmail,
   createOrganizationWithoutName,

@@ -1,8 +1,8 @@
-import selectors from './cypress-template/common_selectors.js'
+import selectors from '../../cypress-template/common_selectors.js'
 import {
   searchInMasterData,
   deleteDocumentInMasterData,
-} from './cypress-template/wipe.js'
+} from '../../cypress-template/wipe.js'
 import 'cypress-file-upload'
 
 Cypress.Commands.add('searchInMasterData', searchInMasterData)

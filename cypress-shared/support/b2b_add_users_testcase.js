@@ -1,8 +1,9 @@
-import selectors from './cypress-template/common_selectors.js'
+import selectors from '../../cypress-template/common_selectors.js'
 import {
   generateEmailId,
   generateName,
   ROLE_ID_EMAIL_MAPPING,
+  validateToastMsg,
 } from './b2b_utils.js'
 import b2b from './b2b_constants.js'
 import { GRAPHL_OPERATIONS } from './graphql_utils.js'
@@ -27,7 +28,7 @@ export function addUserFn({ userName, emailId }, costCenter, dropDownText) {
         .find('option:selected')
         .should('have.text', dropDownText)
       cy.waitForGraphql(GRAPHL_OPERATIONS.GetUsers, selectors.SubmitUser)
-      // cy.get(selectors.ToastMsgInB2B).contains(TOAST_MSG.added)
+      // validateToastMsg(TOAST_MSG.added)
     }
   })
 }
@@ -62,7 +63,7 @@ export function addAndupdateUser(
     )
     cy.get(selectors.RoleDropDownInEdit).select(dropDownText)
     cy.get(selectors.UpdateUser).click()
-    cy.get(selectors.ToastMsgInB2B).contains(TOAST_MSG.updated)
+    validateToastMsg(TOAST_MSG.updated)
   })
 }
 
@@ -115,8 +116,7 @@ export function addAnddeleteUser(organization, costCenter, role) {
 }
 
 export function updateRoleOfTheUser(
-  organization,
-  costCenter,
+  { organization, costCenter },
   currentRole,
   updatedRole
 ) {
@@ -134,7 +134,7 @@ export function updateRoleOfTheUser(
       cy.get(selectors.CostCenterDropDownInEdit).select(costCenter)
       cy.get(selectors.RoleDropDownInEdit).select(dropDownText)
       cy.get(selectors.UpdateUser).click()
-      cy.get(selectors.ToastMsgInB2B).contains(TOAST_MSG.updated)
+      validateToastMsg(TOAST_MSG.updated)
     }
   )
 }
@@ -157,7 +157,7 @@ export function updateCostCenterOftheUser(
         .click()
       cy.get(selectors.CostCenterDropDownInEdit).select(updatedCostCenter)
       cy.get(selectors.UpdateUser).click()
-      cy.get(selectors.ToastMsgInB2B).contains(TOAST_MSG.updated)
+      validateToastMsg(TOAST_MSG.updated)
     }
   )
 }

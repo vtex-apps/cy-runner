@@ -1,4 +1,4 @@
-import selectors from './cypress-template/common_selectors.js'
+import selectors from '../../cypress-template/common_selectors.js'
 import { STATUSES } from './b2b_utils.js'
 import { GRAPHL_OPERATIONS } from './graphql_utils.js'
 import { BUTTON_LABEL } from './validation_text.js'
@@ -121,7 +121,7 @@ function getExpectedStatus(notes, discount, quantity, price) {
   return discount || quantity || price ? STATUSES.ready : STATUSES.revised
 }
 
-function updateDiscount(expectedStatus, saveQuote) {
+function updateDiscount(discount, expectedStatus, saveQuote) {
   const { QuoteTotal, DiscountSliderContainer, SliderSelector, SliderToolTip } =
     selectors
   const transformAttribute = 'transform: translateX(50px) translateX(-50%)'
@@ -235,7 +235,7 @@ export function updateQuote(
         .should('have.text', BUTTON_LABEL.QuoteDetails)
       cy.get(selectors.QuoteStatus).should('be.visible')
       if (notes) updateNotes(notes, saveQuote)
-      if (discount) updateDiscount(expectedStatus, saveQuote)
+      if (discount) updateDiscount(discount, expectedStatus, saveQuote)
       if (price) updatePrice(price, multiple, saveQuote)
       if (quantity) updateQuantity(quantity, saveQuote)
       cy.get(`@${saveQuote}`).then((response) => {

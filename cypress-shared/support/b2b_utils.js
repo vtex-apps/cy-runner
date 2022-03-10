@@ -1,3 +1,5 @@
+import selectors from '../../cypress-template/common_selectors.js'
+
 export function generateName(role) {
   return `${role}-Robot`
 }
@@ -7,7 +9,7 @@ export function getCostCenterName(organization, costCenter) {
 }
 
 export function generateEmailId(organization, role) {
-  return `syed+${
+  return `syed+sy${
     organization.slice(0, 3) + organization.slice(-1)
   }${role}@bitcot.com`
 }
@@ -67,4 +69,10 @@ export const ROLE_ID_EMAIL_MAPPING = {
 export const PAYMENT_TERMS = {
   Promissory: 'Promissory',
   NET30: 'NET 30',
+}
+
+export function validateToastMsg(msg) {
+  cy.get(selectors.ToastMsgInB2B, { timeout: 5000 })
+    .should('be.visible')
+    .contains(msg)
 }
