@@ -121,6 +121,94 @@ function getExpectedStatus(notes, discount, quantity, price) {
   return discount || quantity || price ? STATUSES.ready : STATUSES.revised
 }
 
+function updateDiscount(expectedStatus, saveQuote) {
+  const { QuoteTotal, DiscountSliderContainer, SliderSelector, SliderToolTip } =
+    selectors
+  const transformAttribute = 'transform: translateX(50px) translateX(-50%)'
+  cy.get(selectors.QuoteTotal)
+    .first()
+    .should('not.have.text', DEFAULT_QUOTE_TOTAL)
+    .invoke('text')
+    .then((amountText) => {
+      cy.get(selectors.QuoteStatus)
+        .first()
+        .invoke('text')
+        .then((status) => {
+          if (status !== expectedStatus) {
+            cy.wrap(true).as(saveQuote)
+            const amount = +amountText.replace('$', '')
+            const discountedPrice = amount * ((100 - discount) / 100)
+            cy.get(DiscountSliderContainer)
+              .invoke('attr', 'style', transformAttribute)
+              .should('have.attr', 'style', transformAttribute)
+            cy.get(SliderSelector).should('be.visible').click()
+            cy.get(SliderToolTip)
+              .should('not.have.text', '0%')
+              .invoke('text')
+              .then((percentage) => {
+                const currentPercentage = +percentage.replace('%', '')
+                cy.get(DiscountSliderContainer)
+                  .should('not.have.attr', 'style', transformAttribute)
+                  .invoke('attr', 'style')
+                  .then((transform) => {
+                    const r = /transform: translateX\((\d.*)px\)/
+                    const pixelPerPercentage =
+                      transform.match(r)[1] / currentPercentage
+                    const expectedpixel = pixelPerPercentage * discount
+                    cy.get(DiscountSliderContainer).invoke(
+                      'attr',
+                      'style',
+                      `transform: translateX(${expectedpixel}px) translateX(-50%)`
+                    )
+                    cy.get(SliderSelector).should('be.visible').click()
+                    cy.get(SliderToolTip, {
+                      timeout: 4000,
+                    }).should('have.text', `${discount}%`)
+                    cy.get(SliderSelector).should('be.visible').click()
+                    cy.get(QuoteTotal)
+                      .first()
+                      .should('have.text', `$${discountedPrice.toFixed(2)}`)
+                  })
+              })
+          }
+        })
+    })
+}
+
+function updateNotes(notes, saveQuote) {
+  cy.get(selectors.Notes)
+    .last()
+    .invoke('text')
+    .then((notesDescription) => {
+      if (notesDescription !== `Notes:\n${notes}`) {
+        cy.wrap(true).as(saveQuote)
+        cy.get(selectors.Notes).type(notes)
+      }
+    })
+}
+
+function updatePrice(price, multiple, saveQuote) {
+  cy.checkAndFillData(selectors.PriceField, price, 0).then(
+    (updatePriceField1) => {
+      cy.wrap(updatePriceField1).as(saveQuote)
+      if (multiple) {
+        cy.checkAndFillData(selectors.PriceField, price, 1).then(
+          (updatePriceField2) => {
+            if (!updatePriceField1 || updatePriceField2)
+              cy.wrap(updatePriceField2).as(saveQuote)
+          }
+        )
+      }
+    }
+  )
+}
+
+function updateQuantity(quantity, saveQuote) {
+  cy.checkAndFillData(selectors.QuantityField, quantity).then((update) => {
+    cy.wrap(update).as(saveQuote)
+  })
+}
+
 export function updateQuote(
   quote,
   { notes = false, discount = false, quantity = false, price = null },
@@ -146,101 +234,10 @@ export function updateQuote(
         .should('be.visible')
         .should('have.text', BUTTON_LABEL.QuoteDetails)
       cy.get(selectors.QuoteStatus).should('be.visible')
-      if (notes) {
-        cy.get(selectors.Notes)
-          .last()
-          .invoke('text')
-          .then((notesDescription) => {
-            if (notesDescription !== `Notes:\n${notes}`) {
-              cy.wrap(true).as(saveQuote)
-              cy.get(selectors.Notes).type(notes)
-            }
-          })
-      }
-      if (discount) {
-        const {
-          QuoteTotal,
-          DiscountSliderContainer,
-          SliderSelector,
-          SliderToolTip,
-        } = selectors
-        const transformAttribute =
-          'transform: translateX(50px) translateX(-50%)'
-        cy.get(selectors.QuoteTotal)
-          .first()
-          .should('not.have.text', DEFAULT_QUOTE_TOTAL)
-          .invoke('text')
-          .then((amountText) => {
-            cy.get(selectors.QuoteStatus)
-              .first()
-              .invoke('text')
-              .then((status) => {
-                if (status !== expectedStatus) {
-                  cy.wrap(true).as(saveQuote)
-                  const amount = +amountText.replace('$', '')
-                  const discountedPrice = amount * ((100 - discount) / 100)
-                  cy.get(DiscountSliderContainer)
-                    .invoke('attr', 'style', transformAttribute)
-                    .should('have.attr', 'style', transformAttribute)
-                  cy.get(SliderSelector).should('be.visible').click()
-                  cy.get(SliderToolTip)
-                    .should('not.have.text', '0%')
-                    .invoke('text')
-                    .then((percentage) => {
-                      const currentPercentage = +percentage.replace('%', '')
-                      cy.get(DiscountSliderContainer)
-                        .should('not.have.attr', 'style', transformAttribute)
-                        .invoke('attr', 'style')
-                        .then((transform) => {
-                          const r = /transform: translateX\((\d.*)px\)/
-                          const pixelPerPercentage =
-                            transform.match(r)[1] / currentPercentage
-                          const expectedpixel = pixelPerPercentage * discount
-                          cy.log(transform, pixelPerPercentage, expectedpixel)
-                          cy.get(DiscountSliderContainer).invoke(
-                            'attr',
-                            'style',
-                            `transform: translateX(${expectedpixel}px) translateX(-50%)`
-                          )
-                          cy.get(SliderSelector).should('be.visible').click()
-                          cy.get(SliderToolTip, {
-                            timeout: 4000,
-                          }).should('have.text', `${discount}%`)
-                          cy.get(SliderSelector).should('be.visible').click()
-                          cy.get(QuoteTotal)
-                            .first()
-                            .should(
-                              'have.text',
-                              `$${discountedPrice.toFixed(2)}`
-                            )
-                        })
-                    })
-                }
-              })
-          })
-      }
-      if (price) {
-        cy.checkAndFillData(selectors.PriceField, price, 0).then(
-          (updatePriceField1) => {
-            cy.wrap(updatePriceField1).as(saveQuote)
-            if (multiple) {
-              cy.checkAndFillData(selectors.PriceField, price, 1).then(
-                (updatePriceField2) => {
-                  if (!updatePriceField1 || updatePriceField2)
-                    cy.wrap(updatePriceField2).as(saveQuote)
-                }
-              )
-            }
-          }
-        )
-      }
-      if (quantity) {
-        cy.checkAndFillData(selectors.QuantityField, quantity).then(
-          (update) => {
-            cy.wrap(update).as(saveQuote)
-          }
-        )
-      }
+      if (notes) updateNotes(notes, saveQuote)
+      if (discount) updateDiscount(expectedStatus, saveQuote)
+      if (price) updatePrice(price, multiple, saveQuote)
+      if (quantity) updateQuantity(quantity, saveQuote)
       cy.get(`@${saveQuote}`).then((response) => {
         if (response) {
           cy.waitForGraphql(GRAPHL_OPERATIONS.UpdateQuote, selectors.SaveQuote)
@@ -315,14 +312,10 @@ export function searchQuote(quote) {
   })
 }
 
-function getPosition() {
-  if (organization) {
-    return 2
-  } else if (multi) {
-    return 3
-  } else {
-    return 2
-  }
+function getPosition(organization, multi) {
+  if (organization) return 2
+  else if (multi) return 3
+  else return 2
 }
 
 function fillFilterBy(data, organization = false, multi = false) {
@@ -353,11 +346,15 @@ function fillFilterBy(data, organization = false, multi = false) {
   })
 }
 
-export function filterQuote(costCenter, organization = false) {
-  let title = ''
-  if (costCenter) title = `costCenter ${costCenter}`
+function getTitleForFilterQuoteTestCase(organization, costCenter) {
+  if (costCenter) return `costCenter ${costCenter}`
   if (organization && costCenter)
-    title = `organization - ${organization} & costCenter - ${costCenter}`
+    return `organization - ${organization} & costCenter - ${costCenter}`
+}
+
+export function filterQuote(costCenter, organization = false) {
+  const title = getTitleForFilterQuoteTestCase(organization, costCenter)
+
   it.skip(`Filter by ${title}`, () => {
     cy.gotoMyQuotes()
     cy.get(selectors.QuoteSearch).clear()
