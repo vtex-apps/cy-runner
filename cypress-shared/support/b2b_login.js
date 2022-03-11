@@ -16,9 +16,9 @@ export function loginToStoreFront(emailId, role) {
           cy.get('body').then(async ($body) => {
             if ($body.find(selectors.SignInBtn).length) {
               const gmailCreds = {
-                client_id: gmail.clientId,
-                client_secret: gmail.clientSecret,
-                refresh_token: gmail.refreshToken,
+                clientId: gmail.clientId,
+                clientSecret: gmail.clientSecret,
+                refreshToken: gmail.refreshToken,
               }
 
               const accessToken = await getAccessToken(emailId, gmailCreds)

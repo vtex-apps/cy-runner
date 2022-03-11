@@ -1,3 +1,6 @@
+/* eslint-disable func-names */
+/* eslint-disable no-console */
+
 const axios = require('axios')
 const qs = require('qs')
 
@@ -10,25 +13,25 @@ async function getHeaders(accessToken) {
 }
 
 class GmailAPI {
-  accessToken = ''
   constructor(obj) {
     this.accessToken = this.getAcceToken(obj)
   }
 
-  getAcceToken = async ({ client_id, client_secret, refresh_token }) => {
-    let data = qs.stringify({
-      client_id,
-      client_secret,
-      refresh_token,
+  async getAcceToken({ clientId, clientSecret, refreshToken }) {
+    const data = qs.stringify({
+      clientId,
+      clientSecret,
+      refreshToken,
       grant_type: 'refresh_token',
     })
-    let config = {
+
+    const config = {
       method: 'post',
       url: 'https://accounts.google.com/o/oauth2/token',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      data: data,
+      data,
     }
 
     let accessToken = ''
@@ -44,11 +47,10 @@ class GmailAPI {
     return accessToken
   }
 
-  searchGmail = async (searchItem) => {
-    let config1 = {
+  async searchGmail(searchItem) {
+    const config1 = {
       method: 'get',
-      url:
-        'https://www.googleapis.com/gmail/v1/users/me/messages?q=' + searchItem,
+      url: `https://www.googleapis.com/gmail/v1/users/me/messages?q=${searchItem}`,
       ...(await getHeaders(this.accessToken)),
     }
 
@@ -56,7 +58,7 @@ class GmailAPI {
 
     await axios(config1)
       .then(async function (response) {
-        threadId = await response.data['messages'][0].id
+        threadId = await response.data.messages[0].id
       })
       .catch(function (error) {
         console.log('SearchGmail', error)
@@ -65,8 +67,8 @@ class GmailAPI {
     return threadId
   }
 
-  readGmailContent = async (messageId) => {
-    let config = {
+  async readGmailContent(messageId) {
+    const config = {
       method: 'get',
       url: `https://gmail.googleapis.com/gmail/v1/users/me/messages/${messageId}`,
       ...(await getHeaders(this.accessToken)),
@@ -85,16 +87,18 @@ class GmailAPI {
     return data
   }
 
-  readInboxContent = async (searchText, gmailCreds) => {
+  async readInboxContent(searchText) {
     const threadId = await this.searchGmail(searchText)
     const message = await this.readGmailContent(threadId)
 
     let encodedMessage = await message.payload?.parts
     let decodedStr = null
+
     if (encodedMessage) {
       encodedMessage = encodedMessage[0].body.data
       decodedStr = Buffer.from(encodedMessage, 'base64').toString('ascii')
     }
+
     return decodedStr
   }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable jest/valid-expect */
 import { getCostCenterName } from '../../support/b2b_utils.js'
 import b2b from '../../support/b2b_constants.js'
 import { ENTITIES } from '../../../cypress-template/common_constants.js'
@@ -11,7 +12,7 @@ function deleteOrganization(organization, organizationRequest = false) {
   // Default is organization, if organization request is true then delete organization request
   const func = organizationRequest ? 'Request' : ''
 
-  it(`Delete ${organization}`, () => {
+  test(`Delete ${organization}`, () => {
     cy.getVtexItems().then((vtex) => {
       const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${APP}`
 
@@ -43,7 +44,7 @@ function deleteOrganization(organization, organizationRequest = false) {
 }
 
 function deleteCostCenter(organization, costCenter) {
-  it(`Delete ${costCenter.name} - ${organization}`, () => {
+  test(`Delete ${costCenter.name} - ${organization}`, () => {
     cy.getVtexItems().then((vtex) => {
       const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${APP}`
 
@@ -69,7 +70,7 @@ function deleteCostCenter(organization, costCenter) {
 }
 
 function deleteUsersFromMasterData() {
-  it('Delete Users from master data', () => {
+  test('Delete Users from master data', () => {
     cy.searchInMasterData(ENTITIES.CLIENTS, '*syedbitcot*').then((datas) => {
       for (const { id } of datas) {
         cy.deleteDocumentInMasterData(ENTITIES.CLIENTS, id)
