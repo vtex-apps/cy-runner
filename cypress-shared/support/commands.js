@@ -34,6 +34,7 @@ Cypress.Commands.add('waitForGraphql', (operationName, selector = null) => {
 
 Cypress.Commands.add('fillAddressInCostCenter', (costCenter) => {
   const { country, postalCode, street, receiverName } = costCenter
+
   cy.get(selectors.Country).should('not.be.disabled').select(country)
   cy.intercept('GET', `**/${postalCode}`).as('POSTALCODE')
   cy.get(selectors.PostalCode)
@@ -58,6 +59,7 @@ Cypress.Commands.add('gotoMyOrganization', () => {
       cy.get(selectors.MyAccount).click()
       cy.waitForSession()
     }
+
     cy.get(selectors.MyOrganization).click()
     cy.get(selectors.MyOrganizationCostCenterUserDiv).should('have.length', 4)
   })
@@ -78,8 +80,10 @@ Cypress.Commands.add('gotoMyQuotes', () => {
   cy.get(selectors.ProfileLabel, { timeout: 90000 }).should('be.visible')
   cy.get('body').then(($body) => {
     if (!$body.find(selectors.MyQuotes).length) cy.visit('/')
-    if (!$body.find(selectors.QuoteSearch).length)
+    if (!$body.find(selectors.QuoteSearch).length) {
       cy.get(selectors.MyQuotes).should('be.visible').click()
+    }
+
     cy.get(selectors.QuotesToolBar).should('be.visible')
   })
 })
@@ -94,6 +98,7 @@ Cypress.Commands.add('searchProduct', (product) => {
     if (url.includes('checkout')) {
       cy.visit('/')
     }
+
     cy.get(selectors.ProfileLabel).should('be.visible')
     // Search product in search bar
     cy.get(selectors.Search)
@@ -111,7 +116,8 @@ Cypress.Commands.add('checkStatusAndReject', (expectedStatus) => {
     .first()
     .invoke('text')
     .then((currentStatus) => {
-      if (currentStatus == expectedStatus) return cy.wrap(false)
+      if (currentStatus === expectedStatus) return cy.wrap(false)
+
       return cy.wrap(true)
     })
 })
@@ -125,8 +131,11 @@ Cypress.Commands.add(
       .then((text) => {
         if (text !== expectedText) {
           cy.get(selector).eq(position).clear().type(expectedText)
+
           return cy.wrap(true)
-        } else return cy.wrap(false)
+        }
+
+        return cy.wrap(false)
       })
   }
 )

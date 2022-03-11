@@ -20,7 +20,9 @@ export function loginToStoreFront(emailId, role) {
                 client_secret: gmail.clientSecret,
                 refresh_token: gmail.refreshToken,
               }
+
               const accessToken = await getAccessToken(emailId, gmailCreds)
+
               cy.get(selectors.SignInBtn).click()
               cy.get(selectors.AccessCode).should('be.visible').click()
               cy.get(selectors.Email).should('be.visible').focus().type(emailId)
@@ -32,6 +34,7 @@ export function loginToStoreFront(emailId, role) {
                     gmailCreds,
                     accessToken
                   )
+
                   cy.get(selectors.Token).type(newAccessToken)
                   cy.get(selectors.Submit).click()
                   cy.waitForSession()

@@ -23,6 +23,7 @@ export function quickOrderBySkuAndQuantityTestCase2(role) {
   it(`Verify ${role} is able remove invalid skus in quick order - [Sku's Code],[Quantity]`, () => {
     const { textArea, validate, addtoCart, tableContainer, button } =
       selectors.QuickOrderPage().skus
+
     cy.gotoQuickOrder()
     checkBackButtonIsVisible(tableContainer, button)
     fillSkuAndQuantity(textArea, validate, '880270a,2{enter}1,2{enter}')
@@ -36,6 +37,7 @@ export function quickOrderBySkuAndQuantityTestCase1(role, quoteEnv) {
     cy.gotoQuickOrder()
     const { textArea, validate, invalid, content, addtoCart } =
       selectors.QuickOrderPage().skus
+
     fillSkuAndQuantity(textArea, validate, '1,2{enter}')
     cy.get(invalid).should('be.visible')
     cy.get(content).clear().type('880270a,2{enter}').focus()
@@ -51,6 +53,7 @@ export function quickOrderBySkuAnd51QuantityTestCase(role) {
   it(`Verify ${role} is able to add 50 products to cart with 51 quantity by quick order - [Sku's Code],[Quantity]`, () => {
     const { textArea, validate, addtoCart, remove, button } =
       selectors.QuickOrderPage().skus
+
     cy.gotoQuickOrder()
     cy.get(button).contains(BUTTON_LABEL.back).click()
     fillSkuAndQuantity(textArea, validate, '880270a,51{enter}')
@@ -63,7 +66,7 @@ export function quickOrderBySkuAnd51QuantityTestCase(role) {
   })
 }
 
-function searchOneByOneProduct(search, product, quantity, number) {
+function searchOneByOneProduct(search, { product, quantity }, number) {
   cy.get(search).should('be.visible').should('be.enabled').clear().type(product)
   cy.get('button .pr2 .truncate').should('be.visible')
   cy.get(search).type('{downarrow}{enter}')
@@ -74,7 +77,8 @@ export function quickOrderByOneByOneTestCase(role, product, quoteEnv) {
   it(`Verify ${role} is able to create quote by quick order - One by One`, () => {
     cy.gotoQuickOrder()
     const { search, quantity, add } = selectors.QuickOrderPage().oneByOne
-    searchOneByOneProduct(search, product, quantity, 1)
+
+    searchOneByOneProduct(search, { product, quantity }, 1)
     cy.get(add).should('be.visible').click()
     cy.get(selectors.QuickOrderPage().popupMsgSelector).should('be.visible')
     cy.get(selectors.ToastMsgInB2B).contains('added to the cart')
@@ -87,9 +91,10 @@ export function quickOrderByOneByOneNegativeTestCase(role, product, quoteEnv) {
   it(`Verify ${role} is able to create quote by quick order with 51 products - One by One`, () => {
     cy.gotoQuickOrder()
     const { search, quantity, add, clear } = selectors.QuickOrderPage().oneByOne
-    searchOneByOneProduct(search, product, quantity, 1)
+
+    searchOneByOneProduct(search, { product, quantity }, 1)
     cy.get(clear).should('be.visible').click()
-    searchOneByOneProduct(search, product, quantity, 51)
+    searchOneByOneProduct(search, { product, quantity }, 51)
     cy.get(add).should('be.visible').click()
     cy.get(selectors.QuickOrderPage().popupMsgSelector).contains(POPUP_MSG)
     cy.get(selectors.OpenCart).first().click()
@@ -102,6 +107,7 @@ function quickOrderCategory(quoteEnv, number) {
   cy.gotoQuickOrder()
   const { product, addtoCart, quantity, title } =
     selectors.QuickOrderPage().categories
+
   cy.get(title).should('have.text', BUTTON_LABEL.QuickOrder)
   cy.contains(product).should('be.visible').click()
   cy.get(quantity, { timeout: 5000 }).first().clear().type(number)
@@ -146,6 +152,7 @@ function validateForm(quoteEnv, vtex, productCount) {
 
 function uploadXLS(filePath) {
   const { menu, title, link } = selectors.QuickOrderPage().uploadXLS
+
   cy.get(menu).click()
   cy.get(title).should('have.text', BUTTON_LABEL.QuickOrder)
   cy.get(link).click()
@@ -162,6 +169,7 @@ export function quickOrderByXLS(quoteEnv) {
     () => {
       cy.getVtexItems().then((vtex) => {
         const filePath = 'model-quickorder.xls'
+
         uploadXLS(filePath)
         validateForm(quoteEnv, vtex, 2)
       })
@@ -178,6 +186,7 @@ export function quickOrderByXLSNegativeTestCase(quoteEnv) {
     () => {
       cy.getVtexItems().then((vtex) => {
         const filePath = 'model-quickorder1.xls'
+
         uploadXLS(filePath)
         cy.get('svg[class*=vtex__icon-delete]:nth-child(1)').last().click()
         validateForm(quoteEnv, vtex, 1)
