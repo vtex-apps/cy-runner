@@ -1,5 +1,7 @@
-const qe = require('./utils')
 const path = require('path')
+
+const qe = require('./utils')
+
 const PATH_HOME = process.env.HOME
 const PATH_CACHE = path.join(PATH_HOME, '.cache')
 const PATH_VTEX = path.join(PATH_CACHE, 'vtex')
@@ -13,20 +15,24 @@ process.env.IN_CYPRESS = 'true'
 
 exports.vtexCli = async (config) => {
   const START = qe.tick()
-  const deployCli = config.base.vtex.deployCli
+  const { deployCli } = config.base.vtex
 
   if (deployCli.enabled) {
     qe.msgSection('Toolbelt deployment and authentication')
     // Clean vtex cache state to avoid bugs
     await cleanCache()
     // Check if toolbelt is installed already
-    if (qe.storage(TOOLBELT_BIN))
+    if (qe.storage(TOOLBELT_BIN)) {
       qe.msg('Patched version of toolbelt is installed already')
-    else await installToolbelt(deployCli)
+    } else {
+      await installToolbelt(deployCli)
+    }
+
     qe.msg(`Starting login process using ${config.base.vtex.account}`, 'warn')
     // Authenticate in background
     await startBackground(config.base.vtex)
   }
+
   return {
     path: `${process.env.PATH}:${PATH_TOOLBELT_BIN}`,
     time: qe.toc(START),
@@ -70,8 +76,9 @@ async function installToolbelt(deployCli) {
 
 async function startBackground(vtex) {
   try {
-    let envFile = 'cypress.env.json'
-    let envPath = path.join('node', 'cypress.env.json')
+    const envFile = 'cypress.env.json'
+    const envPath = path.join('node', 'cypress.env.json')
+
     qe.msg('Toolbelt version', true, true, true)
     qe.exec(`${TOOLBELT_BIN} --version`, 'inherit')
     qe.msg(`Removing old ${TOOLBELT_URL}, if any`, true, true)
@@ -81,14 +88,16 @@ async function startBackground(vtex) {
     qe.msg(`Calling toolbelt`, true, true, true)
     qe.exec(`${TOOLBELT_BIN} login ${vtex.account} 1> ${TOOLBELT_URL} &`)
     let size = 0
+
     while (size < 3) size = qe.storage(TOOLBELT_URL, 'size')
     qe.msg(`callback file created`, 'complete', true)
     qe.msg(`Trying to login on ${vtex.account}`, true, true)
     if (!qe.storage(envPath)) qe.storage(envFile, 'link', envPath)
     qe.exec('yarn cypress run -P node')
   } catch (e) {
-    qe.crash('Failed to authenticate using toolbelt\n' + e)
+    qe.crash(`Failed to authenticate using toolbelt\n ${e}`)
   }
+
   // Feedback to user and path to be added returned
   qe.msg(`Login on ${vtex.account} completed successfully`)
 }
