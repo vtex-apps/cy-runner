@@ -144,7 +144,9 @@ function updateDiscount(discount, expectedStatus, saveQuote) {
         .then((status) => {
           if (status !== expectedStatus) {
             cy.wrap(true).as(saveQuote)
+
             const amount = +amountText.replace('$', '')
+
             const discountedPrice = amount * ((100 - discount) / 100)
 
             cy.get(DiscountSliderContainer)
@@ -152,16 +154,19 @@ function updateDiscount(discount, expectedStatus, saveQuote) {
               .should('have.attr', 'style', transformAttribute)
 
             cy.get(SliderSelector).should('be.visible').click()
+
             cy.get(SliderToolTip)
               .should('not.have.text', '0%')
               .invoke('text')
               .then((percentage) => {
                 const currentPercentage = +percentage.replace('%', '')
+
                 cy.get(DiscountSliderContainer)
                   .should('not.have.attr', 'style', transformAttribute)
                   .invoke('attr', 'style')
                   .then((transform) => {
                     const r = /transform: translateX\((\d.*)px\)/
+
                     const pixelPerPercentage =
                       transform.match(r)[1] / currentPercentage
 
@@ -174,10 +179,13 @@ function updateDiscount(discount, expectedStatus, saveQuote) {
                     )
 
                     cy.get(SliderSelector).should('be.visible').click()
+
                     cy.get(SliderToolTip, {
                       timeout: 4000,
                     }).should('have.text', `${discount}%`)
+
                     cy.get(SliderSelector).should('be.visible').click()
+
                     cy.get(QuoteTotal)
                       .first()
                       .should('have.text', `$${discountedPrice.toFixed(2)}`)
@@ -230,6 +238,7 @@ export function updateQuote(
 ) {
   const expectedStatus = getExpectedStatus({ notes, discount, quantity, price })
   const saveQuote = 'saveQuote'
+
   it(
     `${getdescription({
       notes,
@@ -274,6 +283,7 @@ export function updateQuote(
 
 export function rejectQuote(quote, role) {
   const expectedStatus = STATUSES.declined
+
   it(`Decline quote from ${role}`, { retries: 2 }, () => {
     cy.gotoMyQuotes()
     cy.contains(quote).click()
@@ -398,8 +408,10 @@ export function filterQuote(costCenter, organization = false) {
     cy.get(selectors.Datas).then(($els) => {
       const texts = [...$els].map((el) => el.innerText)
       const rows = texts.filter((el) => el.includes('\n'))
+
       for (const row of rows) {
         const datas = row.split('\n')
+
         for (let i = 7; i <= datas.length; i += 8) {
           if (organization) expect(datas[i - 1]).equal(organization)
           expect(datas[i]).equal(costCenter)
