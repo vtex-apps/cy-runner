@@ -29,8 +29,7 @@ function getOrganisationPayload(
 }
 
 function verifyOrganizationData(
-  organizationName,
-  b2bCustomerAdmin,
+  { name, b2bCustomerAdmin },
   defaultCostCenter,
   invalidEmail = false
 ) {
@@ -45,46 +44,48 @@ function verifyOrganizationData(
       cy.intercept('POST', 'https://rc.vtex.com.br/api/events').as('EVENTS')
       cy.wait('@EVENTS')
     }
-  })
-  cy.get('body').then(($body) => {
-    if ($body.find(selectors.PopupMsg).length)
-      cy.get('button > div')
-        .contains(BUTTON_LABEL.create)
-        .should('be.visible')
-        .click()
-  })
 
-  const { firstName, lastName, email } = b2bCustomerAdmin
-  cy.get(selectors.OrganisationSignup, { timeout: 25000 })
-    .should('be.visible')
-    .click()
-  cy.get(selectors.PageNotFound, { timeout: 10000 }).should('not.exist')
-  organizationName
-    ? cy
-        .get(selectors.OrganizationName)
-        .clear()
-        .type(organizationName)
-        .should('have.value', organizationName)
-    : cy.get(selectors.OrganizationName).clear()
-  cy.get(selectors.FirstNameinB2B)
-    .clear()
-    .type(firstName)
-    .should('have.value', firstName)
-  cy.get(selectors.LastNameinB2B)
-    .clear()
-    .type(lastName)
-    .should('have.value', lastName)
-  cy.get(selectors.EmailinB2B)
-    .clear()
-    .type(invalidEmail ? invalidEmail : email)
-    .should('have.value', invalidEmail ? invalidEmail : email)
-  if (defaultCostCenter) {
-    cy.get(selectors.CostCenter)
+    cy.get('body').then(($body) => {
+      if ($body.find(selectors.PopupMsg).length) {
+        cy.get('button > div')
+          .contains(BUTTON_LABEL.create)
+          .should('be.visible')
+          .click()
+      }
+    })
+
+    const { firstName, lastName } = b2bCustomerAdmin
+    const email = invalidEmail || b2bCustomerAdmin.email
+
+    cy.get(selectors.OrganisationSignup, { timeout: 25000 })
+      .should('be.visible')
+      .click()
+    cy.get(selectors.PageNotFound, { timeout: 10000 }).should('not.exist')
+    name
+      ? cy
+          .get(selectors.OrganizationName)
+          .clear()
+          .type(name)
+          .should('have.value', name)
+      : cy.get(selectors.OrganizationName).clear()
+    cy.get(selectors.FirstNameinB2B)
       .clear()
-      .type(defaultCostCenter.name)
-      .should('have.value', defaultCostCenter.name)
-    cy.fillAddressInCostCenter(defaultCostCenter)
-  }
+      .type(firstName)
+      .should('have.value', firstName)
+    cy.get(selectors.LastNameinB2B)
+      .clear()
+      .type(lastName)
+      .should('have.value', lastName)
+
+    cy.get(selectors.EmailinB2B).clear().type(email).should('have.value', email)
+    if (defaultCostCenter) {
+      cy.get(selectors.CostCenter)
+        .clear()
+        .type(defaultCostCenter.name)
+        .should('have.value', defaultCostCenter.name)
+      cy.fillAddressInCostCenter(defaultCostCenter)
+    }
+  })
 }
 
 export function createAndApproveOrganizationRequestTestCase(
@@ -107,7 +108,8 @@ export function createAndApproveOrganizationRequestTestCase(
             },
             email
           )
-        verifyOrganizationData(name, b2bCustomerAdmin, defaultCostCenter)
+
+        verifyOrganizationData({ name, b2bCustomerAdmin }, defaultCostCenter)
         cy.waitForGraphql(
           GRAPHL_OPERATIONS.CreateOrganizationRequest,
           selectors.SubmitOrganization
@@ -115,21 +117,24 @@ export function createAndApproveOrganizationRequestTestCase(
           cy.get(selectors.PopupMsg).contains('pending approval')
           const { id } = req.response.body.data.createOrganizationRequest
           // Saving organizationRequest in organization.json and this request will be deleted this wipe.spec.js
+
           cy.setOrganizationItem(`${organization}request`, id)
           const GRAPHQL_ORAGANIZATION_APPROVAL_MUTATION =
             'mutation' +
             '($id: ID!,$status: String!)' +
             '{updateOrganizationRequest(id: $id,status:$status){id}}'
+
           const variables = {
             id,
             status: 'approved',
           }
+
           cy.request({
             method: 'POST',
             url: CUSTOM_URL,
             body: {
               query: GRAPHQL_ORAGANIZATION_APPROVAL_MUTATION,
-              variables: variables,
+              variables,
             },
             ...FAIL_ON_STATUS_CODE,
           }).then(() => {
@@ -156,10 +161,11 @@ export function createOrganizationWithInvalidEmail(
         },
         email
       )
+
     const invalidEmail = 'dev+test.com'
+
     verifyOrganizationData(
-      name,
-      b2bCustomerAdmin,
+      { name, b2bCustomerAdmin },
       defaultCostCenter,
       invalidEmail
     )
@@ -168,6 +174,7 @@ export function createOrganizationWithInvalidEmail(
       .should('be.disabled')
   })
 }
+
 export function createOrganizationWithoutCostCenterNameAndAddress(
   organization,
   { costCenterName, costCenterAddress },
@@ -182,12 +189,15 @@ export function createOrganizationWithoutCostCenterNameAndAddress(
       },
       email
     )
-    verifyOrganizationData(name, b2bCustomerAdmin, null, null)
+
+    verifyOrganizationData({ name, b2bCustomerAdmin }, null, null)
+
     cy.get(selectors.SubmitOrganization)
       .should('be.visible')
       .should('be.disabled')
   })
 }
+
 export function createOrganizationWithoutName(
   organization,
   { costCenterName, costCenterAddress },
@@ -199,7 +209,12 @@ export function createOrganizationWithoutName(
       { costCenterName, costCenterAddress },
       email
     )
-    verifyOrganizationData(null, b2bCustomerAdmin, defaultCostCenter, null)
+
+    verifyOrganizationData(
+      { name: null, b2bCustomerAdmin },
+      defaultCostCenter,
+      null
+    )
     cy.get(selectors.SubmitOrganization)
       .should('be.visible')
       .should('be.disabled')
@@ -213,8 +228,9 @@ export function organizationAdminShouldNotAbleToEditSalesUsers() {
     () => {
       cy.gotoMyOrganization()
       cy.get(selectors.AddUser).should('be.visible')
-      for (let role of OTHER_ROLES)
+      for (const role of OTHER_ROLES) {
         cy.contains(role).should('have.class', 'c-disabled')
+      }
     }
   )
 }
