@@ -95,7 +95,6 @@ export function addAddressinCostCenter(
 
     cy.get(selectors.PostalCodeInAddressList).then(($els) => {
       const postalCodes = [...$els].map((el) => el.innerText)
-      // const currentAddressLoc = postalCodes.indexOf(postalCode)
 
       if (updatedAddress) {
         const updatedAddressLoc = postalCodes.indexOf(updatedAddress.postalCode)
