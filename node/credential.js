@@ -21,7 +21,7 @@ exports.credentials = async (config) => {
     try {
       const response = await qe.request(axiosConfig)
 
-      if (response.data.authStatus !== 'Success') {
+      if (response && response.data.authStatus !== 'Success') {
         qe.crash(
           'Failed to get credentials',
           'Check your secrets vtex.apiToken and vtex.apiKey'
