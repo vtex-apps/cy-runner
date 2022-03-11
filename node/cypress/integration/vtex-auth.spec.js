@@ -1,9 +1,9 @@
-/// <reference types="cypress" />
-let config = Cypress.env()
+// / <reference types="cypress" />
+const config = Cypress.env()
 
 // Constants
-const vtex = config.base.vtex
-const twilio = config.base.twilio
+const { vtex } = config.base
+const { twilio } = config.base
 const FAIL_TIMEOUT = { retries: 5, timeout: 1000, log: false }
 const TXT_EMAIL = '[name = "email"]'
 const TXT_PASSWORD = '[name = "password"]'
@@ -34,9 +34,10 @@ describe('Authentication process', () => {
       cy.get('body').then(($body) => {
         if ($body.find(TXT_CODE).length) {
           if (twilio.enabled) {
-            let sid = twilio.apiUser
-            let token = twilio.apiToken
-            let url = `${twilio.baseUrl}/${sid}/Messages.json?PageSize=5`
+            const sid = twilio.apiUser
+            const token = twilio.apiToken
+            const url = `${twilio.baseUrl}/${sid}/Messages.json?PageSize=5`
+
             // Get SMS Code
             cy.log(url, sid, token, 5000)
             cy.twilioOtp(url, sid, token, 5000).then((code) => {

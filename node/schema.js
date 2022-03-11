@@ -1,4 +1,4 @@
-/**********************************************
+/** ********************************************
  Validate schema on cy-runner.yml
  Test only mandatory fields cy-runner works
  0 = String not null
@@ -9,67 +9,84 @@
  5 = Boolean
  6 = Not null
  7 = array
- **********************************************/
+ ********************************************* */
 
-const {get} = require('lodash')
+const { get } = require('lodash')
+
 const qe = require('./utils')
 
 function schemaValidator(schema, config, strategy = '') {
-  let skip = []
-  let schemaTraversed = qe.traverse([], schema)
+  const skip = []
+  const schemaTraversed = qe.traverse([], schema)
   const ignore = (key, value) => {
     let byPass = null
+
     key = strategy + key
-    if (/\.enabled/.test(key) && typeof value == 'boolean' && !value) {
+    if (/\.enabled/.test(key) && typeof value === 'boolean' && !value) {
       skip.push(key.split('.enabled')[0])
     }
+
     skip.forEach((disabled) => {
       byPass = !!key.includes(disabled)
     })
+
     return byPass
   }
+
   schemaTraversed.forEach((item) => {
-    let value = get(config, item.key)
+    const value = get(config, item.key)
     let crash = false
     let msg = 'not null'
+
     if (ignore(item.key, value)) return
     if (/[0126]/.test(item.type) && value == null) crash = true
     switch (item.type) {
       // String
       case 0:
+
       case 3:
         msg = 'string'
         crash = typeof value !== msg
         break
+
       // Integer
       case 1:
+
       case 4:
         msg = 'number'
         crash = typeof value !== msg
         break
+
       // Boolean
       case 2:
+
       case 5:
         msg = 'boolean'
         crash = typeof value !== msg
         break
+
       // Array
       case 7:
         msg = 'array'
         try {
-          if (!value.constructor.prototype.hasOwnProperty('push'))
+          if (!value.constructor.prototype.hasOwnProperty('push')) {
             crash = true
+          }
         } catch (e) {
           crash = true
         }
+
         break
+
       default:
         break
     }
-    if (crash)
+
+    if (crash) {
       qe.crash(
         `Parse config file failed: ${strategy}${item.key} must be ${msg}`
       )
+    }
   })
 }
 
@@ -80,12 +97,12 @@ exports.validateConfig = (config, file) => {
         enabled: 2,
         name: 0,
       },
-      twilio: {enabled: 2},
+      twilio: { enabled: 2 },
       vtex: {
         account: 0,
         id: 4,
         domain: 0,
-        deployCli: {enabled: 2, git: 0, branch: 0},
+        deployCli: { enabled: 2, git: 0, branch: 0 },
       },
       cypress: {
         enabled: 2,
@@ -104,8 +121,8 @@ exports.validateConfig = (config, file) => {
         browser: 0,
         chromeWebSecurity: 2,
       },
-      jira: {enabled: 2, account: 0, board: 0, issueType: 0},
-      slack: {enabled: 2, channel: 3},
+      jira: { enabled: 2, account: 0, board: 0, issueType: 0 },
+      slack: { enabled: 2, channel: 3 },
       stateFiles: 7,
     },
     workspace: {
@@ -121,10 +138,11 @@ exports.validateConfig = (config, file) => {
       },
       installApps: 7,
       removeApps: 7,
-      wipe: {enabled: 2, stopOnFail: 2, spec: 0},
-      teardown: {enabled: 2},
+      wipe: { enabled: 2, stopOnFail: 2, spec: 0 },
+      teardown: { enabled: 2 },
     },
   }
+
   const STRATEGY_SCHEMA = {
     enabled: 2,
     sendDashboard: 2,
@@ -139,7 +157,8 @@ exports.validateConfig = (config, file) => {
   schemaValidator(BASE_SCHEMA, config)
 
   // Validate test strategies
-  let configSchema = {}
+  const configSchema = {}
+
   Object.entries(config.strategy).forEach((entry) => {
     configSchema[entry[0]] = entry[1]
   })
@@ -148,7 +167,7 @@ exports.validateConfig = (config, file) => {
   })
 
   // All set, show the user a positive feedback
-  qe.msg(file + ' loaded and validated successfully')
+  qe.msg(`${file} loaded and validated successfully`)
 }
 
 exports.validateSecrets = (secrets, config) => {
@@ -161,13 +180,16 @@ exports.validateSecrets = (secrets, config) => {
         'robotMail',
         'robotPassword',
       ]
+
       VTEX_ATTRIBUTES.forEach((att) => {
         checkSecret(`secrets.vtex.${att}`, secrets.vtex[att])
       })
     }
+
     // Check TWILIO secrets
     if (config.base.twilio.enabled) {
       const TWILIO_ATTRIBUTES = ['apiUser', 'apiToken', 'baseUrl']
+
       TWILIO_ATTRIBUTES.forEach((att) => {
         checkSecret(`secrets.twilio.${att}`, secrets.twilio[att])
       })
@@ -180,6 +202,6 @@ exports.validateSecrets = (secrets, config) => {
 // Check secrets
 function checkSecret(key, value) {
   key = key.split('secrets.')[1]
-  if (typeof value != 'string') qe.crash('Secret must be string: ' + key)
-  if (value.length <= 0) qe.crash('Secret can not be null: ' + key)
+  if (typeof value !== 'string') qe.crash(`Secret must be string: ${key}`)
+  if (value.length <= 0) qe.crash(`Secret can not be null: ${key}`)
 }

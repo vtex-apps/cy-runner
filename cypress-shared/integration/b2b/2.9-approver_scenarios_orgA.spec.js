@@ -1,7 +1,7 @@
 import {
   testSetup,
   preserveCookie,
-} from '../../../cypress-template/common_support.js'
+} from '../../support/cypress-template/common_support.js'
 import b2b from '../../support/b2b_constants.js'
 import { ROLE_DROP_DOWN } from '../../support/b2b_utils.js'
 import { loginToStoreFront } from '../../support/b2b_login.js'

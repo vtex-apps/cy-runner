@@ -1,4 +1,4 @@
-import selectors from '../../cypress-template/common_selectors.js'
+import selectors from './cypress-template/common_selectors.js'
 import { getCostCenterName, generateEmailId } from './b2b_utils.js'
 import { BUTTON_LABEL } from './validation_text.js'
 

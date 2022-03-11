@@ -1,10 +1,10 @@
-import selectors from '../../cypress-template/common_selectors.js'
+import selectors from './cypress-template/common_selectors.js'
 import { fillQuoteInformation } from './b2b_quotes_testcase.js'
 import { BUTTON_LABEL, TOAST_MSG } from './validation_text.js'
 import { GRAPHL_OPERATIONS } from './graphql_utils.js'
 import { validateToastMsg } from './b2b_utils.js'
 
-const POPUP_MSG = "You can't have more than 50 items"
+export const POPUP_MSG = "You can't have more than 50 items"
 
 function fillSkuAndQuantity(textArea, validate, skuQuantity) {
   cy.get(textArea).clear().type(skuQuantity)

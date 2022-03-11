@@ -1,5 +1,5 @@
 import './commands'
-import '../../cypress-template/commands'
+import './cypress-template/commands'
 import './organization-env'
 import './quotes-env'
 

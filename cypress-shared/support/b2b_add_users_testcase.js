@@ -1,4 +1,4 @@
-import selectors from '../../cypress-template/common_selectors.js'
+import selectors from './cypress-template/common_selectors.js'
 import {
   generateEmailId,
   generateName,

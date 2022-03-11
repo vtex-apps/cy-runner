@@ -1,14 +1,14 @@
 const qe = require('./node/utils')
-const {getConfig} = require('./node/config')
-const {vtexCli} = require('./node/cli')
-const {workspace} = require('./node/workspace')
-const {credentials} = require('./node/credential')
-const {strategy} = require('./node/test')
-const {teardown} = require('./node/teardown')
-const {report} = require('./node/report')
+const { getConfig } = require('./node/config')
+const { vtexCli } = require('./node/cli')
+const { workspace } = require('./node/workspace')
+const { credentials } = require('./node/credential')
+const { strategy } = require('./node/test')
+const { teardown } = require('./node/teardown')
+const { report } = require('./node/report')
 
 // Controls test state
-let control = {
+const control = {
   start: qe.tick(),
   timing: {},
   testsFailed: [],
@@ -28,16 +28,17 @@ async function main() {
 
   // Deploy, start in background, and add VTEX CLI to system PATH
   let call = await vtexCli(config)
+
   process.env.PATH = call.path
-  control.timing['vtexCli'] = call.time
+  control.timing.vtexCli = call.time
 
   // Configure workspace (create, install, uninstall, link app)
-  control.timing['workspace'] = await workspace(config)
+  control.timing.workspace = await workspace(config)
 
   // Get credentials
   call = await credentials(config)
   config = call.config
-  control.timing['credentials'] = call.time
+  control.timing.credentials = call.time
 
   // Tests
   if (config.workspace.runInDevMode) {
@@ -46,17 +47,17 @@ async function main() {
     await qe.openCypress()
   } else {
     call = await strategy(config)
-    control.timing['strategy'] = call.time
+    control.timing.strategy = call.time
     control.testsFailed = call.testsFailed
     control.testsSkipped = call.testsSkipped
     control.testsPassed = call.testsPassed
   }
 
   // Teardown
-  control.timing['teardown'] = await teardown(config)
+  control.timing.teardown = await teardown(config)
 
   // Final Report
-  control.timing['total'] = qe.toc(control.start)
+  control.timing.total = qe.toc(control.start)
   await report(control, config)
 }
 

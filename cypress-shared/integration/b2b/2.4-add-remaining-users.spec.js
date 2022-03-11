@@ -1,5 +1,5 @@
 /* eslint-disable jest/valid-expect */
-import { testSetup } from '../../../cypress-template/common_support.js'
+import { testSetup } from '../../support/cypress-template/common_support.js'
 import { ROLE_ID_EMAIL_MAPPING, OTHER_ROLES } from '../../support/b2b_utils.js'
 import { addUserViaGraphql } from '../../support/b2b_add_users_testcase.js'
 
