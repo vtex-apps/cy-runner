@@ -9,7 +9,6 @@ import {
   productShouldNotbeAvailableTestCase,
   verifySession,
 } from '../../support/b2b_common_testcase.js'
-
 import {
   checkoutProduct,
   fillContactInfo,
@@ -21,6 +20,7 @@ describe('Organization B - Cost Center B1 - Approver Scenario', () => {
   testSetup(false)
 
   const { product, nonAvailableProduct, costCenter1, users } = b2b.OrganizationB
+
   loginToStoreFront(users.Approver1, ROLE_DROP_DOWN.Approver)
   verifySession(b2b.OrganizationB)
   productShouldNotbeAvailableTestCase(nonAvailableProduct)

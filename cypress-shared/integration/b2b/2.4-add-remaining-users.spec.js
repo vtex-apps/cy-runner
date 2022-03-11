@@ -24,6 +24,7 @@ describe('Add Sales Users via Graphql', () => {
         const rolesObject = response.body.data.listRoles.filter((r) =>
           OTHER_ROLES.includes(r.name)
         )
+
         expect(rolesObject.length).to.equal(3)
         rolesObject.map((r) => cy.setOrganizationItem(`${r.name}-id`, r.id))
       })
@@ -31,6 +32,7 @@ describe('Add Sales Users via Graphql', () => {
   })
 
   const roles = Object.keys(ROLE_ID_EMAIL_MAPPING)
+
   roles.forEach((r) => {
     addUserViaGraphql(r)
   })

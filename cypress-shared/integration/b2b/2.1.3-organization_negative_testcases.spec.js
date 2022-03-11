@@ -9,6 +9,7 @@ import b2b from '../../support/b2b_constants.js'
 describe('Organization Negative TestCases', () => {
   testSetup(false)
   const emailId = b2b.OrganizationA.users.OrganizationAdmin1
+
   createOrganizationWithoutCostCenterNameAndAddress(
     b2b.OrganizationA.organizationName,
     {
@@ -17,6 +18,7 @@ describe('Organization Negative TestCases', () => {
     },
     emailId
   )
+
   createOrganizationWithoutName(
     b2b.OrganizationA.organizationName,
     {

@@ -13,6 +13,7 @@ export function fillQuoteInformation(
   cy.getVtexItems().then((vtex) => {
     cy.get(selectors.ItemsPriceInCart).then(($div) => {
       const price = $div.text()
+
       cy.get(selectors.CreateQuote).last().should('be.visible').click()
       cy.get(selectors.QuoteName).should('be.visible').type(quoteEnv)
       if (notes) cy.get(selectors.Notes).should('be.visible').type(notes)
@@ -22,22 +23,24 @@ export function fillQuoteInformation(
         }
       }).as(GRAPHL_OPERATIONS.CreateQuote)
       cy.get(selectors.CurrencyContainer).should('be.visible')
-      if (requestQuote)
+      if (requestQuote) {
         cy.get(selectors.RequestQuote)
           .should('be.visible')
           .should('not.be.disabled')
           .click()
-      else
+      } else {
         cy.get(selectors.SaveForLater)
           .should('be.visible')
           .should('not.be.disabled')
           .click()
+      }
 
       cy.wait(`@${GRAPHL_OPERATIONS.CreateQuote}`).then((req) => {
         const quoteId = req.response.body.data.createQuote.replace(
           'quotes-',
           ''
         )
+
         cy.get(selectors.ToggleFields).should('be.visible')
         cy.setQuoteItem(`${quoteEnv}-price`, price)
         cy.setQuoteItem(quoteEnv, quoteId)
@@ -52,6 +55,7 @@ export function createQuote(
   notes = false
 ) {
   const expectedStatus = requestQuote ? STATUSES.pending : STATUSES.ready
+
   it.skip(
     `Create Quote as ${role}, verify state is ${expectedStatus} and store in env ${quoteEnv}`,
     { retries: 3 },
@@ -99,6 +103,7 @@ export function quoteShouldbeVisibleTestCase(
 
 function getdescription({ notes, discount, quantity, price }) {
   let description = null
+
   if (notes) {
     description = `Adding notes - ${notes}`
   } else if (discount) {
@@ -114,9 +119,10 @@ function getdescription({ notes, discount, quantity, price }) {
   return `${description} for this quote`
 }
 
-function getExpectedStatus(notes, discount, quantity, price) {
-  if (!notes && !discount && !quantity && !price)
+function getExpectedStatus({ notes, discount, quantity, price }) {
+  if (!notes && !discount && !quantity && !price) {
     throw Error('Atleast one of the options should be updated')
+  }
 
   return discount || quantity || price ? STATUSES.ready : STATUSES.revised
 }
@@ -124,7 +130,9 @@ function getExpectedStatus(notes, discount, quantity, price) {
 function updateDiscount(discount, expectedStatus, saveQuote) {
   const { QuoteTotal, DiscountSliderContainer, SliderSelector, SliderToolTip } =
     selectors
+
   const transformAttribute = 'transform: translateX(50px) translateX(-50%)'
+
   cy.get(selectors.QuoteTotal)
     .first()
     .should('not.have.text', DEFAULT_QUOTE_TOTAL)
@@ -138,9 +146,11 @@ function updateDiscount(discount, expectedStatus, saveQuote) {
             cy.wrap(true).as(saveQuote)
             const amount = +amountText.replace('$', '')
             const discountedPrice = amount * ((100 - discount) / 100)
+
             cy.get(DiscountSliderContainer)
               .invoke('attr', 'style', transformAttribute)
               .should('have.attr', 'style', transformAttribute)
+
             cy.get(SliderSelector).should('be.visible').click()
             cy.get(SliderToolTip)
               .should('not.have.text', '0%')
@@ -154,12 +164,15 @@ function updateDiscount(discount, expectedStatus, saveQuote) {
                     const r = /transform: translateX\((\d.*)px\)/
                     const pixelPerPercentage =
                       transform.match(r)[1] / currentPercentage
+
                     const expectedpixel = pixelPerPercentage * discount
+
                     cy.get(DiscountSliderContainer).invoke(
                       'attr',
                       'style',
                       `transform: translateX(${expectedpixel}px) translateX(-50%)`
                     )
+
                     cy.get(SliderSelector).should('be.visible').click()
                     cy.get(SliderToolTip, {
                       timeout: 4000,
@@ -194,8 +207,9 @@ function updatePrice(price, multiple, saveQuote) {
       if (multiple) {
         cy.checkAndFillData(selectors.PriceField, price, 1).then(
           (updatePriceField2) => {
-            if (!updatePriceField1 || updatePriceField2)
+            if (!updatePriceField1 || updatePriceField2) {
               cy.wrap(updatePriceField2).as(saveQuote)
+            }
           }
         )
       }
@@ -214,7 +228,7 @@ export function updateQuote(
   { notes = false, discount = false, quantity = false, price = null },
   multiple = false
 ) {
-  const expectedStatus = getExpectedStatus(notes, discount, quantity, price)
+  const expectedStatus = getExpectedStatus({ notes, discount, quantity, price })
   const saveQuote = 'saveQuote'
   it(
     `${getdescription({
@@ -234,14 +248,22 @@ export function updateQuote(
         .should('be.visible')
         .should('have.text', BUTTON_LABEL.QuoteDetails)
       cy.get(selectors.QuoteStatus).should('be.visible')
+
       if (notes) updateNotes(notes, saveQuote)
+
       if (discount) updateDiscount(discount, expectedStatus, saveQuote)
+
       if (price) updatePrice(price, multiple, saveQuote)
+
       if (quantity) updateQuantity(quantity, saveQuote)
+
       cy.get(`@${saveQuote}`).then((response) => {
         if (response) {
           cy.waitForGraphql(GRAPHL_OPERATIONS.UpdateQuote, selectors.SaveQuote)
-        } else cy.log('Quote already got updated')
+        } else {
+          cy.log('Quote already got updated')
+        }
+
         cy.get(selectors.QuoteStatus)
           .first()
           .should('have.text', expectedStatus)
@@ -266,7 +288,9 @@ export function rejectQuote(quote, role) {
         cy.get(selectors.QuoteStatus)
           .first()
           .should('have.text', expectedStatus)
-      } else cy.log('Quote already rejeted')
+      } else {
+        cy.log('Quote already rejeted')
+      }
     })
   })
 }
@@ -283,7 +307,7 @@ export function useQuoteForPlacingTheOrder(quote, role) {
       .should('not.have.text', DEFAULT_QUOTE_TOTAL)
       .invoke('text')
       .then((amountText) => {
-        let text = amountText.replace(/ /g, '')
+        const text = amountText.replace(/ /g, '')
         const amount = +text.replace('$', '')
 
         cy.waitForGraphql(
@@ -305,6 +329,7 @@ export function searchQuote(quote) {
     cy.get(selectors.QuoteSearch).type(quote)
     cy.get(selectors.QuoteFromMyQuotesPage).then(($els) => {
       let quotesList = Array.from($els, (el) => el.innerText)
+
       quotesList = quotesList.slice(0, quotesList.length / 2 + 1)
       quotesList.shift()
       expect(quotesList.every((q) => q.includes(quote))).to.be.true
@@ -314,8 +339,9 @@ export function searchQuote(quote) {
 
 function getPosition(organization, multi) {
   if (organization) return 2
-  else if (multi) return 3
-  else return 2
+  if (multi) return 3
+
+  return 2
 }
 
 function fillFilterBy(data, organization = false, multi = false) {
@@ -324,6 +350,7 @@ function fillFilterBy(data, organization = false, multi = false) {
     const downarrowCount = !organization
       ? '{downarrow}{downarrow}{enter}'
       : '{downarrow}{enter}'
+
     cy.contains(/More/i).click()
     cy.contains(/Select a filter/i)
       .click()
@@ -340,6 +367,7 @@ function fillFilterBy(data, organization = false, multi = false) {
     cy.get('button > div').contains('Apply').click()
     cy.wait(`@${GRAPHL_OPERATIONS.GetQuotes}`)
     const position = getPosition(organization, multi)
+
     cy.get(`.ma2:nth-child(${position}) span.nowrap`)
       .invoke('text')
       .should('contain', `${data}`)
@@ -348,8 +376,9 @@ function fillFilterBy(data, organization = false, multi = false) {
 
 function getTitleForFilterQuoteTestCase(organization, costCenter) {
   if (costCenter) return `costCenter ${costCenter}`
-  if (organization && costCenter)
+  if (organization && costCenter) {
     return `organization - ${organization} & costCenter - ${costCenter}`
+  }
 }
 
 export function filterQuote(costCenter, organization = false) {
@@ -361,13 +390,15 @@ export function filterQuote(costCenter, organization = false) {
     if (organization) {
       fillFilterBy(organization, organization)
     }
+
     if (costCenter) {
       fillFilterBy(costCenter, false, organization)
     }
+
     cy.get(selectors.Datas).then(($els) => {
       const texts = [...$els].map((el) => el.innerText)
       const rows = texts.filter((el) => el.includes('\n'))
-      for (let row of rows) {
+      for (const row of rows) {
         const datas = row.split('\n')
         for (let i = 7; i <= datas.length; i += 8) {
           if (organization) expect(datas[i - 1]).equal(organization)
@@ -389,29 +420,35 @@ export function filterQuoteByStatus(expectedStatus1, expectedStatus2 = null) {
     cy.gotoMyQuotes()
     cy.get(selectors.QuoteSearch).clear()
     cy.get(selectors.QuotesFilterByStatus).click()
-    for (let status in STATUSES) {
+    for (const status in STATUSES) {
       const checkBoxSelector = `input[value='${status}']`
+
       cy.get(checkBoxSelector)
         .invoke('prop', 'checked')
         .then((checked) => {
           if (
             (!checked &&
               (status === expectedStatus1 || status === expectedStatus2)) ||
-            (checked && status != expectedStatus1 && status != expectedStatus2)
+            (checked &&
+              status !== expectedStatus1 &&
+              status !== expectedStatus2)
           ) {
             cy.get(checkBoxSelector).click()
           }
         })
     }
+
     cy.get('button > div').contains('Apply').click()
     cy.get(selectors.QuoteFromMyQuotesPage).then(($els) => {
       let quotesList = Array.from($els, (el) => el.innerText)
+
       cy.get(selectors.ClearFilter).click()
       quotesList.reverse()
       quotesList = quotesList.slice(0, quotesList.length / 2)
       const comparison = quotesList.map((q) => {
         return q.includes(expectedStatus1) || q.includes(expectedStatus2)
       })
+
       expect(checkAllElementsAreTrue(comparison)).to.be.true
     })
   })

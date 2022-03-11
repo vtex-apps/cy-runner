@@ -28,8 +28,9 @@ function setProductQuantity({ position, quantity }, subTotal, check = true) {
   )
   cy.wait('@update', { timeout: 5000 })
 
-  if (check)
+  if (check) {
     cy.get(selectors.SubTotal, { timeout: 5000 }).should('have.text', subTotal)
+  }
 }
 
 function fillAddress(country, fullAddress) {
@@ -299,7 +300,7 @@ export function testSetup(storeFrontCookie = true, stop = true) {
       cy.setCookie(vtex.authCookieName, vtex.adminAuthCookieValue, {
         log: false,
       })
-      if (storeFrontCookie)
+      if (storeFrontCookie) {
         cy.setCookie(
           `${vtex.authCookieName}_${vtex.account}`,
           vtex.userAuthCookieValue,
@@ -307,6 +308,7 @@ export function testSetup(storeFrontCookie = true, stop = true) {
             log: false,
           }
         )
+      }
     })
   })
   if (stop) stopTestCaseOnFailure()

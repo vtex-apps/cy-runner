@@ -10,6 +10,7 @@ const APP = `${APP_NAME}@${APP_VERSION}`
 function deleteOrganization(organization, organizationRequest = false) {
   // Default is organization, if organization request is true then delete organization request
   const func = organizationRequest ? 'Request' : ''
+
   it(`Delete ${organization}`, () => {
     cy.getVtexItems().then((vtex) => {
       const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${APP}`
@@ -18,6 +19,7 @@ function deleteOrganization(organization, organizationRequest = false) {
         'mutation' +
         '($id: ID!)' +
         `{deleteOrganization${func}(id: $id){status}}`
+
       cy.getOrganizationItems().then((items) => {
         cy.request({
           method: 'POST',
@@ -47,6 +49,7 @@ function deleteCostCenter(organization, costCenter) {
 
       const GRAPHQL_DELETE_ORAGANIZATION_MUTATION =
         'mutation' + '($id: ID!)' + '{deleteCostCenter(id: $id){status}}'
+
       cy.getOrganizationItems().then((items) => {
         cy.request({
           method: 'POST',
@@ -58,7 +61,6 @@ function deleteCostCenter(organization, costCenter) {
             },
           },
         }).then((resp) => {
-          console.log(resp.body)
           expect(resp.body.data.deleteCostCenter.status).to.equal('success')
         })
       })

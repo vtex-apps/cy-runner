@@ -6,7 +6,6 @@ import b2b from '../../support/b2b_constants.js'
 import { ROLE_DROP_DOWN } from '../../support/b2b_utils.js'
 import { loginToStoreFront } from '../../support/b2b_login.js'
 import { verifySession } from '../../support/b2b_common_testcase.js'
-
 import {
   fillContactInfo,
   verifyAddress,

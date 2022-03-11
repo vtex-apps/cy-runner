@@ -9,7 +9,6 @@ import {
   productShouldNotbeAvailableTestCase,
   verifySession,
 } from '../../support/b2b_common_testcase.js'
-
 import {
   checkoutProduct,
   fillContactInfo,
