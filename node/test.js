@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 const { intersection } = require('lodash')
 
 const qe = require('./utils')
@@ -22,7 +23,11 @@ module.exports.strategy = async (config) => {
 
       qe.msgSection(`Strategy ${strategy}`)
       if (typeof dependency !== 'undefined') {
-        const check = intersection(dependency, testsPassed)
+        // Convert all to string to avoid compare string to number
+        const check = intersection(
+          dependency.toString().split(','),
+          testsPassed.toString().split(',')
+        )
 
         if (check.length === dependency.length) {
           qe.msg(`As strategy ${check} passed, running strategy ${strategy}`)

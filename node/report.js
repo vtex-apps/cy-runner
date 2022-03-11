@@ -27,6 +27,20 @@ module.exports.report = async (control, config) => {
     }
 
     if (control.testsFailed.length < 1) {
+      qe.success('The test ran successfully, well done!')
+    } else {
+      qe.fail(`The test failed!`)
+    }
+
+    if (control.testsSkipped.length > 0) {
+      qe.msg(`${'Skipped'.padEnd(30, '.')} ${control.testsSkipped}`, true, true)
+    }
+
+    if (control.testsFailed.length > 0) {
+      qe.msg(`${'Failure'.padEnd(30, '.')} ${control.testsFailed}`, true, true)
+    }
+
+    if (control.testsFailed.length < 1) {
       qe.success('The test ran successfully, well done')
     } else {
       qe.fail(`The test failed`)
