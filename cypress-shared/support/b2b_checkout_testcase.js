@@ -34,8 +34,9 @@ export function fillContactInfo() {
 export function verifyAddress(address) {
   it('Verify Auto fill Address in checkout', { retries: 3 }, () => {
     cy.get('body').then(($body) => {
-      if ($body.find(selectors.OpenShipping).length)
+      if ($body.find(selectors.OpenShipping).length) {
         cy.get(selectors.OpenShipping, { timeout: 5000 }).click()
+      }
     })
     for (const { postalCode } of address) {
       cy.get(selectors.PostalCodeText, { timeout: 5000 })
@@ -43,11 +44,13 @@ export function verifyAddress(address) {
         .click()
       cy.get(selectors.GotoPaymentBtn, { timeout: 5000 }).should('be.visible')
     }
+
     cy.get('body').then(($body) => {
-      if ($body.find(selectors.GotoPaymentBtn).length)
+      if ($body.find(selectors.GotoPaymentBtn).length) {
         cy.get(selectors.GotoPaymentBtn, { timeout: 5000 })
           .should('be.visible')
           .click()
+      }
     })
   })
 }
@@ -55,12 +58,14 @@ export function verifyAddress(address) {
 export function verifyPayment(promissory = true) {
   it('Verify enabled payments is shown in the checkout', { retries: 3 }, () => {
     if (cy.state('runnable')._currentRetry > 0) cy.reload()
-    if (promissory)
+    if (promissory) {
       cy.get(`[data-name='${PAYMENT_TERMS.Promissory}']`).should('be.visible')
-    else
+    } else {
       cy.get(`[data-name='${PAYMENT_TERMS.Promissory}']`).should(
         'not.be.visible'
       )
+    }
+
     cy.get(`[data-name='${PAYMENT_TERMS.NET30}']`).should('be.visible')
   })
 }
@@ -78,6 +83,7 @@ export function buyNowProductTestCase(product) {
             .should('have.text', product.toLowerCase())
           cy.waitForSession(selectors.BuyNowBtnInB2B)
         }
+
         cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
         cy.get(selectors.AccessDenied, { timeout: 5000 }).should('be.visible')
       })

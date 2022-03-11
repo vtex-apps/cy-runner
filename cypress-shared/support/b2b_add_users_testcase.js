@@ -35,12 +35,14 @@ export function addUserFn({ userName, emailId }, costCenter, dropDownText) {
 
 export function addUser(organizationName, costCenter, role) {
   const { email, dropDownText } = role
+
   it(
     `Adding ${dropDownText} in ${organizationName} with ${costCenter}`,
     { retries: 3 },
     () => {
       const userName = generateName(email)
       const emailId = generateEmailId(organizationName, email)
+
       addUserFn({ userName, emailId }, costCenter, dropDownText)
     }
   )
@@ -54,8 +56,10 @@ export function addAndupdateUser(
   const { email, dropDownText } = updatedRole
   const userName = generateName(email)
   const emailId = generateEmailId(organization, email)
+
   it(`Adding ${emailId} & update its role & Costcenter`, { retries: 3 }, () => {
     const { dropDownText: previous } = currentRole
+
     addUserFn({ userName, emailId }, currentCostCenter, previous)
     cy.contains(emailId).should('be.visible').click()
     cy.get(selectors.CostCenterDropDownInEdit, { timeout: 2000 }).select(
@@ -76,6 +80,7 @@ export function addSameUserAgainInOrganization(
   const userName = generateName(email)
   const emailId = generateEmailId(organization, email)
   const { dropDownText: previous } = currentRole
+
   it.skip(
     `Adding ${emailId} with role ${previous} & update the role to ${dropDownText}`,
     { retries: 3 },
@@ -126,6 +131,7 @@ export function updateRoleOfTheUser(
     () => {
       const { email } = currentRole
       const { dropDownText } = updatedRole
+
       cy.gotoMyOrganization()
       cy.get(selectors.AddUser).should('be.visible')
       cy.contains(generateEmailId(organization, email))
@@ -140,16 +146,16 @@ export function updateRoleOfTheUser(
 }
 
 export function updateCostCenterOftheUser(
-  organization,
+  { organization, role },
   currentCostCenter,
-  updatedCostCenter,
-  role
+  updatedCostCenter
 ) {
   it(
     `Updating the user from this costcenter ${currentCostCenter} to this costcenter ${updatedCostCenter} in ${organization}`,
     { retries: 3 },
     () => {
       const { email } = role
+
       cy.gotoMyOrganization()
       cy.get(selectors.AddUser).should('be.visible')
       cy.contains(generateEmailId(organization, email))
@@ -164,6 +170,7 @@ export function updateCostCenterOftheUser(
 
 export function addUserViaGraphql(roleKey) {
   const { organizationName, costCenter1 } = b2b.OrganizationA
+
   it(
     `Adding ${roleKey} in ${organizationName} with ${costCenter1.name}`,
     { retries: 3 },
@@ -173,6 +180,7 @@ export function addUserViaGraphql(roleKey) {
       const APP_NAME = 'vtex.storefront-permissions'
       const APP_VERSION = '1.x'
       const APP = `${APP_NAME}@${APP_VERSION}`
+
       cy.getVtexItems().then((vtex) => {
         cy.getOrganizationItems().then((organizationItems) => {
           const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${APP}`
@@ -196,7 +204,7 @@ export function addUserViaGraphql(roleKey) {
             url: CUSTOM_URL,
             body: {
               query: GRAPHQL_ADD_USER_MUTATION,
-              variables: variables,
+              variables,
             },
           }).then((resp) => {
             expect(resp.body.data.saveUser.status).to.equal('success')

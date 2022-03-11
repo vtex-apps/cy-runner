@@ -92,29 +92,30 @@ export function addAddressinCostCenter(
   it(`Adding New Address for ${costCenter}`, { retries: 2 }, () => {
     cy.gotoCostCenter(costCenter)
     const { postalCode } = costCenterAddress
+
     cy.get(selectors.PostalCodeInAddressList).then(($els) => {
       const postalCodes = [...$els].map((el) => el.innerText)
-      const currentAddressLoc = postalCodes.indexOf(postalCode)
+      // const currentAddressLoc = postalCodes.indexOf(postalCode)
+
       if (updatedAddress) {
         const updatedAddressLoc = postalCodes.indexOf(updatedAddress.postalCode)
-        if (updatedAddressLoc != -1) {
+
+        if (updatedAddressLoc !== -1) {
           cy.log('Address already updated')
         }
       } else {
-        if (currentAddressLoc == -1) {
-          cy.get(selectors.PostalCodeInAddressList)
-            .last()
-            .invoke('text')
-            .then((code) => {
-              if (code === postalCode) {
-                cy.log('Address already added in CostCenter')
-              } else {
-                cy.get(selectors.AddAddress).click()
-                cy.fillAddressInCostCenter(costCenterAddress)
-                submitAddressInCostCenter(postalCode)
-              }
-            })
-        }
+        cy.get(selectors.PostalCodeInAddressList)
+          .last()
+          .invoke('text')
+          .then((code) => {
+            if (code === postalCode) {
+              cy.log('Address already added in CostCenter')
+            } else {
+              cy.get(selectors.AddAddress).click()
+              cy.fillAddressInCostCenter(costCenterAddress)
+              submitAddressInCostCenter(postalCode)
+            }
+          })
       }
     })
   })
@@ -122,9 +123,11 @@ export function addAddressinCostCenter(
 
 export function openOptionsForAddress(costCenterAddress) {
   const { postalCode } = costCenterAddress
+
   cy.get(selectors.PostalCodeInAddressList).then(($els) => {
     const postalCodes = [...$els].map((el) => el.innerText)
     const child = postalCodes.indexOf(postalCode)
+
     cy.get(selectors.PostalCodeInAddressList)
       .eq(child)
       .should('have.text', postalCode)
@@ -144,12 +147,14 @@ export function updateAddress(
       const newCostCenterAddressLoc = postalCodes.indexOf(
         newCostCenterAddress.postalCode
       )
-      if (newCostCenterAddressLoc != -1) {
+
+      if (newCostCenterAddressLoc !== -1) {
         cy.log('Address already updated')
       } else {
         openOptionsForAddress(currentCostCenterAddress)
         cy.get(selectors.CostCenterAddressEditOption).click()
         const { postalCode } = newCostCenterAddress
+
         cy.fillAddressInCostCenter(newCostCenterAddress)
         submitAddressInCostCenter(postalCode)
       }
@@ -159,6 +164,7 @@ export function updateAddress(
 
 export function deleteAddressFromCostCenter(costCenter, costCenterAddress) {
   const { postalCode } = costCenterAddress
+
   it(`Delete Address ${postalCode} from cost center ${costCenter}`, () => {
     cy.gotoCostCenter(costCenter)
     openOptionsForAddress(costCenterAddress)

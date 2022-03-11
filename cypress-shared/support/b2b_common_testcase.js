@@ -30,14 +30,16 @@ export function setOrganizationIdInJSON(organization, costCenter) {
 function addPaymentTermsCollectionPriceTables(organizationItems, organization) {
   const { organizationName, collections, paymentTerms, priceTables } =
     organization
+
   const id = organizationItems[organizationName]
+
   return {
     id,
     name: organizationName,
     status: 'active',
-    collections: collections,
-    paymentTerms: paymentTerms,
-    priceTables: priceTables,
+    collections,
+    paymentTerms,
+    priceTables,
   }
 }
 
@@ -65,7 +67,7 @@ export function addPaymentTermsCollectionPriceTablesTestCase(organization) {
             url: CUSTOM_URL,
             body: {
               query: GRAPHQL_UPDATE_ORGANISATION_MUTATION,
-              variables: variables,
+              variables,
             },
           }).then((resp) => {
             expect(resp.body.data.updateOrganization.status).to.equal('success')
@@ -125,6 +127,7 @@ export function userAndCostCenterShouldNotBeEditable(
 ) {
   it(`Trying to update user and cost center in ${organization} with role ${role.dropDownText}`, () => {
     const { email } = role
+
     cy.gotoMyOrganization()
     cy.get(selectors.AddUser).should('be.visible')
     cy.contains(generateEmailId(organization, email)).should(
