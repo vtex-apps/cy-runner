@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 const { execSync } = require('child_process')
 const fs = require('fs')
 const path = require('path')
@@ -105,8 +106,10 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
       break
 
     case 'install':
+    /* falls through */
 
     case 'uninstall':
+    /* falls through */
 
     case 'unlink':
       while (!check && thisTry < MAX_TRIES) {

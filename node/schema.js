@@ -43,6 +43,7 @@ function schemaValidator(schema, config, strategy = '') {
     switch (item.type) {
       // String
       case 0:
+      /* falls through */
 
       case 3:
         msg = 'string'
@@ -51,6 +52,7 @@ function schemaValidator(schema, config, strategy = '') {
 
       // Integer
       case 1:
+      /* falls through */
 
       case 4:
         msg = 'number'
@@ -59,6 +61,7 @@ function schemaValidator(schema, config, strategy = '') {
 
       // Boolean
       case 2:
+      /* falls through */
 
       case 5:
         msg = 'boolean'
