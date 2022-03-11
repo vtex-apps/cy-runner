@@ -1,0 +1,22 @@
+{
+  "extends": ["vtex","plugin:cypress/recommended"],
+  "plugins": [
+    "cypress"
+  ],
+  "root": true,
+  "env": {
+    "node": true,
+    "mocha":true
+  },
+  "globals": {
+    "cy": true
+  },
+    "rules": {
+      "cypress/no-assigning-return-values": "error",
+      "cypress/no-unnecessary-waiting": "error",
+      "cypress/assertion-before-screenshot": "warn",
+      "cypress/no-force": "warn",
+      "cypress/no-async-tests": "error",
+      "cypress/no-pause": "error"
+    }
+}
