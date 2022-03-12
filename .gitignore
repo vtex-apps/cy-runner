@@ -108,7 +108,6 @@ dist
 /.idea
 cypress.env.json
 cypress.json
-.state.json
 /cypress
 /cypress-shared/videos
 /cypress-shared/screenshots
@@ -117,3 +116,5 @@ cypress.json
 /node/cypress/fixtures
 /node/cypress/plugins
 /cy-runner-logs
+# State/ENV files
+.*.json
