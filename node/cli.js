@@ -95,7 +95,7 @@ async function startBackground(vtex) {
     if (!qe.storage(envPath)) qe.storage(envFile, 'link', envPath)
     qe.exec('yarn cypress run -P node')
   } catch (e) {
-    qe.crash(`Failed to authenticate using toolbelt\n ${e}`)
+    qe.crash('Failed to authenticate using toolbelt', e)
   }
 
   // Feedback to user and path to be added returned
