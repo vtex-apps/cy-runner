@@ -1,10 +1,7 @@
 /* eslint-disable jest/valid-expect */
 import { testSetup } from '../../support/common/common_support.js'
-import {
-  ROLE_ID_EMAIL_MAPPING,
-  OTHER_ROLES,
-} from '../../support/b2b/b2b_utils.js'
-import { addUserViaGraphql } from '../../support/b2b/b2b_add_users_testcase.js'
+import { ROLE_ID_EMAIL_MAPPING, OTHER_ROLES } from '../../support/b2b/utils.js'
+import { addUserViaGraphql } from '../../support/b2b/add_users.js'
 
 describe('Add Sales Users via Graphql', () => {
   testSetup(false)

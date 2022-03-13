@@ -1,5 +1,5 @@
 import selectors from '../common/common_selectors.js'
-import { getCostCenterName, generateEmailId } from './b2b_utils.js'
+import { getCostCenterName, generateEmailId } from './utils.js'
 import { BUTTON_LABEL } from '../validation_text.js'
 
 // Define constants

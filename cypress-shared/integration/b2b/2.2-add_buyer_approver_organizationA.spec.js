@@ -2,28 +2,25 @@ import {
   testSetup,
   preserveCookie,
 } from '../../support/common/common_support.js'
-import b2b from '../../support/b2b/b2b_constants.js'
+import b2b from '../../support/b2b/constants.js'
 import {
   addPaymentTermsCollectionPriceTablesTestCase,
   setOrganizationIdInJSON,
-} from '../../support/b2b/b2b_common_testcase.js'
+} from '../../support/b2b/common.js'
 import {
   addAddressinCostCenter,
   deleteCostCenter,
   addCostCenter,
   updateCostCenter,
   updatePaymentTermsinCostCenter,
-} from '../../support/b2b/b2b_cost_center_testcase.js'
-import { loginToStoreFront } from '../../support/b2b/b2b_login.js'
-import {
-  addUser,
-  addAndupdateUser,
-} from '../../support/b2b/b2b_add_users_testcase.js'
+} from '../../support/b2b/cost_center.js'
+import { loginToStoreFront } from '../../support/b2b/login.js'
+import { addUser, addAndupdateUser } from '../../support/b2b/add_users.js'
 import {
   ROLE_DROP_DOWN,
   ROLE_DROP_DOWN_EMAIL_MAPPING as role,
   PAYMENT_TERMS,
-} from '../../support/b2b/b2b_utils.js'
+} from '../../support/b2b/utils.js'
 
 describe('OrganizationA - Create a Buyer and Approver, associate Cost Center and assign payment terms', () => {
   testSetup(false)

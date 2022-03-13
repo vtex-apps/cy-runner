@@ -1,5 +1,5 @@
 import selectors from '../common/common_selectors.js'
-import { STATUSES } from './b2b_utils.js'
+import { STATUSES } from './utils.js'
 import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
 import { BUTTON_LABEL } from '../validation_text.js'
 

@@ -1,5 +1,5 @@
 import selectors from '../common/common_selectors.js'
-import { OTHER_ROLES } from './b2b_utils.js'
+import { OTHER_ROLES } from './utils.js'
 import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
 import { BUTTON_LABEL } from '../validation_text.js'
 import { FAIL_ON_STATUS_CODE } from '../common/common_constants.js'

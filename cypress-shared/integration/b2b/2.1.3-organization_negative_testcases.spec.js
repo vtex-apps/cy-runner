@@ -3,8 +3,8 @@ import {
   createOrganizationWithInvalidEmail,
   createOrganizationWithoutName,
   createOrganizationWithoutCostCenterNameAndAddress,
-} from '../../support/b2b/b2b_organization_request_testcase.js'
-import b2b from '../../support/b2b/b2b_constants.js'
+} from '../../support/b2b/organization_request.js'
+import b2b from '../../support/b2b/constants.js'
 
 describe('Organization Negative TestCases', () => {
   testSetup(false)

@@ -1,6 +1,6 @@
 /* eslint-disable jest/valid-expect */
-import { getCostCenterName } from '../../support/b2b/b2b_utils.js'
-import b2b from '../../support/b2b/b2b_constants.js'
+import { getCostCenterName } from '../../support/b2b/utils.js'
+import b2b from '../../support/b2b/constants.js'
 import { ENTITIES } from '../../support/common/common_constants.js'
 
 // Define constants

@@ -1,7 +1,7 @@
 import './commands'
 import './common/commands'
-import './b2b/organization-env'
-import './quotes-env'
+import './b2b/env_organization'
+import './b2b/env_quotes'
 
 // Configure it to preserve cookies
 Cypress.Cookies.defaults({

@@ -4,8 +4,8 @@ import {
   generateName,
   ROLE_ID_EMAIL_MAPPING,
   validateToastMsg,
-} from './b2b_utils.js'
-import b2b from './b2b_constants.js'
+} from './utils.js'
+import b2b from './constants.js'
 import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
 import { BUTTON_LABEL, TOAST_MSG } from '../validation_text.js'
 
