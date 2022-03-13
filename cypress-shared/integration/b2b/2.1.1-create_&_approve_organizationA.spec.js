@@ -1,6 +1,6 @@
-import { testSetup } from '../../support/cypress-template/common_support.js'
-import { createAndApproveOrganizationRequestTestCase } from '../../support/b2b_organization_request_testcase.js'
-import b2b from '../../support/b2b_constants.js'
+import { testSetup } from '../../support/common/common_support.js'
+import { createAndApproveOrganizationRequestTestCase } from '../../support/b2b/b2b_organization_request_testcase.js'
+import b2b from '../../support/b2b/b2b_constants.js'
 
 describe('Create & Approve OrganizationA', () => {
   testSetup(false)

@@ -1,7 +1,7 @@
 /* eslint-disable jest/valid-expect */
-import { getCostCenterName } from '../../support/b2b_utils.js'
-import b2b from '../../support/b2b_constants.js'
-import { ENTITIES } from '../../support/cypress-template/common_constants.js'
+import { getCostCenterName } from '../../support/b2b/b2b_utils.js'
+import b2b from '../../support/b2b/b2b_constants.js'
+import { ENTITIES } from '../../support/common/common_constants.js'
 
 // Define constants
 const APP_NAME = 'vtex.b2b-organizations-graphql'

@@ -1,10 +1,10 @@
-import { testSetup } from '../../support/cypress-template/common_support.js'
+import { testSetup } from '../../support/common/common_support.js'
 import {
   createOrganizationWithInvalidEmail,
   createOrganizationWithoutName,
   createOrganizationWithoutCostCenterNameAndAddress,
-} from '../../support/b2b_organization_request_testcase.js'
-import b2b from '../../support/b2b_constants.js'
+} from '../../support/b2b/b2b_organization_request_testcase.js'
+import b2b from '../../support/b2b/b2b_constants.js'
 
 describe('Organization Negative TestCases', () => {
   testSetup(false)

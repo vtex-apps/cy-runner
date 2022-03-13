@@ -88,11 +88,11 @@ async function runTest(test, config, group) {
   }
 
   if (!testPassed) {
-    qe.msg(`strategy ${test.name} failed`, 'error')
+    qe.msg(`strategy.${test.name} failed`, 'error')
     testsFailed.push(test.name)
     if (test.stopOnFail) await qe.stopOnFail(config, `strategy ${test.name}`)
   } else {
-    qe.msg(`strategy ${test.name} succeeded`)
+    qe.msg(`strategy.${test.name} succeeded`)
     testsPassed.push(test.name)
   }
 }

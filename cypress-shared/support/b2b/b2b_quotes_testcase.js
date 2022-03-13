@@ -1,7 +1,7 @@
-import selectors from './cypress-template/common_selectors.js'
+import selectors from '../common/common_selectors.js'
 import { STATUSES } from './b2b_utils.js'
-import { GRAPHL_OPERATIONS } from './graphql_utils.js'
-import { BUTTON_LABEL } from './validation_text.js'
+import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
+import { BUTTON_LABEL } from '../validation_text.js'
 
 const DEFAULT_QUOTE_TOTAL = '$0.00'
 
