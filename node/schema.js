@@ -72,9 +72,9 @@ function schemaValidator(schema, config, strategy = '') {
       case 7:
         msg = 'array'
         try {
-          if (!value.constructor.prototype.hasOwnProperty('push')) {
-            crash = true
-          }
+          // If not array, it'll fail
+          value.push('isThisArray?')
+          value.pop()
         } catch (e) {
           crash = true
         }
@@ -169,6 +169,9 @@ exports.validateConfig = (config, file) => {
     schemaValidator(STRATEGY_SCHEMA, configSchema[strategy], `${strategy}.`)
   })
 
+  // Validate dependencies
+  checkDependency(config)
+
   // All set, show the user a positive feedback
   qe.msg(`${file} loaded and validated successfully`)
 }
@@ -207,4 +210,17 @@ function checkSecret(key, value) {
   key = key.split('secrets.')[1]
   if (typeof value !== 'string') qe.crash(`Secret must be string: ${key}`)
   if (value.length <= 0) qe.crash(`Secret can not be null: ${key}`)
+}
+
+// Check dependencies
+function checkDependency(config) {
+  qe.traverse([], config.strategy).forEach((item) => {
+    if (/dependency/.test(item.key)) {
+      const dep = get(config.strategy, item.type)
+
+      if (dep === undefined) {
+        qe.crash('Dependency not found', `strategy.${item.type}`)
+      }
+    }
+  })
 }

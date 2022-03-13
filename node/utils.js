@@ -5,7 +5,7 @@ const path = require('path')
 
 const cy = require('cypress')
 const axios = require('axios')
-const { merge } = require('lodash')
+const { merge, get } = require('lodash')
 const yaml = require('js-yaml')
 
 const { teardown } = require('./teardown')
@@ -142,6 +142,10 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
     case 'local':
       stdout = this.exec(`echo y | ${bin} ${cmd}`, 'pipe').toString()
       check = !/error/.test(stdout)
+      break
+
+    default:
+      this.crash('Fail o call toolbelt', 'Command not supported')
   }
 
   if (!check) this.crash(`Toolbelt command failed: ${bin} ${cmd}`, stdout)
@@ -166,9 +170,7 @@ exports.storage = (source, action, destination = null) => {
         return fs.readFileSync(source, { encoding: 'utf-8' })
 
       case 'size':
-        const stats = fs.statSync(source)
-
-        return stats.size
+        return fs.statSync(source).size
 
       case 'copy':
         if (destination == null) this.crash('You must pass copy destination')
@@ -409,23 +411,37 @@ exports.traverse = (result, obj, previousKey) => {
 }
 
 exports.sectionsToRun = async (config) => {
-  this.msgSection('Sections enabled/disabled')
+  this.msgSection('Sections to run')
   let linkApp = false
+  const hasDependency = (check) => {
+    const dep = get(config, `${check}.dependency`)
+
+    if (dep !== undefined) {
+      return dep
+    }
+
+    return []
+  }
 
   this.traverse([], config).forEach((item) => {
+    // Items enabled
     if (/enabled/.test(item.key) && /true/.test(item.type)) {
       const itemEnabled = item.key.split('.enabled')[0]
 
-      if (itemEnabled === 'workspace.linkApp') linkApp = true
+      linkApp = itemEnabled === 'workspace.linkApp'
       if (linkApp && itemEnabled === 'workspace.linkApp.logOutput') {
         this.msg(itemEnabled)
         this.msg('This output may contain credentials', true, true)
         this.msg('Never enable it on CI environments', true, true)
       } else {
         this.msg(itemEnabled)
+        hasDependency(itemEnabled).forEach((dep) => {
+          this.msg(`dependency: strategy.${dep}`, true, true)
+        })
       }
     }
 
+    // Items disabled
     if (/enabled/.test(item.key) && /false/.test(item.type)) {
       const itemEnabled = item.key.split('.enabled')[0]
 

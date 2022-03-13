@@ -30,11 +30,11 @@ module.exports.strategy = async (config) => {
         )
 
         if (check.length === dependency.length) {
-          qe.msg(`As strategy ${check} passed, running strategy ${strategy}`)
+          qe.msg(`As strategy.${check} passed, running strategy.${strategy}`)
           await runTest(test, config, group)
         } else {
           qe.msg(
-            `As strategy ${dependency} not pass, skipping strategy ${strategy}`,
+            `As strategy.${dependency} not pass, skipping strategy.${strategy}`,
             'warn'
           )
           testsSkipped.push(strategy)
@@ -64,9 +64,9 @@ async function runTest(test, config, group) {
   for (let ht = 0; ht <= test.hardTries; ht++) {
     if (!testPassed) {
       qe.msg(
-        `Running try ${ht + 1} of ${test.hardTries + 1} for strategy ${
+        `Starting try ${ht + 1} of ${test.hardTries + 1} for strategy.${
           test.name
-        },`,
+        }`,
         'warn'
       )
       if (test.runInOrder) {

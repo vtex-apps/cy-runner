@@ -13,23 +13,28 @@ module.exports.report = async (control, config) => {
   if (config.workspace.runInDevMode) {
     qe.success('Hope your tests went well. See you soon!')
   } else {
-    qe.msg('Strategy status')
-    if (control.testsPassed.length > 0) {
-      qe.msg(`${'Success'.padEnd(30, '.')} ${control.testsPassed}`, true, true)
-    }
+    const items = [
+      ['testsPassed', 'Successful', 'ok'],
+      ['testsSkipped', 'Skipped', 'warn'],
+      ['testsFailed', 'Failed', 'error'],
+    ]
 
-    if (control.testsSkipped.length > 0) {
-      qe.msg(`${'Skipped'.padEnd(30, '.')} ${control.testsSkipped}`, true, true)
-    }
+    items.forEach((item) => {
+      const tests = control[item[0]]
 
-    if (control.testsFailed.length > 0) {
-      qe.msg(`${'Failure'.padEnd(30, '.')} ${control.testsFailed}`, true, true)
-    }
+      if (tests.length > 0) {
+        const str = tests.length > 1 ? 'strategies' : 'strategy'
 
+        qe.msg(`${item[1]} ${str}`, item[2])
+        tests.forEach((test) => {
+          qe.msg(test, true, true)
+        })
+      }
+    })
     if (control.testsFailed.length < 1) {
-      qe.success('The test ran successfully, well done')
+      qe.success('The test ran successfully, well done!')
     } else {
-      qe.fail(`The test failed`)
+      qe.fail(`The test failed!`)
     }
   }
 }
