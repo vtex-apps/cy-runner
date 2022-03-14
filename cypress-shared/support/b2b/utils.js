@@ -1,4 +1,4 @@
-import selectors from './cypress-template/common_selectors.js'
+import selectors from '../common/selectors.js'
 
 export function generateName(role) {
   return `${role}-Robot`

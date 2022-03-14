@@ -1,7 +1,7 @@
-import selectors from './cypress-template/common_selectors.js'
-import { getCostCenterName, validateToastMsg } from './b2b_utils.js'
-import { GRAPHL_OPERATIONS } from './graphql_utils.js'
-import { BUTTON_LABEL, TOAST_MSG } from './validation_text.js'
+import selectors from '../common/selectors.js'
+import { getCostCenterName, validateToastMsg } from './utils.js'
+import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
+import { BUTTON_LABEL, TOAST_MSG } from '../validation_text.js'
 
 export function addCostCenter(organization, costCenter, costCenterAddress) {
   it(

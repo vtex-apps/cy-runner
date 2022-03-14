@@ -1,5 +1,5 @@
-import { getAccessToken } from './extract.js'
-import selectors from './cypress-template/common_selectors.js'
+import { getAccessToken } from '../extract.js'
+import selectors from '../common/selectors.js'
 
 export function loginToStoreFront(emailId, role) {
   it(

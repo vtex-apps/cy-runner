@@ -1,6 +1,6 @@
-import selectors from './cypress-template/common_selectors.js'
-import { BUTTON_LABEL } from './validation_text.js'
-import { PAYMENT_TERMS } from './b2b_utils.js'
+import selectors from '../common/selectors.js'
+import { BUTTON_LABEL } from '../validation_text.js'
+import { PAYMENT_TERMS } from './utils.js'
 
 export function checkoutProduct(product) {
   it('Checkout the Product', { retries: 3 }, () => {

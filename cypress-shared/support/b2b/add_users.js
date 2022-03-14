@@ -1,13 +1,13 @@
-import selectors from './cypress-template/common_selectors.js'
+import selectors from '../common/selectors.js'
 import {
   generateEmailId,
   generateName,
   ROLE_ID_EMAIL_MAPPING,
   validateToastMsg,
-} from './b2b_utils.js'
-import b2b from './b2b_constants.js'
-import { GRAPHL_OPERATIONS } from './graphql_utils.js'
-import { BUTTON_LABEL, TOAST_MSG } from './validation_text.js'
+} from './utils.js'
+import b2b from './constants.js'
+import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
+import { BUTTON_LABEL, TOAST_MSG } from '../validation_text.js'
 
 export function addUserFn({ userName, emailId }, costCenter, dropDownText) {
   cy.gotoMyOrganization()

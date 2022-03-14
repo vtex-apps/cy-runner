@@ -1,15 +1,12 @@
-import {
-  testSetup,
-  preserveCookie,
-} from '../../support/cypress-template/common_support.js'
-import b2b from '../../support/b2b_constants.js'
-import { ROLE_DROP_DOWN } from '../../support/b2b_utils.js'
-import { loginToStoreFront } from '../../support/b2b_login.js'
+import { testSetup, preserveCookie } from '../../support/common/support.js'
+import b2b from '../../support/b2b/constants.js'
+import { ROLE_DROP_DOWN } from '../../support/b2b/utils.js'
+import { loginToStoreFront } from '../../support/b2b/login.js'
 import {
   productShouldNotbeAvailableTestCase,
   verifySession,
-} from '../../support/b2b_common_testcase.js'
-import { buyNowProductTestCase } from '../../support/b2b_checkout_testcase.js'
+} from '../../support/b2b/common.js'
+import { buyNowProductTestCase } from '../../support/b2b/checkout.js'
 
 describe('Organization B - Cost Center B1 - Buyer Scenario', () => {
   testSetup(false)

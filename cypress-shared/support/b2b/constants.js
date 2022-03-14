@@ -1,9 +1,9 @@
-import { PRODUCTS } from './cypress-template/utils.js'
+import { PRODUCTS } from '../common/utils.js'
 import {
   ROLE_DROP_DOWN_EMAIL_MAPPING,
   ROLE_ID_EMAIL_MAPPING,
   generateEmailId,
-} from './b2b_utils.js'
+} from './utils.js'
 
 const ORGANIZATION_A = 'OrganizationA'
 const ORGANIZATION_B = 'OrganizationB'

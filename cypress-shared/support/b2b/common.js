@@ -1,6 +1,6 @@
-import selectors from './cypress-template/common_selectors.js'
-import { getCostCenterName, generateEmailId } from './b2b_utils.js'
-import { BUTTON_LABEL } from './validation_text.js'
+import selectors from '../common/selectors.js'
+import { getCostCenterName, generateEmailId } from './utils.js'
+import { BUTTON_LABEL } from '../validation_text.js'
 
 // Define constants
 const APP_NAME = 'vtex.b2b-organizations-graphql'

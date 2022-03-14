@@ -1,6 +1,6 @@
-import selectors from './common_selectors.js'
-import { addressList, AUTH_COOKIE_NAME_ENV } from './common_constants.js'
-import { AdminLogin } from './common_apis.js'
+import selectors from './selectors.js'
+import { addressList, AUTH_COOKIE_NAME_ENV } from './constants.js'
+import { AdminLogin } from './apis.js'
 import { generateAddtoCartSelector } from './utils.js'
 
 function setAuthCookie(authResponse) {
