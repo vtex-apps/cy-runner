@@ -1,4 +1,4 @@
-import { FAIL_ON_STATUS_CODE, VTEX_AUTH_HEADER } from './common_constants.js'
+import { FAIL_ON_STATUS_CODE, VTEX_AUTH_HEADER } from './constants.js'
 
 const generateSearchURL = (baseUrl, entities, searchQuery) => {
   return `${baseUrl}/api/dataentities/${entities.id}/search?${entities.searchKey}=${searchQuery}`

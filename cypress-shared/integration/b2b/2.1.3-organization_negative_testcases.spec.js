@@ -1,4 +1,4 @@
-import { testSetup } from '../../support/common/common_support.js'
+import { testSetup } from '../../support/common/support.js'
 import {
   createOrganizationWithInvalidEmail,
   createOrganizationWithoutName,

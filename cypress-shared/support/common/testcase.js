@@ -1,5 +1,5 @@
-import { FAIL_ON_STATUS_CODE, VTEX_AUTH_HEADER } from './common_constants.js'
-import { updateRetry } from './common_support.js'
+import { FAIL_ON_STATUS_CODE, VTEX_AUTH_HEADER } from './constants.js'
+import { updateRetry } from './support.js'
 
 export function configureTargetWorkspace(app, version, workspace = 'master') {
   it(

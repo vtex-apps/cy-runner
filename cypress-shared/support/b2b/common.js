@@ -1,4 +1,4 @@
-import selectors from '../common/common_selectors.js'
+import selectors from '../common/selectors.js'
 import { getCostCenterName, generateEmailId } from './utils.js'
 import { BUTTON_LABEL } from '../validation_text.js'
 

@@ -1,7 +1,4 @@
-import {
-  testSetup,
-  preserveCookie,
-} from '../../support/common/common_support.js'
+import { testSetup, preserveCookie } from '../../support/common/support.js'
 import b2b from '../../support/b2b/constants.js'
 import {
   addPaymentTermsCollectionPriceTablesTestCase,

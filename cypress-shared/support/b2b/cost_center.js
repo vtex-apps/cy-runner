@@ -1,4 +1,4 @@
-import selectors from '../common/common_selectors.js'
+import selectors from '../common/selectors.js'
 import { getCostCenterName, validateToastMsg } from './utils.js'
 import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
 import { BUTTON_LABEL, TOAST_MSG } from '../validation_text.js'

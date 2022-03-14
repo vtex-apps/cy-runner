@@ -19,7 +19,7 @@ Steps:
    Add below lines of code
 
    ```nodejs
-    import {loginAsAdmin} from './cypress-template/common_support.js'
+    import {loginAsAdmin} from './cypress-template/support.js'
     Cypress.Commands.add('loginAsAdmin', loginAsAdmin)
    ```
 
