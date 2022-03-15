@@ -89,7 +89,12 @@ async function startBackground(vtex) {
     qe.exec(`${TOOLBELT_BIN} login ${vtex.account} 1> ${TOOLBELT_URL} &`)
     let size = 0
 
-    while (size < 3) size = qe.storage(TOOLBELT_URL, 'size')
+    while (size < 3) {
+      if (qe.storage(TOOLBELT_URL)) {
+        size = qe.storage(TOOLBELT_URL, 'size')
+      }
+    }
+
     qe.msg(`callback file created`, 'complete', true)
     qe.msg(`Trying to login on ${vtex.account}`, true, true)
     if (!qe.storage(envPath)) qe.storage(envFile, 'link', envPath)
