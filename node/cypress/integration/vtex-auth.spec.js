@@ -11,16 +11,20 @@ const TXT_PASSWORD = '[name = "password"]'
 const TXT_CODE = '[name = "code"]'
 
 function fillEmailAndPassword() {
-  // Fill Robot email
-  cy.get(TXT_EMAIL)
-    .should('be.visible')
-    .type(`${vtex.robotMail}{enter}`, { log: false })
-  cy.intercept('**/validate').as('validate')
-  // Fill Robot password
-  cy.get(TXT_PASSWORD)
-    .should('be.visible')
-    .type(`${vtex.robotPassword}{enter}`, { log: false })
-  cy.wait('@validate')
+  cy.get('body').then(($body) => {
+    if ($body.find(TXT_EMAIL).length) {
+      // Fill Robot email
+      cy.get(TXT_EMAIL)
+        .should('be.visible')
+        .type(`${vtex.robotMail}{enter}`, { log: false })
+      cy.intercept('**/validate').as('validate')
+      // Fill Robot password
+      cy.get(TXT_PASSWORD)
+        .should('be.visible')
+        .type(`${vtex.robotPassword}{enter}`, { log: false })
+      cy.wait('@validate')
+    }
+  })
 }
 
 describe('Authentication process', () => {
@@ -29,14 +33,15 @@ describe('Authentication process', () => {
     cy.readFile('.toolbelt.url', FAIL_TIMEOUT).then((callBackUrl) => {
       cy.url().then((url) => {
         if (url.includes('blank')) {
+          cy.intercept('**/rc.vtex.com.br/api/events').as('events')
           cy.intercept('**/refreshtoken/admin').as('admin')
           cy.visit(callBackUrl)
+          cy.wait('@events')
           cy.wait('@admin')
-          fillEmailAndPassword()
         }
       })
 
-      cy.wait(10000) // eslint-disable-line cypress/no-unnecessary-waiting
+      fillEmailAndPassword()
 
       // Fill Robot SMS code if Twilio enabled, pause if not
       cy.get('body').then(($body) => {
@@ -47,7 +52,7 @@ describe('Authentication process', () => {
             const url = `${twilio.baseUrl}/${sid}/Messages.json?PageSize=5`
 
             // Get SMS Code
-            cy.twilioOtp(url, sid, token).then((code) => {
+            cy.twilioOtp({ url, sid, token }, 10000).then((code) => {
               cy.get(TXT_CODE).should('be.visible').type(`${code}{enter}`)
             })
           } else {
