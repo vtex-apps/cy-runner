@@ -1,7 +1,10 @@
 /* eslint-disable jest/valid-expect */
 import { getCostCenterName } from '../../support/b2b/utils.js'
 import b2b from '../../support/b2b/constants.js'
-import { ENTITIES } from '../../support/common/constants.js'
+import {
+  ENTITIES,
+  FAIL_ON_STATUS_CODE,
+} from '../../support/common/constants.js'
 
 // Define constants
 const APP_NAME = 'vtex.b2b-organizations-graphql'
@@ -33,6 +36,7 @@ function deleteOrganization(organization, organizationRequest = false) {
               ],
             },
           },
+          ...FAIL_ON_STATUS_CODE,
         }).then((resp) => {
           expect(resp.body.data[`deleteOrganization${func}`].status).to.equal(
             'success'
@@ -61,6 +65,7 @@ function deleteCostCenter(organization, costCenter) {
               id: items[getCostCenterName(organization, costCenter.name)],
             },
           },
+          ...FAIL_ON_STATUS_CODE,
         }).then((resp) => {
           expect(resp.body.data.deleteCostCenter.status).to.equal('success')
         })
