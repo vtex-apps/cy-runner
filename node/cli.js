@@ -93,7 +93,7 @@ async function startBackground(vtex) {
     qe.msg(`callback file created`, 'complete', true)
     qe.msg(`Trying to login on ${vtex.account}`, true, true)
     if (!qe.storage(envPath)) qe.storage(envFile, 'link', envPath)
-    qe.exec('yarn cypress run -P node')
+    qe.exec('yarn cypress run -P node', 'inherit')
   } catch (e) {
     qe.crash('Failed to authenticate using toolbelt', e)
   }
