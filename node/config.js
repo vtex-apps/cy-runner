@@ -23,6 +23,11 @@ exports.getConfig = async (configFile) => {
   qe.writeCypressJson(config)
   // Create empty state files
   qe.createStateFiles(config)
+  // Create empty logs dir
+  if (!qe.storage('logs')) {
+    qe.storage('logs', 'mkdir')
+    qe.msg('Logs dir created successfully')
+  }
 
   return config
 }
