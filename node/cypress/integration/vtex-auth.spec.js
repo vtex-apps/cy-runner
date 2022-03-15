@@ -4,7 +4,7 @@ const config = Cypress.env()
 // Constants
 const { vtex } = config.base
 const { twilio } = config.base
-const FAIL_TIMEOUT = { retries: 5, timeout: 1000, log: false }
+const FAIL_TIMEOUT = { retries: 5, timeout: 10000, log: false }
 const TXT_EMAIL = '[name = "email"]'
 const TXT_PASSWORD = '[name = "password"]'
 const TXT_CODE = '[name = "code"]'
@@ -39,8 +39,7 @@ describe('Authentication process', () => {
             const url = `${twilio.baseUrl}/${sid}/Messages.json?PageSize=5`
 
             // Get SMS Code
-            cy.log(url, sid, token, 5000)
-            cy.twilioOtp(url, sid, token, 5000).then((code) => {
+            cy.twilioOtp(url, sid, token, 10000).then((code) => {
               cy.get(TXT_CODE).should('be.visible').type(`${code}{enter}`)
             })
           } else {

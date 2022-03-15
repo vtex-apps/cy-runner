@@ -1,11 +1,13 @@
 {
   "chromeWebSecurity": false,
-  "video": false,
+  "video": true,
   "videoCompression": false,
   "videoUploadOnPasses": false,
-  "screenshotOnRunFailure": false,
+  "screenshotOnRunFailure": true,
   "trashAssetsBeforeRuns": false,
   "watchForFileChanges": false,
   "pluginsFile": false,
+  "screenshotsFolder": "logs/toolbelt/screenshots",
+  "videosFolder": "logs/toolbelt/videos",
   "retries": 5
 }
