@@ -377,7 +377,9 @@ exports.createStateFiles = (config) => {
     STATE_FILES.forEach((stateFile) => {
       fs.writeFileSync(stateFile, '{}')
     })
-    this.msg(`${SIZE} empty state ${plural} created successfully`)
+    if (SIZE) {
+      this.msg(`${SIZE} empty state ${plural} created successfully`)
+    }
   } catch (e) {
     this.crash('Fail to create a empty state file', e)
   }
