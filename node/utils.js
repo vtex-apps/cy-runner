@@ -29,6 +29,7 @@ function icon(type) {
   }
 }
 
+// eslint-disable-next-line max-params
 exports.msg = (msg, type = 'ok', pad = false, wait = false) => {
   const ICO = pad ? icon().padStart(8) : icon(type).padStart(8)
   const MSG = `${ICO} ${msg}${wait ? '... ' : '\n'}`
@@ -81,10 +82,10 @@ exports.fail = (msg) => {
 
 exports.exec = (cmd, output) => {
   if (typeof output === 'undefined') output = 'ignore'
-  const vtex = /vtex-e2e whoami/.test(cmd)
+  const isVtexCmd = /^vtex/.test(cmd)
   let result = null
 
-  if (vtex) {
+  if (isVtexCmd) {
     result = execSync(cmd, { stdio: output })
   } else {
     try {
@@ -132,18 +133,13 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
       break
 
     case 'link':
-      if (/no-watch/.test(cmd)) {
-        stdout = this.exec(`echo y | ${bin} ${cmd}`, 'pipe').toString()
-        check = /build finished successfully/.test(stdout)
-      } else {
+      cmd = `cd .. && echo y | ${bin} ${cmd}`
+      stdout = await this.exec(cmd, 'pipe').toString()
+      while (!check && thisTry < MAX_TRIES) {
         linkApp = new RegExp(linkApp)
-        this.exec(`cd .. && echo y | ${bin} ${cmd}`)
-        while (!check && thisTry < MAX_TRIES) {
-          thisTry++
-          await new Promise((resolve) => setTimeout(resolve, 10000))
-          stdout = this.exec(`${bin} ls`, 'pipe').toString()
-          check = linkApp.test(stdout)
-        }
+        thisTry++
+        stdout = await this.exec(`${bin} ls`, 'pipe').toString()
+        check = linkApp.test(stdout)
       }
 
       break
@@ -157,7 +153,11 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
       this.crash('Fail o call toolbelt', 'Command not supported')
   }
 
-  if (!check) this.crash(`Toolbelt command failed: ${bin} ${cmd}`, stdout)
+  if (!check) {
+    this.msg(`Toolbelt command failed: ${bin} ${cmd}\n${stdout}`, 'error')
+
+    return 'error'
+  }
 
   return stdout
 }
@@ -437,6 +437,7 @@ exports.sectionsToRun = async (config) => {
   this.traverse([], config).forEach((item) => {
     // Items enabled
     if (/enabled/.test(item.key) && /true/.test(item.type)) {
+      // eslint-disable-next-line prefer-destructuring
       const itemEnabled = item.key.split('.enabled')[0]
 
       linkApp = itemEnabled === 'workspace.linkApp'
@@ -454,6 +455,7 @@ exports.sectionsToRun = async (config) => {
 
     // Items disabled
     if (/enabled/.test(item.key) && /false/.test(item.type)) {
+      // eslint-disable-next-line prefer-destructuring
       const itemEnabled = item.key.split('.enabled')[0]
 
       this.msg(itemEnabled, 'error')
@@ -491,9 +493,11 @@ exports.runCypress = async (
   config,
   addOptions = {},
   noOutput = false
+  // eslint-disable-next-line max-params
 ) => {
   if (typeof test.spec === 'string') test.spec = [test.spec]
   const spec = path.parse(test.spec[0])
+  // eslint-disable-next-line prefer-destructuring
   const cyPath = spec.dir.split(path.sep)[0]
   const options = {
     config: {

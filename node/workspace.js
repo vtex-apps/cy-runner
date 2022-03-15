@@ -1,6 +1,7 @@
 const path = require('path')
 
 const qe = require('./utils')
+const { teardown } = require('./teardown')
 
 exports.workspace = async (config) => {
   const START = qe.tick()
@@ -9,14 +10,14 @@ exports.workspace = async (config) => {
   const { installApps } = wrk
   const { removeApps } = wrk
   const { wipe } = wrk
-  const { teardown } = wrk
+  const { _teardown } = wrk
   const manageWorkspace =
     wrk.random ||
     linkApp.enabled ||
     installApps.length > 0 ||
     removeApps.length > 0 ||
     wipe.enabled ||
-    teardown.enabled
+    _teardown.enabled
 
   const vtexBin = config.base.vtex.bin
 
@@ -68,6 +69,7 @@ exports.workspace = async (config) => {
 }
 
 async function doLinkApp(config) {
+  // eslint-disable-next-line vtex/prefer-early-return
   if (config.workspace.linkApp.enabled) {
     qe.msg('Linking app', 'warn', false)
     const manifestFile = path.join('..', 'manifest.json')
@@ -77,6 +79,7 @@ async function doLinkApp(config) {
 
     testApp = JSON.parse(testApp)
     const app = `${testApp.vendor}.${testApp.name}`
+    // eslint-disable-next-line prefer-destructuring
     const version = testApp.version.split('.')[0]
 
     qe.msg(`Uninstalling ${app}`, true, true)
@@ -88,7 +91,7 @@ async function doLinkApp(config) {
 
     qe.msg(`Adding cy-runner exclusions to ${ignoreFile}`, true, true)
     exclusions.forEach((line) => {
-      qe.storage(ignoreFile, 'append', `${path.join('/', line)}\n`)
+      qe.storage(ignoreFile, 'append', `${line}\n`)
     })
     qe.msg(`Linking ${app}`, true, true)
     const logFolder = 'logs'
@@ -98,7 +101,17 @@ async function doLinkApp(config) {
       : '--no-watch'
 
     if (!qe.storage(logFolder, 'exists')) qe.storage(logFolder, 'mkdir')
-    await qe.toolbelt(config.base.vtex.bin, `link ${logOutput}`, app)
-    qe.msg('App linked successfully')
+    const check = await qe.toolbelt(
+      config.base.vtex.bin,
+      `link ${logOutput}`,
+      app
+    )
+
+    if (check === 'error') {
+      qe.msg(`Error when linking ${app}`, 'error')
+      await teardown(config)
+    } else {
+      qe.msg('App linked successfully')
+    }
   }
 }
