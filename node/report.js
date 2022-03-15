@@ -22,6 +22,7 @@ module.exports.report = async (control, config) => {
     items.forEach((item) => {
       const tests = control[item[0]]
 
+      // eslint-disable-next-line vtex/prefer-early-return
       if (tests.length > 0) {
         const str = tests.length > 1 ? 'strategies' : 'strategy'
 
@@ -29,6 +30,7 @@ module.exports.report = async (control, config) => {
         tests.forEach((test) => {
           qe.msg(test, true, true)
         })
+        qe.newLine()
       }
     })
     if (control.testsFailed.length < 1) {

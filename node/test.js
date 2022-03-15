@@ -30,13 +30,13 @@ module.exports.strategy = async (config) => {
         )
 
         if (check.length === dependency.length) {
-          qe.msg(`As strategy.${check} passed, running strategy.${strategy}`)
+          qe.msg(`Strategy.${check} succeeded`)
+          qe.msg(`Running strategy.${strategy}`, true, true)
+          qe.newLine()
           await runTest(test, config, group)
         } else {
-          qe.msg(
-            `As strategy.${dependency} not pass, skipping strategy.${strategy}`,
-            'warn'
-          )
+          qe.msg(`Strategy.${dependency} not succeeded`, 'warn')
+          qe.msg(`Skipping strategy.${strategy}`, true, true)
           testsSkipped.push(strategy)
         }
       } else {

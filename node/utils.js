@@ -11,6 +11,7 @@ const yaml = require('js-yaml')
 const { teardown } = require('./teardown')
 const schema = require('./schema')
 
+const delay = (ms) => new Promise((res) => setTimeout(res, ms))
 const QE = '[QE] === '
 
 function icon(type) {
@@ -125,6 +126,7 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
       while (!check && thisTry < MAX_TRIES) {
         thisTry++
         stdout = this.exec(`echo y | ${bin} ${cmd}`, 'pipe').toString()
+        await delay(thisTry * 2000)
         check = /uccessfully|App not installed| unlinked|No linked apps/.test(
           stdout
         )
@@ -135,10 +137,11 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
     case 'link':
       cmd = `cd .. && echo y | ${bin} ${cmd}`
       stdout = await this.exec(cmd, 'pipe').toString()
+      linkApp = new RegExp(linkApp)
       while (!check && thisTry < MAX_TRIES) {
-        linkApp = new RegExp(linkApp)
         thisTry++
         stdout = await this.exec(`${bin} ls`, 'pipe').toString()
+        await delay(thisTry * 2000)
         check = linkApp.test(stdout)
       }
 

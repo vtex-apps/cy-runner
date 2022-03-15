@@ -108,8 +108,9 @@ async function doLinkApp(config) {
     )
 
     if (check === 'error') {
-      qe.msg(`Error when linking ${app}`, 'error')
+      qe.msg(`Error linking ${app}`, 'error')
       await teardown(config)
+      this.crash('Prematurely exit duo a link failure')
     } else {
       qe.msg('App linked successfully')
     }
