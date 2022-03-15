@@ -7,7 +7,7 @@
   "trashAssetsBeforeRuns": false,
   "watchForFileChanges": false,
   "pluginsFile": false,
-  "screenshotsFolder": "logs/toolbelt/screenshots",
-  "videosFolder": "logs/toolbelt/videos",
+  "screenshotsFolder": "../logs/toolbelt/screenshots",
+  "videosFolder": "../logs/toolbelt/videos",
   "retries": 5
 }
