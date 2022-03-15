@@ -81,7 +81,7 @@ exports.fail = (msg) => {
 
 exports.exec = (cmd, output) => {
   if (typeof output === 'undefined') output = 'ignore'
-  const vtex = /vtex whoami/.test(cmd)
+  const vtex = /vtex-e2e whoami/.test(cmd)
   let result = null
 
   if (vtex) {
