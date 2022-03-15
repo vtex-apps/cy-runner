@@ -31,15 +31,11 @@ describe('Authentication process', () => {
   // Log in with given credentials
   it('Authenticating vtex cli', () => {
     cy.readFile('.toolbelt.url', FAIL_TIMEOUT).then((callBackUrl) => {
-      cy.url().then((url) => {
-        if (url.includes('blank')) {
-          cy.intercept('**/rc.vtex.com.br/api/events').as('events')
-          cy.intercept('**/refreshtoken/admin').as('admin')
-          cy.visit(callBackUrl)
-          cy.wait('@events')
-          cy.wait('@admin')
-        }
-      })
+      cy.intercept('**/rc.vtex.com.br/api/events').as('events')
+      cy.intercept('**/refreshtoken/admin').as('admin')
+      cy.visit(callBackUrl)
+      cy.wait('@events')
+      cy.wait('@admin')
 
       fillEmailAndPassword()
 
