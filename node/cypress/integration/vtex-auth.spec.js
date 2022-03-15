@@ -11,20 +11,16 @@ const TXT_PASSWORD = '[name = "password"]'
 const TXT_CODE = '[name = "code"]'
 
 function fillEmailAndPassword() {
-  cy.get('body').then(($body) => {
-    if ($body.find(TXT_EMAIL).length) {
-      // Fill Robot email
-      cy.get(TXT_EMAIL)
-        .should('be.visible')
-        .type(`${vtex.robotMail}{enter}`, { log: false })
-      cy.intercept('**/validate').as('validate')
-      // Fill Robot password
-      cy.get(TXT_PASSWORD)
-        .should('be.visible')
-        .type(`${vtex.robotPassword}{enter}`, { log: false })
-      cy.wait('@validate')
-    }
-  })
+  // Fill Robot email
+  cy.get(TXT_EMAIL)
+    .should('be.visible')
+    .type(`${vtex.robotMail}{enter}`, { log: false })
+  cy.intercept('**/validate').as('validate')
+  // Fill Robot password
+  cy.get(TXT_PASSWORD)
+    .should('be.visible')
+    .type(`${vtex.robotPassword}{enter}`, { log: false })
+  cy.wait('@validate')
 }
 
 describe('Authentication process', () => {
@@ -36,9 +32,9 @@ describe('Authentication process', () => {
           cy.intercept('**/refreshtoken/admin').as('admin')
           cy.visit(callBackUrl)
           cy.wait('@admin')
+          fillEmailAndPassword()
         }
       })
-      fillEmailAndPassword()
       // Fill Robot SMS code if Twilio enabled, pause if not
       cy.get('body').then(($body) => {
         if ($body.find(TXT_CODE).length) {
