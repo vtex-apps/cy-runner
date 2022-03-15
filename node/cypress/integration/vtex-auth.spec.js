@@ -1,3 +1,4 @@
+/* eslint-disable vtex/prefer-early-return */
 // / <reference types="cypress" />
 const config = Cypress.env()
 
@@ -9,27 +10,35 @@ const TXT_EMAIL = '[name = "email"]'
 const TXT_PASSWORD = '[name = "password"]'
 const TXT_CODE = '[name = "code"]'
 
+function fillEmailAndPassword() {
+  cy.get('body').then(($body) => {
+    if ($body.find(TXT_EMAIL).length) {
+      // Fill Robot email
+      cy.get(TXT_EMAIL)
+        .should('be.visible')
+        .type(`${vtex.robotMail}{enter}`, { log: false })
+      cy.intercept('**/validate').as('validate')
+      // Fill Robot password
+      cy.get(TXT_PASSWORD)
+        .should('be.visible')
+        .type(`${vtex.robotPassword}{enter}`, { log: false })
+      cy.wait('@validate')
+    }
+  })
+}
+
 describe('Authentication process', () => {
   // Log in with given credentials
   it('Authenticating vtex cli', () => {
     cy.readFile('.toolbelt.url', FAIL_TIMEOUT).then((callBackUrl) => {
-      cy.intercept('**/refreshtoken/admin').as('admin')
-      cy.visit(callBackUrl)
-      cy.wait('@admin')
-      cy.get('body').then(($body) => {
-        if ($body.find(TXT_EMAIL).length) {
-          // Fill Robot email
-          cy.get(TXT_EMAIL)
-            .should('be.visible')
-            .type(`${vtex.robotMail}{enter}`, { log: false })
-          cy.intercept('**/validate').as('validate')
-          // Fill Robot password
-          cy.get(TXT_PASSWORD)
-            .should('be.visible')
-            .type(`${vtex.robotPassword}{enter}`, { log: false })
-          cy.wait('@validate')
+      cy.url().then((url) => {
+        if (url.includes('blank')) {
+          cy.intercept('**/refreshtoken/admin').as('admin')
+          cy.visit(callBackUrl)
+          cy.wait('@admin')
         }
       })
+      fillEmailAndPassword()
       // Fill Robot SMS code if Twilio enabled, pause if not
       cy.get('body').then(($body) => {
         if ($body.find(TXT_CODE).length) {
