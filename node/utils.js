@@ -82,17 +82,17 @@ exports.fail = (msg) => {
 
 exports.exec = (cmd, output) => {
   if (typeof output === 'undefined') output = 'ignore'
-  const isVtexCmd = /^vtex/.test(cmd)
-  let result = null
+  let result
 
-  if (isVtexCmd) {
+  try {
     result = execSync(cmd, { stdio: output })
-  } else {
-    try {
-      result = execSync(cmd, { stdio: output })
-    } catch (e) {
-      this.crash(`Fail to exec ${cmd}`, e)
-    }
+  } catch (e) {
+    const logFile = path.join('.', 'logs', 'cy-runner.log')
+
+    this.storage(logFile, 'append', 'Failed to run\n')
+    this.storage(logFile, 'append', `> Command: ${cmd}\n`)
+    this.storage(logFile, 'append', `> Returns: ${cmd}\n\n`)
+    result = 'error'
   }
 
   return result

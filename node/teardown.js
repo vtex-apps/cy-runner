@@ -1,4 +1,5 @@
 const qe = require('./utils')
+const { wipe } = require('./wipe')
 
 module.exports.teardown = async (config) => {
   const START = qe.tick()
@@ -6,16 +7,7 @@ module.exports.teardown = async (config) => {
 
   if (wrk.wipe.enabled || wrk.teardown.enabled) {
     qe.msgSection('Workspace teardown')
-    if (wrk.wipe.enabled) {
-      qe.msg('Wiping data', 'ok', false, true)
-      const passed = await qe.runCypress(wrk.wipe, config, {}, true)
-      const status = passed ? 'success' : 'failed'
-
-      qe.msg(status, 'complete', true)
-      if (!passed && wrk.wipe.stopOnFail) {
-        qe.crash('Fail on workspace.wipe due a stopOnFail')
-      }
-    }
+    await wipe(config)
 
     if (config.workspace.teardown.enabled) {
       qe.msg(`Removing workspace ${config.workspace.name}`, 'ok', false, true)

@@ -2,11 +2,12 @@ const qe = require('./utils')
 
 module.exports.wipe = async (config) => {
   const START = qe.tick()
+  const { wipe } = config.workspace
 
-  if (config.workspace.wipe.enabled) {
-    qe.msg('Removing temporary files', 'warn')
+  if (wipe.enabled) {
     const tempFiles = ['cypress.env.json', 'cypress.json']
 
+    qe.msg('Removing temporary files', 'warn')
     tempFiles.forEach((file) => {
       qe.msg(file, true, true)
       qe.storage(file, 'rm')
@@ -16,12 +17,19 @@ module.exports.wipe = async (config) => {
       qe.storage(file, 'rm')
     })
     qe.msg('Temporary files removed')
-    qe.msg(`Wiping workspace [${config.workspace.name}]`)
-    const { wipe } = config.workspace
-    const { stopOnFail } = wipe
-    const testPassed = await qe.runCypress(wipe, config)
 
-    if (!testPassed && stopOnFail) await qe.stopOnFail(config, 'wipe')
+    qe.msg(`Wiping data`, 'ok', false, true)
+    const { stopOnFail } = wipe
+    const result = await qe.runCypress(wipe, config, {}, true)
+
+    if (result) {
+      qe.msg('done', 'complete', true)
+    } else {
+      qe.msg('error', 'complete', true)
+      if (stopOnFail) {
+        qe.crash('Stop due to stopOnFail', 'Wipe failed')
+      }
+    }
   }
 
   return qe.toc(START)
