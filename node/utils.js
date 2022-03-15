@@ -91,7 +91,7 @@ exports.exec = (cmd, output) => {
 
     this.storage(logFile, 'append', 'Failed to run\n')
     this.storage(logFile, 'append', `> Command: ${cmd}\n`)
-    this.storage(logFile, 'append', `> Returns: ${cmd}\n\n`)
+    this.storage(logFile, 'append', `> Returns: ${e}\n\n`)
     result = 'error'
   }
 
