@@ -1,3 +1,4 @@
+/* eslint-disable jest/no-conditional-expect */
 /* eslint-disable jest/consistent-test-it */
 /* eslint-disable jest/valid-expect */
 import { getCostCenterName } from '../../support/b2b/utils.js'
@@ -5,7 +6,9 @@ import b2b from '../../support/b2b/constants.js'
 import {
   ENTITIES,
   FAIL_ON_STATUS_CODE,
+  VTEX_AUTH_HEADER,
 } from '../../support/common/constants.js'
+import { updateRetry, testSetup } from '../../support/common/support.js'
 
 // Define constants
 const APP_NAME = 'vtex.b2b-organizations-graphql'
@@ -16,7 +19,7 @@ function deleteOrganization(organization, organizationRequest = false) {
   // Default is organization, if organization request is true then delete organization request
   const func = organizationRequest ? 'Request' : ''
 
-  it(`Delete ${organization}`, () => {
+  it(`Delete ${organization}`, updateRetry(2), () => {
     cy.getVtexItems().then((vtex) => {
       const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${APP}`
 
@@ -26,30 +29,35 @@ function deleteOrganization(organization, organizationRequest = false) {
         `{deleteOrganization${func}(id: $id){status}}`
 
       cy.getOrganizationItems().then((items) => {
-        cy.request({
-          method: 'POST',
-          url: CUSTOM_URL,
-          body: {
-            query: GRAPHQL_DELETE_MUTATION,
-            variables: {
-              id: items[
-                organizationRequest ? `${organization}request` : organization
-              ],
+        const organizationId =
+          items[organizationRequest ? `${organization}request` : organization]
+
+        if (organizationId) {
+          cy.request({
+            method: 'POST',
+            url: CUSTOM_URL,
+            body: {
+              query: GRAPHQL_DELETE_MUTATION,
+              variables: {
+                id: organizationId,
+              },
             },
-          },
-          ...FAIL_ON_STATUS_CODE,
-        }).then((resp) => {
-          expect(resp.body.data[`deleteOrganization${func}`].status).to.equal(
-            'success'
-          )
-        })
+            headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
+            ...FAIL_ON_STATUS_CODE,
+          }).then((response) => {
+            expect(response.status).to.equal(200)
+            expect(
+              response.body.data[`deleteOrganization${func}`].status
+            ).to.equal('success')
+          })
+        }
       })
     })
   })
 }
 
 function deleteCostCenter(organization, costCenter) {
-  it(`Delete ${costCenter.name} - ${organization}`, () => {
+  it(`Delete ${costCenter.name} - ${organization}`, updateRetry(2), () => {
     cy.getVtexItems().then((vtex) => {
       const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${APP}`
 
@@ -57,25 +65,35 @@ function deleteCostCenter(organization, costCenter) {
         'mutation' + '($id: ID!)' + '{deleteCostCenter(id: $id){status}}'
 
       cy.getOrganizationItems().then((items) => {
-        cy.request({
-          method: 'POST',
-          url: CUSTOM_URL,
-          body: {
-            query: GRAPHQL_DELETE_ORAGANIZATION_MUTATION,
-            variables: {
-              id: items[getCostCenterName(organization, costCenter.name)],
+        const costCenterId =
+          items[getCostCenterName(organization, costCenter.name)]
+
+        if (costCenterId) {
+          cy.request({
+            method: 'POST',
+            url: CUSTOM_URL,
+            body: {
+              query: GRAPHQL_DELETE_ORAGANIZATION_MUTATION,
+              variables: {
+                id: costCenterId,
+              },
             },
-          },
-          ...FAIL_ON_STATUS_CODE,
-        }).then((resp) => {
-          expect(resp.body.data.deleteCostCenter.status).to.equal('success')
-        })
+            headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
+            ...FAIL_ON_STATUS_CODE,
+          }).then((response) => {
+            expect(response.status).to.equal(200)
+            expect(response.body.data.deleteCostCenter.status).to.equal(
+              'success'
+            )
+          })
+        }
       })
     })
   })
 }
 
 function deleteUsersFromMasterData() {
+  /* eslint-disable jest/expect-expect */
   it('Delete Users from master data', () => {
     cy.searchInMasterData(ENTITIES.CLIENTS, '*syedbitcot*').then((datas) => {
       for (const { id } of datas) {
@@ -95,10 +113,12 @@ describe('Wipe datas', () => {
   const { organizationName: organizationB, costCenter1: costCenterB1 } =
     b2b.OrganizationB
 
+  testSetup(false)
+
+  deleteUsersFromMasterData()
   deleteCostCenter(organizationA, costCenter1)
   deleteCostCenter(organizationA, costCenter2)
   deleteOrganization(organizationA)
   deleteCostCenter(organizationB, costCenterB1)
   deleteOrganization(organizationB)
-  deleteUsersFromMasterData()
 })
