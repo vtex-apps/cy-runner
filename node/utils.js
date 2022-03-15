@@ -81,11 +81,20 @@ exports.fail = (msg) => {
 
 exports.exec = (cmd, output) => {
   if (typeof output === 'undefined') output = 'ignore'
-  try {
-    return execSync(cmd, { stdio: output })
-  } catch (e) {
-    this.crash(`Fail to exec ${cmd}`, e)
+  const vtex = /vtex/.test(cmd)
+  let result = null
+
+  if (vtex) {
+    result = execSync(cmd, { stdio: output })
+  } else {
+    try {
+      result = execSync(cmd, { stdio: output })
+    } catch (e) {
+      this.crash(`Fail to exec ${cmd}`, e)
+    }
   }
+
+  return result
 }
 
 exports.toolbelt = async (bin, cmd, linkApp) => {
