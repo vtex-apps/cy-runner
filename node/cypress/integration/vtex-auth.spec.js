@@ -35,6 +35,9 @@ describe('Authentication process', () => {
           fillEmailAndPassword()
         }
       })
+
+      cy.wait(10000) // eslint-disable-line cypress/no-unnecessary-waiting
+
       // Fill Robot SMS code if Twilio enabled, pause if not
       cy.get('body').then(($body) => {
         if ($body.find(TXT_CODE).length) {
@@ -44,7 +47,7 @@ describe('Authentication process', () => {
             const url = `${twilio.baseUrl}/${sid}/Messages.json?PageSize=5`
 
             // Get SMS Code
-            cy.twilioOtp(url, sid, token, 10000).then((code) => {
+            cy.twilioOtp(url, sid, token).then((code) => {
               cy.get(TXT_CODE).should('be.visible').type(`${code}{enter}`)
             })
           } else {

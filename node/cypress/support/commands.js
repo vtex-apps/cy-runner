@@ -1,6 +1,5 @@
 // Twilio
-Cypress.Commands.add('twilioOtp', (url, sid, token, wait) => {
-  cy.wait(wait) // eslint-disable-line cypress/no-unnecessary-waiting
+Cypress.Commands.add('twilioOtp', (url, sid, token) => {
   cy.request({
     method: 'GET',
     url,
