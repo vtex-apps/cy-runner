@@ -11,13 +11,14 @@ import {
   fillContactInfo,
   verifyAddress,
   verifyPayment,
+  ordertheProduct,
 } from '../../support/b2b/checkout.js'
 import { organizationAdminShouldNotAbleToEditSalesUsers } from '../../support/b2b/organization_request.js'
 
 describe('Organization A - Cost Center A1 - Organization Admin2 Scenario', () => {
   testSetup(false)
 
-  const { nonAvailableProduct, product, costCenter1, users } = b2b.OrganizationA
+  const { nonAvailableProduct, product, costCenter2, users } = b2b.OrganizationA
 
   loginToStoreFront(users.OrganizationAdmin2, ROLE_DROP_DOWN.OrganizationAdmin)
   verifySession(b2b.OrganizationA)
@@ -25,7 +26,9 @@ describe('Organization A - Cost Center A1 - Organization Admin2 Scenario', () =>
   organizationAdminShouldNotAbleToEditSalesUsers()
   checkoutProduct(product)
   fillContactInfo()
-  verifyAddress(costCenter1.addresses)
+  verifyAddress(costCenter2.addresses)
   verifyPayment(false)
+  ordertheProduct(ROLE_DROP_DOWN.OrganizationAdmin)
+
   preserveCookie()
 })
