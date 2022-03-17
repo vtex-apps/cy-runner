@@ -12,3 +12,7 @@ export const PRODUCTS = {
 export function generateAddtoCartSelector(href) {
   return `a[href='${href}'] > article > button`
 }
+
+export function generateAddtoCartCardSelector(href) {
+  return `a[href='${href}']`
+}

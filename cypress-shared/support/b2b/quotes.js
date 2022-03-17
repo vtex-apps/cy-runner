@@ -60,7 +60,7 @@ export function createQuote(
     `Create Quote as ${role}, verify state is ${expectedStatus} and store in env ${quoteEnv}`,
     { retries: 3 },
     () => {
-      cy.searchProduct(product)
+      cy.searchProductinB2B(product)
       cy.get(selectors.B2BAddtoCart).first().click()
       fillQuoteInformation(quoteEnv, requestQuote, notes)
     }
@@ -247,7 +247,7 @@ export function updateQuote(
       price,
     })} - ${quote} and verify status ${expectedStatus}`,
     { retries: 3 },
-    function () {
+    () => {
       cy.wrap(false).as(saveQuote)
       cy.gotoMyQuotes()
       cy.get(selectors.QuoteSearch).clear()
