@@ -56,7 +56,7 @@ export function createQuote(
 ) {
   const expectedStatus = requestQuote ? STATUSES.pending : STATUSES.ready
 
-  it.skip(
+  it(
     `Create Quote as ${role}, verify state is ${expectedStatus} and store in env ${quoteEnv}`,
     { retries: 3 },
     () => {
