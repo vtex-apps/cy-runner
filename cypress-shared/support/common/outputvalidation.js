@@ -17,7 +17,8 @@ export default {
   },
   multiProduct: {
     prefix: 'multiProduct',
-    postalCode: '33180',
+    postalCode: '93200',
+    pickUpPostalCode: '33180',
     totalAmount: '$ 1,416.00',
     tax: '0',
     taxWithoutExemption: '$ 236.00',

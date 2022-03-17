@@ -176,7 +176,7 @@ export function updateShippingInformation(postalCode, pickup = false) {
 }
 
 export function updateInvalidShippingInformation(address) {
-  const { fullAddress, country } = address
+  const { fullAddress, country, deliveryScreenAddress } = address
 
   cy.get('body').then(($body) => {
     if ($body.find(selectors.ShippingCalculateLink).length) {
@@ -189,12 +189,14 @@ export function updateInvalidShippingInformation(address) {
 
     fillAddress(country, fullAddress)
     cy.intercept('https://rc.vtex.com/v8').as('v8')
-    cy.get(selectors.DeliveryAddressText).should('have.text', 'Texas Road 8')
+    cy.get(selectors.DeliveryAddressText).should(
+      'have.text',
+      deliveryScreenAddress
+    )
     cy.get('p[id="shp-unavailable-delivery-available-pickup"]>span').contains(
       'cannot be shipped to the given address.'
     )
-    cy.contains('Texas Road 8').click()
-    // cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
+    cy.contains(deliveryScreenAddress).click()
   })
 }
 
