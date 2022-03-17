@@ -192,7 +192,7 @@ exports.storage = (source, action, destination = null) => {
       case 'link':
         if (destination == null) this.crash('You must pass link destination')
 
-        return fs.linkSync(source, destination)
+        return fs.symlinkSync(source, destination)
 
       case 'append':
         if (destination == null) this.crash('You must inform what to add')

@@ -1,3 +1,5 @@
+const path = require('path')
+
 const qe = require('./utils')
 
 exports.getConfig = async (configFile) => {
@@ -27,6 +29,17 @@ exports.getConfig = async (configFile) => {
   if (!qe.storage('logs')) {
     qe.storage('logs', 'mkdir')
     qe.msg('Logs dir created successfully')
+  }
+
+  // Make link if base has Cypress folder
+  const src = path.join(__dirname, '..', 'cypress-shared', 'support', 'common')
+  let dst = path.join(__dirname, '..', '..', 'cypress', 'support')
+
+  if (qe.storage(dst)) {
+    dst = path.join(dst, 'common')
+    if (qe.storage(dst)) qe.storage(dst, 'rm')
+    qe.storage(src, 'link', dst)
+    qe.msg('Local cypress detected, common link created')
   }
 
   return config
