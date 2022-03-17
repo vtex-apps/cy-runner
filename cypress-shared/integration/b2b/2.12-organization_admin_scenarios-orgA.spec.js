@@ -24,6 +24,7 @@ describe('Organization A - Cost Center A1 - Organization Admin2 Scenario', () =>
   verifySession(b2b.OrganizationA)
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
   organizationAdminShouldNotAbleToEditSalesUsers()
+
   checkoutProduct(product)
   fillContactInfo()
   verifyAddress(costCenter2.addresses)

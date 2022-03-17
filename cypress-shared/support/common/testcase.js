@@ -1,5 +1,6 @@
 import { FAIL_ON_STATUS_CODE, VTEX_AUTH_HEADER } from './constants.js'
 import { updateRetry } from './support.js'
+import { cancelOrderAPI } from './apis.js'
 
 export function configureTargetWorkspace(app, version, workspace = 'master') {
   it(
@@ -47,7 +48,7 @@ export function configureTaxConfigurationInOrderForm(workspace = null) {
       cy.request({
         method: 'GET',
         url: vtex.ORDER_FORM_CONFIG,
-        headers: VTEX_AUTH_HEADER(vtex.API_KEY, vtex.API_TOKEN),
+        headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
         ...FAIL_ON_STATUS_CODE,
       })
         .as('ORDERFORM')
@@ -67,12 +68,31 @@ export function configureTaxConfigurationInOrderForm(workspace = null) {
         cy.request({
           method: 'POST',
           url: vtex.ORDER_FORM_CONFIG,
-          headers: VTEX_AUTH_HEADER(vtex.API_KEY, vtex.API_TOKEN),
+          headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
           ...FAIL_ON_STATUS_CODE,
           body: response.body,
         })
           .its('status')
           .should('equal', 204)
+      })
+    })
+  })
+}
+
+export function cancelTheOrder(orderEnv) {
+  it(`Cancel the Order`, () => {
+    cy.getVtexItems().then((vtex) => {
+      cy.getOrderItems().then((order) => {
+        cy.request({
+          method: 'POST',
+          url: cancelOrderAPI(vtex.baseUrl, order[orderEnv]),
+          headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
+          body: {
+            reason: 'Customer bought it by mistake',
+          },
+        })
+          .its('status')
+          .should('equal', 200)
       })
     })
   })

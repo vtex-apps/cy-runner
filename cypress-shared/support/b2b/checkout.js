@@ -4,7 +4,7 @@ import { PAYMENT_TERMS } from './utils.js'
 
 export function checkoutProduct(product) {
   it('Checkout the Product', { retries: 3 }, () => {
-    cy.searchProduct(product)
+    cy.searchProductinB2B(product)
     cy.get(selectors.searchResult)
       .first()
       .should('have.text', product.toLowerCase())
@@ -92,7 +92,7 @@ export function buyNowProductTestCase(product) {
     () => {
       cy.url().then((url) => {
         if (!url.includes('checkout')) {
-          cy.searchProduct(product)
+          cy.searchProductinB2B(product)
           cy.get(selectors.searchResult)
             .first()
             .should('have.text', product.toLowerCase())

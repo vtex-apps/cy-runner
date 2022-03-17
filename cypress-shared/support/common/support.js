@@ -1,7 +1,10 @@
 import selectors from './selectors.js'
 import { addressList, AUTH_COOKIE_NAME_ENV } from './constants.js'
 import { AdminLogin } from './apis.js'
-import { generateAddtoCartSelector } from './utils.js'
+import {
+  generateAddtoCartSelector,
+  generateAddtoCartCardSelector,
+} from './utils.js'
 
 function setAuthCookie(authResponse) {
   expect(authResponse.body).to.have.property('authCookie')
@@ -9,18 +12,20 @@ function setAuthCookie(authResponse) {
   Cypress.env(AUTH_COOKIE_NAME_ENV, authResponse.body.authCookie.Name)
   cy.setCookie(
     authResponse.body.authCookie.Name,
-    authResponse.body.authCookie.Value
+    authResponse.body.authCookie.Value,
+    { log: false }
   )
 }
 
 // Set Product Quantity
 function setProductQuantity({ position, quantity }, subTotal, check = true) {
   cy.intercept('**/update').as('update')
+
   cy.get(selectors.ProductQuantityInCheckout(position))
     .should('be.visible')
     .should('not.be.disabled')
     .focus()
-    .type(`{backspace}${quantity}{enter}`, { force: true })
+    .type(`{backspace}${quantity}{enter}`)
   cy.get(selectors.ItemRemove(position)).should(
     'not.have.css',
     'display',
@@ -38,6 +43,7 @@ function fillAddress(country, fullAddress) {
   cy.get(selectors.ShippingPreview).should('be.visible')
   cy.get(selectors.ShipCountry, { timeout: 8000 })
     .should('not.be.disabled')
+    .select('USA')
     .select(country)
   // Type shipping address query
   // Google autocompletion takes some seconds to show dropdown
@@ -53,32 +59,53 @@ function fillAddress(country, fullAddress) {
     .type('{downarrow}{enter}')
 }
 
+function clickProceedtoCheckout() {
+  cy.intercept('**/orderForm/**').as('orderForm')
+  // Click Proceed to Checkout button
+  cy.get(selectors.ProceedtoCheckout).should('be.visible').click()
+  cy.wait('@orderForm')
+  cy.get(selectors.CartTimeline).should('be.visible').click()
+}
+
 // Add product to cart
-export function addProduct(searchKey, proceedtoCheckout = true) {
+export function addProduct(
+  searchKey,
+  { proceedtoCheckout = true, paypal = false, productDetailPage = false }
+) {
   // Add product to cart
   cy.get(selectors.searchResult).should('have.text', searchKey.toLowerCase())
   cy.get(selectors.ProductAnchorElement)
     .should('have.attr', 'href')
     .then((href) => {
-      cy.get(selectors.ProfileIcon)
+      cy.get(selectors.ProfileLabel)
         .should('be.visible')
         .should('have.contain', `Hello,`)
       cy.get(selectors.BrandFilter).should('not.be.disabled')
-      cy.get(generateAddtoCartSelector(href)).first().click()
-      // Make sure proceed to payment is visible
-      cy.get(selectors.ProceedtoCheckout).should('be.visible')
+      if (productDetailPage) {
+        cy.get(generateAddtoCartCardSelector(href)).first().click()
+        cy.get('[name=postalCode]').clear().type('33180').type('{enter}')
+        cy.get(selectors.ProductsQAShipping).click()
+        // Make sure proceed to payment is visible
+        cy.get(selectors.AddtoCart).should('be.visible').click()
+      } else {
+        cy.get(generateAddtoCartSelector(href)).first().click()
+        // Make sure proceed to payment is visible
+        cy.get(selectors.ProceedtoCheckout).should('be.visible')
+      }
       // Make sure shipping and taxes is visible
+
       cy.get(selectors.SummaryText).should('have.contain', 'Shipping and taxes')
       // Make sure remove button is visible
       cy.get(selectors.RemoveProduct).should('be.visible')
-      if (proceedtoCheckout) {
-        cy.intercept('**/orderForm/**').as('orderForm')
-        // Click Proceed to Checkout button
+      if (paypal) {
         cy.get(selectors.ProceedtoCheckout).should('be.visible').click()
-        cy.wait('@orderForm')
-        cy.get(selectors.CartTimeline).should('be.visible')
+        cy.get(selectors.ItemQuantity).should('be.visible')
+        if (proceedtoCheckout) {
+          clickProceedtoCheckout()
+        }
+      } else if (proceedtoCheckout) {
+        clickProceedtoCheckout()
       } else {
-        // Close Cart
         cy.closeCart()
       }
     })
@@ -95,8 +122,28 @@ export function closeCart() {
   cy.get(selectors.CloseCart).click()
 }
 
-export function updateShippingInformation(postalCode) {
-  let fillContactInformation = false
+function fillContactInfo() {
+  cy.wait('@v8')
+  cy.get(selectors.QuantityBadge).should('be.visible')
+  cy.get(selectors.SummaryCart).should('be.visible')
+  cy.get(selectors.FirstName).type('Syed', {
+    delay: 50,
+  })
+  cy.get(selectors.LastName).type('Mujeeb', {
+    delay: 50,
+  })
+  cy.get(selectors.Phone).type('(304) 123 4556', {
+    delay: 50,
+  })
+  cy.get(selectors.ProceedtoShipping).should('be.visible').click()
+  cy.get(selectors.ReceiverName).type('Syed', {
+    delay: 50,
+  })
+  cy.get(selectors.GotoPaymentBtn).should('be.visible').click()
+}
+
+export function updateShippingInformation(postalCode, pickup = false) {
+  let newCustomer = false
   const { fullAddress, country, deliveryScreenAddress } =
     addressList[postalCode]
 
@@ -104,7 +151,37 @@ export function updateShippingInformation(postalCode) {
     if ($body.find(selectors.ShippingCalculateLink).length) {
       // Contact information needs to be filled
       cy.get(selectors.ShippingCalculateLink).should('be.visible').click()
-      fillContactInformation = true
+      newCustomer = true
+    } else if ($body.find(selectors.DeliveryAddress).length) {
+      // Contact Information already filled
+      cy.get(selectors.DeliveryAddress).should('be.visible').click()
+    }
+
+    fillAddress(country, fullAddress)
+    cy.intercept('https://rc.vtex.com/v8').as('v8')
+    cy.get(selectors.DeliveryAddressText, { timeout: 5000 }).should(
+      'have.text',
+      deliveryScreenAddress
+    )
+    if (pickup) {
+      cy.get(selectors.pickupInStore).click()
+    }
+
+    cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
+
+    if (newCustomer) {
+      fillContactInfo()
+    }
+  })
+}
+
+export function updateInvalidShippingInformation(address) {
+  const { fullAddress, country, deliveryScreenAddress } = address
+
+  cy.get('body').then(($body) => {
+    if ($body.find(selectors.ShippingCalculateLink).length) {
+      // Contact information needs to be filled
+      cy.get(selectors.ShippingCalculateLink).should('be.visible').click()
     } else if ($body.find(selectors.DeliveryAddress).length) {
       // Contact Information already filled
       cy.get(selectors.DeliveryAddress).should('be.visible').click()
@@ -116,21 +193,10 @@ export function updateShippingInformation(postalCode) {
       'have.text',
       deliveryScreenAddress
     )
-    cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
-    if (fillContactInformation) {
-      cy.wait('@v8')
-      cy.get(selectors.QuantityBadge).should('be.visible')
-      cy.get(selectors.SummaryCart).should('be.visible')
-      cy.get(selectors.FirstName).type('Syed', { delay: 50 })
-      cy.get(selectors.LastName).type('Mujeeb', { delay: 50 })
-      cy.get(selectors.Phone).type('(304) 123 4556', { delay: 50 })
-      cy.get(selectors.ProceedtoShipping).should('be.visible').click()
-      cy.get(selectors.ReceiverName).type('Syed')
-      cy.get(selectors.GotoPaymentBtn).should('be.visible').click()
-    }
-
-    // Tax Exemption Input should be visible
-    cy.get(selectors.ExemptionInput).should('be.visible')
+    cy.get('p[id="shp-unavailable-delivery-available-pickup"]>span').contains(
+      'cannot be shipped to the given address.'
+    )
+    cy.contains(deliveryScreenAddress).click()
   })
 }
 
@@ -221,7 +287,7 @@ export function logintoStore() {
   })
 
   // Home page should show Hello,
-  cy.get(selectors.ProfileIcon)
+  cy.get(selectors.ProfileLabel)
     .should('be.visible')
     .should('have.contain', `Hello,`)
 }

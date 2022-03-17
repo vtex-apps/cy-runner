@@ -93,7 +93,7 @@ Cypress.Commands.add('gotoQuickOrder', () => {
   cy.get(selectors.QuickOrder).should('be.visible').click()
 })
 
-Cypress.Commands.add('searchProduct', (product) => {
+Cypress.Commands.add('searchProductinB2B', (product) => {
   cy.url().then((url) => {
     if (url.includes('checkout')) {
       cy.visit('/')

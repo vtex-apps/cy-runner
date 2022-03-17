@@ -17,6 +17,11 @@ export const addressList = {
     deliveryScreenAddress: '91 Rue de Strasbourg ',
     fullAddress: '  91 Rue de Strasbourg Saint-Denis 93200',
   },
+  invalid: {
+    country: 'CAN',
+    deliveryScreenAddress: 'Texas Road 8',
+    fullAddress: '8 Texas Road',
+  },
 }
 
 // VTEX_AUTH_HEADER for API Calls

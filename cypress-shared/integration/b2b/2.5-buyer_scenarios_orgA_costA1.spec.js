@@ -32,6 +32,7 @@ describe('Organization A - Cost Center A1 - Buyer Scenarios', () => {
     costCenter1.name,
     role.Buyer1
   )
+
   buyNowProductTestCase(product)
   preserveCookie()
 })

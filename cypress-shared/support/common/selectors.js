@@ -22,6 +22,8 @@ export default {
   AddtoCart: 'span[class*=vtex-add-to-cart-button]',
   TotalPrice: '#total-price > .vtex-checkout-summary-0-x-price',
   RemoveProduct: 'div[class*="removeButton"]',
+  pickupInStore: '.srp-toggle__pickup',
+  ProductsQAShipping: "input[value='Productusqa2']",
   CloseCart: '.vtex-minicart-2-x-closeIconButton',
   // Below products are from sandboxusdev
   AddtoCartBtnForHat: "a[href*='003/p'] > article > button",
@@ -54,6 +56,10 @@ export default {
   NewPayPal: 'div[class*=paypal] > span > iframe[name*=paypal]',
   QuantityBadgeInCart: 'span[class*=minicartQuantityBadge]',
   // *************Cart Sidebar Constants end here************ //
+
+  // ************* New Cart - PayPal Constants end here************ //
+  ItemQuantity: '#items-quantity',
+  // ************* New Cart - PayPal Constants end here************ //
 
   // *************Product Page Constants starts here************ //
   AddressForm: 'div[class*=addressForm]',
