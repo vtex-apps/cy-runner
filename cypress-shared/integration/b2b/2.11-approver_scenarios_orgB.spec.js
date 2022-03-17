@@ -11,7 +11,6 @@ import {
   fillContactInfo,
   verifyAddress,
   verifyPayment,
-  ordertheProduct,
 } from '../../support/b2b/checkout.js'
 
 describe('Organization B - Cost Center B1 - Approver Scenario', () => {
@@ -26,6 +25,5 @@ describe('Organization B - Cost Center B1 - Approver Scenario', () => {
   fillContactInfo()
   verifyAddress(costCenter1.addresses)
   verifyPayment(false)
-  ordertheProduct(ROLE_DROP_DOWN.Approver)
   preserveCookie()
 })

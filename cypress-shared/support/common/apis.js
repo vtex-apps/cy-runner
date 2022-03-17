@@ -14,7 +14,7 @@ export default {
   transactionAPI: (baseUrl) => {
     return `${baseUrl}/api/payments/pvt/transactions`
   },
-  ADMIN_LOGIN: (apiKey, apiToken) => {
+  AdminLogin: (apiKey, apiToken) => {
     return `https://vtexid.vtex.com.br/api/vtexid/pub/authenticate/default?user=${apiKey}&pass=${apiToken}`
   },
   affiliationAPI: (id = null) => {
