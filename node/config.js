@@ -32,14 +32,20 @@ exports.getConfig = async (configFile) => {
   }
 
   // Make link if base has Cypress folder
+  const lnk = path.join(__dirname, '..', 'cypress')
   const src = path.join(__dirname, '..', 'cypress-shared', 'support', 'common')
+  const cyp = path.join(__dirname, '..', '..', 'cypress')
   let dst = path.join(__dirname, '..', '..', 'cypress', 'support')
 
   if (qe.storage(dst)) {
+    // Create common link inside cypress
     dst = path.join(dst, 'common')
     if (qe.storage(dst)) qe.storage(dst, 'rm')
     qe.storage(src, 'link', dst)
-    qe.msg('Local cypress detected, common link created')
+    // Create cypress link inside cy-runner
+    if (qe.storage(lnk)) qe.storage(lnk, 'rm')
+    qe.storage(cyp, 'link', lnk)
+    qe.msg('Local cypress detected, common links created')
   }
 
   return config
