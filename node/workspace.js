@@ -9,15 +9,11 @@ exports.workspace = async (config) => {
   const { linkApp } = wrk
   const { installApps } = wrk
   const { removeApps } = wrk
-  const { wipe } = wrk
-  const { _teardown } = wrk
   const manageWorkspace =
     wrk.random ||
     linkApp.enabled ||
     installApps.length > 0 ||
-    removeApps.length > 0 ||
-    wipe.enabled ||
-    _teardown.enabled
+    removeApps.length > 0
 
   const vtexBin = config.base.vtex.bin
 

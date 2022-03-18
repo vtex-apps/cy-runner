@@ -466,6 +466,17 @@ exports.sectionsToRun = async (config) => {
       this.msg(itemEnabled, 'error')
     }
   })
+
+  const appsToInstall = config.workspace.installApps.length
+  const appsToRemove = config.workspace.removeApps.length
+
+  if (appsToInstall) {
+    this.msg(`${appsToInstall} app(s) on worksapce.installApps`)
+  }
+
+  if (appsToRemove) {
+    this.msg(`${appsToRemove} app(s) on worksapce.removeApps`)
+  }
 }
 
 exports.stopOnFail = async (config, step) => {
