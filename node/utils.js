@@ -12,6 +12,7 @@ const { teardown } = require('./teardown')
 const schema = require('./schema')
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms))
+const logFile = path.join('.', 'logs', 'cy-runner.log')
 const QE = '[QE] === '
 
 function icon(type) {
@@ -30,33 +31,36 @@ function icon(type) {
   }
 }
 
+exports.stdWrite = (msg) => {
+  process.stdout.write(msg)
+  this.storage(logFile, 'append', msg)
+}
+
 // eslint-disable-next-line max-params
 exports.msg = (msg, type = 'ok', pad = false, wait = false) => {
   const ICO = pad ? icon().padStart(8) : icon(type).padStart(8)
   const MSG = `${ICO} ${msg}${wait ? '... ' : '\n'}`
 
-  type === 'complete'
-    ? process.stdout.write(`${msg}\n`)
-    : process.stdout.write(MSG)
+  type === 'complete' ? this.stdWrite(`${msg}\n`) : this.stdWrite(MSG)
 }
 
 exports.msgSection = (msg) => {
   const END = '\n'
 
   msg = `${QE}${msg} `.padEnd(100, '=')
-  process.stdout.write(END + msg + END)
-  process.stdout.write(''.padStart(5, ' ').padEnd(100, '=') + END + END)
+  this.stdWrite(END + msg + END)
+  this.stdWrite(''.padStart(5, ' ').padEnd(100, '=') + END + END)
 }
 
 exports.msgEnd = (msg) => {
   const END = '\n'
 
   msg = `${QE}${msg} `.padEnd(100, '=')
-  process.stdout.write(END + msg + END + END)
+  this.stdWrite(END + msg + END + END)
 }
 
 exports.newLine = () => {
-  process.stdout.write('\n')
+  this.stdWrite('\n')
 }
 
 exports.crash = (msg, e) => {
@@ -88,8 +92,6 @@ exports.exec = (cmd, output) => {
   try {
     result = execSync(cmd, { stdio: output })
   } catch (e) {
-    const logFile = path.join('.', 'logs', 'cy-runner.log')
-
     this.storage(logFile, 'append', 'Failed to run\n')
     this.storage(logFile, 'append', `> Command: ${cmd}\n`)
     this.storage(logFile, 'append', `> Returns: ${e}\n\n`)
