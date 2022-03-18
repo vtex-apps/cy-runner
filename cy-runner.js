@@ -17,6 +17,9 @@ const control = {
 }
 
 async function main() {
+  // Create logs folder
+  if (!qe.storage('logs')) qe.storage('logs', 'mkdir')
+
   // Welcome message
   qe.msgSection('Cypress Runner')
 
