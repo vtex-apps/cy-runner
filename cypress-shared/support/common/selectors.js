@@ -113,6 +113,7 @@ export default {
   DeliveryAddress: '#deliver-at-text',
   ReceiverName: '#ship-receiverName',
   DeliveryAddressText: '#deliver-at-text > a',
+  ChangeShippingAddress: 'button[data-i18n="modal.editShipping"]',
 
   // *************Shipping Section Constants end here************ //
 
@@ -129,6 +130,7 @@ export default {
   GotoPaymentBtn: '#btn-go-to-payment',
   SubTotal:
     '.cart-template > .summary-template-holder > div > .totalizers > div table tr.Items > td.monetary',
+  DeliveryUnavailable: 'p[id="shp-unavailable-delivery-available-pickup"]>span',
   // *************Summary Section Constants end here************ //
 
   //* ************Payment Section Constants starts here************ //

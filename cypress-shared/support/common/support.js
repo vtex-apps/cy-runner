@@ -202,7 +202,7 @@ export function updateShippingInformation(postalCode, pickup = false) {
 }
 
 export function updateInvalidShippingInformation(address) {
-  const { fullAddress, country, deliveryScreenAddress } = address
+  const { deliveryScreenAddress, postalCode } = address
 
   cy.get('body').then(($body) => {
     if ($body.find(selectors.ShippingCalculateLink).length) {
@@ -213,16 +213,17 @@ export function updateInvalidShippingInformation(address) {
       cy.get(selectors.DeliveryAddress).should('be.visible').click()
     }
 
-    fillAddress(country, fullAddress)
-    cy.intercept('https://rc.vtex.com/v8').as('v8')
-    cy.get(selectors.DeliveryAddressText).should(
-      'have.text',
-      deliveryScreenAddress
-    )
-    cy.get('p[id="shp-unavailable-delivery-available-pickup"]>span').contains(
-      'cannot be shipped to the given address.'
-    )
-    cy.contains(deliveryScreenAddress).click()
+    cy.fillAddress(postalCode).then(() => {
+      cy.intercept('https://rc.vtex.com/v8').as('v8')
+      cy.get(selectors.DeliveryAddressText).should(
+        'have.text',
+        deliveryScreenAddress
+      )
+      cy.get(selectors.DeliveryUnavailable).contains(
+        'cannot be shipped to the given address.'
+      )
+      cy.contains(deliveryScreenAddress).click()
+    })
   })
 }
 
@@ -230,6 +231,7 @@ export function updateProductQuantity(
   product,
   { quantity = '1', multiProduct = false, verifySubTotal = true }
 ) {
+  cy.get(selectors.CartTimeline).should('be.visible').click()
   cy.get(selectors.ShippingPreview).should('be.visible')
   if (multiProduct) {
     // Set First product quantity and don't verify subtotal because we passed false

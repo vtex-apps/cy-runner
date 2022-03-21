@@ -18,6 +18,7 @@ export const addressList = {
     fullAddress: '  91 Rue de Strasbourg Saint-Denis 93200',
   },
   invalid: {
+    postalCode: 'N9V 1K8',
     country: 'CAN',
     deliveryScreenAddress: 'Texas Road 8',
     fullAddress: '8 Texas Road',
