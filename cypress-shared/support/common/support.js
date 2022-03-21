@@ -38,27 +38,6 @@ function setProductQuantity({ position, quantity }, subTotal, check = true) {
   }
 }
 
-function fillAddress(country, fullAddress) {
-  // shipping preview should be visible
-  cy.get(selectors.ShippingPreview).should('be.visible')
-  cy.get(selectors.ShipCountry, { timeout: 8000 })
-    .should('not.be.disabled')
-    .select('USA')
-    .select(country)
-  // Type shipping address query
-  // Google autocompletion takes some seconds to show dropdown
-  // So, we use 500 seconds wait before and after typing of address
-  cy.get(selectors.ShipAddressQuery) // eslint-disable-line cypress/no-unnecessary-waiting
-    .should('not.be.disabled')
-    .focus()
-    .clear()
-    .click()
-    .wait(500)
-    .type(`${fullAddress}`, { delay: 80 })
-    .wait(500)
-    .type('{downarrow}{enter}')
-}
-
 function clickProceedtoCheckout() {
   cy.intercept('**/orderForm/**').as('orderForm')
   // Click Proceed to Checkout button
@@ -122,8 +101,50 @@ export function closeCart() {
   cy.get(selectors.CloseCart).click()
 }
 
+export function fillAddress(postalCode) {
+  const { fullAddress, country, deliveryScreenAddress } =
+    addressList[postalCode]
+
+  // shipping preview should be visible
+  cy.get(selectors.ShippingPreview).should('be.visible')
+  cy.get(selectors.ShipCountry, { timeout: 5000 })
+    .should('not.be.disabled')
+    .select(country)
+
+  cy.get('body').then(($body) => {
+    if ($body.find(selectors.ShipAddressQuery).length) {
+      // Type shipping address query
+      // Google autocompletion takes some seconds to show dropdown
+      // So, we use 500 seconds wait before and after typing of address
+      cy.get(selectors.ShipAddressQuery) // eslint-disable-line cypress/no-unnecessary-waiting
+        .should('not.be.disabled')
+        .focus()
+        .clear()
+        .click()
+        .wait(500)
+        .type(`${fullAddress}`, { delay: 80 })
+        .wait(500)
+        .type('{downarrow}{enter}')
+      cy.get(selectors.DeliveryAddressText).should(
+        'have.text',
+        deliveryScreenAddress
+      )
+      cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
+
+      return cy.wrap(false)
+    }
+
+    cy.get(selectors.PostalCodeInput).should('be.visible').type(postalCode)
+    cy.get(selectors.DeliveryAddressText)
+      .should('be.visible')
+      .should('have.text', postalCode)
+    cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
+
+    return cy.wrap(true)
+  })
+}
+
 function fillContactInfo() {
-  cy.wait('@v8')
   cy.get(selectors.QuantityBadge).should('be.visible')
   cy.get(selectors.SummaryCart).should('be.visible')
   cy.get(selectors.FirstName).type('Syed', {
@@ -144,8 +165,7 @@ function fillContactInfo() {
 
 export function updateShippingInformation(postalCode, pickup = false) {
   let newCustomer = false
-  const { fullAddress, country, deliveryScreenAddress } =
-    addressList[postalCode]
+  const { deliveryScreenAddress } = addressList[postalCode]
 
   cy.get('body').then(($body) => {
     if ($body.find(selectors.ShippingCalculateLink).length) {
@@ -157,21 +177,27 @@ export function updateShippingInformation(postalCode, pickup = false) {
       cy.get(selectors.DeliveryAddress).should('be.visible').click()
     }
 
-    fillAddress(country, fullAddress)
-    cy.intercept('https://rc.vtex.com/v8').as('v8')
-    cy.get(selectors.DeliveryAddressText, { timeout: 5000 }).should(
-      'have.text',
-      deliveryScreenAddress
-    )
-    if (pickup) {
-      cy.get(selectors.pickupInStore).click()
-    }
+    cy.fillAddress(postalCode).then((shipByZipCode) => {
+      cy.intercept('https://rc.vtex.com/v8').as('v8')
+      cy.get(selectors.DeliveryAddressText, { timeout: 5000 }).should(
+        'have.text',
+        deliveryScreenAddress
+      )
+      if (pickup) {
+        cy.get(selectors.pickupInStore).click()
+      }
 
-    cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
+      cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
 
-    if (newCustomer) {
-      fillContactInfo()
-    }
+      if (newCustomer) {
+        fillContactInfo()
+      }
+
+      if (shipByZipCode) {
+        cy.get(selectors.ShipStreet).type(deliveryScreenAddress)
+        cy.get(selectors.GotoPaymentBtn).should('be.visible').click()
+      }
+    })
   })
 }
 
@@ -292,7 +318,15 @@ export function logintoStore() {
     .should('have.contain', `Hello,`)
 }
 
-export function ordertheProduct(refundEnv = false, externalSeller = false) {
+export function net30Payment() {
+  cy.promissoryPayment()
+  cy.buyProduct()
+}
+
+export function orderAndSaveProductId(
+  refundEnv = false,
+  externalSeller = false
+) {
   cy.promissoryPayment()
   cy.buyProduct()
 
