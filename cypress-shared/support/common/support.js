@@ -163,7 +163,7 @@ function fillContactInfo() {
   cy.get(selectors.GotoPaymentBtn).should('be.visible').click()
 }
 
-export function updateShippingInformation(postalCode, pickup = false) {
+export function updateShippingInformation(postalCode, { pickup = false }) {
   let newCustomer = false
   const { deliveryScreenAddress } = addressList[postalCode]
 
