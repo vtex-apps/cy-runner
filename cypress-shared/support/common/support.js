@@ -18,7 +18,7 @@ function setAuthCookie(authResponse) {
 }
 
 // Set Product Quantity
-function setProductQuantity({ position, quantity }, subTotal, check = true) {
+function setProductQuantity({ position, quantity }, subTotal, check) {
   cy.intercept('**/update').as('update')
 
   cy.get(selectors.ProductQuantityInCheckout(position))
@@ -228,8 +228,7 @@ export function updateInvalidShippingInformation(address) {
 
 export function updateProductQuantity(
   product,
-  quantity = '1',
-  multiProduct = false
+  { quantity = '1', multiProduct = false, verifySubTotal = true }
 ) {
   cy.get(selectors.ShippingPreview).should('be.visible')
   if (multiProduct) {
@@ -237,10 +236,18 @@ export function updateProductQuantity(
     setProductQuantity({ position: 1, quantity }, product.subTotal, false)
     // if multiProduct is true, then remove the set quantity and verify subtotal for multiProduct
     // Set second product quantity and verify subtotal
-    setProductQuantity({ position: 2, quantity: 1 }, product.subTotal)
+    setProductQuantity(
+      { position: 2, quantity: 1 },
+      product.subTotal,
+      verifySubTotal
+    )
   } else {
     // Set First product quantity and verify subtotal
-    setProductQuantity({ position: 1, quantity }, product.subTotal)
+    setProductQuantity(
+      { position: 1, quantity },
+      product.subTotal,
+      verifySubTotal
+    )
   }
 }
 
