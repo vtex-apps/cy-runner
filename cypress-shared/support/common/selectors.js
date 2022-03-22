@@ -22,7 +22,8 @@ export default {
   AddtoCart: 'span[class*=vtex-add-to-cart-button]',
   TotalPrice: '#total-price > .vtex-checkout-summary-0-x-price',
   RemoveProduct: 'div[class*="removeButton"]',
-  pickupInStore: '.srp-toggle__pickup',
+  PickupInStore: '.srp-toggle__pickup',
+  PickupItems: '.srp-items',
   ProductsQAShipping: "input[value='Productusqa2']",
   CloseCart: '.vtex-minicart-2-x-closeIconButton',
   // Below products are from sandboxusdev
