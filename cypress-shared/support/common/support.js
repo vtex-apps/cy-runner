@@ -128,7 +128,6 @@ export function fillAddress(postalCode, invalid = false) {
           .should('not.be.disabled')
           .focus()
           .clear()
-          .click()
           .wait(500)
           .type(`${fullAddress}`, { delay: 80 })
           .wait(500)
