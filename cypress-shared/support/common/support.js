@@ -267,7 +267,7 @@ export function updateProductQuantity(
   product,
   { quantity = '1', multiProduct = false, verifySubTotal = true } = {}
 ) {
-  cy.get(selectors.CartTimeline).should('be.visible').click()
+  cy.get(selectors.CartTimeline).should('be.visible').click({ force: true })
   cy.get(selectors.ShippingPreview).should('be.visible')
   if (multiProduct) {
     // Set First product quantity and don't verify subtotal because we passed false
