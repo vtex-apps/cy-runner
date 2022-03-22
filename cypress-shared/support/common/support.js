@@ -114,11 +114,12 @@ export function fillAddress(postalCode, invalid = false) {
       if ($body.find(selectors.ShippingPreview).length) {
         // shipping preview should be visible
         cy.get(selectors.ShippingPreview).should('be.visible')
-        cy.get(selectors.ShipCountry, { timeout: 5000 })
-          .should('not.be.disabled')
-          .select('USA')
-          .select(country)
       }
+
+      cy.get(selectors.ShipCountry, { timeout: 5000 })
+        .should('not.be.disabled')
+        .select('USA')
+        .select(country)
 
       if ($body.find(selectors.ShipAddressQuery).length) {
         // Type shipping address query
@@ -126,8 +127,10 @@ export function fillAddress(postalCode, invalid = false) {
         // So, we use 500 seconds wait before and after typing of address
         cy.get(selectors.ShipAddressQuery) // eslint-disable-line cypress/no-unnecessary-waiting
           .should('not.be.disabled')
+          .should('be.visible')
           .focus()
           .clear()
+          .click()
           .wait(500)
           .type(`${fullAddress}`, { delay: 80 })
           .wait(500)
