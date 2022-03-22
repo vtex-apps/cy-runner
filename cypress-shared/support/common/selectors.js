@@ -72,7 +72,7 @@ export default {
 
   // Progress bar
 
-  CartTimeline: 'span[class*=item_cart]',
+  CartTimeline: 'span[class*=item_cart] > span',
 
   // *************Contact Form Page Constants starts here************ //
   ContactForm: '.form-step.box-edit',
