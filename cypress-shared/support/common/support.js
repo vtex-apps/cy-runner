@@ -125,13 +125,13 @@ export function fillAddress(postalCode, invalid = false) {
         // Type shipping address query
         // Google autocompletion takes some seconds to show dropdown
         // So, we use 500 seconds wait before and after typing of address
-        cy.get(selectors.ShipAddressQuery) // eslint-disable-line cypress/no-unnecessary-waiting
+        cy.get(selectors.ShipAddressQuery)
           .should('not.be.disabled')
-          .should('be.visible')
           .focus()
           .clear()
+
+        cy.get(selectors.ShipAddressQuery) // eslint-disable-line cypress/no-unnecessary-waiting
           .click()
-          .wait(500)
           .type(`${fullAddress}`, { delay: 80 })
           .wait(500)
           .type('{downarrow}{enter}')
