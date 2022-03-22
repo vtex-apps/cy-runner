@@ -101,7 +101,7 @@ export function closeCart() {
   cy.get(selectors.CloseCart).click()
 }
 
-export function fillAddress(postalCode) {
+export function fillAddress(postalCode, invalid = false) {
   const { fullAddress, country, deliveryScreenAddress } =
     addressList[postalCode]
 
@@ -133,11 +133,14 @@ export function fillAddress(postalCode) {
           .type(`${fullAddress}`, { delay: 80 })
           .wait(500)
           .type('{downarrow}{enter}')
-        cy.get(selectors.DeliveryAddressText).should(
-          'have.text',
-          deliveryScreenAddress
-        )
-        cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
+
+        if (!invalid) {
+          cy.get(selectors.DeliveryAddressText).should(
+            'have.text',
+            deliveryScreenAddress
+          )
+          cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
+        }
 
         return cy.wrap(false)
       }
@@ -167,19 +170,26 @@ function fillContactInfo() {
     delay: 50,
   })
   cy.get(selectors.ProceedtoShipping).should('be.visible').click()
-  cy.get(selectors.ReceiverName, { timeout: 5000 }).type('Syed', {
-    delay: 50,
+  cy.get('body').then(($shippingBlock) => {
+    if ($shippingBlock.find(selectors.ReceiverName).length) {
+      cy.get(selectors.ReceiverName, { timeout: 5000 }).type('Syed', {
+        delay: 50,
+      })
+      cy.get(selectors.GotoPaymentBtn).should('be.visible').click()
+    }
   })
-  cy.get(selectors.GotoPaymentBtn).should('be.visible').click()
 }
 
-export function updateShippingInformation({
-  postalCode,
-  pickup = false,
-  invalid = false,
-}) {
-  const { deliveryScreenAddress } = addressList[postalCode]
+function fillAddressLine1(deliveryScreenAddress) {
+  cy.get('body').then(($shippingBlock) => {
+    if ($shippingBlock.find(selectors.ShipStreet).length) {
+      cy.get(selectors.ShipStreet).type(deliveryScreenAddress)
+      cy.get(selectors.GotoPaymentBtn).should('be.visible').click()
+    }
+  })
+}
 
+function startShipping() {
   cy.get('body').then(($body) => {
     if ($body.find(selectors.ShippingCalculateLink).length) {
       // Contact information needs to be filled
@@ -192,19 +202,25 @@ export function updateShippingInformation({
         }
       })
     }
+  })
+}
 
-    cy.intercept('https://rc.vtex.com/v8').as('v8')
-    cy.fillAddress(postalCode).then(() => {
-      cy.get(selectors.FirstName).then(($el) => {
-        if (Cypress.dom.isVisible($el)) {
-          fillContactInfo()
-          cy.get('body').then(($shippingBlock) => {
-            if ($shippingBlock.find(selectors.ShipStreet).length) {
-              cy.get(selectors.ShipStreet).type(deliveryScreenAddress)
-              cy.get(selectors.GotoPaymentBtn).should('be.visible').click()
-            }
-          })
-        } else {
+export function updateShippingInformation({
+  postalCode,
+  pickup = false,
+  invalid = false,
+}) {
+  const { deliveryScreenAddress } = addressList[postalCode]
+
+  startShipping()
+  cy.intercept('https://rc.vtex.com/v8').as('v8')
+  cy.fillAddress(postalCode, invalid).then(() => {
+    cy.get(selectors.FirstName).then(($el) => {
+      if (Cypress.dom.isVisible($el)) {
+        fillContactInfo()
+        fillAddressLine1(deliveryScreenAddress)
+      } else {
+        if (!invalid) {
           cy.get(selectors.CartTimeline).should('be.visible').click()
           cy.get(selectors.DeliveryAddressText, { timeout: 5000 })
             .invoke('text')
@@ -212,27 +228,22 @@ export function updateShippingInformation({
               'match',
               new RegExp(`${deliveryScreenAddress}|${postalCode}`, 'gi')
             )
-
-          if (invalid) {
-            cy.get(selectors.DeliveryUnavailable).contains(
-              'cannot be shipped to the given address.'
-            )
-            cy.get(selectors.DeliveryAddressText, { timeout: 5000 }).click()
-          } else {
-            if (pickup) {
-              cy.get(selectors.pickupInStore).should('be.visible').click()
-            }
-
-            cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
-            cy.get('body').then(($shippingBlock) => {
-              if ($shippingBlock.find(selectors.ShipStreet).length) {
-                cy.get(selectors.ShipStreet).type(deliveryScreenAddress)
-                cy.get(selectors.GotoPaymentBtn).should('be.visible').click()
-              }
-            })
-          }
         }
-      })
+
+        if (invalid) {
+          cy.get(selectors.DeliveryUnavailable).contains(
+            'cannot be shipped to the given address.'
+          )
+          cy.get(selectors.DeliveryAddressText, { timeout: 5000 }).click()
+        } else {
+          if (pickup) {
+            cy.get(selectors.pickupInStore).should('be.visible').click()
+          }
+
+          cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
+          fillAddressLine1(deliveryScreenAddress)
+        }
+      }
     })
   })
 }
