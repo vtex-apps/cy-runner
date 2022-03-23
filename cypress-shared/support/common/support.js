@@ -223,7 +223,7 @@ export function updateShippingInformation({
         .invoke('text')
         .should(
           'match',
-          new RegExp(`${deliveryScreenAddress}|${postalCode}`, 'gi')
+          new RegExp(`^${deliveryScreenAddress}$|^${postalCode}$`, 'gi')
         )
       cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
     }
@@ -235,32 +235,6 @@ export function updateShippingInformation({
     })
 
     fillAddressLine1(deliveryScreenAddress)
-  })
-}
-
-export function updateInvalidShippingInformation(address) {
-  const { deliveryScreenAddress, postalCode } = address
-
-  cy.get('body').then(($body) => {
-    if ($body.find(selectors.ShippingCalculateLink).length) {
-      // Contact information needs to be filled
-      cy.get(selectors.ShippingCalculateLink).should('be.visible').click()
-    } else if ($body.find(selectors.DeliveryAddress).length) {
-      // Contact Information already filled
-      cy.get(selectors.DeliveryAddress).should('be.visible').click()
-    }
-
-    cy.fillAddress(postalCode).then(() => {
-      cy.intercept('https://rc.vtex.com/v8').as('v8')
-      cy.get(selectors.DeliveryAddressText).should(
-        'have.text',
-        deliveryScreenAddress
-      )
-      cy.get(selectors.DeliveryUnavailable).contains(
-        'cannot be shipped to the given address.'
-      )
-      cy.contains(deliveryScreenAddress).click()
-    })
   })
 }
 
@@ -373,9 +347,6 @@ export function orderAndSaveProductId(
   refundEnv = false,
   externalSeller = false
 ) {
-  cy.promissoryPayment()
-  cy.buyProduct()
-
   // This page take longer time to load. So, wait for profile icon to visible then get orderid from url
   cy.get(selectors.Search, { timeout: 30000 })
   cy.url().then((url) => {
