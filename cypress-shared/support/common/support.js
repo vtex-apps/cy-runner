@@ -343,19 +343,16 @@ export function net30Payment() {
   cy.buyProduct()
 }
 
-export function orderAndSaveProductId(
-  refundEnv = false,
-  externalSeller = false
-) {
+export function saveOrderId(orderIdEnv = false, externalSeller = false) {
   // This page take longer time to load. So, wait for profile icon to visible then get orderid from url
   cy.get(selectors.Search, { timeout: 30000 })
   cy.url().then((url) => {
     const orderId = `${url.split('=').pop()}-01`
 
-    // If we are ordering product for refund/external seller test case,
-    // then store orderId in NodeJS Environment
-    if (refundEnv) {
-      cy.setOrderItem(refundEnv, orderId)
+    // If we are ordering product
+    // then store orderId in .orders.json
+    if (orderIdEnv) {
+      cy.setOrderItem(orderIdEnv, orderId)
     }
 
     if (externalSeller) {
