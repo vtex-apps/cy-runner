@@ -17,7 +17,7 @@ export const addressList = {
     deliveryScreenAddress: '91 Rue de Strasbourg ',
     fullAddress: '  91 Rue de Strasbourg Saint-Denis 93200',
   },
-  invalid: {
+  'N9V 1K8': {
     country: 'CAN',
     deliveryScreenAddress: 'Texas Road 8',
     fullAddress: '8 Texas Road',
@@ -41,4 +41,11 @@ export const FAIL_ON_STATUS_CODE = {
 export const ENTITIES = {
   CLIENTS: { id: 'CL', searchKey: 'email' },
   ADDRESSES: { id: 'AD', searchKey: 'userId' },
+}
+
+export const HEADERS = {
+  headers: {
+    'user-agent':
+      'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.74 Safari/537.36',
+  },
 }

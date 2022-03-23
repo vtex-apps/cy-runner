@@ -2,7 +2,6 @@ import { getRefundPayload } from './refund.js'
 import { updateRetry } from './support.js'
 import { workFlowAPI, startHandlingAPI } from './apis.js'
 import { FAIL_ON_STATUS_CODE, VTEX_AUTH_HEADER } from './constants.js'
-import { transactionConstants } from '../transaction_constants.js'
 
 export function refund({ total, title, env }, startHandling = true) {
   const refundInvoiceNumber = '84321'
@@ -35,9 +34,7 @@ export function refund({ total, title, env }, startHandling = true) {
             VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken)
           ).then((response) => {
             expect(response.status).to.equal(200)
-            expect(response.body.currentState).to.equal(
-              transactionConstants.INVOICED
-            )
+            expect(response.body.currentState).to.equal('invoiced')
           })
         })
       })

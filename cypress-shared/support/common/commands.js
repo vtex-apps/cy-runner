@@ -1,6 +1,7 @@
 import selectors from './selectors.js'
 import {
   addProduct,
+  fillAddress,
   searchProduct,
   updateProductQuantity,
   updateShippingInformation,
@@ -8,6 +9,7 @@ import {
 } from './support.js'
 
 Cypress.Commands.add('addProduct', addProduct)
+Cypress.Commands.add('fillAddress', fillAddress)
 Cypress.Commands.add('searchProduct', searchProduct)
 Cypress.Commands.add('updateProductQuantity', updateProductQuantity)
 Cypress.Commands.add('updateShippingInformation', updateShippingInformation)
