@@ -3,6 +3,7 @@ import {
   addProduct,
   fillAddress,
   searchProduct,
+  verifyTotal,
   updateProductQuantity,
   updateShippingInformation,
 } from './support.js'
@@ -12,6 +13,7 @@ Cypress.Commands.add('fillAddress', fillAddress)
 Cypress.Commands.add('searchProduct', searchProduct)
 Cypress.Commands.add('updateProductQuantity', updateProductQuantity)
 Cypress.Commands.add('updateShippingInformation', updateShippingInformation)
+Cypress.Commands.add('verifyTotal', verifyTotal)
 
 Cypress.Commands.add('getVtexItems', () => {
   return cy.wrap(Cypress.env().base.vtex, { log: false })
