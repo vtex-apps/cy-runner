@@ -6,7 +6,6 @@ import {
   verifyTotal,
   updateProductQuantity,
   updateShippingInformation,
-  updateInvalidShippingInformation,
 } from './support.js'
 
 Cypress.Commands.add('addProduct', addProduct)
@@ -14,10 +13,6 @@ Cypress.Commands.add('fillAddress', fillAddress)
 Cypress.Commands.add('searchProduct', searchProduct)
 Cypress.Commands.add('updateProductQuantity', updateProductQuantity)
 Cypress.Commands.add('updateShippingInformation', updateShippingInformation)
-Cypress.Commands.add(
-  'updateInvalidShippingInformation',
-  updateInvalidShippingInformation
-)
 Cypress.Commands.add('verifyTotal', verifyTotal)
 
 Cypress.Commands.add('getVtexItems', () => {
