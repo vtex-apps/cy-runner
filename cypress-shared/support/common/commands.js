@@ -3,6 +3,7 @@ import {
   addProduct,
   fillAddress,
   searchProduct,
+  verifyTotal,
   updateProductQuantity,
   updateShippingInformation,
   updateInvalidShippingInformation,
@@ -17,6 +18,7 @@ Cypress.Commands.add(
   'updateInvalidShippingInformation',
   updateInvalidShippingInformation
 )
+Cypress.Commands.add('verifyTotal', verifyTotal)
 
 Cypress.Commands.add('getVtexItems', () => {
   return cy.wrap(Cypress.env().base.vtex, { log: false })
