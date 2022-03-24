@@ -13,6 +13,7 @@ const schema = require('./schema')
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms))
 const logFile = path.join('.', 'logs', 'cy-runner.log')
+const ciNumber = Date.now().toString().substring(6, 13)
 const QE = '[QE] === '
 
 function icon(type) {
@@ -526,14 +527,22 @@ exports.runCypress = async (
       supportFile: `${cyPath}/support`,
     },
     spec: test.spec,
-    headed: config.workspace.runHeaded,
+    headed: config.base.cypress.runHeaded,
     browser: config.base.cypress.browser,
   }
 
   // Options tuning
   if (test.sendDashboard) {
+    const cyEnv = config.base.cypress.internalEnv
+
     options.key = config.base.cypress.dashboardKey
     options.record = true
+    // If in dev mode and dashboard on, give the ciBuildNumber
+    if (typeof cyEnv === 'string' && cyEnv === 'development') {
+      process.env.CYPRESS_INTERNAL_ENV = cyEnv
+      options.ciBuildId = ciNumber
+    }
+
     merge(options, addOptions)
   }
 

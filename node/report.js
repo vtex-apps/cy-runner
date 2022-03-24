@@ -10,7 +10,7 @@ module.exports.report = async (control, config) => {
 
   qe.newLine()
 
-  if (config.workspace.runInDevMode) {
+  if (config.base.cypress.devMode) {
     qe.success('Hope your tests went well. See you soon!')
   } else {
     const items = [
