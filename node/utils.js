@@ -3,7 +3,7 @@ const { execSync } = require('child_process')
 const fs = require('fs')
 const path = require('path')
 
-const cy = require('cypress')
+const cypress = require('cypress')
 const axios = require('axios')
 const { merge, get } = require('lodash')
 const yaml = require('js-yaml')
@@ -504,7 +504,7 @@ exports.openCypress = async () => {
 
   // Open Cypress
   try {
-    await cy.open(options)
+    await cypress.open(options)
   } catch (e) {
     this.crash('Fail to open Cypress', e.message)
   }
@@ -562,7 +562,7 @@ exports.runCypress = async (
 
       testPassed = /All specs passed/.test(stdout)
     } else {
-      await cy.run(options).then((result) => {
+      await cypress.run(options).then((result) => {
         if (result.failures) this.crash(result.message)
         testPassed = result.totalFailed < 1
       })

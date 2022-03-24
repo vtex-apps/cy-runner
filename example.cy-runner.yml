@@ -69,7 +69,6 @@ strategy:
     hardTries: 1
     stopOnFail: false
     parallel: true
-    runInOrder: false
     specs:
       - cypress/integration/A01*
       - cypress/integration/A02*
@@ -79,11 +78,10 @@ strategy:
     hardTries: 1
     stopOnFail: false
     parallel: false
-    runInOrder: true
     specs:
       - cypress/integration/A02*
     dependency:
-      - A
+      - A01
 
   # secrets template
   #
