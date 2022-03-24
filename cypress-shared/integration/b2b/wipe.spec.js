@@ -95,7 +95,10 @@ function deleteCostCenter(organization, costCenter) {
 function deleteUsersFromMasterData() {
   /* eslint-disable jest/expect-expect */
   it('Delete Users from master data', () => {
-    cy.searchInMasterData(ENTITIES.CLIENTS, '*syedbitcot*').then((datas) => {
+    cy.searchInMasterData(
+      ENTITIES.CLIENTS,
+      `*${Cypress.env().workspace.name}*`
+    ).then((datas) => {
       for (const { id } of datas) {
         cy.deleteDocumentInMasterData(ENTITIES.CLIENTS, id)
       }
