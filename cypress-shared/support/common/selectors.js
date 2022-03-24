@@ -200,6 +200,7 @@ export default {
     'div[class*=layout__container] > div:nth-child(1) #toolbar button',
   CostCenterName:
     'div[class*=scroll] > div:nth-of-type(1) div[class*=input] input[type=text]',
+  CostCenterHeader: 'div[class*=vtex-pageHeader]',
   CloseModal: 'div[class*=modal__close]',
   SubmitCostCenter: '.nowrap > span:last-child > button',
   PromissoryCheckbox: '.mv4:nth-child(1) input[type=checkbox]',
