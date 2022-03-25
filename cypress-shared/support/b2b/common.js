@@ -135,7 +135,11 @@ export function userAndCostCenterShouldNotBeEditable(
       'c-disabled'
     )
     cy.contains(costCenter).should('be.visible').click()
-    cy.contains(BUTTON_LABEL.save).should('be.disabled')
-    cy.contains(BUTTON_LABEL.delete).should('be.disabled')
+    cy.get(selectors.CostCenterHeader)
+      .contains(BUTTON_LABEL.save)
+      .should('be.disabled')
+    cy.get(selectors.CostCenterHeader)
+      .contains(BUTTON_LABEL.delete)
+      .should('be.disabled')
   })
 }

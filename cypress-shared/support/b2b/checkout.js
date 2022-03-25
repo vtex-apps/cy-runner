@@ -48,11 +48,12 @@ export function fillContactInfo() {
 
 export function verifyAddress(address) {
   it('Verify Auto fill Address in checkout', { retries: 3 }, () => {
-    cy.get('body').then(($body) => {
-      if ($body.find(selectors.OpenShipping).length) {
+    cy.get('body').then(($shipping) => {
+      if ($shipping.find(selectors.OpenShipping).length) {
         cy.get(selectors.OpenShipping, { timeout: 5000 }).click()
       }
     })
+
     for (const { postalCode } of address) {
       cy.get(selectors.PostalCodeText, { timeout: 5000 })
         .contains(postalCode)

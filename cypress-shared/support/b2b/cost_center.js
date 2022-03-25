@@ -42,7 +42,10 @@ export function updateCostCenter(oldcostCenterName, updatedcostcenterName) {
       .should('be.visible')
       .clear()
       .type(updatedcostcenterName)
-    cy.contains(BUTTON_LABEL.save).should('be.visible').click()
+    cy.get(selectors.CostCenterHeader)
+      .contains(BUTTON_LABEL.save)
+      .should('be.visible')
+      .click()
     cy.get(`input[value='${updatedcostcenterName}']`).should('be.visible')
   })
 }
