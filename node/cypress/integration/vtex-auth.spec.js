@@ -39,6 +39,9 @@ describe('Authentication process', () => {
 
       fillEmailAndPassword()
 
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(2000)
+
       // Fill Robot SMS code if Twilio enabled, pause if not
       cy.get('body').then(($body) => {
         if ($body.find(TXT_CODE).length) {
