@@ -71,7 +71,7 @@ async function runTest(test, config, group) {
       `Hard try ${thisTry} of ${hardTries} for strategy.${test.name}`,
       'warn'
     )
-    addOptions.group = `${group}-try-${thisTry}`
+    addOptions.group = `${group}/${thisTry}`
 
     const testsResult = await qe.runCypress(test, config, addOptions)
 
