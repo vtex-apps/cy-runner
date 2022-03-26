@@ -509,27 +509,27 @@ exports.openCypress = async () => {
 }
 
 exports.runCypress = async (test, config, addOptions = {}) => {
-  if (typeof test.spec === 'string') test.specs = [test.spec]
   // If mix base path for specs, stop it
-  const specPath = path.parse(test.specs[0])
-  // eslint-disable-next-line prefer-destructuring
-  const cypressPath = specPath.dir.split(path.sep)[0]
+  const specPath = path.parse(test.specs[0]).dir
 
   test.specs.forEach((spec) => {
-    // eslint-disable-next-line prefer-destructuring
-    const pathToCheck = path.parse(spec).dir.split(path.sep)[0]
+    const pathToCheck = path.parse(spec).dir
 
-    if (pathToCheck !== cypressPath) {
-      this.crash('Cypress path must be the same on each strategy', test.specs)
+    if (pathToCheck !== specPath) {
+      this.msg('Cypress path must be unique among specs', 'error')
+      test.specs.forEach(specDef => {
+        this.msg(specDef, true, true)
+      })
+      this.crash('Test stopped due a strategy misconfiguration', `strategy.${test.name}`)
     }
   })
 
   const options = {
     config: {
       integrationFolder: specPath.dir,
-      supportFile: `${cypressPath}/support`,
+      supportFile: `${specPath.split(path.sep)[0]}/support`,
     },
-    spec: test.spec,
+    spec: test.specs,
     headed: config.base.cypress.runHeaded,
     browser: config.base.cypress.browser,
     quiet: test.quiet,

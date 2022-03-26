@@ -14,9 +14,9 @@ module.exports.report = async (control, config) => {
     qe.success('Hope your tests went well. See you soon!')
   } else {
     const items = [
-      ['testsPassed', 'Successful', 'ok'],
-      ['testsSkipped', 'Skipped', 'warn'],
-      ['testsFailed', 'Failed', 'error'],
+      ['strategiesPassed', 'Successful', 'ok'],
+      ['strategiesSkipped', 'Skipped', 'warn'],
+      ['strategiesFailed', 'Failed', 'error'],
     ]
 
     items.forEach((item) => {
@@ -33,7 +33,7 @@ module.exports.report = async (control, config) => {
         qe.newLine()
       }
     })
-    if (control.testsFailed.length < 1) {
+    if (control.strategiesFailed.length < 1) {
       qe.success('The test ran successfully, well done!')
     } else {
       qe.fail(`The test failed!`)

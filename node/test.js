@@ -3,9 +3,9 @@ const { intersection } = require('lodash')
 
 const qe = require('./utils')
 
-const testsFailed = []
-const testsSkipped = []
-const testsPassed = []
+const strategiesFailed = []
+const strategiesSkipped = []
+const strategiesPassed = []
 
 module.exports.strategy = async (config) => {
   const START = qe.tick()
@@ -26,7 +26,7 @@ module.exports.strategy = async (config) => {
         // Convert all to string to avoid compare string to number
         const check = intersection(
           dependency.toString().split(','),
-          testsPassed.toString().split(',')
+          strategiesPassed.toString().split(',')
         )
 
         if (check.length === dependency.length) {
@@ -37,32 +37,35 @@ module.exports.strategy = async (config) => {
         } else {
           qe.msg(`Strategy.${dependency} not succeeded`, 'warn')
           qe.msg(`Skipping strategy.${strategy}`, true, true)
-          testsSkipped.push(strategy)
+          strategiesSkipped.push(strategy)
         }
       } else {
         await runTest(test, config, group)
       }
     } else {
-      testsSkipped.push(strategy)
+      strategiesSkipped.push(strategy)
     }
   }
 
   return {
     time: qe.toc(START),
-    testsFailed,
-    testsSkipped,
-    testsPassed,
+    strategiesFailed: strategiesFailed,
+    strategiesSkipped: strategiesSkipped,
+    strategiesPassed: strategiesPassed,
   }
 }
 
 async function runTest(test, config, group) {
-  let testPassed = false
+  let testsPassed = false
+
   const addOptions = {
     parallel: test.parallel,
   }
 
   for (let ht = 0; ht <= test.hardTries; ht++) {
-    if (!testPassed) {
+
+    if (!testsPassed && test.specs.length > 0) {
+      testsPassed = true
       qe.msg(
         `Starting try ${ht + 1} of ${test.hardTries + 1} for strategy.${
           test.name
@@ -70,17 +73,30 @@ async function runTest(test, config, group) {
         'warn'
       )
       addOptions.group = `${group}-try-${ht + 1}`
-      test.spec = test.specs
-      testPassed = await qe.runCypress(test, config, addOptions)
+      const testsResult = await qe.runCypress(test, config, addOptions)
+      testsResult.forEach(testResult => {
+        if (testResult.totalFailed)
+          // eslint-disable-next-line no-loop-func
+          testsPassed = false
+        else
+          for (const spec in test.specs) {
+            let search = test.specs[spec].split('*')[0]
+            let found = testResult.runs[0].spec.relative.includes(search)
+            if (found) {
+              test.specs.splice(spec, 1)
+              break
+            }
+          }
+      })
     }
   }
 
-  if (!testPassed) {
+  if (!testsPassed) {
     qe.msg(`strategy.${test.name} failed`, 'error')
-    testsFailed.push(test.name)
+    strategiesFailed.push(test.name)
     if (test.stopOnFail) await qe.stopOnFail(config, `strategy ${test.name}`)
   } else {
     qe.msg(`strategy.${test.name} succeeded`)
-    testsPassed.push(test.name)
+    strategiesPassed.push(test.name)
   }
 }
