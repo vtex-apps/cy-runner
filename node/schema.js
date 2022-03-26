@@ -150,8 +150,9 @@ exports.validateConfig = (config, file) => {
     enabled: 2,
     sendDashboard: 2,
     stopOnFail: 2,
-    hardTries: 1,
     parallel: 2,
+    hardTries: 1,
+    quiet: 2,
     specs: 7,
   }
 
