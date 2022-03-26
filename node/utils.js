@@ -553,14 +553,17 @@ exports.runCypress = async (test, config, addOptions = {}) => {
   // Run Cypress
   const testToRun = []
   const testResult = []
-  let numInstances = 1
+  let maxJobs = 1
 
   // Set the number of runners
   if (test.parallel) {
-    numInstances = test.specs.length < 4 ? test.specs.length : 4
+    maxJobs =
+      test.specs.length < config.base.cypress.maxJobs
+        ? test.specs.length
+        : config.base.cypress.maxJobs
   }
 
-  for (let i = 0; i < numInstances; i++) {
+  for (let i = 0; i < maxJobs; i++) {
     testToRun.push(
       cypress.run(options).then((result) => {
         if (result.failures) this.crash(result.message)

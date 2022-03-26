@@ -112,6 +112,7 @@ exports.validateConfig = (config, file) => {
         devMode: 2,
         runHeaded: 2,
         getCookies: 2,
+        maxJobs: 1,
         projectId: 0,
         video: 2,
         videoCompression: 6,
