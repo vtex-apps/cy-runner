@@ -75,6 +75,8 @@ async function installToolbelt(deployCli) {
 }
 
 async function startBackground(vtex) {
+  let login
+
   try {
     qe.msg('Toolbelt version', true, true, true)
     qe.exec(`${TOOLBELT_BIN} --version`, 'inherit')
@@ -101,10 +103,15 @@ async function startBackground(vtex) {
 
     // Make cypress.env.json is available to login
     if (!qe.storage(dst)) qe.storage(src, 'link', dst)
-    qe.exec('yarn cypress run -P node')
+    login = qe.exec('yarn cypress run -P node', 'pipe').toString()
   } catch (e) {
     qe.crash('Failed to authenticate using toolbelt', e)
   }
+
+  const isLogged = qe.toolbelt(TOOLBELT_BIN, 'whoami')
+
+  // Exit if the login fails
+  if (isLogged === false) qe.crash(`Error to login on ${vtex.account}`, login)
 
   // Feedback to user and path to be added returned
   qe.msg(`Login on ${vtex.account} completed successfully`)

@@ -510,21 +510,25 @@ exports.openCypress = async () => {
   }
 }
 
-exports.runCypress = async (
-  test,
-  config,
-  addOptions = {},
-  noOutput = false
-  // eslint-disable-next-line max-params
-) => {
-  if (typeof test.spec === 'string') test.spec = [test.spec]
-  const spec = path.parse(test.spec[0])
+exports.runCypress = async (test, config, addOptions = {}) => {
+  if (typeof test.spec === 'string') test.specs = [test.spec]
+
+  // If mix base path for specs, stop it
+  const specPath = path.parse(test.specs[0])
+  const cypressPath = specPath.dir.split(path.sep)[0]
+
+  test.specs.forEach((spec) => {
+    const pathToCheck = path.parse(spec).dir.split(path.sep)[0]
+
+    if (pathToCheck !== cypressPath) {
+      this.crash('Cypress path must be the same on each strategy', test.specs)
+    }
+  })
   // eslint-disable-next-line prefer-destructuring
-  const cyPath = spec.dir.split(path.sep)[0]
   const options = {
     config: {
-      integrationFolder: spec.dir,
-      supportFile: `${cyPath}/support`,
+      integrationFolder: specPath.dir,
+      supportFile: `${cypressPath}/support`,
     },
     spec: test.spec,
     headed: config.base.cypress.runHeaded,
@@ -547,31 +551,31 @@ exports.runCypress = async (
   }
 
   // Run Cypress
-  let testPassed = true
+  const testToRun = []
+  const testResult = []
+  let numInstances = 1
+
+  // Set the number of runners
+  if (test.parallel) {
+    numInstances = test.specs.length < 4 ? test.specs.length : 4
+  }
+
+  for (let i = 0; i < numInstances; i++) {
+    testToRun.push(
+      cypress.run(options).then((result) => {
+        if (result.failures) this.crash(result.message)
+        testResult.push(result)
+      })
+    )
+  }
 
   try {
-    if (noOutput) {
-      const cfg =
-        `integrationFolder='${options.config.integrationFolder}',` +
-        `supportFile='${options.config.supportFile}'`
-
-      const stdout = this.exec(
-        `yarn cypress run -s ${config.workspace.wipe.spec} -c ${cfg}`,
-        'pipe'
-      ).toString()
-
-      testPassed = /All specs passed/.test(stdout)
-    } else {
-      await cypress.run(options).then((result) => {
-        if (result.failures) this.crash(result.message)
-        testPassed = result.totalFailed < 1
-      })
-    }
+    await Promise.all(testToRun)
   } catch (e) {
     this.crash('Fail to run Cypress', e.message)
   }
 
-  return testPassed
+  return testResult
 }
 
 exports.request = async (config) => {
