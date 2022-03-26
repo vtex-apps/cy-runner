@@ -49,9 +49,9 @@ module.exports.strategy = async (config) => {
 
   return {
     time: qe.toc(START),
-    strategiesFailed: strategiesFailed,
-    strategiesSkipped: strategiesSkipped,
-    strategiesPassed: strategiesPassed,
+    strategiesFailed,
+    strategiesSkipped,
+    strategiesPassed,
   }
 }
 
@@ -63,30 +63,32 @@ async function runTest(test, config, group) {
   }
 
   for (let ht = 0; ht <= test.hardTries; ht++) {
-
     if (!testsPassed && test.specs.length > 0) {
       testsPassed = true
       qe.msg(
-        `Starting try ${ht + 1} of ${test.hardTries + 1} for strategy.${
-          test.name
-        }`,
+        `Try ${ht + 1} of ${test.hardTries + 1} for strategy.${test.name}`,
         'warn'
       )
       addOptions.group = `${group}-try-${ht + 1}`
+
       const testsResult = await qe.runCypress(test, config, addOptions)
-      testsResult.forEach(testResult => {
-        if (testResult.totalFailed)
-          // eslint-disable-next-line no-loop-func
+
+      // eslint-disable-next-line no-loop-func
+      testsResult.forEach((testResult) => {
+        if (testResult.totalFailed) {
           testsPassed = false
-        else
+        } else {
           for (const spec in test.specs) {
-            let search = test.specs[spec].split('*')[0]
-            let found = testResult.runs[0].spec.relative.includes(search)
+            const [search] = test.specs[spec].split('*')
+            const found = testResult.runs[0].spec.relative.includes(search)
+
             if (found) {
-              test.specs.splice(spec, 1)
+              test.specs.splice(Number(spec), 1)
+
               break
             }
           }
+        }
       })
     }
   }

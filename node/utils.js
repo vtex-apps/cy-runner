@@ -1,4 +1,5 @@
 /* eslint-disable no-await-in-loop */
+/* eslint-disable vtex/prefer-early-return */
 const { execSync } = require('child_process')
 const fs = require('fs')
 const path = require('path')
@@ -457,7 +458,7 @@ exports.sectionsToRun = async (config) => {
       } else {
         this.msg(itemEnabled)
         hasDependency(itemEnabled).forEach((dep) => {
-          this.msg(`dependency: strategy.${dep}`, true, true)
+          this.msg(`depends on: strategy.${dep}`, true, true)
         })
       }
     }
@@ -517,10 +518,13 @@ exports.runCypress = async (test, config, addOptions = {}) => {
 
     if (pathToCheck !== specPath) {
       this.msg('Cypress path must be unique among specs', 'error')
-      test.specs.forEach(specDef => {
+      test.specs.forEach((specDef) => {
         this.msg(specDef, true, true)
       })
-      this.crash('Test stopped due a strategy misconfiguration', `strategy.${test.name}`)
+      this.crash(
+        'Test stopped due a strategy misconfiguration',
+        `strategy.${test.name}`
+      )
     }
   })
 

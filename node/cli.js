@@ -108,10 +108,10 @@ async function startBackground(vtex) {
     qe.crash('Failed to authenticate using toolbelt', e)
   }
 
-  const isLogged = qe.toolbelt(TOOLBELT_BIN, 'whoami')
+  const tlb = await qe.toolbelt(TOOLBELT_BIN, 'whoami')
 
-  // Exit if the login fails
-  if (isLogged === false) qe.crash(`Error to login on ${vtex.account}`, login)
+  // Exit if login fails
+  if (!tlb.success) qe.crash(`Error to login on ${vtex.account}`, login)
 
   // Feedback to user and path to be added returned
   qe.msg(`Login on ${vtex.account} completed successfully`)
