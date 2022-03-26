@@ -95,7 +95,7 @@ async function startBackground(vtex) {
     }
 
     qe.msg(`callback file created`, 'complete', true)
-    qe.msg(`Trying to login on ${vtex.account}`, true, true)
+    qe.msg(`Trying to login on account ${vtex.account}`, true, true)
 
     const envName = 'cypress.env.json'
     const src = path.join(__dirname, '..', envName)

@@ -116,8 +116,8 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
   switch (cmd.split(' ')[0]) {
     case 'whoami':
       stdout = this.exec(`${bin} ${cmd}`, 'pipe').toString()
-
-      return /Logged/.test(stdout) ? stdout.split(' ')[7] : false
+      check = /Logged/.test(stdout)
+      break
 
     case 'workspace':
       stdout = this.exec(`echo y | ${bin} ${cmd}`, 'pipe').toString()
@@ -149,7 +149,7 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
       while (!check && thisTry < MAX_TRIES) {
         thisTry++
         stdout = this.exec(`${bin} ls`, 'pipe').toString()
-        await delay(thisTry * 2000)
+        await delay(thisTry * 1000)
         check = linkApp.test(stdout)
       }
 
@@ -166,11 +166,9 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
 
   if (!check) {
     this.msg(`Toolbelt command failed: ${bin} ${cmd}\n${stdout}`, 'error')
-
-    return 'error'
   }
 
-  return stdout
+  return { success: check, stdout }
 }
 
 exports.vtexCliInstallApp = (bin) => {
@@ -511,13 +509,14 @@ exports.openCypress = async () => {
 }
 
 exports.runCypress = async (test, config, addOptions = {}) => {
-  // eslint-disable-next-line prefer-destructuring
   if (typeof test.spec === 'string') test.specs = [test.spec]
   // If mix base path for specs, stop it
   const specPath = path.parse(test.specs[0])
+  // eslint-disable-next-line prefer-destructuring
   const cypressPath = specPath.dir.split(path.sep)[0]
 
   test.specs.forEach((spec) => {
+    // eslint-disable-next-line prefer-destructuring
     const pathToCheck = path.parse(spec).dir.split(path.sep)[0]
 
     if (pathToCheck !== cypressPath) {

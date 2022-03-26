@@ -111,6 +111,7 @@ exports.validateConfig = (config, file) => {
       cypress: {
         devMode: 2,
         runHeaded: 2,
+        getCookies: 2,
         projectId: 0,
         video: 2,
         videoCompression: 6,
