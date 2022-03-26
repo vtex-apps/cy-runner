@@ -113,6 +113,7 @@ exports.validateConfig = (config, file) => {
         runHeaded: 2,
         getCookies: 2,
         maxJobs: 1,
+        quiet: 2,
         projectId: 0,
         video: 2,
         videoCompression: 6,
@@ -154,7 +155,6 @@ exports.validateConfig = (config, file) => {
     stopOnFail: 2,
     parallel: 2,
     hardTries: 1,
-    quiet: 2,
     specs: 7,
   }
 

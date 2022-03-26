@@ -536,7 +536,7 @@ exports.runCypress = async (test, config, addOptions = {}) => {
     spec: test.specs,
     headed: config.base.cypress.runHeaded,
     browser: config.base.cypress.browser,
-    quiet: test.quiet,
+    quiet: config.base.cypress.quiet,
   }
 
   // Options tuning
