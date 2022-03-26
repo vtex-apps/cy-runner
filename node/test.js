@@ -71,31 +71,37 @@ async function runTest(test, config, group) {
       `Hard try ${thisTry} of ${hardTries} for strategy.${test.name}`,
       'warn'
     )
-    addOptions.group = `${group}-try-${hardTries - 1}`
+    addOptions.group = `${group}-try-${thisTry}`
 
     const testsResult = await qe.runCypress(test, config, addOptions)
 
     testsPassed = true
     // eslint-disable-next-line no-loop-func
     testsResult.forEach((testResult) => {
-      if (testResult.totalFailed) {
-        testsPassed = false
-      } else {
-        for (const spec in test.specs) {
-          const [search] = test.specs[spec].split('*')
-          const found = testResult.runs[0].spec.relative.includes(search)
+      testResult.runs.forEach((run) => {
+        if (run.stats.failures) {
+          testsPassed = false
+        } else {
+          for (const spec in test.specs) {
+            const [search] = test.specs[spec].split('*')
+            const found = run.spec.relative.includes(search)
 
-          if (found) {
-            test.specs.splice(Number(spec), 1)
+            if (found) {
+              test.specs.splice(Number(spec), 1)
 
-            break
+              break
+            }
           }
         }
-      }
+      })
     })
     thisTry++
   }
 
+  await pushResults(testsPassed, test, config)
+}
+
+async function pushResults(testsPassed, test, config) {
   if (!testsPassed) {
     qe.msg(`strategy.${test.name} failed`, 'error')
     strategiesFailed.push(test.name)

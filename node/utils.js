@@ -530,7 +530,7 @@ exports.runCypress = async (test, config, addOptions = {}) => {
 
   const options = {
     config: {
-      integrationFolder: specPath.dir,
+      integrationFolder: specPath,
       supportFile: `${specPath.split(path.sep)[0]}/support`,
     },
     spec: test.specs,
