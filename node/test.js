@@ -57,40 +57,43 @@ module.exports.strategy = async (config) => {
 
 async function runTest(test, config, group) {
   let testsPassed = false
-
+  const hardTries = test.hardTries + 1
+  let thisTry = 1
   const addOptions = {
     parallel: test.parallel,
   }
 
-  for (let ht = 0; ht <= test.hardTries; ht++) {
-    if (!testsPassed && test.specs.length > 0) {
-      testsPassed = true
-      qe.msg(
-        `Try ${ht + 1} of ${test.hardTries + 1} for strategy.${test.name}`,
-        'warn'
-      )
-      addOptions.group = `${group}-try-${ht + 1}`
+  // Remove duplicates
+  test.specs = [...new Set(test.specs)]
 
-      const testsResult = await qe.runCypress(test, config, addOptions)
+  while (thisTry <= hardTries && !testsPassed && test.specs.length) {
+    qe.msg(
+      `Hard try ${thisTry} of ${hardTries} for strategy.${test.name}`,
+      'warn'
+    )
+    addOptions.group = `${group}-try-${hardTries - 1}`
 
-      // eslint-disable-next-line no-loop-func
-      testsResult.forEach((testResult) => {
-        if (testResult.totalFailed) {
-          testsPassed = false
-        } else {
-          for (const spec in test.specs) {
-            const [search] = test.specs[spec].split('*')
-            const found = testResult.runs[0].spec.relative.includes(search)
+    const testsResult = await qe.runCypress(test, config, addOptions)
 
-            if (found) {
-              test.specs.splice(Number(spec), 1)
+    testsPassed = true
+    // eslint-disable-next-line no-loop-func
+    testsResult.forEach((testResult) => {
+      if (testResult.totalFailed) {
+        testsPassed = false
+      } else {
+        for (const spec in test.specs) {
+          const [search] = test.specs[spec].split('*')
+          const found = testResult.runs[0].spec.relative.includes(search)
 
-              break
-            }
+          if (found) {
+            test.specs.splice(Number(spec), 1)
+
+            break
           }
         }
-      })
-    }
+      }
+    })
+    thisTry++
   }
 
   if (!testsPassed) {
