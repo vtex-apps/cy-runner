@@ -511,8 +511,8 @@ exports.openCypress = async () => {
 }
 
 exports.runCypress = async (test, config, addOptions = {}) => {
+  // eslint-disable-next-line prefer-destructuring
   if (typeof test.spec === 'string') test.specs = [test.spec]
-
   // If mix base path for specs, stop it
   const specPath = path.parse(test.specs[0])
   const cypressPath = specPath.dir.split(path.sep)[0]
@@ -524,7 +524,7 @@ exports.runCypress = async (test, config, addOptions = {}) => {
       this.crash('Cypress path must be the same on each strategy', test.specs)
     }
   })
-  // eslint-disable-next-line prefer-destructuring
+
   const options = {
     config: {
       integrationFolder: specPath.dir,
