@@ -144,7 +144,7 @@ exports.validateConfig = (config, file) => {
       },
       installApps: 7,
       removeApps: 7,
-      wipe: { enabled: 2, stopOnFail: 2, spec: 0 },
+      wipe: { enabled: 2, stopOnFail: 2, spec: 7 },
       teardown: { enabled: 2 },
     },
   }
