@@ -12,6 +12,7 @@
  ********************************************* */
 
 const { get } = require('lodash')
+const { mapValues } = require('lodash')
 
 const qe = require('./utils')
 
@@ -217,11 +218,17 @@ function checkSecret(key, value) {
 // Check dependencies
 function checkDependency(config) {
   qe.traverse([], config.strategy).forEach((item) => {
+    // eslint-disable-next-line vtex/prefer-early-return
     if (/dependency/.test(item.key)) {
-      const dep = get(config.strategy, item.type)
+      const dep = mapValues(config.strategy, (o) => {
+        return o.specs
+      })
 
-      if (dep === undefined) {
-        qe.crash('Dependency not found', `strategy.${item.type}`)
+      const checkRegex = new RegExp(item.type.split('*')[0])
+      const check = checkRegex.test(JSON.stringify(dep))
+
+      if (!check) {
+        qe.crash(`Spec ${item.key} not found`, item.type)
       }
     }
   })

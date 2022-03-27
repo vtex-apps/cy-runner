@@ -3,6 +3,7 @@ const path = require('path')
 const qe = require('./utils')
 
 exports.getConfig = async (configFile) => {
+  qe.msg('Checking configuration', 'warn')
   // Check config file, parse it and add dynamic values
   let config = qe.loadYmlConfig(configFile)
   const VTEX_AUTH_PATH = '.myvtex.com/api/vtexid/pub/authentication'
