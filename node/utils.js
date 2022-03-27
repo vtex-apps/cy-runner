@@ -458,7 +458,7 @@ exports.sectionsToRun = async (config) => {
       } else {
         this.msg(itemEnabled)
         hasDependency(itemEnabled).forEach((dep) => {
-          this.msg(`depends on: strategy.${dep}`, true, true)
+          this.msg(`depends on spec ${dep}`, true, true)
         })
       }
     }

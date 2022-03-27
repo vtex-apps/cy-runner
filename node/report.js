@@ -14,9 +14,9 @@ module.exports.report = async (control, config) => {
     qe.success('Hope your tests went well. See you soon!')
   } else {
     const items = [
-      ['strategiesPassed', 'Successful', 'ok'],
-      ['strategiesSkipped', 'Skipped', 'warn'],
-      ['strategiesFailed', 'Failed', 'error'],
+      ['specsPassed', 'Successful', 'ok'],
+      ['specsSkipped', 'Skipped', 'warn'],
+      ['specsFailed', 'Failed', 'error'],
     ]
 
     items.forEach((item) => {
@@ -24,7 +24,7 @@ module.exports.report = async (control, config) => {
 
       // eslint-disable-next-line vtex/prefer-early-return
       if (tests.length > 0) {
-        const str = tests.length > 1 ? 'strategies' : 'strategy'
+        const str = tests.length > 1 ? 'specs' : 'spec'
 
         qe.msg(`${item[1]} ${str}`, item[2])
         tests.forEach((test) => {
@@ -33,7 +33,7 @@ module.exports.report = async (control, config) => {
         qe.newLine()
       }
     })
-    if (control.strategiesFailed.length < 1) {
+    if (control.specsFailed.length < 1) {
       qe.success('The test ran successfully, well done!')
     } else {
       qe.fail(`The test failed!`)
