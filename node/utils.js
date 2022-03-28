@@ -579,6 +579,7 @@ exports.runCypress = async (test, config, addOptions = {}) => {
         const logSpec = path.join(logPath, logName)
 
         delete cleanResult.config
+        this.storage(logSpec, 'append', `# ${this.tick()} ################\n\n`)
         this.storage(logSpec, 'append', yaml.dump(cleanResult))
       })
     )
