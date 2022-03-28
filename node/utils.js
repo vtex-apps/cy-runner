@@ -13,7 +13,8 @@ const { teardown } = require('./teardown')
 const schema = require('./schema')
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms))
-const logFile = path.join('.', 'logs', 'cy-runner.log')
+const logPath = path.join('.', 'logs')
+const logFile = path.join(logPath, 'cy-runner.log')
 const ciNumber = Date.now().toString().substring(6, 13)
 const QE = '[QE] === '
 
@@ -572,6 +573,13 @@ exports.runCypress = async (test, config, addOptions = {}) => {
       cypress.run(options).then((result) => {
         if (result.failures) this.crash(result.message)
         testResult.push(result)
+
+        const cleanResult = result
+        const logName = result.runs[0].spec.name.replace('.js', '.yml')
+        const logSpec = path.join(logPath, logName)
+
+        delete cleanResult.config
+        this.storage(logSpec, 'append', yaml.dump(cleanResult))
       })
     )
   }
