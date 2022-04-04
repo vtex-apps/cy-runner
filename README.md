@@ -14,7 +14,7 @@ Tool to orchestrate Cypress tests
 * Report test to [Cypress Dashboard](https://www.cypress.io/dashboard) or [Sorry-Cypress](https://sorry-cypress.dev/)
 * Wipe data (needs spec to do it) and do tear down (workspace removal)
 
-## Use it locally
+## Run it locally
 1. Clone the repository you want to run tests
 2. Add a `cy-runner.yml` configuration file using the configuration template
 3. Create a env or local file with the secrets using the secrets template
