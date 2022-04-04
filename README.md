@@ -7,9 +7,9 @@
 Tool to orchestrate Cypress tests
 
 ## Features
-* Deploy a patched version of [toolbelt](https://github.com/vtex/toolbelt) to login by Cypress tests
-* Create dynamic workspace and install dependencies
-* Provide tests dependencies
+* Deploy a patched version of [toolbelt](https://github.com/vtex/toolbelt) to login by Cypress spec
+* Create dynamic workspace, install dependencies, uninstall packages if needed
+* Link the main application with the PR code to be tested
 * Orchestrate tests to run in parallel (needs [Cypress Dashboard](https://www.cypress.io/dashboard) or [Sorry-Cypress](https://sorry-cypress.dev/))
 * Report test to [Cypress Dashboard](https://www.cypress.io/dashboard) or [Sorry-Cypress](https://sorry-cypress.dev/)
 * Wipe data (needs spec to do it) and do tear down (workspace removal)
