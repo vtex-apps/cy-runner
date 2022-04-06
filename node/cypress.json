@@ -9,6 +9,5 @@
   "pluginsFile": false,
   "screenshotsFolder": "../logs/toolbelt/screenshots",
   "videosFolder": "../logs/toolbelt/videos",
-  "retries": 5,
-  "browser": "chrome"
+  "retries": 5
 }

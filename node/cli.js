@@ -30,7 +30,7 @@ exports.vtexCli = async (config) => {
 
     qe.msg(`Starting login process using ${config.base.vtex.account}`, 'warn')
     // Authenticate in background
-    await startBackground(config.base.vtex)
+    await startBackground(config.base.vtex, config.base.cypress.browser)
   }
 
   return {
@@ -74,7 +74,7 @@ async function installToolbelt(deployCli) {
   }
 }
 
-async function startBackground(vtex) {
+async function startBackground(vtex, browser) {
   let login
 
   try {
@@ -103,7 +103,9 @@ async function startBackground(vtex) {
 
     // Make cypress.env.json is available to login
     if (!qe.storage(dst)) qe.storage(src, 'link', dst)
-    login = qe.exec('yarn cypress run -P node', 'pipe').toString()
+    login = qe
+      .exec(`yarn cypress run -P node --browser ${browser}`, 'pipe')
+      .toString()
   } catch (e) {
     qe.crash('Failed to authenticate using toolbelt', e)
   }
