@@ -138,7 +138,9 @@ export function fillAddress(postalCode) {
         return cy.wrap(false)
       }
 
-      cy.get(selectors.PostalCodeInput).should('be.visible').type(postalCode)
+      cy.get(selectors.PostalCodeInput, { timeout: 15000 })
+        .should('be.visible')
+        .type(postalCode)
 
       return cy.wrap(true)
     })
@@ -382,7 +384,8 @@ export function searchProduct(searchKey) {
     .clear()
     .type(searchKey)
     .type('{enter}')
-  // Page should load successfully now Filter should be visible
+  // Page should load successfully now searchResult & Filter should be visible
+  cy.get(selectors.searchResult).should('have.text', searchKey.toLowerCase())
   cy.get(selectors.FilterHeading).should('be.visible')
 }
 
