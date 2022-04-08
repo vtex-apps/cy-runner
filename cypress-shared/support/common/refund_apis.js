@@ -1,9 +1,12 @@
-import { getRefundPayload } from './refund.js'
 import { updateRetry } from './support.js'
 import { workFlowAPI, startHandlingAPI } from './apis.js'
 import { FAIL_ON_STATUS_CODE, VTEX_AUTH_HEADER } from './constants.js'
 
-export function refund({ total, title, env }, startHandling = true) {
+export function refund(
+  { total, title, env },
+  payload,
+  { startHandling = true } = {}
+) {
   const refundInvoiceNumber = '84321'
 
   if (startHandling) {
@@ -44,7 +47,7 @@ export function refund({ total, title, env }, startHandling = true) {
   it(`Request for ${title} refund`, () => {
     cy.getOrderItems().then((order) => {
       cy.sendInvoiceAPI(
-        getRefundPayload(refundInvoiceNumber, total, order[env]),
+        payload(refundInvoiceNumber, total, order[env]),
         order[env]
       ).then((response) => {
         expect(response.status).to.match(/200|500/)
