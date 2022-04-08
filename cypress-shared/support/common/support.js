@@ -18,7 +18,7 @@ function setAuthCookie(authResponse) {
 }
 
 // Set Product Quantity
-function setProductQuantity({ position, quantity }, subTotal, check) {
+function setProductQuantity({ position, quantity, timeout }, subTotal, check) {
   cy.intercept('**/update').as('update')
 
   cy.get(selectors.ProductQuantityInCheckout(position))
@@ -31,10 +31,11 @@ function setProductQuantity({ position, quantity }, subTotal, check) {
     'display',
     'none'
   )
-  cy.wait('@update', { timeout: 5000 })
+
+  cy.wait('@update', { timeout })
 
   if (check) {
-    cy.get(selectors.SubTotal, { timeout: 5000 }).should('have.text', subTotal)
+    cy.get(selectors.SubTotal, { timeout }).should('have.text', subTotal)
   }
 }
 
@@ -242,24 +243,33 @@ export function updateShippingInformation({
 
 export function updateProductQuantity(
   product,
-  { quantity = '1', multiProduct = false, verifySubTotal = true } = {}
+  {
+    quantity = '1',
+    multiProduct = false,
+    verifySubTotal = true,
+    timeout = 8000,
+  } = {}
 ) {
   cy.get(selectors.CartTimeline).should('be.visible').click({ force: true })
   cy.get(selectors.ShippingPreview).should('be.visible')
   if (multiProduct) {
     // Set First product quantity and don't verify subtotal because we passed false
-    setProductQuantity({ position: 1, quantity }, product.subTotal, false)
+    setProductQuantity(
+      { position: 1, quantity, timeout },
+      product.subTotal,
+      false
+    )
     // if multiProduct is true, then remove the set quantity and verify subtotal for multiProduct
     // Set second product quantity and verify subtotal
     setProductQuantity(
-      { position: 2, quantity: 1 },
+      { position: 2, quantity: 1, timeout },
       product.subTotal,
       verifySubTotal
     )
   } else {
     // Set First product quantity and verify subtotal
     setProductQuantity(
-      { position: 1, quantity },
+      { position: 1, quantity, timeout },
       product.subTotal,
       verifySubTotal
     )
