@@ -139,7 +139,7 @@ export function fillAddress(postalCode) {
         return cy.wrap(false)
       }
 
-      cy.get(selectors.PostalCodeInput, { timeout: 15000 })
+      cy.get(selectors.PostalCodeInput, { timeout: 10000 })
         .should('be.visible')
         .type(postalCode)
 
