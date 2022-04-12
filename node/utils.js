@@ -91,17 +91,20 @@ exports.exec = (cmd, output) => {
   let result
 
   try {
-    result = execSync(cmd, { stdio: output })
+    result = execSync(cmd, { stdio: output, timeout: 60000 })
   } catch (e) {
     /* eslint-disable prefer-template */
-    const msg1 = 'Failed to run'.padStart(10) + '\n'
-    const msg2 = `Command: ${cmd}\n`.padStart(10) + '\n'
-    const msg3 = `Returns: ${e}`.padStart(10) + '\n'
+    const msg1 = '\n >>  Failed to run'
+    const msg2 = `\n >>  Command: ${cmd}`
+    const msg3 = `\n >>  Returns: ${e}`
 
     this.storage(logFile, 'append', msg1)
     this.storage(logFile, 'append', msg2)
     this.storage(logFile, 'append', msg3)
     result = 'error'
+
+    // If timeout, exit
+    if (/ETIMEDOUT/.test(e)) this.crash('Timeout running ' + cmd, e)
   }
 
   return result
