@@ -13,6 +13,8 @@ export function setOrganizationIdInJSON(organization, costCenter) {
     { retries: 3 },
     () => {
       cy.request('/api/sessions?items=*').then((response) => {
+        expect(response.body.namespaces).to.be.exist
+        expect(response.body.namespaces['storefront-permissions']).to.be.exist
         // Saving organization & costcenter id in organization.json and this id will be deleted this wipe.spec.js
         cy.setOrganizationItem(
           organization,

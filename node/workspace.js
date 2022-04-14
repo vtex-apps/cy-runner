@@ -48,6 +48,9 @@ exports.workspace = async (config) => {
         qe.msg('Apps uninstalled successfully')
       }
 
+      // Logging all apps
+      await listApps(vtexBin)
+
       // Link app
       await doLinkApp(config)
     } else {
@@ -62,6 +65,17 @@ exports.workspace = async (config) => {
   }
 
   return qe.toc(START)
+}
+
+async function listApps(vtexBin) {
+  const apps = await qe.toolbelt(vtexBin, 'ls')
+  const deps = await qe.toolbelt(vtexBin, 'deps ls')
+
+  qe.msgSection('Workspace app list')
+  qe.msg(`Listing apps`)
+  qe.msg(apps)
+  qe.msg(`Listing deps`)
+  qe.msg(deps)
 }
 
 async function doLinkApp(config) {
