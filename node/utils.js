@@ -164,7 +164,8 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
       break
 
     default:
-      this.crash('Fail o call toolbelt', 'Command not supported')
+      stdout = this.exec(`${bin} ${cmd}`, 'pipe').toString()
+      check = true
   }
 
   if (!check) {
