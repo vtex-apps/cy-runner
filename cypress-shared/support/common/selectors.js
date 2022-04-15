@@ -22,6 +22,9 @@ export default {
   AddtoCart: 'span[class*=vtex-add-to-cart-button]',
   TotalPrice: '#total-price > .vtex-checkout-summary-0-x-price',
   RemoveProduct: 'div[class*="removeButton"]',
+  PickupInStore: '.srp-toggle__pickup',
+  PickupItems: '.srp-items',
+  ProductsQAShipping: "input[value='Productusqa2']",
   CloseCart: '.vtex-minicart-2-x-closeIconButton',
   // Below products are from sandboxusdev
   AddtoCartBtnForHat: "a[href*='003/p'] > article > button",
@@ -55,6 +58,10 @@ export default {
   QuantityBadgeInCart: 'span[class*=minicartQuantityBadge]',
   // *************Cart Sidebar Constants end here************ //
 
+  // ************* New Cart - PayPal Constants end here************ //
+  ItemQuantity: '#items-quantity',
+  // ************* New Cart - PayPal Constants end here************ //
+
   // *************Product Page Constants starts here************ //
   AddressForm: 'div[class*=addressForm]',
   NormalShipping: "input[value='Normal']",
@@ -66,7 +73,7 @@ export default {
 
   // Progress bar
 
-  CartTimeline: 'span[class*=item_cart]',
+  CartTimeline: 'span[class*=item_cart] > span',
 
   // *************Contact Form Page Constants starts here************ //
   ContactForm: '.form-step.box-edit',
@@ -95,17 +102,19 @@ export default {
   UpdateSelectedAddressBtn: '#edit-address-button',
   ShippingSectionTitle: 'p[class*=shippingSectionTitle]',
   ShipCountry: '#ship-country',
-  ShipStreet: '#v-custom-ship-street',
+  ShipStreet: '#ship-street',
   ShipAddressQuery: '#ship-addressQuery',
   ShipCity: '#ship-city',
   ShipState: '#ship-state',
   PostalCodeInput: '#ship-postalCode',
+  CalculateBtn: '#cart-shipping-calculate',
   ContinueShipping: '#btn-go-to-shippping-method',
   CalculateShipping: 'button[class*=btnDelivery]',
   ForceShippingFields: '#force-shipping-fields',
   DeliveryAddress: '#deliver-at-text',
   ReceiverName: '#ship-receiverName',
   DeliveryAddressText: '#deliver-at-text > a',
+  ChangeShippingAddress: 'button[data-i18n="modal.editShipping"]',
 
   // *************Shipping Section Constants end here************ //
 
@@ -122,6 +131,7 @@ export default {
   GotoPaymentBtn: '#btn-go-to-payment',
   SubTotal:
     '.cart-template > .summary-template-holder > div > .totalizers > div table tr.Items > td.monetary',
+  DeliveryUnavailable: 'p[id="shp-unavailable-delivery-available-pickup"]>span',
   // *************Summary Section Constants end here************ //
 
   //* ************Payment Section Constants starts here************ //
@@ -136,6 +146,15 @@ export default {
   BuyNowBtn: '#payment-data-submit > span',
   PaymentConfirmationLabel: '.vtex-order-placed-2-x-confirmationTitle',
   OrderIdLabel: '.vtex-order-placed-2-x-orderNumber',
+  PaymentMethodIFrame: '.payment-method iframe',
+  CardExist: '#use-another-card',
+  CreditCard: 'a[data-name*=American]',
+  CreditCardNumber: '[name=cardNumber]',
+  CreditCardHolderName: "[name='ccName']",
+  CreditCardExpirationMonth: '[name=cardExpirationMonth]',
+  CreditCardExpirationYear: '[name=cardExpirationYear]',
+  CreditCardCode: '#creditCardpayment-card-0Code',
+  PaymentUnAuthorized: 'div[class*=payment-unauthorized]',
   // *************Payment Section Constants end here************ //
 
   // *************Order Form Page Constants end here************ //
@@ -181,6 +200,7 @@ export default {
     'div[class*=layout__container] > div:nth-child(1) #toolbar button',
   CostCenterName:
     'div[class*=scroll] > div:nth-of-type(1) div[class*=input] input[type=text]',
+  CostCenterHeader: 'div[class*=vtex-pageHeader]',
   CloseModal: 'div[class*=modal__close]',
   SubmitCostCenter: '.nowrap > span:last-child > button',
   PromissoryCheckbox: '.mv4:nth-child(1) input[type=checkbox]',

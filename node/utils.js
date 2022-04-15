@@ -3,7 +3,7 @@ const { execSync } = require('child_process')
 const fs = require('fs')
 const path = require('path')
 
-const cy = require('cypress')
+const cypress = require('cypress')
 const axios = require('axios')
 const { merge, get } = require('lodash')
 const yaml = require('js-yaml')
@@ -12,6 +12,8 @@ const { teardown } = require('./teardown')
 const schema = require('./schema')
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms))
+const logFile = path.join('.', 'logs', 'cy-runner.log')
+const ciNumber = Date.now().toString().substring(6, 13)
 const QE = '[QE] === '
 
 function icon(type) {
@@ -30,33 +32,36 @@ function icon(type) {
   }
 }
 
+exports.stdWrite = (msg) => {
+  process.stdout.write(msg)
+  this.storage(logFile, 'append', msg)
+}
+
 // eslint-disable-next-line max-params
 exports.msg = (msg, type = 'ok', pad = false, wait = false) => {
   const ICO = pad ? icon().padStart(8) : icon(type).padStart(8)
   const MSG = `${ICO} ${msg}${wait ? '... ' : '\n'}`
 
-  type === 'complete'
-    ? process.stdout.write(`${msg}\n`)
-    : process.stdout.write(MSG)
+  type === 'complete' ? this.stdWrite(`${msg}\n`) : this.stdWrite(MSG)
 }
 
 exports.msgSection = (msg) => {
   const END = '\n'
 
   msg = `${QE}${msg} `.padEnd(100, '=')
-  process.stdout.write(END + msg + END)
-  process.stdout.write(''.padStart(5, ' ').padEnd(100, '=') + END + END)
+  this.stdWrite(END + msg + END)
+  this.stdWrite(''.padStart(5, ' ').padEnd(100, '=') + END + END)
 }
 
 exports.msgEnd = (msg) => {
   const END = '\n'
 
   msg = `${QE}${msg} `.padEnd(100, '=')
-  process.stdout.write(END + msg + END + END)
+  this.stdWrite(END + msg + END + END)
 }
 
 exports.newLine = () => {
-  process.stdout.write('\n')
+  this.stdWrite('\n')
 }
 
 exports.crash = (msg, e) => {
@@ -86,14 +91,20 @@ exports.exec = (cmd, output) => {
   let result
 
   try {
-    result = execSync(cmd, { stdio: output })
+    result = execSync(cmd, { stdio: output, timeout: 60000 })
   } catch (e) {
-    const logFile = path.join('.', 'logs', 'cy-runner.log')
+    /* eslint-disable prefer-template */
+    const msg1 = '\n >>  Failed to run'
+    const msg2 = `\n >>  Command: ${cmd}`
+    const msg3 = `\n >>  Returns: ${e}`
 
-    this.storage(logFile, 'append', 'Failed to run\n')
-    this.storage(logFile, 'append', `> Command: ${cmd}\n`)
-    this.storage(logFile, 'append', `> Returns: ${e}\n\n`)
+    this.storage(logFile, 'append', msg1)
+    this.storage(logFile, 'append', msg2)
+    this.storage(logFile, 'append', msg3)
     result = 'error'
+
+    // If timeout, exit
+    if (/ETIMEDOUT/.test(e)) this.crash('Timeout running ' + cmd, e)
   }
 
   return result
@@ -136,11 +147,11 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
 
     case 'link':
       cmd = `cd .. && echo y | ${bin} ${cmd}`
-      stdout = await this.exec(cmd, 'pipe').toString()
+      stdout = this.exec(cmd, 'pipe').toString()
       linkApp = new RegExp(linkApp)
       while (!check && thisTry < MAX_TRIES) {
         thisTry++
-        stdout = await this.exec(`${bin} ls`, 'pipe').toString()
+        stdout = this.exec(`${bin} ls`, 'pipe').toString()
         await delay(thisTry * 2000)
         check = linkApp.test(stdout)
       }
@@ -153,7 +164,8 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
       break
 
     default:
-      this.crash('Fail o call toolbelt', 'Command not supported')
+      stdout = this.exec(`${bin} ${cmd}`, 'pipe').toString()
+      check = true
   }
 
   if (!check) {
@@ -192,7 +204,7 @@ exports.storage = (source, action, destination = null) => {
       case 'link':
         if (destination == null) this.crash('You must pass link destination')
 
-        return fs.linkSync(source, destination)
+        return fs.symlinkSync(source, destination)
 
       case 'append':
         if (destination == null) this.crash('You must inform what to add')
@@ -464,6 +476,17 @@ exports.sectionsToRun = async (config) => {
       this.msg(itemEnabled, 'error')
     }
   })
+
+  const appsToInstall = config.workspace.installApps.length
+  const appsToRemove = config.workspace.removeApps.length
+
+  if (appsToInstall) {
+    this.msg(`${appsToInstall} app(s) on worksapce.installApps`)
+  }
+
+  if (appsToRemove) {
+    this.msg(`${appsToRemove} app(s) on worksapce.removeApps`)
+  }
 }
 
 exports.stopOnFail = async (config, step) => {
@@ -485,7 +508,7 @@ exports.openCypress = async () => {
 
   // Open Cypress
   try {
-    await cy.open(options)
+    await cypress.open(options)
   } catch (e) {
     this.crash('Fail to open Cypress', e.message)
   }
@@ -508,14 +531,22 @@ exports.runCypress = async (
       supportFile: `${cyPath}/support`,
     },
     spec: test.spec,
-    headed: config.workspace.runHeaded,
+    headed: config.base.cypress.runHeaded,
     browser: config.base.cypress.browser,
   }
 
   // Options tuning
   if (test.sendDashboard) {
+    const cyEnv = config.base.cypress.internalEnv
+
     options.key = config.base.cypress.dashboardKey
     options.record = true
+    // If in dev mode and dashboard on, give the ciBuildNumber
+    if (typeof cyEnv === 'string' && cyEnv === 'development') {
+      process.env.CYPRESS_INTERNAL_ENV = cyEnv
+      options.ciBuildId = ciNumber
+    }
+
     merge(options, addOptions)
   }
 
@@ -535,7 +566,7 @@ exports.runCypress = async (
 
       testPassed = /All specs passed/.test(stdout)
     } else {
-      await cy.run(options).then((result) => {
+      await cypress.run(options).then((result) => {
         if (result.failures) this.crash(result.message)
         testPassed = result.totalFailed < 1
       })

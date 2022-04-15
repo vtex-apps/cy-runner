@@ -17,6 +17,9 @@ const control = {
 }
 
 async function main() {
+  // Create logs folder
+  if (!qe.storage('logs')) qe.storage('logs', 'mkdir')
+
   // Welcome message
   qe.msgSection('Cypress Runner')
 
@@ -41,7 +44,7 @@ async function main() {
   control.timing.credentials = call.time
 
   // Tests
-  if (config.workspace.runInDevMode) {
+  if (config.base.cypress.devMode) {
     qe.msgSection('Running in dev mode')
     qe.msg('When you finish, please wait the process flow', 'warn')
     await qe.openCypress()

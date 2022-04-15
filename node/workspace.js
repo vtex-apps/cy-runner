@@ -9,15 +9,11 @@ exports.workspace = async (config) => {
   const { linkApp } = wrk
   const { installApps } = wrk
   const { removeApps } = wrk
-  const { wipe } = wrk
-  const { _teardown } = wrk
   const manageWorkspace =
     wrk.random ||
     linkApp.enabled ||
     installApps.length > 0 ||
-    removeApps.length > 0 ||
-    wipe.enabled ||
-    _teardown.enabled
+    removeApps.length > 0
 
   const vtexBin = config.base.vtex.bin
 
@@ -54,6 +50,9 @@ exports.workspace = async (config) => {
 
       // Link app
       await doLinkApp(config)
+
+      // Logging all apps
+      await listApps(vtexBin)
     } else {
       if (!config.base.vtex.deployCli.enabled) {
         qe.crash(
@@ -68,6 +67,18 @@ exports.workspace = async (config) => {
   return qe.toc(START)
 }
 
+async function listApps(vtexBin) {
+  const appsLogFile = path.join('.', 'logs', 'appsVersions.log')
+  const depsLogFile = path.join('.', 'logs', 'depsVersions.log')
+  const apps = await qe.toolbelt(vtexBin, 'ls')
+  const deps = await qe.toolbelt(vtexBin, 'deps ls')
+
+  qe.msg(`Listing apps to ${appsLogFile}`)
+  qe.storage(appsLogFile, 'append', apps)
+  qe.msg(`Listing deps to ${depsLogFile}`)
+  qe.storage(depsLogFile, 'append', deps)
+}
+
 async function doLinkApp(config) {
   // eslint-disable-next-line vtex/prefer-early-return
   if (config.workspace.linkApp.enabled) {
@@ -79,12 +90,11 @@ async function doLinkApp(config) {
 
     testApp = JSON.parse(testApp)
     const app = `${testApp.vendor}.${testApp.name}`
-    // eslint-disable-next-line prefer-destructuring
-    const version = testApp.version.split('.')[0]
+    const [version] = testApp.version.split('.')
 
-    qe.msg(`Uninstalling ${app}`, true, true)
+    qe.msg(`Uninstalling ${app} if needed`, true, true)
     await qe.toolbelt(config.base.vtex.bin, `uninstall ${app}`)
-    qe.msg(`Unlinking ${app}`, true, true)
+    qe.msg(`Unlinking ${app} if needed`, true, true)
     await qe.toolbelt(config.base.vtex.bin, `unlink ${app}@${version}.x`)
     const ignoreFile = path.join('..', '.vtexignore')
     const exclusions = ['cypress', 'cy-runner', 'cypress-shared']
@@ -110,7 +120,7 @@ async function doLinkApp(config) {
     if (check === 'error') {
       qe.msg(`Error linking ${app}`, 'error')
       await teardown(config)
-      this.crash('Prematurely exit duo a link failure')
+      qe.crash('Prematurely exit duo a link failure')
     } else {
       qe.msg('App linked successfully')
     }

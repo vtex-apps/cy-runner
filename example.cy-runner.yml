@@ -4,15 +4,14 @@ base:
     enabled: true
     name: VTEX_QE
   vtex:
-    account: account
+    account: productusqa
     id: 2001459804
     domain: myvtex.com
-    urlExternalSeller: https://accountqaseller.myvtex.com
+    urlExternalSeller: https://productusqaseller.myvtex.com
     vtexIdUrl: https://vtexid.vtex.com.br/api/vtexid/pub/authenticate/default
+    orderFormConfig: https://productusqa.vtexcommercestable.com.br/api/checkout/pvt/configuration/orderForm
     deployCli:
-      # Implies login with credentials from base.secrets.name
-      # If you want to use the current vtex login, disable it
-      enabled: true
+      enabled: false
       git: https://github.com/vtex/toolbelt.git
       branch: qe/cypress
   twilio:
@@ -26,8 +25,9 @@ base:
     enabled: false
     channel: some-channel
   cypress:
-    enabled: false
-    projectId: xyza
+    devMode: false
+    runHeaded: false
+    projectId: 7to5f3
     video: true
     videoCompression: false
     videoUploadOnPasses: false
@@ -41,69 +41,49 @@ base:
     pageLoadTimeout: 45000
     browser: chrome
     chromeWebSecurity: false
-  stateFiles:
-    - .state.json
+    internalEnv: development
+  stateFiles: []
 
 workspace:
-  # If random a new name will be generated with prefix (ie b2b1234567)
-  name: random
+  # Set to random to get [prefix][random] (ie b2b1234567)
+  name: master
   prefix: b2b
-  runInDevMode: false
-  runHeaded: false
-  # If enabled it'll link the app for integration tests with PR code
+  # Enabled to link the PR app for integration tests
   linkApp:
     enabled: false
     logOutput:
       enabled: false
-  # List of apps will be installed, if not empty and config.vtexCli disabled,
-  # you must ensure your vtex cli is authenticated already
   installApps: []
-#     - vtex.b2b-suite
-#     - vtex.b2b-quotes
-#     - vtex.quickorder
-#     # Theme
-#     - vtex.wish-list@1.x
-#     - vtex.location-availability@0.x
-#     - vtex.shopper-location@0.x
-#     - vtex.wordpress-integration@2.x
-#     - vtex.storefront-permissions-ui@0.x
-#     - vtex.b2bstore@2.x
   removeApps: []
-#     - vtex.store-theme
   wipe:
     enabled: false
     stopOnFail: false
-    spec: cypress-shared/integration/pass.spec.js
+    spec: cypress-shared/integration/workspace/wipe.spec.js
   teardown:
-    enabled: true
+    enabled: false
 
 strategy:
-  # The strategies must be in order, with dependent tests last
-  A:
+  A01:
     enabled: true
     sendDashboard: false
     hardTries: 1
     stopOnFail: false
     parallel: true
-    # No order guaranteed if parallel = true
-    runInOrder: true
-    # You can use *, but the order will be not guaranteed
     specs:
-      - cypress-shared/integration/fail.spec.js
-
-  B:
+      - cypress/integration/A01*
+      - cypress/integration/A02*
+  B01:
     enabled: true
-    sendDashboard: false
+    sendDashboard: true
     hardTries: 1
-    stopOnFail: true
+    stopOnFail: false
     parallel: false
-    runInOrder: false
     specs:
-      - cypress-shared/integration/pass.spec.js
+      - cypress/integration/A02*
     dependency:
-      - A
+      - A01
 
-  # secrets
+  # secrets template
   #
   # The name to look for secrets on memory or file
   #

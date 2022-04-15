@@ -73,6 +73,7 @@ function schemaValidator(schema, config, strategy = '') {
         msg = 'array'
         try {
           // If not array, it'll fail
+          // noinspection JSObjectNullOrUndefined
           value.push('isThisArray?')
           value.pop()
         } catch (e) {
@@ -108,7 +109,8 @@ exports.validateConfig = (config, file) => {
         deployCli: { enabled: 2, git: 0, branch: 0 },
       },
       cypress: {
-        enabled: 2,
+        devMode: 2,
+        runHeaded: 2,
         projectId: 0,
         video: 2,
         videoCompression: 6,
@@ -130,8 +132,6 @@ exports.validateConfig = (config, file) => {
     },
     workspace: {
       name: 3,
-      runHeaded: 2,
-      runInDevMode: 2,
       prefix: 0,
       linkApp: {
         enabled: 2,
@@ -152,7 +152,6 @@ exports.validateConfig = (config, file) => {
     stopOnFail: 2,
     hardTries: 1,
     parallel: 2,
-    runInOrder: 2,
     specs: 7,
   }
 

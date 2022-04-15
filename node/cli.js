@@ -76,9 +76,6 @@ async function installToolbelt(deployCli) {
 
 async function startBackground(vtex) {
   try {
-    const envFile = 'cypress.env.json'
-    const envPath = path.join('node', 'cypress.env.json')
-
     qe.msg('Toolbelt version', true, true, true)
     qe.exec(`${TOOLBELT_BIN} --version`, 'inherit')
     qe.msg(`Removing old ${TOOLBELT_URL}, if any`, true, true)
@@ -97,7 +94,13 @@ async function startBackground(vtex) {
 
     qe.msg(`callback file created`, 'complete', true)
     qe.msg(`Trying to login on ${vtex.account}`, true, true)
-    if (!qe.storage(envPath)) qe.storage(envFile, 'link', envPath)
+
+    const envName = 'cypress.env.json'
+    const src = path.join(__dirname, '..', envName)
+    const dst = path.join(__dirname, envName)
+
+    // Make cypress.env.json is available to login
+    if (!qe.storage(dst)) qe.storage(src, 'link', dst)
     qe.exec('yarn cypress run -P node')
   } catch (e) {
     qe.crash('Failed to authenticate using toolbelt', e)

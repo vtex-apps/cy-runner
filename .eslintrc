@@ -20,6 +20,6 @@
       "cypress/no-pause": "error"
     },
     "parserOptions": {
-      "ecmaVersion": "latest"
+      "ecmaVersion": 12
     }
 }

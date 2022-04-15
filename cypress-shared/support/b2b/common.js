@@ -10,9 +10,11 @@ const APP = `${APP_NAME}@${APP_VERSION}`
 export function setOrganizationIdInJSON(organization, costCenter) {
   it(
     'Getting Organization Id from session and set in OrganizationItem',
-    { retries: 3 },
+    { retries: 3, taskTimeout: 5000 },
     () => {
       cy.request('/api/sessions?items=*').then((response) => {
+        expect(response.body.namespaces).to.be.exist
+        expect(response.body.namespaces['storefront-permissions']).to.be.exist
         // Saving organization & costcenter id in organization.json and this id will be deleted this wipe.spec.js
         cy.setOrganizationItem(
           organization,
@@ -102,7 +104,7 @@ export function productShouldNotbeAvailableTestCase(product) {
     'Products from outside collection should not be visible to the user',
     { retries: 2 },
     () => {
-      cy.searchProduct(product)
+      cy.searchProductinB2B(product)
       cy.get(selectors.PageNotFound).should('be.visible')
     }
   )
@@ -135,7 +137,11 @@ export function userAndCostCenterShouldNotBeEditable(
       'c-disabled'
     )
     cy.contains(costCenter).should('be.visible').click()
-    cy.contains(BUTTON_LABEL.save).should('be.disabled')
-    cy.contains(BUTTON_LABEL.delete).should('be.disabled')
+    cy.get(selectors.CostCenterHeader)
+      .contains(BUTTON_LABEL.save)
+      .should('be.disabled')
+    cy.get(selectors.CostCenterHeader)
+      .contains(BUTTON_LABEL.delete)
+      .should('be.disabled')
   })
 }

@@ -7,8 +7,13 @@ export const PRODUCTS = {
   tshirt: 'green night',
   irobot: 'irobot',
   blackDecker: 'black decker',
+  greenConventional: 'green conventional',
 }
 
 export function generateAddtoCartSelector(href) {
   return `a[href='${href}'] > article > button`
+}
+
+export function generateAddtoCartCardSelector(href) {
+  return `a[href='${href}']`
 }

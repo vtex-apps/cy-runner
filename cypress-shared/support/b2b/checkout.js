@@ -4,7 +4,7 @@ import { PAYMENT_TERMS } from './utils.js'
 
 export function checkoutProduct(product) {
   it('Checkout the Product', { retries: 3 }, () => {
-    cy.searchProduct(product)
+    cy.searchProductinB2B(product)
     cy.get(selectors.searchResult)
       .first()
       .should('have.text', product.toLowerCase())
@@ -12,32 +12,48 @@ export function checkoutProduct(product) {
     cy.intercept('**/checkout/**').as('checkout')
     cy.get(selectors.ProceedtoCheckout).click()
     cy.wait('@checkout')
+    cy.get('body').then(($body) => {
+      if ($body.find(selectors.ShippingCalculateLink).length) {
+        // Contact information needs to be filled
+        cy.get(selectors.ShippingCalculateLink).should('be.visible')
+      } else if ($body.find(selectors.DeliveryAddress).length) {
+        // Contact Information already filled
+        cy.get(selectors.DeliveryAddress).should('be.visible')
+      }
+    })
     cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
   })
 }
 
 export function fillContactInfo() {
   it('Fill Contact Information', { retries: 3 }, () => {
-    cy.get(selectors.FirstName).clear().type('Syed', { delay: 50 })
-    cy.get(selectors.LastName).clear().type('Mujeeb', { delay: 50 })
-    cy.get(selectors.Phone).clear().type('(304) 123 4556', { delay: 50 })
-    cy.get(selectors.ProceedtoShipping).should('be.visible').click()
-    cy.get('body').then(($body) => {
-      if ($body.find(selectors.ReceiverName).length) {
-        cy.get(selectors.ReceiverName, { timeout: 5000 }).type('Syed')
+    cy.get(selectors.FirstName).then(($el) => {
+      if (Cypress.dom.isVisible($el)) {
+        cy.get(selectors.FirstName).clear().type('Syed', { delay: 50 })
+        cy.get(selectors.LastName).clear().type('Mujeeb', { delay: 50 })
+        cy.get(selectors.Phone).clear().type('(304) 123 4556', { delay: 50 })
+        cy.get(selectors.ProceedtoShipping).should('be.visible').click()
+        cy.get('body').then(($body) => {
+          if ($body.find(selectors.ReceiverName).length) {
+            cy.get(selectors.ReceiverName, { timeout: 5000 }).type('Syed')
+          }
+        })
+        cy.get(selectors.GotoPaymentBtn, { timeout: 5000 }).should('be.visible')
+      } else {
+        cy.log('Contact information already filled')
       }
     })
-    cy.get(selectors.GotoPaymentBtn, { timeout: 5000 }).should('be.visible')
   })
 }
 
 export function verifyAddress(address) {
   it('Verify Auto fill Address in checkout', { retries: 3 }, () => {
-    cy.get('body').then(($body) => {
-      if ($body.find(selectors.OpenShipping).length) {
+    cy.get('body').then(($shipping) => {
+      if ($shipping.find(selectors.OpenShipping).length) {
         cy.get(selectors.OpenShipping, { timeout: 5000 }).click()
       }
     })
+
     for (const { postalCode } of address) {
       cy.get(selectors.PostalCodeText, { timeout: 5000 })
         .contains(postalCode)
@@ -77,7 +93,7 @@ export function buyNowProductTestCase(product) {
     () => {
       cy.url().then((url) => {
         if (!url.includes('checkout')) {
-          cy.searchProduct(product)
+          cy.searchProductinB2B(product)
           cy.get(selectors.searchResult)
             .first()
             .should('have.text', product.toLowerCase())

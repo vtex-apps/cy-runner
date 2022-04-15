@@ -69,21 +69,9 @@ async function runTest(test, config, group) {
         }`,
         'warn'
       )
-      if (test.runInOrder) {
-        const passSpec = []
-
-        for (let i = 0; i < test.specs.length; i++) {
-          addOptions.group = `${group}-try-${ht + 1}-spec-${i}`
-          test.spec = test.specs[i]
-          passSpec.push(await qe.runCypress(test, config, addOptions))
-        }
-
-        testPassed = !/false/.test(passSpec.toString())
-      } else {
-        addOptions.group = `${group}-try-${ht + 1}`
-        test.spec = test.specs
-        testPassed = await qe.runCypress(test, config, addOptions)
-      }
+      addOptions.group = `${group}-try-${ht + 1}`
+      test.spec = test.specs
+      testPassed = await qe.runCypress(test, config, addOptions)
     }
   }
 
