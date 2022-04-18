@@ -284,8 +284,9 @@ export default {
   QuoteNotFound:
     '[data-testid=totalizer-item-subtotal] [data-testid=totalizer-value]',
   Notes: '.vtex-textarea > textarea',
-  RequestQuote: 'div[class*=request i] > button',
-  SaveForLater: 'div[class*=SaveQuote i] > button',
+  RequestQuote: 'Request Quote',
+  SaveQuote: 'Save Quote',
+  SaveForLater: 'Save for Later',
   QuoteStatus: 'div[class*=vtex-tag]',
   CurrencyContainer: 'span[class*=currencyContainer]',
   QuoteStatusInMyQuotesPage:
@@ -317,7 +318,6 @@ export default {
   SliderContainer: '.vtex-slider-container',
   QuantityField: 'input[name=quantity]',
   Decline: '.nowrap > span:nth-child(1) button',
-  SaveQuote: '.nowrap > span:nth-child(2) button',
   SubmitToSalesRep: 'Submit',
   UseQuote: 'Use Quote',
   BackBtn: 'div[class*=pageHeader] span',

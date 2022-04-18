@@ -5,8 +5,8 @@ import {
   generateEmailId,
 } from './utils.js'
 
-const ORGANIZATION_A = 'OrganizationA'
-const ORGANIZATION_B = 'OrganizationB'
+const ORGANIZATION_A = `OrganizationA-${Cypress.env().workspace.name}`
+const ORGANIZATION_B = `OrganizationB-${Cypress.env().workspace.name}`
 
 export const USA_ADDRESS_1 = {
   postalCode: '33301',
