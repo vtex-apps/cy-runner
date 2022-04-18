@@ -3,9 +3,9 @@ const { intersection } = require('lodash')
 
 const qe = require('./utils')
 
-const testsFailed = []
-const testsSkipped = []
-const testsPassed = []
+let specsFailed = []
+let specsSkipped = []
+let specsPassed = []
 
 module.exports.strategy = async (config) => {
   const START = qe.tick()
@@ -19,68 +19,101 @@ module.exports.strategy = async (config) => {
     const group = `${wrk.name}/${strategy}`
 
     if (test.enabled) {
-      const { dependency } = test
+      let { dependency } = test
 
       qe.msgSection(`Strategy ${strategy}`)
       if (typeof dependency !== 'undefined') {
-        // Convert all to string to avoid compare string to number
-        const check = intersection(
-          dependency.toString().split(','),
-          testsPassed.toString().split(',')
-        )
+        // Take out possible duplications
+        dependency = [...new Set(dependency)]
+        specsPassed = [...new Set(specsPassed)]
+        const check = intersection(dependency, specsPassed)
 
         if (check.length === dependency.length) {
-          qe.msg(`Strategy.${check} succeeded`)
-          qe.msg(`Running strategy.${strategy}`, true, true)
+          qe.msg('As the follow specs succeeded')
+          check.forEach((item) => {
+            qe.msg(item, true, true)
+          })
+          qe.msg(`Let's run strategy.${strategy}`)
           qe.newLine()
           await runTest(test, config, group)
         } else {
-          qe.msg(`Strategy.${dependency} not succeeded`, 'warn')
-          qe.msg(`Skipping strategy.${strategy}`, true, true)
-          testsSkipped.push(strategy)
+          qe.msg('As the follow specs not succeeded', 'error')
+          check.forEach((item) => {
+            qe.msg(item, true, true)
+          })
+          qe.msg(`Spec ${dependency} not succeeded`, 'warn')
+          qe.msg(`Let's skip strategy.${strategy}`)
+          specsSkipped = specsSkipped.concat(test.specs)
         }
       } else {
         await runTest(test, config, group)
       }
     } else {
-      testsSkipped.push(strategy)
+      specsSkipped = specsSkipped.concat(test.specs)
     }
   }
 
   return {
     time: qe.toc(START),
-    testsFailed,
-    testsSkipped,
-    testsPassed,
+    specsFailed,
+    specsSkipped,
+    specsPassed,
   }
 }
 
 async function runTest(test, config, group) {
-  let testPassed = false
+  let testsPassed = false
+  const hardTries = test.hardTries + 1
+  let thisTry = 1
   const addOptions = {
     parallel: test.parallel,
   }
 
-  for (let ht = 0; ht <= test.hardTries; ht++) {
-    if (!testPassed) {
-      qe.msg(
-        `Starting try ${ht + 1} of ${test.hardTries + 1} for strategy.${
-          test.name
-        }`,
-        'warn'
-      )
-      addOptions.group = `${group}-try-${ht + 1}`
-      test.spec = test.specs
-      testPassed = await qe.runCypress(test, config, addOptions)
-    }
+  // If needed, remove duplicates
+  test.specs = [...new Set(test.specs)]
+
+  while (thisTry <= hardTries && !testsPassed && test.specs.length) {
+    qe.msg(
+      `Hard try ${thisTry} of ${hardTries} for strategy.${test.name}`,
+      'warn'
+    )
+    addOptions.group = `${group}/${thisTry}`
+
+    const testsResult = await qe.runCypress(test, config, addOptions)
+
+    testsPassed = true
+    // eslint-disable-next-line no-loop-func
+    testsResult.forEach((testResult) => {
+      testResult.runs.forEach((run) => {
+        if (run.stats.failures) {
+          testsPassed = false
+        } else {
+          for (const spec in test.specs) {
+            const [search] = test.specs[spec].split('*')
+            const found = run.spec.relative.includes(search)
+
+            if (found) {
+              specsPassed.push(test.specs[spec])
+              test.specs.splice(Number(spec), 1)
+
+              break
+            }
+          }
+        }
+      })
+    })
+    thisTry++
   }
 
-  if (!testPassed) {
+  await pushResults(testsPassed, test, config)
+}
+
+async function pushResults(testsPassed, test, config) {
+  if (!testsPassed) {
     qe.msg(`strategy.${test.name} failed`, 'error')
-    testsFailed.push(test.name)
+    specsFailed = specsFailed.concat(test.specs)
     if (test.stopOnFail) await qe.stopOnFail(config, `strategy ${test.name}`)
   } else {
     qe.msg(`strategy.${test.name} succeeded`)
-    testsPassed.push(test.name)
   }
 }

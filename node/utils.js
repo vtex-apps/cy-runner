@@ -1,4 +1,5 @@
 /* eslint-disable no-await-in-loop */
+/* eslint-disable vtex/prefer-early-return */
 const { execSync } = require('child_process')
 const fs = require('fs')
 const path = require('path')
@@ -12,7 +13,8 @@ const { teardown } = require('./teardown')
 const schema = require('./schema')
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms))
-const logFile = path.join('.', 'logs', 'cy-runner.log')
+const logPath = path.join('.', 'logs')
+const logFile = path.join(logPath, 'cy-runner.log')
 const ciNumber = Date.now().toString().substring(6, 13)
 const QE = '[QE] === '
 
@@ -119,8 +121,8 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
   switch (cmd.split(' ')[0]) {
     case 'whoami':
       stdout = this.exec(`${bin} ${cmd}`, 'pipe').toString()
-
-      return /Logged/.test(stdout) ? stdout.split(' ')[7] : false
+      check = /Logged/.test(stdout)
+      break
 
     case 'workspace':
       stdout = this.exec(`echo y | ${bin} ${cmd}`, 'pipe').toString()
@@ -152,7 +154,7 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
       while (!check && thisTry < MAX_TRIES) {
         thisTry++
         stdout = this.exec(`${bin} ls`, 'pipe').toString()
-        await delay(thisTry * 2000)
+        await delay(thisTry * 1000)
         check = linkApp.test(stdout)
       }
 
@@ -170,11 +172,9 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
 
   if (!check) {
     this.msg(`Toolbelt command failed: ${bin} ${cmd}\n${stdout}`, 'error')
-
-    return 'error'
   }
 
-  return stdout
+  return { success: check, stdout }
 }
 
 exports.vtexCliInstallApp = (bin) => {
@@ -463,7 +463,7 @@ exports.sectionsToRun = async (config) => {
       } else {
         this.msg(itemEnabled)
         hasDependency(itemEnabled).forEach((dep) => {
-          this.msg(`dependency: strategy.${dep}`, true, true)
+          this.msg(`depends on spec ${dep}`, true, true)
         })
       }
     }
@@ -514,25 +514,36 @@ exports.openCypress = async () => {
   }
 }
 
-exports.runCypress = async (
-  test,
-  config,
-  addOptions = {},
-  noOutput = false
-  // eslint-disable-next-line max-params
-) => {
-  if (typeof test.spec === 'string') test.spec = [test.spec]
-  const spec = path.parse(test.spec[0])
-  // eslint-disable-next-line prefer-destructuring
-  const cyPath = spec.dir.split(path.sep)[0]
+exports.runCypress = async (test, config, addOptions = {}) => {
+  // If mix base path for specs, stop it
+  const specPath = path.parse(test.specs[0]).dir
+
+  test.specs.forEach((spec) => {
+    const pathToCheck = path.parse(spec).dir
+
+    if (pathToCheck !== specPath) {
+      this.msg('Cypress path must be unique among specs', 'error')
+      test.specs.forEach((specDef) => {
+        this.msg(specDef, true, true)
+      })
+      this.crash(
+        'Test stopped due a strategy misconfiguration',
+        `strategy.${test.name}`
+      )
+    }
+  })
+
   const options = {
     config: {
-      integrationFolder: spec.dir,
-      supportFile: `${cyPath}/support`,
+      integrationFolder: specPath,
+      supportFile: `${specPath.split(path.sep)[0]}/support`,
+      // Plugins hard disabled to avoid Cypress random errors
+      pluginsFile: false,
     },
-    spec: test.spec,
+    spec: test.specs,
     headed: config.base.cypress.runHeaded,
     browser: config.base.cypress.browser,
+    quiet: config.base.cypress.quiet,
   }
 
   // Options tuning
@@ -551,31 +562,42 @@ exports.runCypress = async (
   }
 
   // Run Cypress
-  let testPassed = true
+  const testToRun = []
+  const testResult = []
+  let maxJobs = 1
+
+  // Set the number of runners
+  if (test.parallel) {
+    maxJobs =
+      test.specs.length < config.base.cypress.maxJobs
+        ? test.specs.length
+        : config.base.cypress.maxJobs
+  }
+
+  for (let i = 0; i < maxJobs; i++) {
+    testToRun.push(
+      cypress.run(options).then((result) => {
+        if (result.failures) this.crash(result.message)
+        testResult.push(result)
+
+        const cleanResult = result
+        const logName = result.runs[0].spec.name.replace('.js', '.yml')
+        const logSpec = path.join(logPath, logName)
+
+        delete cleanResult.config
+        this.storage(logSpec, 'append', `# ${this.tick()} ################\n\n`)
+        this.storage(logSpec, 'append', yaml.dump(cleanResult))
+      })
+    )
+  }
 
   try {
-    if (noOutput) {
-      const cfg =
-        `integrationFolder='${options.config.integrationFolder}',` +
-        `supportFile='${options.config.supportFile}'`
-
-      const stdout = this.exec(
-        `yarn cypress run -s ${config.workspace.wipe.spec} -c ${cfg}`,
-        'pipe'
-      ).toString()
-
-      testPassed = /All specs passed/.test(stdout)
-    } else {
-      await cypress.run(options).then((result) => {
-        if (result.failures) this.crash(result.message)
-        testPassed = result.totalFailed < 1
-      })
-    }
+    await Promise.all(testToRun)
   } catch (e) {
     this.crash('Fail to run Cypress', e.message)
   }
 
-  return testPassed
+  return testResult
 }
 
 exports.request = async (config) => {
