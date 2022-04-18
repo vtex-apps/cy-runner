@@ -10,7 +10,7 @@ const APP = `${APP_NAME}@${APP_VERSION}`
 export function setOrganizationIdInJSON(organization, costCenter) {
   it(
     'Getting Organization Id from session and set in OrganizationItem',
-    { retries: 3, taskTimeout: 5000 },
+    { retries: 3, responseTimeout: 5000 },
     () => {
       cy.request('/api/sessions?items=*').then((response) => {
         expect(response.body.namespaces).to.be.exist
