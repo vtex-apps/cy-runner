@@ -75,9 +75,9 @@ async function listApps(vtexBin) {
   const deps = await qe.toolbelt(vtexBin, 'deps ls')
 
   qe.msg(`Listing apps to ${appsLogFile}`)
-  qe.storage(appsLogFile, 'append', apps)
+  qe.storage(appsLogFile, 'append', apps.stdout)
   qe.msg(`Listing deps to ${depsLogFile}`)
-  qe.storage(depsLogFile, 'append', deps)
+  qe.storage(depsLogFile, 'append', deps.stdout)
 }
 
 async function doInstallApps(apps, vtexBin) {
