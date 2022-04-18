@@ -47,6 +47,9 @@ exports.workspace = async (config) => {
 
       // Link app
       await doLinkApp(config)
+
+      // Logging all apps
+      await listApps(vtexBin)
     } else {
       if (!config.base.vtex.deployCli.enabled) {
         qe.crash(
@@ -63,6 +66,18 @@ exports.workspace = async (config) => {
   }
 
   return qe.toc(START)
+}
+
+async function listApps(vtexBin) {
+  const appsLogFile = path.join('.', 'logs', 'appsVersions.log')
+  const depsLogFile = path.join('.', 'logs', 'depsVersions.log')
+  const apps = await qe.toolbelt(vtexBin, 'ls')
+  const deps = await qe.toolbelt(vtexBin, 'deps ls')
+
+  qe.msg(`Listing apps to ${appsLogFile}`)
+  qe.storage(appsLogFile, 'append', apps)
+  qe.msg(`Listing deps to ${depsLogFile}`)
+  qe.storage(depsLogFile, 'append', deps)
 }
 
 async function doInstallApps(apps, vtexBin) {
@@ -98,12 +113,11 @@ async function doLinkApp(config) {
 
     testApp = JSON.parse(testApp)
     const app = `${testApp.vendor}.${testApp.name}`
-    // eslint-disable-next-line prefer-destructuring
-    const version = testApp.version.split('.')[0]
+    const [version] = testApp.version.split('.')
 
-    qe.msg(`Uninstalling ${app}`, true, true)
+    qe.msg(`Uninstalling ${app} if needed`, true, true)
     await qe.toolbelt(config.base.vtex.bin, `uninstall ${app}`)
-    qe.msg(`Unlinking ${app}`, true, true)
+    qe.msg(`Unlinking ${app} if needed`, true, true)
     await qe.toolbelt(config.base.vtex.bin, `unlink ${app}@${version}.x`)
     const ignoreFile = path.join('..', '.vtexignore')
     const exclusions = ['cypress', 'cy-runner', 'cypress-shared']
