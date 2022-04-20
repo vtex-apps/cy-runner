@@ -145,3 +145,53 @@ export function userAndCostCenterShouldNotBeEditable(
       .should('be.disabled')
   })
 }
+
+export function verifyImpersonationFeatureAvailable(
+  role,
+  user,
+  impersonation = false
+) {
+  it(`Verifying impersonate feature available for ${role}`, () => {
+    cy.gotoMyOrganization()
+    cy.get('div[class*=styleguide__pageBlock]')
+      .eq(1)
+      .find(
+        'div[class=ReactVirtualized__Grid__innerScrollContainer] > div > span'
+      )
+      .then(($els) => {
+        let texts = Array.from($els, (el) => el.innerText)
+
+        texts = texts.splice(3, texts.length)
+        cy.log(texts)
+        const index = texts.indexOf(user)
+        const abc = index + 2
+
+        cy.get(
+          `div[class=ReactVirtualized__Grid__innerScrollContainer] > div:nth-child(${abc}) > div`
+        )
+          .should('be.visible')
+          .click()
+        cy.get('button[data-testid=menu-option-0] > span').should(
+          'have.text',
+          'Impersonate User'
+        )
+        cy.get('button[data-testid=menu-option-0] > span').click()
+        if (impersonation) {
+          cy.get(selectors.ToastMsgInB2B, { timeout: 5000 })
+            .should('be.visible')
+            .contains('initializing')
+          cy.getVtexItems().then((vtex) => {
+            cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
+              if (req.body.operationName === 'ImpersonateUser') {
+                req.continue()
+              }
+            })
+          })
+        } else {
+          cy.get(selectors.ToastMsgInB2B, { timeout: 5000 })
+            .should('be.visible')
+            .contains('do not have permission to impersonate')
+        }
+      })
+  })
+}
