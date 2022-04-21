@@ -191,9 +191,13 @@ export default {
   // *************B2B Account: My Organization Constants start here************ //
   Profile: 'a[href*=profile]',
   MyOrganization: 'a[href*=organization]',
+  MyOrganizationUserContainer:
+    'div[class=ReactVirtualized__Grid__innerScrollContainer] > div > span',
   MyOrganizationCostCenterUserDiv:
     '.ReactVirtualized__Grid__innerScrollContainer',
   PageNotFound: 'div[class*=notFound]',
+  PageBlock: 'div[class*=styleguide__pageBlock]',
+  ImpersonateButton: 'button[data-testid=menu-option-0] > span',
 
   // *************B2B Account: My Organization - Add Cost Center Constants start here************ //
   AddCostCenter:
