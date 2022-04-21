@@ -8,4 +8,5 @@ export const GRAPHL_OPERATIONS = {
   CreateQuote: 'CreateQuote',
   UpdateQuote: 'UpdateQuote',
   GetQuotes: 'GetQuotes',
+  ImpersonateUser: 'ImpersonateUser',
 }

@@ -1,6 +1,11 @@
 import selectors from '../common/selectors.js'
-import { getCostCenterName, generateEmailId } from './utils.js'
-import { BUTTON_LABEL } from '../validation_text.js'
+import {
+  getCostCenterName,
+  generateEmailId,
+  validateToastMsg,
+} from './utils.js'
+import { BUTTON_LABEL, TOAST_MSG } from '../validation_text.js'
+import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
 
 // Define constants
 const APP_NAME = 'vtex.b2b-organizations-graphql'
@@ -160,10 +165,7 @@ export function verifyImpersonationFeatureAvailable(
         let texts = Array.from($els, (el) => el.innerText)
 
         texts = texts.splice(4, texts.length)
-        cy.log(texts)
         const indexOfUser = texts.indexOf(user)
-
-        cy.log(indexOfUser)
         const childIndex = indexOfUser + 2
 
         cy.get(
@@ -175,20 +177,18 @@ export function verifyImpersonationFeatureAvailable(
           .should('have.text', 'Impersonate User')
           .click()
         if (impersonation) {
-          cy.get(selectors.ToastMsgInB2B, { timeout: 5000 })
-            .should('be.visible')
-            .contains('initializing')
+          validateToastMsg(TOAST_MSG.initializing)
           cy.getVtexItems().then((vtex) => {
             cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
-              if (req.body.operationName === 'ImpersonateUser') {
+              if (
+                req.body.operationName === GRAPHL_OPERATIONS.ImpersonateUser
+              ) {
                 req.continue()
               }
             })
           })
         } else {
-          cy.get(selectors.ToastMsgInB2B, { timeout: 5000 })
-            .should('be.visible')
-            .contains('do not have permission to impersonate')
+          validateToastMsg(TOAST_MSG.impersonatePermissionError)
         }
       })
   })
