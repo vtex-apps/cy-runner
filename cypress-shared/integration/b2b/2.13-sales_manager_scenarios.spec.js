@@ -4,6 +4,7 @@ import { ROLE_ID_EMAIL_MAPPING as roleObject } from '../../support/b2b/utils.js'
 import { loginToStoreFront } from '../../support/b2b/login.js'
 import {
   productShouldNotbeAvailableTestCase,
+  verifyImpersonationFeatureAvailable,
   verifySession,
 } from '../../support/b2b/common.js'
 
@@ -14,6 +15,8 @@ describe('Organization A - Cost Center A1 - Sales Manager Scenario', () => {
 
   loginToStoreFront(users.SalesManager, roleObject.SalesManager.role)
   verifySession(b2b.OrganizationA)
+  verifyImpersonationFeatureAvailable(roleObject.SalesRepresentative.role)
+  verifyImpersonationFeatureAvailable(roleObject.SalesAdmin.role)
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
 
   preserveCookie()

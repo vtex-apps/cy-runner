@@ -4,6 +4,7 @@ import { ROLE_ID_EMAIL_MAPPING as roleObject } from '../../support/b2b/utils.js'
 import { loginToStoreFront } from '../../support/b2b/login.js'
 import {
   productShouldNotbeAvailableTestCase,
+  verifyImpersonationFeatureAvailable,
   verifySession,
 } from '../../support/b2b/common.js'
 import {
@@ -20,6 +21,14 @@ describe('Organization A - Cost Center A1 - Sales Admin Scenario', () => {
 
   loginToStoreFront(users.SalesAdmin, roleObject.SalesAdmin.role)
   verifySession(b2b.OrganizationA)
+  verifyImpersonationFeatureAvailable(
+    roleObject.SalesAdmin.role,
+    roleObject.SalesRepresentative.role
+  )
+  verifyImpersonationFeatureAvailable(
+    roleObject.SalesAdmin.role,
+    roleObject.SalesManager.role
+  )
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
   checkoutProduct(product)
   fillContactInfo()

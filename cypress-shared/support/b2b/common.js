@@ -152,11 +152,10 @@ export function userAndCostCenterShouldNotBeEditable(
 }
 
 export function verifyImpersonationFeatureAvailable(
-  role,
   user,
   impersonation = false
 ) {
-  it(`Verifying impersonate feature available for ${role}`, () => {
+  it(`Verifying impersonate feature on ${user}`, () => {
     cy.gotoMyOrganization()
     cy.get(selectors.PageBlock)
       .eq(1)
@@ -168,6 +167,7 @@ export function verifyImpersonationFeatureAvailable(
         const indexOfUser = texts.indexOf(user)
         const childIndex = indexOfUser + 2
 
+        cy.log(texts, indexOfUser)
         cy.get(
           `div[class=ReactVirtualized__Grid__innerScrollContainer] > div:nth-child(${childIndex}) > div`
         )

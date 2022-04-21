@@ -3,6 +3,7 @@ import b2b from '../../support/b2b/constants.js'
 import {
   ROLE_DROP_DOWN_EMAIL_MAPPING as role,
   ROLE_DROP_DOWN,
+  ROLE_ID_EMAIL_MAPPING as roleObject,
 } from '../../support/b2b/utils.js'
 import { loginToStoreFront } from '../../support/b2b/login.js'
 import {
@@ -10,6 +11,7 @@ import {
   verifySession,
   userAndCostCenterShouldNotBeEditable,
   userAndCostCenterShouldNotBeAdded,
+  verifyImpersonationFeatureAvailable,
 } from '../../support/b2b/common.js'
 import { buyNowProductTestCase } from '../../support/b2b/checkout.js'
 
@@ -21,6 +23,8 @@ describe('Organization A - Cost Center A1 - Buyer Scenarios', () => {
 
   loginToStoreFront(users.Buyer1, ROLE_DROP_DOWN.Buyer)
   verifySession(b2b.OrganizationA)
+  verifyImpersonationFeatureAvailable(roleObject.SalesManager.role)
+  verifyImpersonationFeatureAvailable(ROLE_DROP_DOWN.Approver)
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
   userAndCostCenterShouldNotBeEditable(
     organizationName,
