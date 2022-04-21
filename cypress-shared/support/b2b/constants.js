@@ -8,6 +8,12 @@ import {
 const ORGANIZATION_A = 'OrganizationA'
 const ORGANIZATION_B = 'OrganizationB'
 
+export const OrganizationRequestStatus = {
+  approved: 'approved',
+  declined: 'declined',
+  pending: 'pending',
+}
+
 export const USA_ADDRESS_1 = {
   postalCode: '33301',
   country: 'USA',
