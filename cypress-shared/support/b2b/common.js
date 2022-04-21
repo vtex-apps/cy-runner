@@ -159,8 +159,11 @@ export function verifyImpersonationFeatureAvailable(
       .then(($els) => {
         let texts = Array.from($els, (el) => el.innerText)
 
-        texts = texts.splice(3, texts.length)
+        texts = texts.splice(4, texts.length)
+        cy.log(texts)
         const indexOfUser = texts.indexOf(user)
+
+        cy.log(indexOfUser)
         const childIndex = indexOfUser + 2
 
         cy.get(

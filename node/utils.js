@@ -91,7 +91,7 @@ exports.exec = (cmd, output) => {
   let result
 
   try {
-    result = execSync(cmd, { stdio: output, timeout: 1200000 })
+    result = execSync(cmd, { stdio: output, timeout: 60000 })
   } catch (e) {
     /* eslint-disable prefer-template */
     const msg1 = '\n >>  Failed to run'

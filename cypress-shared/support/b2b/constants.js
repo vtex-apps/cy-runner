@@ -7,8 +7,6 @@ import {
 
 const ORGANIZATION_A = 'OrganizationA'
 const ORGANIZATION_B = 'OrganizationB'
-const ORGANIZATION_C = 'OrganizationC'
-const ORGANIZATION_D = 'OrganizationD'
 
 export const USA_ADDRESS_1 = {
   postalCode: '33301',
@@ -43,12 +41,6 @@ export const FRANCE_ADDRESS = {
   country: 'FRA',
   street: '91 Rue de Strasbourg',
   receiverName: 'Robot',
-}
-
-export const OrganizationRequestStatus = {
-  approved: 'approved',
-  declined: 'declined',
-  pending: 'pending',
 }
 
 function quotesListForOrganizationA() {
@@ -254,82 +246,6 @@ export default {
       ),
       Approver1: generateEmailId(
         ORGANIZATION_B,
-        ROLE_DROP_DOWN_EMAIL_MAPPING.Approver1.email
-      ),
-    },
-  },
-  OrganizationC: {
-    organizationName: ORGANIZATION_C,
-    costCenter1: { name: 'CostCenterC1', addresses: [USA_ADDRESS_2] },
-    collections: [
-      {
-        id: '143',
-        name: 'House',
-      },
-      {
-        id: '142',
-        name: 'Tools',
-      },
-    ],
-    paymentTerms: [
-      {
-        id: '202',
-        name: 'NET 30',
-      },
-    ],
-    priceTables: 'silver',
-    product: PRODUCTS.irobot,
-    nonAvailableProduct: PRODUCTS.tshirt,
-    quotes: quotesListForOrganizationB(),
-    users: {
-      OrganizationAdmin1: generateEmailId(
-        ORGANIZATION_C,
-        ROLE_DROP_DOWN_EMAIL_MAPPING.OrganizationAdmin1.email
-      ),
-      Buyer1: generateEmailId(
-        ORGANIZATION_C,
-        ROLE_DROP_DOWN_EMAIL_MAPPING.Buyer1.email
-      ),
-      Approver1: generateEmailId(
-        ORGANIZATION_C,
-        ROLE_DROP_DOWN_EMAIL_MAPPING.Approver1.email
-      ),
-    },
-  },
-  OrganizationD: {
-    organizationName: ORGANIZATION_D,
-    costCenter1: { name: 'CostCenterD1', addresses: [USA_ADDRESS_2] },
-    collections: [
-      {
-        id: '143',
-        name: 'House',
-      },
-      {
-        id: '142',
-        name: 'Tools',
-      },
-    ],
-    paymentTerms: [
-      {
-        id: '202',
-        name: 'NET 30',
-      },
-    ],
-    priceTables: 'silver',
-    product: PRODUCTS.irobot,
-    nonAvailableProduct: PRODUCTS.tshirt,
-    quotes: quotesListForOrganizationB(),
-    users: {
-      OrganizationAdmin1: generateEmailId(
-        ORGANIZATION_D,
-        ROLE_DROP_DOWN_EMAIL_MAPPING.OrganizationAdmin1.email
-      ),
-      Buyer1: generateEmailId(
-        ORGANIZATION_D,
-        ROLE_DROP_DOWN_EMAIL_MAPPING.Buyer1.email
-      ),
-      Approver1: generateEmailId(
-        ORGANIZATION_D,
         ROLE_DROP_DOWN_EMAIL_MAPPING.Approver1.email
       ),
     },
