@@ -165,7 +165,7 @@ export function verifyImpersonationFeatureAvailable(
 
         texts = texts.splice(4, texts.length)
         const indexOfUser = texts.indexOf(user)
-        const childIndex = indexOfUser + 2
+        const childIndex = Math.ceil(indexOfUser / 3) * 4
 
         cy.log(texts, indexOfUser)
         cy.get(
@@ -177,7 +177,6 @@ export function verifyImpersonationFeatureAvailable(
           .should('have.text', 'Impersonate User')
           .click()
         if (impersonation) {
-          validateToastMsg(TOAST_MSG.initializing)
           cy.getVtexItems().then((vtex) => {
             cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
               if (
@@ -185,8 +184,10 @@ export function verifyImpersonationFeatureAvailable(
               ) {
                 req.continue()
               }
-            })
+            }).as(GRAPHL_OPERATIONS.ImpersonateUser)
           })
+          validateToastMsg(TOAST_MSG.initializing)
+          cy.wait(`@${GRAPHL_OPERATIONS.ImpersonateUser}`)
         } else {
           validateToastMsg(TOAST_MSG.impersonatePermissionError)
         }
