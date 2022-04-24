@@ -34,15 +34,13 @@ module.exports.strategy = async (config) => {
             qe.msg(item, true, true)
           })
           qe.msg(`Let's run strategy.${strategy}`)
-          qe.newLine()
           await runTest(test, config, group)
         } else {
-          qe.msg('As the follow specs not succeeded', 'error')
-          check.forEach((item) => {
+          qe.msg('As one of the follow specs not succeeded', 'error')
+          dependency.forEach((item) => {
             qe.msg(item, true, true)
           })
-          qe.msg(`Spec ${dependency} not succeeded`, 'warn')
-          qe.msg(`Let's skip strategy.${strategy}`)
+          qe.msg(`Let's skip strategy.${strategy}`, 'warn')
           specsSkipped = specsSkipped.concat(test.specs)
         }
       } else {
