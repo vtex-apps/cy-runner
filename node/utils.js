@@ -439,21 +439,16 @@ exports.traverse = (result, obj, previousKey) => {
 exports.sectionsToRun = async (config) => {
   this.msgSection('Sections to run')
   let linkApp = false
-  const hasDependency = (check) => {
-    const dep = get(config, `${check}.dependency`)
+  const getList = (item, property) => {
+    const list = get(config, `${item}.${property}`)
 
-    if (dep !== undefined) {
-      return dep
-    }
-
-    return []
+    return list !== undefined ? list : []
   }
 
   this.traverse([], config).forEach((item) => {
     // Items enabled
     if (/enabled/.test(item.key) && /true/.test(item.type)) {
-      // eslint-disable-next-line prefer-destructuring
-      const itemEnabled = item.key.split('.enabled')[0]
+      const [itemEnabled] = item.key.split('.enabled')
 
       linkApp = itemEnabled === 'workspace.linkApp'
       if (linkApp && itemEnabled === 'workspace.linkApp.logOutput') {
@@ -462,18 +457,13 @@ exports.sectionsToRun = async (config) => {
         this.msg('Never enable it on CI environments', true, true)
       } else {
         this.msg(itemEnabled)
-        hasDependency(itemEnabled).forEach((dep) => {
-          this.msg(`depends on spec ${dep}`, true, true)
+        getList(itemEnabled, 'specs').forEach((spec) => {
+          this.msg(`runs ${spec}`, true, true)
+        })
+        getList(itemEnabled, 'dependency').forEach((dep) => {
+          this.msg(`deps ${dep}`, true, true)
         })
       }
-    }
-
-    // Items disabled
-    if (/enabled/.test(item.key) && /false/.test(item.type)) {
-      // eslint-disable-next-line prefer-destructuring
-      const itemEnabled = item.key.split('.enabled')[0]
-
-      this.msg(itemEnabled, 'error')
     }
   })
 
@@ -481,11 +471,17 @@ exports.sectionsToRun = async (config) => {
   const appsToRemove = config.workspace.removeApps.length
 
   if (appsToInstall) {
-    this.msg(`${appsToInstall} app(s) on worksapce.installApps`)
+    this.msg('workspace.installApps')
+    getList('workspace', 'installApps').forEach((app) => {
+      this.msg(`${app}`, true, true)
+    })
   }
 
   if (appsToRemove) {
-    this.msg(`${appsToRemove} app(s) on worksapce.removeApps`)
+    this.msg('workspace.removeApps')
+    getList('workspace', 'removeApps').forEach((app) => {
+      this.msg(`${app}`, true, true)
+    })
   }
 }
 
