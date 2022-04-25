@@ -542,14 +542,15 @@ exports.runCypress = async (test, config, addOptions = {}) => {
 
   // Options tuning
   if (test.sendDashboard) {
-    const cyEnv = config.base.cypress.internalEnv
+    const RUN_ID = process.env.GITHUB_RUN_ID
+    const RUN_ATTEMPT = process.env.GITHUB_RUN_ATTEMPT
 
     options.key = config.base.cypress.dashboardKey
     options.record = true
-    // If in dev mode and dashboard on, give the ciBuildNumber
-    if (typeof cyEnv === 'string' && cyEnv === 'development') {
-      process.env.CYPRESS_INTERNAL_ENV = cyEnv
-      options.ciBuildId = ciNumber
+    options.ciBuildId =
+      typeof RUN_ID === 'undefined' ? ciNumber : `${RUN_ID}-${RUN_ATTEMPT}`
+    if (config.base.cypress.sorry) {
+      process.env.CYPRESS_INTERNAL_ENV = 'development'
     }
 
     merge(options, addOptions)
