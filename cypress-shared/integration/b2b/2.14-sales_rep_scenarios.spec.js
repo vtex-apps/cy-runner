@@ -11,6 +11,7 @@ import {
   verifyImpersonationFeatureAvailable,
   verifySession,
 } from '../../support/b2b/common.js'
+import { organizationAdminShouldNotAbleToEditSalesUsers } from '../../support/b2b/organization_request.js'
 
 describe('Organization A - Cost Center A1 - Sales Rep Scenario', () => {
   testSetup(false)
@@ -23,6 +24,8 @@ describe('Organization A - Cost Center A1 - Sales Rep Scenario', () => {
   verifyImpersonationFeatureAvailable(ROLE_DROP_DOWN.Buyer, true)
   verifyImpersonationFeatureAvailable(roleObject.SalesAdmin.role)
   verifyImpersonationFeatureAvailable(roleObject.SalesManager.role)
+  verifyImpersonationFeatureAvailable(ROLE_DROP_DOWN.Approver)
+  organizationAdminShouldNotAbleToEditSalesUsers()
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
   preserveCookie()
 })

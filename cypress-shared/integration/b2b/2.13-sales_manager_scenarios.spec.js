@@ -1,6 +1,9 @@
 import { testSetup, preserveCookie } from '../../support/common/support.js'
 import b2b from '../../support/b2b/constants.js'
-import { ROLE_ID_EMAIL_MAPPING as roleObject } from '../../support/b2b/utils.js'
+import {
+  ROLE_ID_EMAIL_MAPPING as roleObject,
+  ROLE_DROP_DOWN,
+} from '../../support/b2b/utils.js'
 import { loginToStoreFront } from '../../support/b2b/login.js'
 import {
   productShouldNotbeAvailableTestCase,
@@ -17,6 +20,8 @@ describe('Organization A - Cost Center A1 - Sales Manager Scenario', () => {
   verifySession(b2b.OrganizationA)
   verifyImpersonationFeatureAvailable(roleObject.SalesRepresentative.role)
   verifyImpersonationFeatureAvailable(roleObject.SalesAdmin.role)
+  verifyImpersonationFeatureAvailable(ROLE_DROP_DOWN.Approver)
+  verifyImpersonationFeatureAvailable(ROLE_DROP_DOWN.Buyer)
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
 
   preserveCookie()
