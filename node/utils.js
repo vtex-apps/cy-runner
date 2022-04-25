@@ -533,8 +533,6 @@ exports.runCypress = async (test, config, addOptions = {}) => {
     config: {
       integrationFolder: specPath,
       supportFile: `${specPath.split(path.sep)[0]}/support`,
-      // Plugins hard disabled to avoid Cypress random errors
-      pluginsFile: false,
     },
     spec: test.specs,
     headed: config.base.cypress.runHeaded,
