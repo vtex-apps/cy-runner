@@ -118,3 +118,4 @@ cypress.json
 /cy-runner-logs
 # State/ENV files
 .*.json
+/cy-runner.yml
