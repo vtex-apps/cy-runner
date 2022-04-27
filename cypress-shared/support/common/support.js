@@ -21,12 +21,12 @@ function setAuthCookie(authResponse) {
 function setProductQuantity({ position, quantity, timeout }, subTotal, check) {
   cy.intercept('**/update').as('update')
 
-  cy.get(selectors.ProductQuantityInCheckout(position))
+  cy.get(selectors.ProductQuantityInCheckout(position), { timeout: 15000 })
     .should('be.visible')
     .should('not.be.disabled')
     .focus()
     .type(`{backspace}${quantity}{enter}`)
-  cy.get(selectors.ItemRemove(position)).should(
+  cy.get(selectors.ItemRemove(position), { timeout: 15000 }).should(
     'not.have.css',
     'display',
     'none'
@@ -50,7 +50,7 @@ function clickProceedtoCheckout() {
 // Add product to cart
 export function addProduct(
   searchKey,
-  { proceedtoCheckout = true, paypal = false, productDetailPage = false }
+  { proceedtoCheckout = true, paypal = false, productDetailPage = false } = {}
 ) {
   // Add product to cart
   cy.get(selectors.searchResult).should('have.text', searchKey.toLowerCase())
@@ -247,7 +247,7 @@ export function updateProductQuantity(
     quantity = '1',
     multiProduct = false,
     verifySubTotal = true,
-    timeout = 8000,
+    timeout = 5000,
   } = {}
 ) {
   cy.get(selectors.CartTimeline).should('be.visible').click({ force: true })
@@ -414,7 +414,7 @@ export function stopTestCaseOnFailure() {
 }
 
 /* Test Setup
-   before()  
+   before()
      a) Inject Authentication cookie
   afterEach()
      a) Stop Execution if testcase gets failed in all retries
