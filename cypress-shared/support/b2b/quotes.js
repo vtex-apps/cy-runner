@@ -22,14 +22,18 @@ export function fillQuoteInformation(
           req.continue()
         }
       }).as(GRAPHL_OPERATIONS.CreateQuote)
-      cy.get(selectors.CurrencyContainer).should('be.visible')
+      cy.get(selectors.CurrencyContainer, { timeout: 5000 }).should(
+        'be.visible'
+      )
       if (requestQuote) {
-        cy.get(selectors.RequestQuote)
+        cy.get('div')
+          .contains(selectors.RequestQuote)
           .should('be.visible')
           .should('not.be.disabled')
           .click()
       } else {
-        cy.get(selectors.SaveForLater)
+        cy.get('div')
+          .contains(selectors.SaveForLater)
           .should('be.visible')
           .should('not.be.disabled')
           .click()

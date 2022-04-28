@@ -14,12 +14,19 @@ import {
   verifyImpersonationFeatureAvailable,
 } from '../../support/b2b/common.js'
 import { buyNowProductTestCase } from '../../support/b2b/checkout.js'
+import { createQuote } from '../../support/b2b/quotes.js'
 
 describe('Organization A - Cost Center A1 - Buyer Scenarios', () => {
   testSetup(false)
 
-  const { organizationName, nonAvailableProduct, product, costCenter1, users } =
-    b2b.OrganizationA
+  const {
+    organizationName,
+    nonAvailableProduct,
+    product,
+    costCenter1,
+    users,
+    quotes,
+  } = b2b.OrganizationA
 
   loginToStoreFront(users.Buyer1, ROLE_DROP_DOWN.Buyer)
   verifySession(b2b.OrganizationA)
@@ -36,6 +43,11 @@ describe('Organization A - Cost Center A1 - Buyer Scenarios', () => {
     costCenter1.name,
     role.Buyer1
   )
+  createQuote({
+    product,
+    quoteEnv: quotes.Buyer.quotes5,
+    role: ROLE_DROP_DOWN.Buyer,
+  })
 
   buyNowProductTestCase(product)
   preserveCookie()

@@ -14,7 +14,7 @@ export function generateEmailId(organization, role) {
   return `${basename}+${Cypress.env().workspace.name}${organization.slice(
     0,
     3
-  )}${organization.slice(-1)}${role}@${domain}`
+  )}${organization.split('-')[0].slice(-1)}${role}@${domain}`
 }
 
 export const STATUSES = {

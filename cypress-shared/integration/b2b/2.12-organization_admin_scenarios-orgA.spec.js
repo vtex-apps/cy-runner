@@ -18,11 +18,19 @@ import {
   ordertheProduct,
 } from '../../support/b2b/checkout.js'
 import { organizationAdminShouldNotAbleToEditSalesUsers } from '../../support/b2b/organization_request.js'
+import { rejectQuote } from '../../support/b2b/quotes.js'
 
 describe('Organization A - Cost Center A1 - Organization Admin2 Scenario', () => {
   testSetup(false)
 
-  const { nonAvailableProduct, product, costCenter2, users } = b2b.OrganizationA
+  const {
+    nonAvailableProduct,
+    product,
+    // costCenter1,
+    costCenter2,
+    users,
+    quotes,
+  } = b2b.OrganizationA
 
   loginToStoreFront(users.OrganizationAdmin2, ROLE_DROP_DOWN.OrganizationAdmin)
   verifySession(b2b.OrganizationA)
@@ -30,6 +38,11 @@ describe('Organization A - Cost Center A1 - Organization Admin2 Scenario', () =>
   verifyImpersonationFeatureAvailable(ROLE_DROP_DOWN.Buyer)
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
   organizationAdminShouldNotAbleToEditSalesUsers()
+  rejectQuote(
+    quotes.OrganizationAdmin2.declineQuote,
+    ROLE_DROP_DOWN.OrganizationAdmin
+  )
+
   checkoutProduct(product)
   fillContactInfo()
   verifyAddress(costCenter2.addresses)
