@@ -162,6 +162,9 @@ function fillContactInfo() {
     delay: 50,
   })
   cy.get(selectors.ProceedtoShipping).should('be.visible').click()
+  cy.get(selectors.ProceedtoShipping, { timeout: 1000 }).should(
+    'not.be.visible'
+  )
   cy.get('body').then(($shippingBlock) => {
     if ($shippingBlock.find(selectors.ReceiverName).length) {
       cy.get(selectors.ReceiverName, { timeout: 5000 }).type('Syed', {
