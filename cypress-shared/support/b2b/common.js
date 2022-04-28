@@ -151,46 +151,47 @@ export function userAndCostCenterShouldNotBeEditable(
   })
 }
 
-export function verifyImpersonationFeatureAvailable(
-  user,
-  impersonation = false
-) {
-  it(`Verifying impersonate feature on ${user}`, () => {
-    cy.gotoMyOrganization()
-    cy.get(selectors.PageBlock)
-      .eq(1)
-      .find(selectors.MyOrganizationUserContainer)
-      .then(($els) => {
-        let texts = Array.from($els, (el) => el.innerText)
+function performImpersonation(user) {
+  cy.gotoMyOrganization()
+  cy.get(selectors.PageBlock)
+    .eq(1)
+    .find(selectors.MyOrganizationUserContainer)
+    .then(($els) => {
+      let texts = Array.from($els, (el) => el.innerText)
 
-        texts = texts.splice(4, texts.length)
-        const indexOfUser = texts.indexOf(user)
-        const childIndex = Math.ceil(indexOfUser / 3) * 4
+      texts = texts.splice(4, texts.length)
+      const indexOfUser = texts.indexOf(user)
+      const childIndex = Math.ceil(indexOfUser / 3) * 4
 
-        cy.log(texts, indexOfUser)
-        cy.get(
-          `div[class=ReactVirtualized__Grid__innerScrollContainer] > div:nth-child(${childIndex}) > div`
-        )
-          .should('be.visible')
-          .click()
-        cy.get(selectors.ImpersonateButton)
-          .should('have.text', 'Impersonate User')
-          .click()
-        if (impersonation) {
-          cy.getVtexItems().then((vtex) => {
-            cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
-              if (
-                req.body.operationName === GRAPHL_OPERATIONS.ImpersonateUser
-              ) {
-                req.continue()
-              }
-            }).as(GRAPHL_OPERATIONS.ImpersonateUser)
-          })
-          validateToastMsg(TOAST_MSG.initializing)
-          cy.wait(`@${GRAPHL_OPERATIONS.ImpersonateUser}`)
-        } else {
-          validateToastMsg(TOAST_MSG.impersonatePermissionError)
+      cy.get(
+        `div[class=ReactVirtualized__Grid__innerScrollContainer] > div:nth-child(${childIndex}) > div`
+      )
+        .should('be.visible')
+        .click()
+      cy.get(selectors.ImpersonateButton)
+        .should('have.text', 'Impersonate User')
+        .click()
+    })
+}
+
+export function salesUserShouldNotImpersonateSalesUser(user1, user2) {
+  it(`Verifying ${user1} is not able to impersonate ${user2}`, () => {
+    performImpersonation(user2)
+    validateToastMsg(TOAST_MSG.impersonatePermissionError)
+  })
+}
+
+export function salesUserShouldImpersonateNonSalesUser(user1, user2) {
+  it(`Verifying ${user1} is able to impersonate ${user2}`, () => {
+    performImpersonation(user2)
+    cy.getVtexItems().then((vtex) => {
+      cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
+        if (req.body.operationName === GRAPHL_OPERATIONS.ImpersonateUser) {
+          req.continue()
         }
-      })
+      }).as(GRAPHL_OPERATIONS.ImpersonateUser)
+    })
+    validateToastMsg(TOAST_MSG.initializing)
+    cy.wait(`@${GRAPHL_OPERATIONS.ImpersonateUser}`)
   })
 }
