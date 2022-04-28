@@ -21,6 +21,9 @@ export function checkoutProduct(product) {
         cy.get(selectors.DeliveryAddress).should('be.visible')
       }
     })
+    cy.get('tr:nth-child(1) > div > td.quantity.item-disabled').should(
+      'be.visible'
+    )
     cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
   })
 }

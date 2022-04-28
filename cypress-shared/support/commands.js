@@ -16,7 +16,7 @@ Cypress.Commands.add('waitForSession', (selector = null) => {
       }
     }).as('Session')
     if (selector) cy.get(selector).last().click()
-    cy.wait('@Session', { timeout: 40000 })
+    cy.wait('@Session', { timeout: 20000 })
   })
 })
 
@@ -80,7 +80,7 @@ Cypress.Commands.add('gotoMyQuotes', () => {
   cy.get(selectors.ProfileLabel, { timeout: 90000 }).should('be.visible')
   cy.get('body').then(($body) => {
     if (!$body.find(selectors.MyQuotes).length) cy.visit('/')
-    if (!$body.find(selectors.QuoteSearch).length) {
+    if (!$body.find(selectors.QuoteSearchQuery).length) {
       cy.get(selectors.MyQuotes).should('be.visible').click()
     }
 

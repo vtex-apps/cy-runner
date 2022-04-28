@@ -4,6 +4,7 @@ import {
   ROLE_ID_EMAIL_MAPPING as roleObject,
   ROLE_DROP_DOWN,
   ROLE_DROP_DOWN_EMAIL_MAPPING as role,
+  STATUSES,
 } from '../../support/b2b/utils.js'
 import { loginToStoreFront } from '../../support/b2b/login.js'
 import {
@@ -23,20 +24,33 @@ import {
   updateCostCenter,
 } from '../../support/b2b/cost_center.js'
 import { addAndupdateUser } from '../../support/b2b/add_users.js'
-// import { organizationAdminShouldNotAbleToEditSalesUsers } from '../../support/b2b/organization_request.js'
+import {
+  searchQuote,
+  discountSliderShouldNotExist,
+  updateQuote,
+  rejectQuote,
+  filterQuote,
+  filterQuoteByStatus,
+  quoteShouldbeVisibleTestCase,
+  verifyQuotesAndSavedCarts,
+} from '../../support/b2b/quotes.js'
 
 describe('Organization A - Cost Center A1 - Sales Admin Scenario', () => {
   testSetup(false)
 
   const {
+    product,
     organizationName,
     nonAvailableProduct,
-    product,
     costCenter1,
     costCenter2,
     costCenter4,
     users,
+    quotes,
   } = b2b.OrganizationA
+
+  const { organizationName: organizationB, quotes: organizationBQuote } =
+    b2b.OrganizationB
 
   loginToStoreFront(users.SalesAdmin, roleObject.SalesAdmin.role)
   verifySession(b2b.OrganizationA)
@@ -66,6 +80,28 @@ describe('Organization A - Cost Center A1 - Sales Admin Scenario', () => {
   // organizationAdminShouldNotAbleToEditSalesUsers()
 
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
+  verifyQuotesAndSavedCarts()
+  quoteShouldbeVisibleTestCase(
+    organizationName,
+    quotes.Buyer2.quotes1,
+    organizationName
+  )
+  quoteShouldbeVisibleTestCase(
+    organizationName,
+    organizationBQuote.OrganizationAdmin.quotes1,
+    organizationB
+  )
+  searchQuote(quotes.Buyer.quotes1)
+  filterQuote(costCenter1.name, organizationB)
+  discountSliderShouldNotExist(quotes.Buyer2.quotes3)
+  updateQuote(quotes.Buyer.quotes1, { discount: '10' })
+  updateQuote(quotes.Buyer.quotes2, { notes: 'Notes' })
+  const price = '30.00'
+  const quantity = '10'
+
+  updateQuote(quotes.Buyer.quotes6, { price, quantity })
+  rejectQuote(quotes.Buyer.quotes3, roleObject.SalesAdmin.role)
+  filterQuoteByStatus(STATUSES.ready, STATUSES.declined)
   checkoutProduct(product)
   fillContactInfo()
   verifyAddress(costCenter1.addresses)

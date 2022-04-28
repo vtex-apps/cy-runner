@@ -189,6 +189,7 @@ export default {
   CreateQuote: 'a[href*=quote]',
   PageHeader: 'div[class*=vtex-pageHeader__title]',
   // *************B2B Account: My Organization Constants start here************ //
+  QuotesAndSavedCarts: 'Quotes and Saved Carts',
   Profile: 'a[href*=profile]',
   MyOrganization: 'a[href*=organization]',
   MyOrganizationUserContainer:
@@ -288,9 +289,9 @@ export default {
   QuoteNotFound:
     '[data-testid=totalizer-item-subtotal] [data-testid=totalizer-value]',
   Notes: '.vtex-textarea > textarea',
-  RequestQuote: 'Request Quote',
-  SaveQuote: 'Save Quote',
-  SaveForLater: 'Save for Later',
+  RequestQuote: /Request Quote/i,
+  SaveQuote: /Save Quote/i,
+  SaveForLater: /Save for Later/i,
   QuoteStatus: 'div[class*=vtex-tag]',
   CurrencyContainer: 'span[class*=currencyContainer]',
   QuoteStatusInMyQuotesPage:
@@ -300,7 +301,8 @@ export default {
   ToggleFields: '#toggleFieldsBtn',
   // *************B2B Constants My Quotes start here************ //
   MyQuotes: 'span[class*=orderQuote]',
-  QuoteSearch: 'input[type=search]',
+  QuoteSearchQuery: 'input[type=search]',
+  QuoteSearch: '#toolbar svg[class*=search]',
   QuotesToolBar: '#toolbar',
   QuotesFilterByStatus: '.ma2:nth-child(1) button',
   StatusLabel: 'label[class*=label]',
@@ -315,6 +317,8 @@ export default {
   // *************B2B Constants Quote Details section start here************ //
   PriceField: 'input[name=price]',
   QuoteTotal: 'div[data-testid=totalizer-value]',
+  Discount:
+    'div[data-testid*=percentage-discount] div[data-testid=totalizer-value]',
   NewProductPrice: '.new-product-price',
   DiscountSliderContainer: '.vtex-slider__selector-container',
   SliderSelector: '.vtex-slider__selector',

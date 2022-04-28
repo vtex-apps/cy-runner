@@ -117,7 +117,7 @@ export function productShouldNotbeAvailableTestCase(product) {
 
 export function userAndCostCenterShouldNotBeAdded(
   organization,
-  costCenter,
+  _costCenter,
   role
 ) {
   it(`Trying to add user and cost center in ${organization} with role ${role.dropDownText}`, () => {

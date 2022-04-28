@@ -2,6 +2,7 @@ import selectors from '../common/selectors.js'
 import { STATUSES } from './utils.js'
 import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
 import { BUTTON_LABEL } from '../validation_text.js'
+import { updateRetry } from '../common/support.js'
 
 const DEFAULT_QUOTE_TOTAL = '$0.00'
 
@@ -12,9 +13,30 @@ export function fillQuoteInformation(
 ) {
   cy.getVtexItems().then((vtex) => {
     cy.get(selectors.ItemsPriceInCart).then(($div) => {
+      // Make sure remove button is visible
+      cy.get(selectors.RemoveProduct).should('be.visible')
+      cy.get('#total-price div[class*=checkout-summary]')
+        .should('be.visible')
+        .should('contain', '$')
+
       const price = $div.text()
 
       cy.get(selectors.CreateQuote).last().should('be.visible').click()
+
+      cy.get(selectors.CurrencyContainer, { timeout: 5000 }).should(
+        'be.visible'
+      )
+      if (cy.state('runnable')._currentRetry > 0) cy.reload()
+
+      // cy.get(selectors.QuoteTotal, { timeout: 5000 })
+      //   .invoke('text')
+      //   .then((text) => {
+      //     cy.log(text)
+      //     if (text.includes('$0.00')) {
+      //       cy.reload()
+      //     }
+      //   })
+
       cy.get(selectors.QuoteName).should('be.visible').type(quoteEnv)
       if (notes) cy.get(selectors.Notes).should('be.visible').type(notes)
       cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
@@ -22,22 +44,22 @@ export function fillQuoteInformation(
           req.continue()
         }
       }).as(GRAPHL_OPERATIONS.CreateQuote)
-      cy.get(selectors.CurrencyContainer, { timeout: 5000 }).should(
-        'be.visible'
-      )
+
       if (requestQuote) {
         cy.get('div')
-          .contains(selectors.RequestQuote)
+          .contains(selectors.RequestQuote, { timeout: 5000 })
           .should('be.visible')
           .should('not.be.disabled')
           .click()
       } else {
         cy.get('div')
-          .contains(selectors.SaveForLater)
+          .contains(selectors.SaveForLater, { timeout: 5000 })
           .should('be.visible')
           .should('not.be.disabled')
           .click()
       }
+
+      cy.get(selectors.ToggleFields).should('be.visible')
 
       cy.wait(`@${GRAPHL_OPERATIONS.CreateQuote}`).then((req) => {
         const quoteId = req.response.body.data.createQuote.replace(
@@ -45,7 +67,6 @@ export function fillQuoteInformation(
           ''
         )
 
-        cy.get(selectors.ToggleFields).should('be.visible')
         cy.setQuoteItem(`${quoteEnv}-price`, price)
         cy.setQuoteItem(quoteEnv, quoteId)
       })
@@ -65,7 +86,7 @@ export function createQuote(
     { retries: 3 },
     () => {
       cy.searchProductinB2B(product)
-      cy.get(selectors.B2BAddtoCart).first().click()
+      cy.waitForGraphql('addToCart', selectors.B2BAddtoCart)
       fillQuoteInformation(quoteEnv, requestQuote, notes)
     }
   )
@@ -153,11 +174,18 @@ function updateDiscount(discount, expectedStatus, saveQuote) {
 
             const discountedPrice = amount * ((100 - discount) / 100)
 
+            cy.log(amountText, amount, discountedPrice, transformAttribute)
+
             cy.get(DiscountSliderContainer)
               .invoke('attr', 'style', transformAttribute)
               .should('have.attr', 'style', transformAttribute)
+              .trigger('change')
 
-            cy.get(SliderSelector).should('be.visible').click()
+            cy.get(SliderToolTip).click()
+            // cy.get(SliderSelector).click()
+            // .trigger('mouseover')
+            // .wait(1000)
+            // .click('center', { ctrlKey: true })
 
             cy.get(SliderToolTip)
               .should('not.have.text', '0%')
@@ -195,6 +223,8 @@ function updateDiscount(discount, expectedStatus, saveQuote) {
                       .should('have.text', `$${discountedPrice.toFixed(2)}`)
                   })
               })
+          } else {
+            cy.log(`Discount already updated`)
           }
         })
     })
@@ -235,6 +265,18 @@ function updateQuantity(quantity, saveQuote) {
   })
 }
 
+function viewQuote(quote) {
+  cy.gotoMyQuotes()
+  cy.get(selectors.QuoteSearchQuery).clear().type(quote)
+  cy.get(selectors.QuoteSearch).should('be.visible').click()
+  cy.contains(quote).click()
+  cy.get(selectors.ProfileLabel).should('be.visible')
+  cy.get(selectors.PageHeader)
+    .should('be.visible')
+    .should('have.text', BUTTON_LABEL.QuoteDetails)
+  cy.get(selectors.QuoteStatus).should('be.visible')
+}
+
 export function updateQuote(
   quote,
   { notes = false, discount = false, quantity = false, price = null },
@@ -250,17 +292,10 @@ export function updateQuote(
       quantity,
       price,
     })} - ${quote} and verify status ${expectedStatus}`,
-    { retries: 3 },
+    { retries: 3, scrollBehavior: false },
     () => {
       cy.wrap(false).as(saveQuote)
-      cy.gotoMyQuotes()
-      cy.get(selectors.QuoteSearch).clear()
-      cy.contains(quote).click()
-      cy.get(selectors.ProfileLabel).should('be.visible')
-      cy.get(selectors.PageHeader)
-        .should('be.visible')
-        .should('have.text', BUTTON_LABEL.QuoteDetails)
-      cy.get(selectors.QuoteStatus).should('be.visible')
+      viewQuote(quote)
 
       if (notes) updateNotes(notes, saveQuote)
 
@@ -312,7 +347,7 @@ export function rejectQuote(quote, role) {
 export function useQuoteForPlacingTheOrder(quote, role) {
   it(`Verify quote and Place the order from ${role}`, { retries: 3 }, () => {
     cy.gotoMyQuotes()
-    cy.get(selectors.QuoteSearch).clear()
+    cy.get(selectors.QuoteSearchQuery).clear()
     cy.contains(quote).click()
     cy.get(selectors.ProfileLabel).should('be.visible')
     cy.get(selectors.QuoteStatus).should('be.visible')
@@ -338,17 +373,23 @@ export function useQuoteForPlacingTheOrder(quote, role) {
 }
 
 export function searchQuote(quote) {
-  it.skip('Only Searched quote results should be available to the user', () => {
-    cy.gotoMyQuotes()
-    cy.get(selectors.QuoteSearch).type(quote)
-    cy.get(selectors.QuoteFromMyQuotesPage).then(($els) => {
-      let quotesList = Array.from($els, (el) => el.innerText)
+  it(
+    'Only Searched quote results should be available to the user',
+    updateRetry(3),
+    () => {
+      cy.gotoMyQuotes()
+      cy.get(selectors.QuoteSearchQuery).clear().type(quote)
+      cy.contains(quote).should('be.visible')
+      cy.waitForGraphql(GRAPHL_OPERATIONS.GetQuotes, selectors.QuoteSearch)
+      cy.get(selectors.QuoteFromMyQuotesPage).then(($els) => {
+        let quotesList = Array.from($els, (el) => el.innerText)
 
-      quotesList = quotesList.slice(0, quotesList.length / 2 + 1)
-      quotesList.shift()
-      expect(quotesList.every((q) => q.includes(quote))).to.be.true
-    })
-  })
+        quotesList = quotesList.slice(0, quotesList.length / 2 + 1)
+        quotesList.shift()
+        expect(quotesList.every((q) => q.includes(quote))).to.be.true
+      })
+    }
+  )
 }
 
 function getPosition(organization, multi) {
@@ -398,9 +439,9 @@ function getTitleForFilterQuoteTestCase(organization, costCenter) {
 export function filterQuote(costCenter, organization = false) {
   const title = getTitleForFilterQuoteTestCase(organization, costCenter)
 
-  it.skip(`Filter by ${title}`, () => {
+  it(`Filter by ${title}`, () => {
     cy.gotoMyQuotes()
-    cy.get(selectors.QuoteSearch).clear()
+    cy.get(selectors.QuoteSearchQuery).clear()
     if (organization) {
       fillFilterBy(organization, organization)
     }
@@ -434,7 +475,7 @@ export function filterQuoteByStatus(expectedStatus1, expectedStatus2 = null) {
 
   it(title, () => {
     cy.gotoMyQuotes()
-    cy.get(selectors.QuoteSearch).clear()
+    cy.get(selectors.QuoteSearchQuery).clear()
     cy.get(selectors.QuotesFilterByStatus).click()
     for (const status in STATUSES) {
       const checkBoxSelector = `input[value='${status}']`
@@ -467,5 +508,43 @@ export function filterQuoteByStatus(expectedStatus1, expectedStatus2 = null) {
 
       expect(checkAllElementsAreTrue(comparison)).to.be.true
     })
+  })
+}
+
+export function preventQuoteUpdation() {
+  it(
+    'In checkout page, Quote should not be able to update',
+    updateRetry(3),
+    () => {
+      // cy.get('tr:nth-child(1) > div > td.quantity.item-disabled').should(
+      //   'be.visible'
+      // )
+      // .should('not.be.disabled')
+      // .focus()
+      // .type(`{backspace}5{enter}`)
+
+      cy.get('tr:nth-child(1) > div > td.quantity > input')
+        .should('be.visible')
+        .should('not.be.disabled')
+        .focus()
+        .type(`{backspace}5{enter}`)
+      cy.get('#clear-cart').should('be.visible')
+    }
+  )
+}
+
+export function discountSliderShouldNotExist(quote) {
+  it(`Discount Slider should not exist for this quote ${quote}`, () => {
+    viewQuote(quote)
+    cy.get(selectors.DiscountSliderContainer).should('not.exist')
+    cy.get(selectors.Discount).should('have.text', '97%')
+  })
+}
+
+export function verifyQuotesAndSavedCarts() {
+  it(`Verify when we click QuotesAndSavedCarts section it should redirect us to quotes page`, () => {
+    cy.gotoMyOrganization()
+    cy.contains(selectors.QuotesAndSavedCarts).should('be.visible').click()
+    cy.get(selectors.MyQuotes).should('be.visible').click()
   })
 }
