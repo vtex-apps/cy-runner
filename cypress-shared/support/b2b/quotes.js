@@ -6,11 +6,12 @@ import { updateRetry } from '../common/support.js'
 
 const DEFAULT_QUOTE_TOTAL = '$0.00'
 
-export function fillQuoteInformation(
+export function fillQuoteInformation({
   quoteEnv,
+  impersonatedRole,
   requestQuote = true,
-  notes = false
-) {
+  notes = false,
+}) {
   cy.getVtexItems().then((vtex) => {
     cy.get(selectors.ItemsPriceInCart).then(($div) => {
       // Make sure remove button is visible
@@ -26,7 +27,6 @@ export function fillQuoteInformation(
       cy.get(selectors.CurrencyContainer, { timeout: 5000 }).should(
         'be.visible'
       )
-      if (cy.state('runnable')._currentRetry > 0) cy.reload()
 
       // cy.get(selectors.QuoteTotal, { timeout: 5000 })
       //   .invoke('text')
@@ -46,11 +46,19 @@ export function fillQuoteInformation(
       }).as(GRAPHL_OPERATIONS.CreateQuote)
 
       if (requestQuote) {
-        cy.get('div')
-          .contains(selectors.RequestQuote, { timeout: 5000 })
-          .should('be.visible')
-          .should('not.be.disabled')
-          .click()
+        if (!impersonatedRole) {
+          cy.get('div')
+            .contains(selectors.RequestQuote, { timeout: 5000 })
+            .should('be.visible')
+            .should('not.be.disabled')
+            .click()
+        } else {
+          cy.get('div')
+            .contains(selectors.SaveQuote, { timeout: 5000 })
+            .should('be.visible')
+            .should('not.be.disabled')
+            .click()
+        }
       } else {
         cy.get('div')
           .contains(selectors.SaveForLater, { timeout: 5000 })
@@ -75,21 +83,21 @@ export function fillQuoteInformation(
 }
 
 export function createQuote(
-  { product, quoteEnv, role },
+  { product, quoteEnv, role, impersonatedRole },
   requestQuote = true,
   notes = false
 ) {
   const expectedStatus = requestQuote ? STATUSES.pending : STATUSES.ready
 
-  it(
-    `Create Quote as ${role}, verify state is ${expectedStatus} and store in env ${quoteEnv}`,
-    { retries: 3 },
-    () => {
-      cy.searchProductinB2B(product)
-      cy.waitForGraphql('addToCart', selectors.B2BAddtoCart)
-      fillQuoteInformation(quoteEnv, requestQuote, notes)
-    }
-  )
+  const title = impersonatedRole
+    ? `Create Quote by ${role} who impersonated ${impersonatedRole}, verify state is ${expectedStatus} and store in env ${quoteEnv}`
+    : `Create Quote as ${role}, verify state is ${expectedStatus} and store in env ${quoteEnv}`
+
+  it(title, { retries: 3 }, () => {
+    cy.searchProductinB2B(product)
+    cy.waitForGraphql('addToCart', selectors.B2BAddtoCart)
+    fillQuoteInformation({ quoteEnv, requestQuote, notes, impersonatedRole })
+  })
 }
 
 export function quoteShouldNotBeVisibleTestCase(
@@ -372,24 +380,27 @@ export function useQuoteForPlacingTheOrder(quote, role) {
   })
 }
 
-export function searchQuote(quote) {
-  it(
-    'Only Searched quote results should be available to the user',
-    updateRetry(3),
-    () => {
-      cy.gotoMyQuotes()
-      cy.get(selectors.QuoteSearchQuery).clear().type(quote)
-      cy.contains(quote).should('be.visible')
-      cy.waitForGraphql(GRAPHL_OPERATIONS.GetQuotes, selectors.QuoteSearch)
-      cy.get(selectors.QuoteFromMyQuotesPage).then(($els) => {
-        let quotesList = Array.from($els, (el) => el.innerText)
+export function searchQuote(quote, email = false) {
+  const title = email
+    ? `Searched Quote must have createdBy field with this email ${email}`
+    : `Only Searched quote results should be available to the user`
 
-        quotesList = quotesList.slice(0, quotesList.length / 2 + 1)
-        quotesList.shift()
-        expect(quotesList.every((q) => q.includes(quote))).to.be.true
-      })
-    }
-  )
+  it(title, updateRetry(3), () => {
+    cy.gotoMyQuotes()
+    cy.get(selectors.QuoteSearchQuery).clear().type(quote)
+    cy.contains(quote).should('be.visible')
+    cy.waitForGraphql(GRAPHL_OPERATIONS.GetQuotes, selectors.QuoteSearch)
+    cy.get(selectors.QuoteFromMyQuotesPage).then(($els) => {
+      let quotesList = Array.from($els, (el) => el.innerText)
+
+      quotesList = quotesList.slice(0, quotesList.length / 2 + 1)
+      quotesList.shift()
+      expect(quotesList.every((q) => q.includes(quote))).to.be.true
+      if (email) {
+        cy.contains(email, { timeout: 8000 })
+      }
+    })
+  })
 }
 
 function getPosition(organization, multi) {

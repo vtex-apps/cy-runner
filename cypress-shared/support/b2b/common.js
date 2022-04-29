@@ -152,7 +152,7 @@ export function userAndCostCenterShouldNotBeEditable(
 }
 
 function performImpersonation(user) {
-  cy.gotoMyOrganization()
+  cy.gotoMyOrganization(false)
   cy.get(selectors.PageBlock)
     .eq(1)
     .find(selectors.MyOrganizationUserContainer)
@@ -174,7 +174,7 @@ function performImpersonation(user) {
     })
 }
 
-export function salesUserShouldNotImpersonateSalesUser(user1, user2) {
+export function userShouldNotImpersonateThisUser(user1, user2) {
   it(`Verifying ${user1} is not able to impersonate ${user2}`, () => {
     performImpersonation(user2)
     validateToastMsg(TOAST_MSG.impersonatePermissionError)

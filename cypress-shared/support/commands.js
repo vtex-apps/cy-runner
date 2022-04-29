@@ -51,13 +51,13 @@ Cypress.Commands.add('fillAddressInCostCenter', (costCenter) => {
     .should('have.value', receiverName)
 })
 
-Cypress.Commands.add('gotoMyOrganization', () => {
+Cypress.Commands.add('gotoMyOrganization', (waitforSession = true) => {
   cy.url().then((url) => {
     if (!url.includes('account')) {
       cy.get(selectors.ProfileLabel).should('be.visible')
       cy.get(selectors.SignInBtn).click()
       cy.get(selectors.MyAccount).click()
-      cy.waitForSession()
+      if (waitforSession) cy.waitForSession()
     }
 
     cy.get(selectors.MyOrganization).click()

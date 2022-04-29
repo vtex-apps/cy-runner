@@ -9,7 +9,8 @@ import {
 import { loginToStoreFront } from '../../support/b2b/login.js'
 import {
   productShouldNotbeAvailableTestCase,
-  verifyImpersonationFeatureAvailable,
+  salesUserShouldImpersonateNonSalesUser,
+  userShouldNotImpersonateThisUser,
   verifySession,
 } from '../../support/b2b/common.js'
 import {
@@ -26,6 +27,7 @@ import {
 import { addAndupdateUser } from '../../support/b2b/add_users.js'
 import {
   searchQuote,
+  createQuote,
   discountSliderShouldNotExist,
   updateQuote,
   rejectQuote,
@@ -34,6 +36,23 @@ import {
   quoteShouldbeVisibleTestCase,
   verifyQuotesAndSavedCarts,
 } from '../../support/b2b/quotes.js'
+
+function QuotesAccess(
+  { organizationName, quotes },
+  organizationB,
+  organizationBQuote
+) {
+  quoteShouldbeVisibleTestCase(
+    organizationName,
+    quotes.Buyer2.quotes1,
+    organizationName
+  )
+  quoteShouldbeVisibleTestCase(
+    organizationName,
+    organizationBQuote.OrganizationAdmin.quotes1,
+    organizationB
+  )
+}
 
 describe('Organization A - Cost Center A1 - Sales Admin Scenario', () => {
   testSetup(false)
@@ -52,15 +71,17 @@ describe('Organization A - Cost Center A1 - Sales Admin Scenario', () => {
   const { organizationName: organizationB, quotes: organizationBQuote } =
     b2b.OrganizationB
 
+  const impersonatedRole = ROLE_DROP_DOWN.OrganizationAdmin
+
   loginToStoreFront(users.SalesAdmin, roleObject.SalesAdmin.role)
   verifySession(b2b.OrganizationA)
 
   // Impersonate users
-  verifyImpersonationFeatureAvailable(roleObject.SalesRepresentative.role)
-  verifyImpersonationFeatureAvailable(roleObject.SalesManager.role)
-  verifyImpersonationFeatureAvailable(ROLE_DROP_DOWN.OrganizationAdmin, true)
-  // verifyImpersonationFeatureAvailable(ROLE_DROP_DOWN.Buyer)
-
+  userShouldNotImpersonateThisUser(
+    roleObject.SalesAdmin.role,
+    roleObject.SalesManager.role
+  )
+  QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
   // Cost Center 3 - Scenarios
   addCostCenter(
     organizationName,
@@ -77,20 +98,9 @@ describe('Organization A - Cost Center A1 - Sales Admin Scenario', () => {
     { currentRole: role.OrganizationAdmin2, updatedRole: role.Buyer2 }
   )
 
-  // organizationAdminShouldNotAbleToEditSalesUsers()
-
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
   verifyQuotesAndSavedCarts()
-  quoteShouldbeVisibleTestCase(
-    organizationName,
-    quotes.Buyer2.quotes1,
-    organizationName
-  )
-  quoteShouldbeVisibleTestCase(
-    organizationName,
-    organizationBQuote.OrganizationAdmin.quotes1,
-    organizationB
-  )
+
   searchQuote(quotes.Buyer.quotes1)
   filterQuote(costCenter1.name, organizationB)
   discountSliderShouldNotExist(quotes.Buyer2.quotes3)
@@ -106,5 +116,22 @@ describe('Organization A - Cost Center A1 - Sales Admin Scenario', () => {
   fillContactInfo()
   verifyAddress(costCenter1.addresses)
   verifyPayment()
+  salesUserShouldImpersonateNonSalesUser(
+    roleObject.SalesAdmin.role,
+    impersonatedRole
+  )
+  QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
+
+  userShouldNotImpersonateThisUser(roleObject.SalesManager.role)
+  const quote = 'IMPERSONATE_QUOTE_1'
+
+  createQuote({
+    product,
+    quoteEnv: quote,
+    role: roleObject.SalesManager.role,
+    impersonatedRole,
+  })
+  searchQuote(quote, users.OrganizationAdmin1)
+
   preserveCookie()
 })
