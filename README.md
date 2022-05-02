@@ -43,13 +43,8 @@ base:
   vtex:
     # Account to be used to login
     account: yourAccount
-    # Account identification (for use in API - not mandatory)
-    id: 1234567
     domain: myvtex.com
-    # If you need to test external seller
-    urlExternalSeller: https://productusqaseller.myvtex.com
     vtexIdUrl: https://vtexid.vtex.com.br/api/vtexid/pub/authenticate/default
-    orderFormConfig: https://productusqa.vtexcommercestable.com.br/api/checkout/pvt/configuration/orderForm
     deployCli:
       # Deploy the toolbelt to provide login using the secrets
       enabled: true
@@ -67,7 +62,7 @@ base:
     issueType: task
   slack:
     # If you want to report issues on Slack
-    # Not fully functional yet
+    # Not functional yet
     enabled: false
     channel: some-channel
   cypress:
@@ -75,7 +70,13 @@ base:
     devMode: false
     # Show the GUI window in run mode
     runHeaded: false
-    # Project to log on Cypress Dashboard
+    # Get tokens to use inside tests
+    getCookies: true
+    # Max number of specs parallelization
+    maxJobs: 3 
+    # Show less information on logs
+    quiet: true
+    # Project run with Cypress Dashboard
     projectId: xxzzyy
     video: false
     videoCompression: 32
@@ -93,7 +94,7 @@ base:
     chromeWebSecurity: false
     # Set to development if you want to use
     # sorry-cypress locally
-    internalEnv: development
+    sorry: false
   # If you need to create empty state
   # to use in your tests, for checking transactions
   # or for doing data wipe on the end
@@ -118,13 +119,15 @@ workspace:
   wipe:
     enabled: false
     stopOnFail: false
-    spec: cypress-shared/integration/workspace/wipe.spec.js
+    specs:
+      # You can pass more the one spec to teardown
+      - cypress-shared/integration/workspace/wipe.spec.js
   # Clean workspace and state files on the end
   teardown:
-    enabled: false
+    enabled: true
 
 strategy:
-  # You can name it whatever pleases you
+  # Short name is better
   A01:
     enabled: true
     # Send it to Cypress Dashboard or Sorry-Cypress
@@ -133,10 +136,9 @@ strategy:
     hardTries: 1
     # Stop the test if it fails
     stopOnFail: false
-    # Run in parallel
-    # Requires Cypress Dashboard or Sorry-Cypress
+    # Run in parallel, requires Cypress Dashboard or Sorry-Cypress
     parallel: true
-    # Specs to run (ordered not guaranteed)
+    # Specs to run (order not guaranteed)
     specs:
       - cypress/integration/A01*
       - cypress/integration/A02*
