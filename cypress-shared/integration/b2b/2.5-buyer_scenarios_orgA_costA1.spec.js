@@ -11,12 +11,11 @@ import {
   userAndCostCenterShouldNotBeEditable,
   userAndCostCenterShouldNotBeAdded,
 } from '../../support/b2b/common.js'
-import { buyNowProductTestCase } from '../../support/b2b/checkout.js'
 
 describe('Organization A - Cost Center A1 - Buyer Scenarios', () => {
   testSetup(false)
 
-  const { organizationName, nonAvailableProduct, product, costCenter1, users } =
+  const { organizationName, nonAvailableProduct, costCenter1, users } =
     b2b.OrganizationA
 
   loginToStoreFront(users.Buyer1, ROLE_DROP_DOWN.Buyer)
@@ -33,6 +32,5 @@ describe('Organization A - Cost Center A1 - Buyer Scenarios', () => {
     role.Buyer1
   )
 
-  buyNowProductTestCase(product)
   preserveCookie()
 })
