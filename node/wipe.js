@@ -7,17 +7,17 @@ module.exports.wipe = async (config) => {
   if (wipe.enabled) {
     const tempFiles = ['cypress.env.json', 'cypress.json']
 
-    qe.msg(`Wiping data`, 'ok', false, true)
+    qe.msg(`Wiping data`, 'warn')
     const { stopOnFail } = wipe
     const result = await qe.runCypress(wipe, config, {}, true)
 
-    if (result) {
-      qe.msg('done', 'complete', true)
-    } else {
-      qe.msg('error', 'complete', true)
+    if (result[0].totalFailed) {
+      qe.msg('Failed to clean data', 'error')
       if (stopOnFail) {
         qe.crash('Stop due to stopOnFail', 'Wipe failed')
       }
+    } else {
+      qe.msg('Success to clean data')
     }
 
     qe.msg('Removing temporary files', 'warn')

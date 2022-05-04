@@ -6,13 +6,9 @@ Cypress.Commands.add('searchInMasterData', searchInMasterData)
 Cypress.Commands.add('deleteDocumentInMasterData', deleteDocumentInMasterData)
 
 // Send Invoice API Test Case
-Cypress.Commands.add('sendInvoiceAPI', (body, orderId, externalSellerTotal) => {
+Cypress.Commands.add('sendInvoiceAPI', (body, orderId) => {
   cy.getVtexItems().then((vtex) => {
-    const url = `${
-      externalSellerTotal
-        ? invoiceAPI(vtex.urlExternalSeller)
-        : invoiceAPI(vtex.baseUrl)
-    }/${orderId}/invoice`
+    const url = `${invoiceAPI(vtex.baseUrl)}/${orderId}/invoice`
 
     cy.request({
       method: 'POST',
@@ -43,7 +39,7 @@ Cypress.Commands.add('orderTaxApi', (requestPayload, tax) => {
         Cypress.env('workspace').prefix
       }/checkout/order-tax`,
       headers: {
-        Authorization: vtex.authorization,
+        Authorization: vtex.authorizationHeader,
         ...VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
       },
       ...FAIL_ON_STATUS_CODE,
