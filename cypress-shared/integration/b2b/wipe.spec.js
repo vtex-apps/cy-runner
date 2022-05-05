@@ -9,52 +9,17 @@ import {
   VTEX_AUTH_HEADER,
 } from '../../support/common/constants.js'
 import { updateRetry, testSetup } from '../../support/common/support.js'
+import { deleteOrganization } from '../../support/b2b/graphql.js'
+
+const config = Cypress.env()
+
+// Constants
+const { name } = config.workspace
 
 // Define constants
 const APP_NAME = 'vtex.b2b-organizations-graphql'
 const APP_VERSION = '*.x'
 const APP = `${APP_NAME}@${APP_VERSION}`
-
-function deleteOrganization(organization, organizationRequest = false) {
-  // Default is organization, if organization request is true then delete organization request
-  const func = organizationRequest ? 'Request' : ''
-
-  it(`Delete ${organization}`, updateRetry(2), () => {
-    cy.getVtexItems().then((vtex) => {
-      const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${APP}`
-
-      const GRAPHQL_DELETE_MUTATION =
-        'mutation' +
-        '($id: ID!)' +
-        `{deleteOrganization${func}(id: $id){status}}`
-
-      cy.getOrganizationItems().then((items) => {
-        const organizationId =
-          items[organizationRequest ? `${organization}request` : organization]
-
-        if (organizationId) {
-          cy.request({
-            method: 'POST',
-            url: CUSTOM_URL,
-            body: {
-              query: GRAPHQL_DELETE_MUTATION,
-              variables: {
-                id: organizationId,
-              },
-            },
-            headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
-            ...FAIL_ON_STATUS_CODE,
-          }).then((response) => {
-            expect(response.status).to.equal(200)
-            expect(
-              response.body.data[`deleteOrganization${func}`].status
-            ).to.equal('success')
-          })
-        }
-      })
-    })
-  })
-}
 
 function deleteCostCenter(organization, costCenter) {
   it(`Delete ${costCenter.name} - ${organization}`, updateRetry(2), () => {
@@ -121,7 +86,11 @@ describe('Wipe datas', () => {
   deleteUsersFromMasterData()
   deleteCostCenter(organizationA, costCenter1)
   deleteCostCenter(organizationA, costCenter2)
-  deleteOrganization(organizationA)
   deleteCostCenter(organizationB, costCenterB1)
-  deleteOrganization(organizationB)
+  it(`Deleting Organizations which we created in this workspace ${name}`, () => {
+    deleteOrganization(name)
+  })
+  it(`Deleting Organizations Requests which we created in this workspace ${name}`, () => {
+    deleteOrganization(name, true)
+  })
 })

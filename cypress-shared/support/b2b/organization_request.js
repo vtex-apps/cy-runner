@@ -3,6 +3,9 @@ import { OTHER_ROLES } from './utils.js'
 import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
 import { BUTTON_LABEL } from '../validation_text.js'
 import { FAIL_ON_STATUS_CODE } from '../common/constants.js'
+import { OrganizationRequestStatus } from './constants.js'
+import { deleteOrganization } from './graphql.js'
+import { updateRetry } from '../common/support.js'
 
 // Define constants
 const APP_NAME = 'vtex.b2b-organizations-graphql'
@@ -88,62 +91,167 @@ function verifyOrganizationData(
   })
 }
 
-export function createAndApproveOrganizationRequestTestCase(
+function submitOrganization(org) {
+  cy.waitForGraphql(
+    GRAPHL_OPERATIONS.CreateOrganizationRequest,
+    selectors.SubmitOrganization
+  ).then((req) => {
+    cy.get(selectors.PopupMsg).contains('pending approval')
+    const { id } = req.response.body.data.createOrganizationRequest
+
+    cy.setOrganizationItem(org, id)
+  })
+}
+
+export function createOrganizationTestCase(
   organization,
-  { costCenterName, costCenterAddress },
-  email
+  { costCenterName, costCenterAddress, approved = false, declined = false }
 ) {
   it(
-    `Creating ${organization} via storefront & Approving ${organization} via graphql`,
-    { retries: 3 },
+    `Creating ${organization.name} via storefront & Approving ${organization.name} via graphql`,
+    { retries: 2 },
     () => {
+      deleteOrganization(organization.email, organization.name, true)
       cy.getVtexItems().then((vtex) => {
-        const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${APP}`
         const { name, b2bCustomerAdmin, defaultCostCenter } =
           getOrganisationPayload(
-            organization,
+            organization.name,
             {
               costCenterName,
               costCenterAddress,
             },
-            email
+            organization.email
           )
 
         verifyOrganizationData({ name, b2bCustomerAdmin }, defaultCostCenter)
-        cy.waitForGraphql(
-          GRAPHL_OPERATIONS.CreateOrganizationRequest,
-          selectors.SubmitOrganization
-        ).then((req) => {
-          cy.get(selectors.PopupMsg).contains('pending approval')
-          const { id } = req.response.body.data.createOrganizationRequest
-          // Saving organizationRequest in organization.json and this request will be deleted this wipe.spec.js
-
-          cy.setOrganizationItem(`${organization}request`, id)
-          const GRAPHQL_ORAGANIZATION_APPROVAL_MUTATION =
-            'mutation' +
-            '($id: ID!,$status: String!)' +
-            '{updateOrganizationRequest(id: $id,status:$status){id}}'
-
-          const variables = {
-            id,
-            status: 'approved',
-          }
-
-          cy.request({
-            method: 'POST',
-            url: CUSTOM_URL,
-            body: {
-              query: GRAPHQL_ORAGANIZATION_APPROVAL_MUTATION,
-              variables,
-            },
-            ...FAIL_ON_STATUS_CODE,
-          }).then(() => {
-            cy.reload(true).contains('created')
-          })
-        })
+        submitOrganization(organization.name)
+        if (approved) {
+          updateOrganizationRequestStatus(
+            { vtex },
+            organization.name,
+            OrganizationRequestStatus.approved
+          )
+        } else if (declined) {
+          updateOrganizationRequestStatus(
+            { vtex },
+            organization.name,
+            OrganizationRequestStatus.declined
+          )
+        }
       })
     }
   )
+}
+
+export function approveOrganization(organization) {
+  it(`Approving ${organization} request`, () => {
+    cy.getVtexItems().then((vtex) => {
+      updateOrganizationRequestStatus(
+        { vtex, verify: false },
+        organization,
+        OrganizationRequestStatus.approved
+      )
+    })
+  })
+}
+
+function updateOrganizationRequestStatus({ vtex, verify = true }, org, status) {
+  cy.getOrganizationItems().then((items) => {
+    const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${APP}`
+
+    const GRAPHQL_ORAGANIZATION_UPDATE_MUTATION =
+      'mutation' +
+      '($id: ID!,$status: String!)' +
+      '{updateOrganizationRequest(id: $id,status:$status){id}}'
+
+    const variables = {
+      id: items[org],
+      status,
+    }
+
+    cy.request({
+      method: 'POST',
+      url: CUSTOM_URL,
+      body: {
+        query: GRAPHQL_ORAGANIZATION_UPDATE_MUTATION,
+        variables,
+      },
+      ...FAIL_ON_STATUS_CODE,
+    }).then(() => {
+      if (verify) {
+        const statusInUI =
+          status === OrganizationRequestStatus.approved ? 'created' : 'declined'
+
+        cy.reload(true).contains(statusInUI)
+      }
+    })
+  })
+}
+
+export function requestOrganizationAndVerifyPopup(
+  organization,
+  { costCenterName, costCenterAddress },
+  status
+) {
+  const msg =
+    status === OrganizationRequestStatus.approved
+      ? 'approved request'
+      : 'pending request'
+
+  it(
+    `Creating ${organization.name} via storefront and verify we are getting this message ${msg} in popup`,
+    updateRetry(2),
+    () => {
+      const { name, b2bCustomerAdmin, defaultCostCenter } =
+        getOrganisationPayload(
+          organization.name,
+          {
+            costCenterName,
+            costCenterAddress,
+          },
+          organization.email
+        )
+
+      verifyOrganizationData(
+        { name, b2bCustomerAdmin },
+        defaultCostCenter,
+        organization.email
+      )
+      // cy.get(selectors.SubmitOrganization).click()
+
+      cy.waitForGraphql(
+        GRAPHL_OPERATIONS.CreateOrganizationRequest,
+        selectors.SubmitOrganization
+      ).then(() => {
+        cy.contains(msg)
+      })
+    }
+  )
+}
+
+export function createOrganizationRequestTestCase(
+  organization,
+  { costCenterName, costCenterAddress },
+  email
+) {
+  it(`Creating ${organization.name} via storefront`, () => {
+    const { name, b2bCustomerAdmin, defaultCostCenter } =
+      getOrganisationPayload(
+        organization,
+        {
+          costCenterName,
+          costCenterAddress,
+        },
+        email
+      )
+
+    verifyOrganizationData(
+      { name, b2bCustomerAdmin },
+      defaultCostCenter,
+      organization.email
+    )
+    cy.get(selectors.SubmitOrganization).click()
+  })
 }
 
 export function createOrganizationWithInvalidEmail(
