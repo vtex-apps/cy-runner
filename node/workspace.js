@@ -120,7 +120,12 @@ async function doLinkApp(config) {
     qe.msg(`Unlinking ${app} if needed`, true, true)
     await qe.toolbelt(config.base.vtex.bin, `unlink ${app}@${version}.x`)
     const ignoreFile = path.join('..', '.vtexignore')
-    const exclusions = ['cypress', 'cy-runner', 'cypress-shared']
+    const exclusions = [
+      'cypress',
+      'cy-runner',
+      'cypress-shared',
+      'docs/**/*.{gif,png,jpg}',
+    ]
 
     qe.msg(`Adding cy-runner exclusions to ${ignoreFile}`, true, true)
     exclusions.forEach((line) => {
