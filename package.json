@@ -41,7 +41,7 @@
   "dependencies": {
     "@vtex/prettier-config": "^1.0.0",
     "axios": "^0.26.0",
-    "cypress": "^9.5.4",
+    "cypress": "^9.6.0",
     "cypress-file-upload": "^5.0.8",
     "eslint": "^7.4.0",
     "eslint-config-vtex": "^12.7.0",
