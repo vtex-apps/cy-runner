@@ -534,6 +534,9 @@ exports.runCypress = async (test, config, addOptions = {}) => {
       integrationFolder: specPath,
       supportFile: `${specPath.split(path.sep)[0]}/support`,
     },
+    env: {
+      DISPLAY: '',
+    },
     spec: test.specs,
     headed: config.base.cypress.runHeaded,
     browser: config.base.cypress.browser,
