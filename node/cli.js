@@ -101,11 +101,13 @@ async function startBackground(vtex, browser) {
     const src = path.join(__dirname, '..', envName)
     const dst = path.join(__dirname, envName)
 
-    // Make cypress.env.json is available to login
+    // Make cypress.env.json available to login
     if (!qe.storage(dst)) qe.storage(src, 'link', dst)
     login = qe
       .exec(`yarn cypress run -P node --browser ${browser}`, 'pipe')
       .toString()
+    // Set env to avoid new xbvf spawn
+    process.env.ELECTRON_RUN_AS_NODE = 'true'
   } catch (e) {
     qe.crash('Failed to authenticate using toolbelt', e)
   }
