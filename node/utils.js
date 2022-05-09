@@ -572,7 +572,7 @@ exports.runCypress = async (test, config, addOptions = {}) => {
   for (let i = 0; i < maxJobs; i++) {
     testToRun.push(
       cypress.run(options).then((result) => {
-        if (result.failures) this.crash(result.message)
+        if (result.failures) this.msg(JSON.stringify(result), 'error')
         testResult.push(result)
 
         const cleanResult = result
