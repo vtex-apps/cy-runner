@@ -1,6 +1,6 @@
 {
   "chromeWebSecurity": false,
-  "video": false,
+  "video": true,
   "videoCompression": false,
   "videoUploadOnPasses": false,
   "screenshotOnRunFailure": true,
