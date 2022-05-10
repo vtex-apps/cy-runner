@@ -394,15 +394,23 @@ exports.writeCypressJson = (config) => {
 
 exports.createStateFiles = (config) => {
   try {
-    const STATE_FILES = config.base.stateFiles
-    const SIZE = STATE_FILES.length
-    const plural = SIZE > 1 ? 'files' : 'file'
+    const { stateFiles } = config.base
+    const SIZE = stateFiles.length
+    const PLURAL = SIZE > 1 ? 'files' : 'file'
 
-    STATE_FILES.forEach((stateFile) => {
-      fs.writeFileSync(stateFile, '{}')
-    })
     if (SIZE) {
-      this.msg(`${SIZE} empty state ${plural} created successfully`)
+      this.msg(`Creating state ${PLURAL}`, 'warn')
+      stateFiles.forEach((stateFile) => {
+        const FILE = path.resolve(logPath, stateFile)
+        const LINK_FILE = path.resolve(__dirname, '..', stateFile)
+
+        // TODO: Improve the log location
+        // TODO: Make it compatible with Windows
+        this.msg(stateFile, true, true)
+        fs.writeFileSync(FILE, '{}')
+        if (this.storage(LINK_FILE)) this.storage(LINK_FILE, 'rm')
+        fs.linkSync(path.resolve(__dirname, '..', FILE), LINK_FILE)
+      })
     }
   } catch (e) {
     this.crash('Fail to create a empty state file', e)

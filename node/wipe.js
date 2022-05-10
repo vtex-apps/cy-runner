@@ -5,7 +5,7 @@ module.exports.wipe = async (config) => {
   const { wipe } = config.workspace
 
   if (wipe.enabled) {
-    const tempFiles = ['cypress.env.json', 'cypress.json']
+    const sensitiveFiles = ['cypress.env.json', 'cypress.json']
 
     qe.msg(`Wiping data`, 'warn')
     const { stopOnFail } = wipe
@@ -20,17 +20,12 @@ module.exports.wipe = async (config) => {
       qe.msg('Success to clean data')
     }
 
-    qe.msg('Removing temporary files', 'warn')
-    tempFiles.forEach((file) => {
+    qe.msg('Removing sensitive files', 'warn')
+    sensitiveFiles.forEach((file) => {
       qe.msg(file, true, true)
       qe.storage(file, 'rm')
     })
-    config.base.stateFiles.forEach((file) => {
-      // TODO Make it compatible with Windows
-      qe.msg(file, true, true)
-      qe.storage(file, 'rm')
-    })
-    qe.msg('Temporary files removed')
+    qe.msg('Sensitive files removed')
   }
 
   return qe.tack(START)
