@@ -60,7 +60,7 @@ async function main() {
   control.timing.teardown = await teardown(config)
 
   // Final Report
-  control.timing.total = qe.toc(control.start)
+  control.timing.total = qe.tock(control.start)
   await report(control, config)
 }
 
