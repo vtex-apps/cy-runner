@@ -35,7 +35,7 @@ exports.vtexCli = async (config) => {
 
   return {
     path: `${process.env.PATH}:${PATH_TOOLBELT_BIN}`,
-    time: qe.toc(START),
+    time: qe.tack(START),
   }
 }
 

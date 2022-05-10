@@ -26,11 +26,12 @@ module.exports.wipe = async (config) => {
       qe.storage(file, 'rm')
     })
     config.base.stateFiles.forEach((file) => {
+      // TODO Make it compatible with Windows
       qe.msg(file, true, true)
       qe.storage(file, 'rm')
     })
     qe.msg('Temporary files removed')
   }
 
-  return qe.toc(START)
+  return qe.tack(START)
 }

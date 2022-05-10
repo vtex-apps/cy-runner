@@ -90,12 +90,12 @@ exports.fail = (msg) => {
 
 exports.exec = (cmd, output) => {
   if (typeof output === 'undefined') output = 'ignore'
+  const maxTimeout = 4 * 60 * 1000
   let result
 
   try {
-    result = execSync(cmd, { stdio: output, timeout: 180000 })
+    result = execSync(cmd, { stdio: output, timeout: maxTimeout })
   } catch (e) {
-    /* eslint-disable prefer-template */
     const msg1 = '\n >>  Failed to run'
     const msg2 = `\n >>  Command: ${cmd}`
     const msg3 = `\n >>  Returns: ${e}`
@@ -106,7 +106,7 @@ exports.exec = (cmd, output) => {
     result = 'error'
 
     // If timeout, exit
-    if (/ETIMEDOUT/.test(e)) this.crash('Timeout running ' + cmd, e)
+    if (/ETIMEDOUT/.test(e)) this.crash(`Timeout running ${cmd}`, e)
   }
 
   return result
@@ -320,20 +320,20 @@ exports.mergeSecrets = (config, secrets) => {
 }
 
 exports.getWorkspaceName = (config) => {
-  let workspace = config.workspace.name
+  const { workspace } = config
 
-  config.workspace.random = false
-  if (workspace === 'random') {
+  workspace.random = false
+  if (workspace.name === 'random') {
     const seed = this.tick()
-    const { prefix } = config.workspace
+    const { prefix } = workspace
 
-    config.workspace.random = true
-    workspace = `${prefix}${seed.toString().substring(6, 13)}`
+    workspace.random = true
+    workspace.name = `${prefix}${seed.toString().substring(6, 13)}`
   }
 
-  this.msg(`Workspace to be used on this run: ${workspace}`)
+  this.msg(`Workspace to be used on this run: ${workspace.name}`)
 
-  return workspace
+  return workspace.name
 }
 
 exports.writeEnvJson = (config) => {
@@ -413,7 +413,7 @@ exports.tick = () => {
   return Date.now()
 }
 
-exports.toc = (start) => {
+exports.tack = (start) => {
   return `${(Date.now() - start) / 1000} seconds`
 }
 
@@ -575,6 +575,7 @@ exports.runCypress = async (test, config, addOptions = {}) => {
   for (let i = 0; i < maxJobs; i++) {
     testToRun.push(
       cypress.run(options).then((result) => {
+        // TODO Check the result.failures better
         if (result.failures) this.msg(JSON.stringify(result), 'error')
         testResult.push(result)
 
@@ -592,6 +593,7 @@ exports.runCypress = async (test, config, addOptions = {}) => {
   try {
     await Promise.all(testToRun)
   } catch (e) {
+    // TODO Move the crash to inside the Promise.all
     this.crash('Fail to run Cypress', e.message)
   }
 

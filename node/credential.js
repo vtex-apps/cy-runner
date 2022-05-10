@@ -59,6 +59,6 @@ exports.credentials = async (config) => {
 
   return {
     config,
-    time: qe.toc(START),
+    time: qe.tack(START),
   }
 }

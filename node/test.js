@@ -52,7 +52,7 @@ module.exports.strategy = async (config) => {
   }
 
   return {
-    time: qe.toc(START),
+    time: qe.tack(START),
     specsFailed,
     specsSkipped,
     specsPassed,

@@ -65,7 +65,7 @@ exports.workspace = async (config) => {
     }
   }
 
-  return qe.toc(START)
+  return qe.tack(START)
 }
 
 async function listApps(vtexBin) {
