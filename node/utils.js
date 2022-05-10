@@ -401,15 +401,8 @@ exports.createStateFiles = (config) => {
     if (SIZE) {
       this.msg(`Creating state ${PLURAL}`, 'warn')
       stateFiles.forEach((stateFile) => {
-        const FILE = path.resolve(logPath, stateFile)
-        const LINK_FILE = path.resolve(__dirname, '..', stateFile)
-
-        // TODO: Improve the log location
-        // TODO: Make it compatible with Windows
         this.msg(stateFile, true, true)
-        fs.writeFileSync(FILE, '{}')
-        if (this.storage(LINK_FILE)) this.storage(LINK_FILE, 'rm')
-        fs.linkSync(path.resolve(__dirname, '..', FILE), LINK_FILE)
+        fs.writeFileSync(stateFile, '{}')
       })
     }
   } catch (e) {
@@ -421,7 +414,7 @@ exports.tick = () => {
   return Date.now()
 }
 
-exports.tack = (start) => {
+exports.tock = (start) => {
   return `${(Date.now() - start) / 1000} seconds`
 }
 

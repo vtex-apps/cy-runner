@@ -19,5 +19,5 @@ module.exports.teardown = async (config) => {
     }
   }
 
-  return qe.tack(START)
+  return qe.tock(START)
 }

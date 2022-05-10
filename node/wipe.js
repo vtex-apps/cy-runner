@@ -28,5 +28,5 @@ module.exports.wipe = async (config) => {
     qe.msg('Sensitive files removed')
   }
 
-  return qe.tack(START)
+  return qe.tock(START)
 }
