@@ -2,8 +2,6 @@
   "name": "cy-runner",
   "vendor": "vtex",
   "version": "1.0.0",
-  "builders": {
-    "node": "6.x"
-  },
+  "builders": {},
   "$schema": "https://raw.githubusercontent.com/vtex/node-vtex-api/master/gen/manifest.schema"
 }
