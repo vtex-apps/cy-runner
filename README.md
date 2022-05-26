@@ -20,7 +20,7 @@ Tool to orchestrate Cypress tests
 2. Add a `cy-runner.yml` configuration file using the configuration template
 3. Create a env or local file with the secrets using the secrets template (`.VTEX_QE.json` in our example)
 3. Add a `cy-r` inside your `package.json` file to make easier call cy-runner or call it directly by `node cy-runner`
-```json
+```txt
 scripts {
     ...,
     "cy-r": "cd cy-runner && node cy-runner",
@@ -28,7 +28,7 @@ scripts {
 }
 ```
 4. If you are developing `cy-r`, maybe can be useful check it before start the tests. To do so, add another line in your `package.json`
-```json
+```txt
 scripts {
     ...,
     "cy-r": "cd cy-runner && node cy-runner",
