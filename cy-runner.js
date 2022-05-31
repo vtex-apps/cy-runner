@@ -11,9 +11,9 @@ const { report } = require('./node/report')
 const control = {
   start: qe.tick(),
   timing: {},
-  testsFailed: [],
-  testsSkipped: [],
-  testsPassed: [],
+  specsFailed: [],
+  specsSkipped: [],
+  specsPassed: [],
 }
 
 async function main() {
@@ -51,16 +51,16 @@ async function main() {
   } else {
     call = await strategy(config)
     control.timing.strategy = call.time
-    control.testsFailed = call.testsFailed
-    control.testsSkipped = call.testsSkipped
-    control.testsPassed = call.testsPassed
+    control.specsFailed = call.specsFailed
+    control.specsSkipped = call.specsSkipped
+    control.specsPassed = call.specsPassed
   }
 
   // Teardown
   control.timing.teardown = await teardown(config)
 
   // Final Report
-  control.timing.total = qe.toc(control.start)
+  control.timing.total = qe.tock(control.start)
   await report(control, config)
 }
 

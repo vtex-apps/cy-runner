@@ -30,12 +30,12 @@ exports.vtexCli = async (config) => {
 
     qe.msg(`Starting login process using ${config.base.vtex.account}`, 'warn')
     // Authenticate in background
-    await startBackground(config.base.vtex)
+    await startBackground(config.base.vtex, config.base.cypress.browser)
   }
 
   return {
     path: `${process.env.PATH}:${PATH_TOOLBELT_BIN}`,
-    time: qe.toc(START),
+    time: qe.tock(START),
   }
 }
 
@@ -74,7 +74,9 @@ async function installToolbelt(deployCli) {
   }
 }
 
-async function startBackground(vtex) {
+async function startBackground(vtex, browser) {
+  let login
+
   try {
     qe.msg('Toolbelt version', true, true, true)
     qe.exec(`${TOOLBELT_BIN} --version`, 'inherit')
@@ -93,18 +95,27 @@ async function startBackground(vtex) {
     }
 
     qe.msg(`callback file created`, 'complete', true)
-    qe.msg(`Trying to login on ${vtex.account}`, true, true)
+    qe.msg(`Trying to login on account ${vtex.account}`, true, true)
 
     const envName = 'cypress.env.json'
     const src = path.join(__dirname, '..', envName)
     const dst = path.join(__dirname, envName)
 
-    // Make cypress.env.json is available to login
+    // Make cypress.env.json available to login
     if (!qe.storage(dst)) qe.storage(src, 'link', dst)
-    qe.exec('yarn cypress run -P node')
+    login = qe
+      .exec(`yarn cypress run -P node --browser ${browser}`, 'pipe')
+      .toString()
+    // Set env to avoid new xbvf spawn
+    process.env.ELECTRON_RUN_AS_NODE = 'true'
   } catch (e) {
     qe.crash('Failed to authenticate using toolbelt', e)
   }
+
+  const tlb = await qe.toolbelt(TOOLBELT_BIN, 'whoami')
+
+  // Exit if login fails
+  if (!tlb.success) qe.crash(`Error to login on ${vtex.account}`, login)
 
   // Feedback to user and path to be added returned
   qe.msg(`Login on ${vtex.account} completed successfully`)

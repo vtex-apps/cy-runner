@@ -12,6 +12,7 @@
  ********************************************* */
 
 const { get } = require('lodash')
+const { mapValues } = require('lodash')
 
 const qe = require('./utils')
 
@@ -111,6 +112,9 @@ exports.validateConfig = (config, file) => {
       cypress: {
         devMode: 2,
         runHeaded: 2,
+        getCookies: 2,
+        maxJobs: 1,
+        quiet: 2,
         projectId: 0,
         video: 2,
         videoCompression: 6,
@@ -141,7 +145,7 @@ exports.validateConfig = (config, file) => {
       },
       installApps: 7,
       removeApps: 7,
-      wipe: { enabled: 2, stopOnFail: 2, spec: 0 },
+      wipe: { enabled: 2, stopOnFail: 2, specs: 7 },
       teardown: { enabled: 2 },
     },
   }
@@ -150,8 +154,8 @@ exports.validateConfig = (config, file) => {
     enabled: 2,
     sendDashboard: 2,
     stopOnFail: 2,
-    hardTries: 1,
     parallel: 2,
+    hardTries: 1,
     specs: 7,
   }
 
@@ -214,11 +218,17 @@ function checkSecret(key, value) {
 // Check dependencies
 function checkDependency(config) {
   qe.traverse([], config.strategy).forEach((item) => {
+    // eslint-disable-next-line vtex/prefer-early-return
     if (/dependency/.test(item.key)) {
-      const dep = get(config.strategy, item.type)
+      const dep = mapValues(config.strategy, (o) => {
+        return o.specs
+      })
 
-      if (dep === undefined) {
-        qe.crash('Dependency not found', `strategy.${item.type}`)
+      const checkRegex = new RegExp(item.type.split('*')[0])
+      const check = checkRegex.test(JSON.stringify(dep))
+
+      if (!check) {
+        qe.crash(`Spec ${item.key} not found`, item.type)
       }
     }
   })

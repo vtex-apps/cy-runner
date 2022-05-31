@@ -89,27 +89,6 @@ export function verifyPayment(promissory = true) {
   })
 }
 
-export function buyNowProductTestCase(product) {
-  it(
-    'Verify in checkout buyer is getting unauthorized popup message',
-    { retries: 2 },
-    () => {
-      cy.url().then((url) => {
-        if (!url.includes('checkout')) {
-          cy.searchProductinB2B(product)
-          cy.get(selectors.searchResult)
-            .first()
-            .should('have.text', product.toLowerCase())
-          cy.waitForSession(selectors.BuyNowBtnInB2B)
-        }
-
-        cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
-        cy.get(selectors.AccessDenied, { timeout: 5000 }).should('be.visible')
-      })
-    }
-  )
-}
-
 export function ordertheProduct(role) {
   it(`Verify ${role} is able to order the product`, () => {
     cy.intercept('**/paymentData').as('paymentData')

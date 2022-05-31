@@ -20,31 +20,28 @@ exports.workspace = async (config) => {
   if (manageWorkspace) {
     qe.msgSection('Workspace preparation')
     // Check if vtex cli is logged
-    const toolbelt = await qe.toolbelt(vtexBin, 'whoami')
+    const tlb = await qe.toolbelt(vtexBin, 'whoami')
 
-    if (typeof toolbelt === 'string') {
+    if (tlb.success) {
       // Feedback with actual user
-      qe.msg(`Toolbelt logged as ${toolbelt}`)
+      // eslint-disable-next-line prefer-destructuring
+      const user = tlb.stdout.split(' ')[7]
+
+      qe.msg(`Toolbelt logged as ${user}`)
       // Change workspace
       qe.msg(`Changing workspace to ${wrk.name}`)
       await qe.toolbelt(vtexBin, `workspace use ${wrk.name}`)
       // Install apps
       if (installApps.length > 0) {
         qe.msg('Installing apps', 'warn', false)
-        installApps.forEach((app) => {
-          qe.msg(app, true, true)
-          qe.toolbelt(vtexBin, `install ${app}`)
-        })
+        await doInstallApps(installApps, vtexBin)
         qe.msg('Apps installed successfully')
       }
 
       // Uninstall apps
       if (removeApps.length > 0) {
         qe.msg('Uninstalling apps', 'warn', false)
-        removeApps.forEach((app) => {
-          qe.msg(app, true, true)
-          qe.toolbelt(vtexBin, `uninstall ${app}`)
-        })
+        await doRemoveApps(removeApps, vtexBin)
         qe.msg('Apps uninstalled successfully')
       }
 
@@ -56,15 +53,19 @@ exports.workspace = async (config) => {
     } else {
       if (!config.base.vtex.deployCli.enabled) {
         qe.crash(
-          'deployCli is disabled, you must be logged on your system toolbelt to manage workspace'
+          'You must be logged on toolbelt to manage workspace',
+          `Do a 'vtex login ${config.base.vtex.account}' or enable base.vtex.deployCli`
         )
       }
 
-      qe.crash('You have deployCli enabled, but something goes wrong')
+      qe.crash(
+        'You have deployCli enabled, but login fails',
+        'Check your network!'
+      )
     }
   }
 
-  return qe.toc(START)
+  return qe.tock(START)
 }
 
 async function listApps(vtexBin) {
@@ -74,9 +75,31 @@ async function listApps(vtexBin) {
   const deps = await qe.toolbelt(vtexBin, 'deps ls')
 
   qe.msg(`Listing apps to ${appsLogFile}`)
-  qe.storage(appsLogFile, 'append', apps)
+  qe.storage(appsLogFile, 'append', apps.stdout)
   qe.msg(`Listing deps to ${depsLogFile}`)
-  qe.storage(depsLogFile, 'append', deps)
+  qe.storage(depsLogFile, 'append', deps.stdout)
+}
+
+async function doInstallApps(apps, vtexBin) {
+  for (const index in apps) {
+    const app = apps[index]
+    // eslint-disable-next-line no-await-in-loop
+    const tlb = await qe.toolbelt(vtexBin, `install ${app}`)
+
+    if (!tlb.success) qe.crash(`Error on install ${app}`)
+    qe.msg(app, true, true)
+  }
+}
+
+async function doRemoveApps(apps, vtexBin) {
+  for (const index in apps) {
+    const app = apps[index]
+    // eslint-disable-next-line no-await-in-loop
+    const tlb = await qe.toolbelt(vtexBin, `uninstall ${app}`)
+
+    if (!tlb.success) qe.crash(`Error on remove ${app}`)
+    qe.msg(app, true, true)
+  }
 }
 
 async function doLinkApp(config) {
@@ -97,7 +120,12 @@ async function doLinkApp(config) {
     qe.msg(`Unlinking ${app} if needed`, true, true)
     await qe.toolbelt(config.base.vtex.bin, `unlink ${app}@${version}.x`)
     const ignoreFile = path.join('..', '.vtexignore')
-    const exclusions = ['cypress', 'cy-runner', 'cypress-shared']
+    const exclusions = [
+      'cypress',
+      'cy-runner',
+      'cypress-shared',
+      'docs/**/*.{gif,png,jpg}',
+    ]
 
     qe.msg(`Adding cy-runner exclusions to ${ignoreFile}`, true, true)
     exclusions.forEach((line) => {
@@ -111,18 +139,18 @@ async function doLinkApp(config) {
       : '--no-watch'
 
     if (!qe.storage(logFolder, 'exists')) qe.storage(logFolder, 'mkdir')
-    const check = await qe.toolbelt(
+    const tlb = await qe.toolbelt(
       config.base.vtex.bin,
       `link ${logOutput}`,
       app
     )
 
-    if (check === 'error') {
+    if (tlb.success) {
+      qe.msg('App linked successfully')
+    } else {
       qe.msg(`Error linking ${app}`, 'error')
       await teardown(config)
       qe.crash('Prematurely exit duo a link failure')
-    } else {
-      qe.msg('App linked successfully')
     }
   }
 }

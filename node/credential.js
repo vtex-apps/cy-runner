@@ -3,7 +3,7 @@ const qe = require('./utils')
 exports.credentials = async (config) => {
   const START = qe.tick()
 
-  if (config.base.secrets.enabled) {
+  if (config.base.secrets.enabled && config.base.cypress.getCookies) {
     // Admin cookie
     qe.msgSection('Cookies')
     qe.msg('Getting cookies', 'warn')
@@ -24,8 +24,8 @@ exports.credentials = async (config) => {
       if (response) {
         if (response.data.authStatus !== 'Success') {
           qe.crash(
-            'Failed to get credentials',
-            'Check your secrets vtex.apiToken and vtex.apiKey'
+            'Failed to get admin credentials',
+            'Check the secrets vtex.apiToken and vtex.apiKey'
           )
         }
 
@@ -40,10 +40,17 @@ exports.credentials = async (config) => {
         // User cookie
         qe.msg('Requesting user cookie', true, true)
         const vtexBin = config.base.vtex.bin
-        const cookieRobot = await qe.toolbelt(vtexBin, 'local token')
+        const tlb = await qe.toolbelt(vtexBin, 'local token')
 
-        config.base.vtex.userAuthCookieValue = cookieRobot.slice(0, -1)
-        qe.writeEnvJson(config)
+        if (tlb.success) {
+          config.base.vtex.userAuthCookieValue = tlb.stdout.slice(0, -1)
+          qe.writeEnvJson(config)
+        } else {
+          qe.crash(
+            'Failed to get robot credentials',
+            'You logged out from toolbelt while the test is running?'
+          )
+        }
       }
     } catch (e) {
       qe.crash('Fail on axios', e)
@@ -52,6 +59,6 @@ exports.credentials = async (config) => {
 
   return {
     config,
-    time: qe.toc(START),
+    time: qe.tock(START),
   }
 }

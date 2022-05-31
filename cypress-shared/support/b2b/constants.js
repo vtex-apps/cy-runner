@@ -8,6 +8,12 @@ import {
 const ORGANIZATION_A = `OrganizationA-${Cypress.env().workspace.name}`
 const ORGANIZATION_B = `OrganizationB-${Cypress.env().workspace.name}`
 
+export const OrganizationRequestStatus = {
+  approved: 'approved',
+  declined: 'declined',
+  pending: 'pending',
+}
+
 export const USA_ADDRESS_1 = {
   postalCode: '33301',
   country: 'USA',

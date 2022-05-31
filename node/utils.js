@@ -1,4 +1,5 @@
 /* eslint-disable no-await-in-loop */
+/* eslint-disable vtex/prefer-early-return */
 const { execSync } = require('child_process')
 const fs = require('fs')
 const path = require('path')
@@ -12,7 +13,8 @@ const { teardown } = require('./teardown')
 const schema = require('./schema')
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms))
-const logFile = path.join('.', 'logs', 'cy-runner.log')
+const logPath = path.join('.', 'logs')
+const logFile = path.join(logPath, 'cy-runner.log')
 const ciNumber = Date.now().toString().substring(6, 13)
 const QE = '[QE] === '
 
@@ -88,12 +90,12 @@ exports.fail = (msg) => {
 
 exports.exec = (cmd, output) => {
   if (typeof output === 'undefined') output = 'ignore'
+  const maxTimeout = 4 * 60 * 1000
   let result
 
   try {
-    result = execSync(cmd, { stdio: output, timeout: 180000 })
+    result = execSync(cmd, { stdio: output, timeout: maxTimeout })
   } catch (e) {
-    /* eslint-disable prefer-template */
     const msg1 = '\n >>  Failed to run'
     const msg2 = `\n >>  Command: ${cmd}`
     const msg3 = `\n >>  Returns: ${e}`
@@ -104,7 +106,7 @@ exports.exec = (cmd, output) => {
     result = 'error'
 
     // If timeout, exit
-    if (/ETIMEDOUT/.test(e)) this.crash('Timeout running ' + cmd, e)
+    if (/ETIMEDOUT/.test(e)) this.crash(`Timeout running ${cmd}`, e)
   }
 
   return result
@@ -119,8 +121,8 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
   switch (cmd.split(' ')[0]) {
     case 'whoami':
       stdout = this.exec(`${bin} ${cmd}`, 'pipe').toString()
-
-      return /Logged/.test(stdout) ? stdout.split(' ')[7] : false
+      check = /Logged/.test(stdout)
+      break
 
     case 'workspace':
       stdout = this.exec(`echo y | ${bin} ${cmd}`, 'pipe').toString()
@@ -152,7 +154,7 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
       while (!check && thisTry < MAX_TRIES) {
         thisTry++
         stdout = this.exec(`${bin} ls`, 'pipe').toString()
-        await delay(thisTry * 2000)
+        await delay(thisTry * 1000)
         check = linkApp.test(stdout)
       }
 
@@ -170,11 +172,9 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
 
   if (!check) {
     this.msg(`Toolbelt command failed: ${bin} ${cmd}\n${stdout}`, 'error')
-
-    return 'error'
   }
 
-  return stdout
+  return { success: check, stdout }
 }
 
 exports.vtexCliInstallApp = (bin) => {
@@ -320,20 +320,20 @@ exports.mergeSecrets = (config, secrets) => {
 }
 
 exports.getWorkspaceName = (config) => {
-  let workspace = config.workspace.name
+  const { workspace } = config
 
-  config.workspace.random = false
-  if (workspace === 'random') {
+  workspace.random = false
+  if (workspace.name === 'random') {
     const seed = this.tick()
-    const { prefix } = config.workspace
+    const { prefix } = workspace
 
-    config.workspace.random = true
-    workspace = `${prefix}${seed.toString().substring(6, 13)}`
+    workspace.random = true
+    workspace.name = `${prefix}${seed.toString().substring(6, 13)}`
   }
 
-  this.msg(`Workspace to be used on this run: ${workspace}`)
+  this.msg(`Workspace to be used on this run: ${workspace.name}`)
 
-  return workspace
+  return workspace.name
 }
 
 exports.writeEnvJson = (config) => {
@@ -394,15 +394,16 @@ exports.writeCypressJson = (config) => {
 
 exports.createStateFiles = (config) => {
   try {
-    const STATE_FILES = config.base.stateFiles
-    const SIZE = STATE_FILES.length
-    const plural = SIZE > 1 ? 'files' : 'file'
+    const { stateFiles } = config.base
+    const SIZE = stateFiles.length
+    const PLURAL = SIZE > 1 ? 'files' : 'file'
 
-    STATE_FILES.forEach((stateFile) => {
-      fs.writeFileSync(stateFile, '{}')
-    })
     if (SIZE) {
-      this.msg(`${SIZE} empty state ${plural} created successfully`)
+      this.msg(`Creating state ${PLURAL}`, 'warn')
+      stateFiles.forEach((stateFile) => {
+        this.msg(stateFile, true, true)
+        fs.writeFileSync(stateFile, '{}')
+      })
     }
   } catch (e) {
     this.crash('Fail to create a empty state file', e)
@@ -413,7 +414,7 @@ exports.tick = () => {
   return Date.now()
 }
 
-exports.toc = (start) => {
+exports.tock = (start) => {
   return `${(Date.now() - start) / 1000} seconds`
 }
 
@@ -439,21 +440,16 @@ exports.traverse = (result, obj, previousKey) => {
 exports.sectionsToRun = async (config) => {
   this.msgSection('Sections to run')
   let linkApp = false
-  const hasDependency = (check) => {
-    const dep = get(config, `${check}.dependency`)
+  const getList = (item, property) => {
+    const list = get(config, `${item}.${property}`)
 
-    if (dep !== undefined) {
-      return dep
-    }
-
-    return []
+    return list !== undefined ? list : []
   }
 
   this.traverse([], config).forEach((item) => {
     // Items enabled
     if (/enabled/.test(item.key) && /true/.test(item.type)) {
-      // eslint-disable-next-line prefer-destructuring
-      const itemEnabled = item.key.split('.enabled')[0]
+      const [itemEnabled] = item.key.split('.enabled')
 
       linkApp = itemEnabled === 'workspace.linkApp'
       if (linkApp && itemEnabled === 'workspace.linkApp.logOutput') {
@@ -462,18 +458,13 @@ exports.sectionsToRun = async (config) => {
         this.msg('Never enable it on CI environments', true, true)
       } else {
         this.msg(itemEnabled)
-        hasDependency(itemEnabled).forEach((dep) => {
-          this.msg(`dependency: strategy.${dep}`, true, true)
+        getList(itemEnabled, 'specs').forEach((spec) => {
+          this.msg(`runs ${spec}`, true, true)
+        })
+        getList(itemEnabled, 'dependency').forEach((dep) => {
+          this.msg(`deps ${dep}`, true, true)
         })
       }
-    }
-
-    // Items disabled
-    if (/enabled/.test(item.key) && /false/.test(item.type)) {
-      // eslint-disable-next-line prefer-destructuring
-      const itemEnabled = item.key.split('.enabled')[0]
-
-      this.msg(itemEnabled, 'error')
     }
   })
 
@@ -481,11 +472,17 @@ exports.sectionsToRun = async (config) => {
   const appsToRemove = config.workspace.removeApps.length
 
   if (appsToInstall) {
-    this.msg(`${appsToInstall} app(s) on worksapce.installApps`)
+    this.msg('workspace.installApps')
+    getList('workspace', 'installApps').forEach((app) => {
+      this.msg(`${app}`, true, true)
+    })
   }
 
   if (appsToRemove) {
-    this.msg(`${appsToRemove} app(s) on worksapce.removeApps`)
+    this.msg('workspace.removeApps')
+    getList('workspace', 'removeApps').forEach((app) => {
+      this.msg(`${app}`, true, true)
+    })
   }
 }
 
@@ -514,68 +511,94 @@ exports.openCypress = async () => {
   }
 }
 
-exports.runCypress = async (
-  test,
-  config,
-  addOptions = {},
-  noOutput = false
-  // eslint-disable-next-line max-params
-) => {
-  if (typeof test.spec === 'string') test.spec = [test.spec]
-  const spec = path.parse(test.spec[0])
-  // eslint-disable-next-line prefer-destructuring
-  const cyPath = spec.dir.split(path.sep)[0]
+exports.runCypress = async (test, config, addOptions = {}) => {
+  // If mix base path for specs, stop it
+  const specPath = path.parse(test.specs[0]).dir
+
+  test.specs.forEach((spec) => {
+    const pathToCheck = path.parse(spec).dir
+
+    if (pathToCheck !== specPath) {
+      this.msg('Cypress path must be unique among specs', 'error')
+      test.specs.forEach((specDef) => {
+        this.msg(specDef, true, true)
+      })
+      this.crash(
+        'Test stopped due a strategy misconfiguration',
+        `strategy.${test.name}`
+      )
+    }
+  })
+
   const options = {
     config: {
-      integrationFolder: spec.dir,
-      supportFile: `${cyPath}/support`,
+      integrationFolder: specPath,
+      supportFile: `${specPath.split(path.sep)[0]}/support`,
     },
-    spec: test.spec,
+    env: {
+      DISPLAY: '',
+    },
+    spec: test.specs,
     headed: config.base.cypress.runHeaded,
     browser: config.base.cypress.browser,
+    quiet: config.base.cypress.quiet,
   }
 
   // Options tuning
   if (test.sendDashboard) {
-    const cyEnv = config.base.cypress.internalEnv
+    const RUN_ID = process.env.GITHUB_RUN_ID
+    const RUN_ATTEMPT = process.env.GITHUB_RUN_ATTEMPT
 
     options.key = config.base.cypress.dashboardKey
     options.record = true
-    // If in dev mode and dashboard on, give the ciBuildNumber
-    if (typeof cyEnv === 'string' && cyEnv === 'development') {
-      process.env.CYPRESS_INTERNAL_ENV = cyEnv
-      options.ciBuildId = ciNumber
+    options.ciBuildId =
+      typeof RUN_ID === 'undefined' ? ciNumber : `${RUN_ID}-${RUN_ATTEMPT}`
+    if (config.base.cypress.sorry) {
+      process.env.CYPRESS_INTERNAL_ENV = 'development'
     }
 
     merge(options, addOptions)
   }
 
   // Run Cypress
-  let testPassed = true
+  const testToRun = []
+  const testResult = []
+  let maxJobs = 1
+
+  // Set the number of runners
+  if (test.parallel) {
+    maxJobs =
+      test.specs.length < config.base.cypress.maxJobs
+        ? test.specs.length
+        : config.base.cypress.maxJobs
+  }
+
+  for (let i = 0; i < maxJobs; i++) {
+    testToRun.push(
+      cypress.run(options).then((result) => {
+        // TODO Check the result.failures better
+        if (result.failures) this.msg(JSON.stringify(result), 'error')
+        testResult.push(result)
+
+        const cleanResult = result
+        const logName = result.runs[0].spec.name.replace('.js', '.yml')
+        const logSpec = path.join(logPath, logName)
+
+        delete cleanResult.config
+        this.storage(logSpec, 'append', `# ${this.tick()} ################\n\n`)
+        this.storage(logSpec, 'append', yaml.dump(cleanResult))
+      })
+    )
+  }
 
   try {
-    if (noOutput) {
-      const cfg =
-        `integrationFolder='${options.config.integrationFolder}',` +
-        `supportFile='${options.config.supportFile}'`
-
-      const stdout = this.exec(
-        `yarn cypress run -s ${config.workspace.wipe.spec} -c ${cfg}`,
-        'pipe'
-      ).toString()
-
-      testPassed = /All specs passed/.test(stdout)
-    } else {
-      await cypress.run(options).then((result) => {
-        if (result.failures) this.crash(result.message)
-        testPassed = result.totalFailed < 1
-      })
-    }
+    await Promise.all(testToRun)
   } catch (e) {
+    // TODO Move the crash to inside the Promise.all
     this.crash('Fail to run Cypress', e.message)
   }
 
-  return testPassed
+  return testResult
 }
 
 exports.request = async (config) => {
