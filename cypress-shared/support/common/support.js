@@ -205,7 +205,7 @@ export function updateShippingInformation({
   pickup = false,
   invalid = false,
 }) {
-  const { deliveryScreenAddress } = addressList[postalCode]
+  const { deliveryScreenAddress, fullAddress } = addressList[postalCode]
 
   startShipping()
   cy.intercept('https://rc.vtex.com/v8').as('v8')
@@ -219,9 +219,27 @@ export function updateShippingInformation({
       cy.get(selectors.PickupInStore, { timeout: 5000 })
         .should('be.visible')
         .click()
-      cy.get(selectors.PickupItems, { timeout: 5000 })
-        .should('be.visible')
-        .contains('Pickup')
+      cy.get('body').then(async ($body) => {
+        if ($body.find('#find-pickup-link').length) {
+          cy.get('#find-pickup-link').click()
+          cy.get('.vtex-pickup-points-modal-3-x-modalSearch').should(
+            'be.visible'
+          )
+          // eslint-disable-next-line cypress/no-unnecessary-waiting
+          cy.get('.vtex-pickup-points-modal-3-x-modalSearch input')
+            .click()
+            .type(fullAddress, { delay: 100 })
+            .wait(1000)
+            .type('{downarrow}{enter}')
+          cy.get('.vtex-pickup-points-modal-3-x-pickupPointMain').click()
+          cy.get(selectors.ConfirmPickup).should('be.visible').click()
+        } else {
+          cy.get(selectors.PickupItems, { timeout: 5000 })
+            .should('be.visible')
+            .contains('Pickup')
+          cy.get(selectors.FillInvoiceButton).click()
+        }
+      })
       cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
     } else {
       cy.get(selectors.CartTimeline).should('be.visible').click({ force: true })
