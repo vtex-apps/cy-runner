@@ -6,7 +6,9 @@ const config = Cypress.env()
 const WIPE_ENV = 'wipe'
 
 // Constants
-const { account } = config.base.vtex
+const { account, apiKey, apiToken, authorizationHeader, baseUrl } =
+  config.base.vtex
+
 const TAX_APP = config.workspace.prefix
 const { name } = config.workspace
 
@@ -17,52 +19,50 @@ export function configureTargetWorkspace(app, version, workspace = 'master') {
     `Configuring target workspace as ${workspace} in ${app}`,
     updateRetry(2),
     () => {
-      cy.getVtexItems().then((vtex) => {
-        cy.getOrderItems().then((order) => {
-          if (order[WIPE_ENV]) {
-            // Define constants
-            const APP_NAME = 'vtex.apps-graphql'
-            const APP_VERSION = '3.x'
-            const APP = `${APP_NAME}@${APP_VERSION}`
-            const CUSTOM_URL = `https://${vtex.account}.myvtex.com/_v/private/admin-graphql-ide/v0/${APP}`
+      cy.getOrderItems().then((order) => {
+        if (order[WIPE_ENV]) {
+          // Define constants
+          const APP_NAME = 'vtex.apps-graphql'
+          const APP_VERSION = '3.x'
+          const APP = `${APP_NAME}@${APP_VERSION}`
+          const CUSTOM_URL = `https://${account}.myvtex.com/_v/private/admin-graphql-ide/v0/${APP}`
 
-            const GRAPHQL_MUTATION =
-              'mutation' +
-              '($app:String,$version:String,$settings:String)' +
-              '{saveAppSettings(app:$app,version:$version,settings:$settings){message}}'
+          const GRAPHQL_MUTATION =
+            'mutation' +
+            '($app:String,$version:String,$settings:String)' +
+            '{saveAppSettings(app:$app,version:$version,settings:$settings){message}}'
 
-            const QUERY_VARIABLES = {
-              app,
-              version,
-              settings: `{"targetWorkspace":"${workspace}"}`,
-            }
-
-            // Mutating it to the new workspace
-            cy.request({
-              method: 'POST',
-              url: CUSTOM_URL,
-              ...FAIL_ON_STATUS_CODE,
-              body: {
-                query: GRAPHQL_MUTATION,
-                variables: QUERY_VARIABLES,
-              },
-            })
-              .its('body.data.saveAppSettings.message', { timeout: 10000 })
-              .should('contain', workspace)
-          } else {
-            cy.log('Tax configuration is configured with another workspace')
+          const QUERY_VARIABLES = {
+            app,
+            version,
+            settings: `{"targetWorkspace":"${workspace}"}`,
           }
-        })
+
+          // Mutating it to the new workspace
+          cy.request({
+            method: 'POST',
+            url: CUSTOM_URL,
+            ...FAIL_ON_STATUS_CODE,
+            body: {
+              query: GRAPHQL_MUTATION,
+              variables: QUERY_VARIABLES,
+            },
+          })
+            .its('body.data.saveAppSettings.message', { timeout: 10000 })
+            .should('contain', workspace)
+        } else {
+          cy.log('Tax configuration is configured with another workspace')
+        }
       })
     }
   )
 }
 
-function callOrderFormConfiguration(vtex) {
+function callOrderFormConfiguration() {
   cy.request({
     method: 'GET',
     url: ORDER_FORM_CONFIG,
-    headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
+    headers: VTEX_AUTH_HEADER(apiKey, apiToken),
     ...FAIL_ON_STATUS_CODE,
   })
     .as('ORDERFORM')
@@ -72,35 +72,33 @@ function callOrderFormConfiguration(vtex) {
   return cy.get('@ORDERFORM')
 }
 
-function makeDecision(vtex, workspace) {
+function makeDecision(workspace) {
   if (!workspace) {
     // If workspace is null then we are on wipe step
-    callOrderFormConfiguration(vtex).then(({ body }) => {
-      const { taxConfiguration } = body
-
+    callOrderFormConfiguration().then(({ body }) => {
       // if we have workspace name in taxConfiguration then return true else null
-      return taxConfiguration ? body.taxConfiguration.url.includes(name) : null
+      cy.setOrderItem(
+        WIPE_ENV,
+        body.taxConfiguration ? body.taxConfiguration.url.includes(name) : null
+      )
     })
   } else {
     // if workspace is not null then we are on postSetup step
     cy.log('Setting workspace in taxConfiguration')
-
-    return true
+    cy.setOrderItem(WIPE_ENV, true)
   }
 }
 
 export function configureTaxConfigurationInOrderForm(workspace = null) {
   it(`Configuring tax configuration in Order Form Configuration API`, () => {
-    cy.getVtexItems().then((vtex) => {
-      const decision = makeDecision(vtex, workspace)
-
-      if (decision) {
-        cy.setOrderItem(WIPE_ENV, true)
-        callOrderFormConfiguration(vtex).then((response) => {
+    makeDecision(workspace)
+    cy.getOrderItems().then((order) => {
+      if (order[WIPE_ENV]) {
+        callOrderFormConfiguration().then((response) => {
           response.body.taxConfiguration = workspace
             ? {
-                url: `https://${workspace}--${vtex.account}.myvtex.com/${TAX_APP}/checkout/order-tax`,
-                authorizationHeader: vtex.authorizationHeader,
+                url: `https://${workspace}--${account}.myvtex.com/${TAX_APP}/checkout/order-tax`,
+                authorizationHeader,
                 allowExecutionAfterErrors: false,
                 integratedAuthentication: false,
                 appId: null,
@@ -109,7 +107,7 @@ export function configureTaxConfigurationInOrderForm(workspace = null) {
           cy.request({
             method: 'POST',
             url: ORDER_FORM_CONFIG,
-            headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
+            headers: VTEX_AUTH_HEADER(apiKey, apiToken),
             ...FAIL_ON_STATUS_CODE,
             body: response.body,
           })
@@ -126,35 +124,31 @@ export function configureTaxConfigurationInOrderForm(workspace = null) {
 
 export function cancelTheOrder(orderEnv) {
   it(`Cancel the Order`, () => {
-    cy.getVtexItems().then((vtex) => {
-      cy.getOrderItems().then((order) => {
-        cy.request({
-          method: 'POST',
-          url: cancelOrderAPI(vtex.baseUrl, order[orderEnv]),
-          headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
-          body: {
-            reason: 'Customer bought it by mistake',
-          },
-        })
-          .its('status')
-          .should('equal', 200)
+    cy.getOrderItems().then((order) => {
+      cy.request({
+        method: 'POST',
+        url: cancelOrderAPI(baseUrl, order[orderEnv]),
+        headers: VTEX_AUTH_HEADER(apiKey, apiToken),
+        body: {
+          reason: 'Customer bought it by mistake',
+        },
       })
+        .its('status')
+        .should('equal', 200)
     })
   })
 }
 
 export function startE2E(app, workspace) {
   it(`Start ${app}`, () => {
-    cy.getVtexItems().then((vtex) => {
-      callOrderFormConfiguration(vtex).then((response) => {
-        const { taxConfiguration } = response.body
+    callOrderFormConfiguration().then((response) => {
+      const { taxConfiguration } = response.body
 
-        if (!taxConfiguration) {
-          expect(response.body.taxConfiguration).to.be.null
-        } else {
-          expect(response.body.taxConfiguration.url).to.include(workspace)
-        }
-      })
+      if (!taxConfiguration) {
+        expect(response.body.taxConfiguration).to.be.null
+      } else {
+        expect(response.body.taxConfiguration.url).to.include(workspace)
+      }
     })
   })
 }
