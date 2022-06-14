@@ -72,11 +72,12 @@ export function addProduct(
         // Make sure proceed to payment is visible
         cy.get(selectors.ProceedtoCheckout).should('be.visible')
       }
-      // Make sure shipping and taxes is visible
 
+      // Make sure shipping and taxes is visible
       cy.get(selectors.SummaryText).should('have.contain', 'Shipping and taxes')
       // Make sure remove button is visible
       cy.get(selectors.RemoveProduct).should('be.visible')
+      cy.get('#items-price div[class*=price]').should('have.contain', '$')
       if (paypal) {
         cy.get(selectors.ProceedtoCheckout).should('be.visible').click()
         cy.get(selectors.ItemQuantity).should('be.visible')
@@ -209,6 +210,7 @@ export function updateShippingInformation({
 
   startShipping()
   cy.intercept('https://rc.vtex.com/v8').as('v8')
+  cy.intercept('**/shippingData').as('shippingData')
   cy.fillAddress(postalCode).then(() => {
     if (invalid) {
       cy.get(selectors.DeliveryUnavailable, { timeout: 5000 }).contains(
@@ -216,6 +218,7 @@ export function updateShippingInformation({
       )
       cy.get(selectors.DeliveryAddressText, { timeout: 5000 }).click()
     } else if (pickup) {
+      cy.wait('@shippingData')
       cy.get(selectors.PickupInStore, { timeout: 5000 })
         .should('be.visible')
         .click()

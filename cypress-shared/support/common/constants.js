@@ -22,6 +22,11 @@ export const addressList = {
     deliveryScreenAddress: 'Texas Road 8',
     fullAddress: '8 Texas Road',
   },
+  94536: {
+    country: 'USA',
+    deliveryScreenAddress: 'Shinn Street ',
+    fullAddress: '  Shinn Street Fremont, CA 94536',
+  },
 }
 
 // VTEX_AUTH_HEADER for API Calls
