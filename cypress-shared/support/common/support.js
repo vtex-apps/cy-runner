@@ -72,11 +72,12 @@ export function addProduct(
         // Make sure proceed to payment is visible
         cy.get(selectors.ProceedtoCheckout).should('be.visible')
       }
-      // Make sure shipping and taxes is visible
 
+      // Make sure shipping and taxes is visible
       cy.get(selectors.SummaryText).should('have.contain', 'Shipping and taxes')
       // Make sure remove button is visible
       cy.get(selectors.RemoveProduct).should('be.visible')
+      cy.get('#items-price div[class*=price]').should('have.contain', '$')
       if (paypal) {
         cy.get(selectors.ProceedtoCheckout).should('be.visible').click()
         cy.get(selectors.ItemQuantity).should('be.visible')
@@ -205,10 +206,11 @@ export function updateShippingInformation({
   pickup = false,
   invalid = false,
 }) {
-  const { deliveryScreenAddress, fullAddress } = addressList[postalCode]
+  const { deliveryScreenAddress } = addressList[postalCode]
 
   startShipping()
   cy.intercept('https://rc.vtex.com/v8').as('v8')
+  cy.intercept('**/shippingData').as('shippingData')
   cy.fillAddress(postalCode).then(() => {
     if (invalid) {
       cy.get(selectors.DeliveryUnavailable, { timeout: 5000 }).contains(
@@ -216,30 +218,13 @@ export function updateShippingInformation({
       )
       cy.get(selectors.DeliveryAddressText, { timeout: 5000 }).click()
     } else if (pickup) {
+      cy.wait('@shippingData')
       cy.get(selectors.PickupInStore, { timeout: 5000 })
         .should('be.visible')
         .click()
-      cy.get('body').then(async ($body) => {
-        if ($body.find('#find-pickup-link').length) {
-          cy.get('#find-pickup-link').click()
-          cy.get('.vtex-pickup-points-modal-3-x-modalSearch').should(
-            'be.visible'
-          )
-          // eslint-disable-next-line cypress/no-unnecessary-waiting
-          cy.get('.vtex-pickup-points-modal-3-x-modalSearch input')
-            .click()
-            .type(fullAddress, { delay: 100 })
-            .wait(1000)
-            .type('{downarrow}{enter}')
-          cy.get('.vtex-pickup-points-modal-3-x-pickupPointMain').click()
-          cy.get(selectors.ConfirmPickup).should('be.visible').click()
-        } else {
-          cy.get(selectors.PickupItems, { timeout: 5000 })
-            .should('be.visible')
-            .contains('Pickup')
-          cy.get(selectors.FillInvoiceButton).click()
-        }
-      })
+      cy.get(selectors.PickupItems, { timeout: 5000 })
+        .should('be.visible')
+        .contains('Pickup')
       cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
     } else {
       cy.get(selectors.CartTimeline).should('be.visible').click({ force: true })
