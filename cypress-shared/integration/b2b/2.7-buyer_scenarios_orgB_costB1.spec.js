@@ -6,26 +6,24 @@ import {
   productShouldNotbeAvailableTestCase,
   verifySession,
 } from '../../support/b2b/common.js'
-import {
-  // createQuote,
-  quoteShouldbeVisibleTestCase,
-} from '../../support/b2b/quotes.js'
+// import // createQuote,
+// quoteShouldbeVisibleTestCase,
+// '../../support/b2b/quotes.js'
 
 describe('Organization B - Cost Center B1 - Buyer Scenario', () => {
   testSetup(false)
 
-  const { organizationName, users, nonAvailableProduct, quotes } =
-    b2b.OrganizationB
+  const { users, nonAvailableProduct } = b2b.OrganizationB
   // const { users, nonAvailableProduct } = b2b.OrganizationB
 
   loginToStoreFront(users.Buyer1, ROLE_DROP_DOWN.Buyer)
   verifySession(b2b.OrganizationB)
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
-  quoteShouldbeVisibleTestCase(
-    organizationName,
-    quotes.OrganizationAdmin.quotes1,
-    organizationName
-  )
+  // quoteShouldbeVisibleTestCase(
+  //   organizationName,
+  //   quotes.OrganizationAdmin.quotes1,
+  //   organizationName
+  // )
   // quoteShouldNotBeVisibleTestCase(
   //   organizationName,
   //   organizationAQuotes.OrganizationAdmin.quotes1,

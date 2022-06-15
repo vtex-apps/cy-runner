@@ -59,3 +59,47 @@ export function deleteOrganization(search, organizationRequest = false) {
     })
   })
 }
+
+// query($id:ID!){
+//   shippingPolicy(id:$id){
+//     id,
+//     name,
+//     shippingMethod,
+//     pickupPointsSettings{
+//       pickupPointIds,
+//       pickupPointTags,
+//       sellers
+//     }
+//   }
+// }
+
+// {
+//   "id": "sha1920ede3r"
+// }
+
+// {
+//   "data": {
+//     "shippingPolicy": {
+//       "id": "sha1920ede3r",
+//       "name": "Test Shipping",
+//       "shippingMethod": "Normal (1234)",
+//       "pickupPointsSettings": {
+//         "pickupPointIds": [
+//           "ssq13fae",
+//           "456",
+//           "12a0ff64-91e6-48ff-81a1-b6df58be6d4f",
+//           "456789"
+//         ],
+//         "pickupPointTags": [],
+//         "sellers": []
+//       }
+//     }
+//   }
+// }
+
+// mutation($shippingPolicy: ShippingPolicyInput!){
+//   updateShippingPolicy(shippingPolicy: $shippingPolicy){
+//     id,
+//     name
+//   }
+// }

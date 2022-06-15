@@ -3,7 +3,7 @@ import b2b from '../../support/b2b/constants.js'
 import {
   ROLE_ID_EMAIL_MAPPING as roleObject,
   ROLE_DROP_DOWN,
-  STATUSES,
+  // STATUSES,
 } from '../../support/b2b/utils.js'
 import { loginToStoreFront } from '../../support/b2b/login.js'
 import {
@@ -14,41 +14,41 @@ import {
 } from '../../support/b2b/common.js'
 import {
   createQuote,
-  searchQuote,
-  filterQuoteByStatus,
-  quoteShouldbeVisibleTestCase,
-  quoteShouldNotBeVisibleTestCase,
+  // searchQuote,
+  // filterQuoteByStatus,
+  // quoteShouldbeVisibleTestCase,
+  // quoteShouldNotBeVisibleTestCase,
 } from '../../support/b2b/quotes.js'
 
-function QuotesAccess(
-  { organizationName, quotes },
-  organizationB,
-  organizationBQuote
-) {
-  quoteShouldbeVisibleTestCase(
-    organizationName,
-    quotes.OrganizationAdmin.quotes1,
-    organizationName
-  )
-  quoteShouldbeVisibleTestCase(
-    organizationName,
-    quotes.Buyer2.quotes1,
-    organizationName
-  )
-  quoteShouldNotBeVisibleTestCase(
-    organizationName,
-    organizationBQuote.OrganizationAdmin.quotes1,
-    organizationB
-  )
-}
+// function QuotesAccess(
+//   { organizationName, quotes },
+//   organizationB,
+//   organizationBQuote
+// ) {
+//   quoteShouldbeVisibleTestCase(
+//     organizationName,
+//     quotes.OrganizationAdmin.quotes1,
+//     organizationName
+//   )
+//   quoteShouldbeVisibleTestCase(
+//     organizationName,
+//     quotes.Buyer2.quotes1,
+//     organizationName
+//   )
+//   quoteShouldNotBeVisibleTestCase(
+//     organizationName,
+//     organizationBQuote.OrganizationAdmin.quotes1,
+//     organizationB
+//   )
+// }
 
 describe('Organization A - Cost Center A1 - Sales Manager Scenario', () => {
   testSetup(false)
 
-  const { quotes, nonAvailableProduct, users, product } = b2b.OrganizationA
+  const { nonAvailableProduct, users, product } = b2b.OrganizationA
 
-  const { organizationName: organizationB, quotes: organizationBQuote } =
-    b2b.OrganizationB
+  // const { organizationName: organizationB, quotes: organizationBQuote } =
+  //   b2b.OrganizationB
 
   const impersonatedRole = ROLE_DROP_DOWN.Approver
 
@@ -59,14 +59,14 @@ describe('Organization A - Cost Center A1 - Sales Manager Scenario', () => {
     roleObject.SalesManager.role,
     roleObject.SalesRepresentative.role
   )
-  searchQuote(quotes.OrganizationAdmin.quotes1)
-  filterQuoteByStatus(STATUSES.pending)
-  QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
+  // searchQuote(quotes.OrganizationAdmin.quotes1)
+  // filterQuoteByStatus(STATUSES.pending)
+  // QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
   salesUserShouldImpersonateNonSalesUser(
     roleObject.SalesManager.role,
     impersonatedRole
   )
-  QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
+  // QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
   userShouldNotImpersonateThisUser(
     roleObject.SalesManager.role,
     roleObject.SalesRepresentative.role
@@ -79,7 +79,6 @@ describe('Organization A - Cost Center A1 - Sales Manager Scenario', () => {
     role: roleObject.SalesManager.role,
     impersonatedRole,
   })
-  searchQuote(quote, users.Approver1)
 
   preserveCookie()
 })

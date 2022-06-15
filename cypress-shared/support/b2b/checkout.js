@@ -21,9 +21,6 @@ export function checkoutProduct(product) {
         cy.get(selectors.DeliveryAddress).should('be.visible')
       }
     })
-    cy.get('tr:nth-child(1) > div > td.quantity.item-disabled').should(
-      'be.visible'
-    )
     cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
   })
 }
@@ -93,8 +90,8 @@ export function ordertheProduct(role) {
   it(`Verify ${role} is able to order the product`, () => {
     cy.intercept('**/paymentData').as('paymentData')
     cy.get(`[data-name='${PAYMENT_TERMS.NET30}']`).should('be.visible').click()
-    cy.wait('@paymentData')
     cy.contains(BUTTON_LABEL.completeOrder).click()
+    cy.wait('@paymentData')
     cy.get(selectors.Search, { timeout: 30000 }).should('be.visible')
   })
 }

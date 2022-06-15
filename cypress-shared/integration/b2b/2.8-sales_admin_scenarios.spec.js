@@ -4,7 +4,7 @@ import {
   ROLE_ID_EMAIL_MAPPING as roleObject,
   ROLE_DROP_DOWN,
   ROLE_DROP_DOWN_EMAIL_MAPPING as role,
-  STATUSES,
+  // STATUSES,
 } from '../../support/b2b/utils.js'
 import { loginToStoreFront } from '../../support/b2b/login.js'
 import {
@@ -13,12 +13,12 @@ import {
   userShouldNotImpersonateThisUser,
   verifySession,
 } from '../../support/b2b/common.js'
-import {
-  checkoutProduct,
-  fillContactInfo,
-  verifyAddress,
-  verifyPayment,
-} from '../../support/b2b/checkout.js'
+// import {
+//   checkoutProduct,
+//   fillContactInfo,
+//   verifyAddress,
+//   verifyPayment,
+// } from '../../support/b2b/checkout.js'
 import {
   addCostCenter,
   deleteCostCenter,
@@ -26,50 +26,50 @@ import {
 } from '../../support/b2b/cost_center.js'
 import { addAndupdateUser } from '../../support/b2b/add_users.js'
 import {
-  searchQuote,
-  createQuote,
-  discountSliderShouldNotExist,
-  updateQuote,
-  rejectQuote,
-  filterQuote,
-  filterQuoteByStatus,
-  quoteShouldbeVisibleTestCase,
+  // searchQuote,
+  // createQuote,
+  // discountSliderShouldNotExist,
+  // updateQuote,
+  // rejectQuote,
+  // filterQuote,
+  // filterQuoteByStatus,
+  // quoteShouldbeVisibleTestCase,
   verifyQuotesAndSavedCarts,
 } from '../../support/b2b/quotes.js'
 
-function QuotesAccess(
-  { organizationName, quotes },
-  organizationB,
-  organizationBQuote
-) {
-  quoteShouldbeVisibleTestCase(
-    organizationName,
-    quotes.Buyer2.quotes1,
-    organizationName
-  )
-  quoteShouldbeVisibleTestCase(
-    organizationName,
-    organizationBQuote.OrganizationAdmin.quotes1,
-    organizationB
-  )
-}
+// function QuotesAccess(
+//   { organizationName, quotes },
+//   organizationB,
+//   organizationBQuote
+// ) {
+//   quoteShouldbeVisibleTestCase(
+//     organizationName,
+//     quotes.Buyer2.quotes1,
+//     organizationName
+//   )
+//   quoteShouldbeVisibleTestCase(
+//     organizationName,
+//     organizationBQuote.OrganizationAdmin.quotes1,
+//     organizationB
+//   )
+// }
 
 describe('Organization A - Cost Center A1 - Sales Admin Scenario', () => {
   testSetup(false)
 
   const {
-    product,
+    // product,
     organizationName,
     nonAvailableProduct,
     costCenter1,
     costCenter2,
     costCenter4,
     users,
-    quotes,
+    // quotes,
   } = b2b.OrganizationA
 
-  const { organizationName: organizationB, quotes: organizationBQuote } =
-    b2b.OrganizationB
+  // const { organizationName: organizationB, quotes: organizationBQuote } =
+  //   b2b.OrganizationB
 
   const impersonatedRole = ROLE_DROP_DOWN.OrganizationAdmin
 
@@ -81,7 +81,7 @@ describe('Organization A - Cost Center A1 - Sales Admin Scenario', () => {
     roleObject.SalesAdmin.role,
     roleObject.SalesManager.role
   )
-  QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
+  // QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
   // Cost Center 3 - Scenarios
   addCostCenter(
     organizationName,
@@ -101,37 +101,40 @@ describe('Organization A - Cost Center A1 - Sales Admin Scenario', () => {
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
   verifyQuotesAndSavedCarts()
 
-  searchQuote(quotes.Buyer.quotes1)
-  filterQuote(costCenter1.name, organizationB)
-  discountSliderShouldNotExist(quotes.Buyer2.quotes3)
-  updateQuote(quotes.Buyer.quotes1, { discount: '10' })
-  updateQuote(quotes.Buyer.quotes2, { notes: 'Notes' })
-  const price = '30.00'
-  const quantity = '10'
+  // searchQuote(quotes.Buyer.quotes1)
+  // filterQuote(costCenter1.name, organizationB)
+  // discountSliderShouldNotExist(quotes.Buyer2.quotes3)
+  // updateQuote(quotes.Buyer.quotes1, { discount: '10' })
+  // updateQuote(quotes.Buyer.quotes2, { notes: 'Notes' })
+  // const price = '30.00'
+  // const quantity = '10'
 
-  updateQuote(quotes.Buyer.quotes6, { price, quantity })
-  rejectQuote(quotes.Buyer.quotes3, roleObject.SalesAdmin.role)
-  filterQuoteByStatus(STATUSES.ready, STATUSES.declined)
-  checkoutProduct(product)
-  fillContactInfo()
-  verifyAddress(costCenter1.addresses)
-  verifyPayment()
+  // updateQuote(quotes.Buyer.quotes6, { price, quantity })
+  // rejectQuote(quotes.Buyer.quotes3, roleObject.SalesAdmin.role)
+  // filterQuoteByStatus(STATUSES.ready, STATUSES.declined)
+  // checkoutProduct(product)
+  // fillContactInfo()
+  // verifyAddress(costCenter1.addresses)
+  // verifyPayment()
   salesUserShouldImpersonateNonSalesUser(
     roleObject.SalesAdmin.role,
     impersonatedRole
   )
-  QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
+  // QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
 
-  userShouldNotImpersonateThisUser(roleObject.SalesManager.role)
-  const quote = 'IMPERSONATE_QUOTE_1'
-
-  createQuote({
-    product,
-    quoteEnv: quote,
-    role: roleObject.SalesManager.role,
+  userShouldNotImpersonateThisUser(
     impersonatedRole,
-  })
-  searchQuote(quote, users.OrganizationAdmin1)
+    roleObject.SalesManager.role
+  )
+  // const quote = 'IMPERSONATE_QUOTE_1'
+
+  // createQuote({
+  //   product,
+  //   quoteEnv: quote,
+  //   role: roleObject.SalesManager.role,
+  //   impersonatedRole,
+  // })
+  // searchQuote(quote, users.OrganizationAdmin1)
 
   preserveCookie()
 })

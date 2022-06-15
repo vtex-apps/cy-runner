@@ -44,7 +44,10 @@ describe('Organization A - Cost Center A1 - Buyer Scenarios', () => {
 
   loginToStoreFront(users.Buyer1, ROLE_DROP_DOWN.Buyer)
   verifySession(b2b.OrganizationA)
-  userShouldNotImpersonateThisUser(roleObject.SalesManager.role)
+  userShouldNotImpersonateThisUser(
+    ROLE_DROP_DOWN.Buyer,
+    roleObject.SalesManager.role
+  )
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
   userAndCostCenterShouldNotBeEditable(
     organizationName,

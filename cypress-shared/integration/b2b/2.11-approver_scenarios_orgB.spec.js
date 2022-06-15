@@ -13,7 +13,7 @@ import {
   verifyPayment,
   ordertheProduct,
 } from '../../support/b2b/checkout.js'
-import { quoteShouldbeVisibleTestCase } from '../../support/b2b/quotes.js'
+// import { quoteShouldbeVisibleTestCase } from '../../support/b2b/quotes.js'
 
 describe('Organization B - Cost Center B1 - Approver Scenario', () => {
   testSetup(false)
@@ -23,18 +23,18 @@ describe('Organization B - Cost Center B1 - Approver Scenario', () => {
     nonAvailableProduct,
     costCenter1,
     users,
-    quotes,
-    organizationName,
+    // quotes,
+    // organizationName,
   } = b2b.OrganizationB
 
   loginToStoreFront(users.Approver1, ROLE_DROP_DOWN.Approver)
   verifySession(b2b.OrganizationB)
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
-  quoteShouldbeVisibleTestCase(
-    organizationName,
-    quotes.OrganizationAdmin.quotes1,
-    organizationName
-  )
+  // quoteShouldbeVisibleTestCase(
+  //   organizationName,
+  //   quotes.OrganizationAdmin.quotes1,
+  //   organizationName
+  // )
   //   quoteShouldNotBeVisibleTestCase(
   //     organizationName,
   //     organizationAQuotes.OrganizationAdmin.quotes1,
