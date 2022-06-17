@@ -2,7 +2,7 @@ import { testSetup } from '../../support/common/support.js'
 import { createOrganizationTestCase } from '../../support/b2b/organization_request.js'
 import b2b from '../../support/b2b/constants.js'
 
-describe('Create & Approve OrganizationB', () => {
+describe('Create & Decline OrganizationB', () => {
   testSetup(false)
 
   // Create and decline Organization B

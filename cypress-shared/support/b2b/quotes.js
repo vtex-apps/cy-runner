@@ -387,7 +387,7 @@ export function searchQuote(quote, email = false) {
 
   it(title, updateRetry(3), () => {
     cy.gotoMyQuotes()
-    cy.get(selectors.QuoteSearchQuery).clear().type(quote)
+    cy.get(selectors.QuoteSearchQuery).clear().type(`${quote}{enter}`)
     cy.contains(quote, { timeout: 8000 }).should('be.visible')
     cy.waitForGraphql(GRAPHL_OPERATIONS.GetQuotes, selectors.QuoteSearch)
     cy.get(selectors.QuoteFromMyQuotesPage).then(($els) => {

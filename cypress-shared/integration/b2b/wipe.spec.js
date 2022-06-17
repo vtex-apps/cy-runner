@@ -61,7 +61,7 @@ function deleteCostCenter(organization, costCenter) {
 }
 
 function deleteUsers() {
-  it('Delete users via graphql', updateRetry(2), () => {
+  it('Delete users via graphql', updateRetry(5), () => {
     cy.getVtexItems().then((vtex) => {
       cy.url().then((url) => {
         if (url.includes('blank')) {

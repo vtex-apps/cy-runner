@@ -163,9 +163,7 @@ export function userAndCostCenterShouldNotBeEditable(
 
 export function performImpersonation(user1, user2, email) {
   cy.getVtexItems().then((vtex) => {
-    const re = /Manager|Representative/i
-
-    const isSalesManagerOrRep = !!user1.match(re)
+    const isSalesManagerOrRep = !!user1.match(/Manager|Representative/i)
 
     cy.gotoMyOrganization(false, isSalesManagerOrRep)
     cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
@@ -178,11 +176,12 @@ export function performImpersonation(user1, user2, email) {
       .clear()
       .type(`${email}{enter}`)
     cy.wait(`@${GRAPHL_OPERATIONS.GetUsers}`)
-    const childIndex = isSalesManagerOrRep ? 4 : 5
+    const SalesAdmin = !!user1.match(/Sales Admin/i)
+    const childIndex = SalesAdmin ? 5 : 4
 
     cy.get(
       `div[class=ReactVirtualized__Grid__innerScrollContainer] > div:nth-child(${childIndex}) > div`,
-      { timeout: 8000 }
+      { timeout: 10000 }
     )
       .should('be.visible')
       .click()
