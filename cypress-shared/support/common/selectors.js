@@ -37,6 +37,7 @@ export default {
   AddtoCartBtnForCoconut: "a[href*='coconut'] > article > button",
   AddtoCartBtnForOrange: "a[href*='frutas'] > article > button",
   AddtoCartBtnForMelon: "a[href*='watermelon'] > article > button",
+  FillInvoiceButton: '.vtex-omnishipping-1-x-btnDelivery',
   // *************HomePage Constants end here************ //
 
   // *************Search Results Constants end here************ //
@@ -115,6 +116,7 @@ export default {
   ReceiverName: '#ship-receiverName',
   DeliveryAddressText: '#deliver-at-text > a',
   ChangeShippingAddress: 'button[data-i18n="modal.editShipping"]',
+  ConfirmPickup: 'button[id*=confirm-pickup]',
 
   // *************Shipping Section Constants end here************ //
 
