@@ -30,7 +30,7 @@ describe('Organization A - Cost Center A2 - Approver Scenario', () => {
     // organizationName,
     // quotes,
     nonAvailableProduct,
-    // costCenter2,
+    costCenter2,
     users,
     // product,
   } = b2b.OrganizationA
@@ -39,7 +39,7 @@ describe('Organization A - Cost Center A2 - Approver Scenario', () => {
   //   b2b.OrganizationB
 
   loginToStoreFront(users.Approver2, ROLE_DROP_DOWN.Approver)
-  verifySession(b2b.OrganizationA)
+  verifySession(b2b.OrganizationA, costCenter2.name, ROLE_DROP_DOWN.Approver)
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
   // quoteShouldbeVisibleTestCase(
   //   organizationName,

@@ -111,7 +111,8 @@ export function createOrganizationTestCase(
     `Creating ${organization.name} via storefront & Approving ${organization.name} via graphql`,
     { retries: 2 },
     () => {
-      deleteOrganization(organization.email, organization.name, true)
+      deleteOrganization(organization.name)
+      deleteOrganization(organization.name, true)
       cy.getVtexItems().then((vtex) => {
         const { name, b2bCustomerAdmin, defaultCostCenter } =
           getOrganisationPayload(

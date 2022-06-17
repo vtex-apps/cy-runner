@@ -188,6 +188,9 @@ export default {
   MyQuote: 'a[href*=quote]:nth-child(1)',
   CreateQuote: 'a[href*=quote]',
   PageHeader: 'div[class*=vtex-pageHeader__title]',
+  UserWidget: 'div[class*=userWidgetItem]',
+  UserImpersonationWidget: 'div[class*=userWidgetImpersonationItem]',
+  Tag: '.vtex-tag',
   // *************B2B Account: My Organization Constants start here************ //
   QuotesAndSavedCarts: 'Quotes and Saved Carts',
   Profile: 'a[href*=profile]',

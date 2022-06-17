@@ -19,13 +19,13 @@ import {
 
 describe('Organization A - Cost Center A2 - Buyer Scenarios', () => {
   testSetup(false)
-  const { nonAvailableProduct, users } = b2b.OrganizationA
+  const { nonAvailableProduct, users, costCenter2 } = b2b.OrganizationA
 
   // const { organizationName: organizationB, quotes: organizationBQuote } =
   //   b2b.OrganizationB
 
   loginToStoreFront(users.Buyer2, ROLE_DROP_DOWN.Buyer)
-  verifySession(b2b.OrganizationA)
+  verifySession(b2b.OrganizationA, costCenter2.name, ROLE_DROP_DOWN.Buyer)
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
   // quoteShouldNotBeVisibleTestCase(
   //   organizationName,

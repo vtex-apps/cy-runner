@@ -10,11 +10,13 @@ export function getCostCenterName(organization, costCenter) {
 
 export function generateEmailId(organization, role) {
   const [basename, domain] = Cypress.env().base.gmail.id.split('@')
+  const email = `${basename}+${
+    Cypress.env().workspace.name
+  }${organization.slice(0, 3)}${organization
+    .split('-')[0]
+    .slice(-1)}${role}a@${domain}`
 
-  return `${basename}+${Cypress.env().workspace.name}${organization.slice(
-    0,
-    3
-  )}${organization.split('-')[0].slice(-1)}${role}@${domain}`
+  return email.toLowerCase()
 }
 
 export const STATUSES = {

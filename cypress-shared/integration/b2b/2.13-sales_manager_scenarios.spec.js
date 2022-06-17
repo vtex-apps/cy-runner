@@ -11,10 +11,11 @@ import {
   salesUserShouldImpersonateNonSalesUser,
   userShouldNotImpersonateThisUser,
   verifySession,
+  stopImpersonation,
 } from '../../support/b2b/common.js'
 import {
   createQuote,
-  // searchQuote,
+  searchQuote,
   // filterQuoteByStatus,
   // quoteShouldbeVisibleTestCase,
   // quoteShouldNotBeVisibleTestCase,
@@ -45,32 +46,36 @@ import {
 describe('Organization A - Cost Center A1 - Sales Manager Scenario', () => {
   testSetup(false)
 
-  const { nonAvailableProduct, users, product } = b2b.OrganizationA
+  const { nonAvailableProduct, users, product, costCenter1 } = b2b.OrganizationA
 
   // const { organizationName: organizationB, quotes: organizationBQuote } =
   //   b2b.OrganizationB
 
-  const impersonatedRole = ROLE_DROP_DOWN.Approver
-
   loginToStoreFront(users.SalesManager, roleObject.SalesManager.role)
-  verifySession(b2b.OrganizationA)
+  verifySession(
+    b2b.OrganizationA,
+    costCenter1.name,
+    roleObject.SalesManager.role
+  )
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
   userShouldNotImpersonateThisUser(
     roleObject.SalesManager.role,
-    roleObject.SalesRepresentative.role
+    roleObject.SalesRepresentative.role,
+    users.SalesRep
   )
   // searchQuote(quotes.OrganizationAdmin.quotes1)
   // filterQuoteByStatus(STATUSES.pending)
   // QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
+
+  const impersonatedRole = ROLE_DROP_DOWN.OrganizationAdmin
+
   salesUserShouldImpersonateNonSalesUser(
     roleObject.SalesManager.role,
-    impersonatedRole
+    impersonatedRole,
+    users.OrganizationAdmin1
   )
   // QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
-  userShouldNotImpersonateThisUser(
-    roleObject.SalesManager.role,
-    roleObject.SalesRepresentative.role
-  )
+
   const quote = 'IMPERSONATE_QUOTE_2'
 
   createQuote({
@@ -79,6 +84,12 @@ describe('Organization A - Cost Center A1 - Sales Manager Scenario', () => {
     role: roleObject.SalesManager.role,
     impersonatedRole,
   })
+  searchQuote(quote, users.OrganizationAdmin1)
+  stopImpersonation(
+    b2b.OrganizationA,
+    costCenter1.name,
+    roleObject.SalesManager.role
+  )
 
   preserveCookie()
 })

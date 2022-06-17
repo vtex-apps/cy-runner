@@ -11,7 +11,6 @@ import {
   productShouldNotbeAvailableTestCase,
   verifySession,
   userAndCostCenterShouldNotBeEditable,
-  userAndCostCenterShouldNotBeAdded,
   userShouldNotImpersonateThisUser,
 } from '../../support/b2b/common.js'
 // import {
@@ -43,23 +42,18 @@ describe('Organization A - Cost Center A1 - Buyer Scenarios', () => {
   //   b2b.OrganizationB
 
   loginToStoreFront(users.Buyer1, ROLE_DROP_DOWN.Buyer)
-  verifySession(b2b.OrganizationA)
+  verifySession(b2b.OrganizationA, costCenter1.name, ROLE_DROP_DOWN.Buyer)
+  productShouldNotbeAvailableTestCase(nonAvailableProduct)
   userShouldNotImpersonateThisUser(
     ROLE_DROP_DOWN.Buyer,
     roleObject.SalesManager.role
   )
-  productShouldNotbeAvailableTestCase(nonAvailableProduct)
   userAndCostCenterShouldNotBeEditable(
     organizationName,
     costCenter1.name,
     role.Buyer1
   )
 
-  userAndCostCenterShouldNotBeAdded(
-    organizationName,
-    costCenter1.name,
-    role.Buyer1
-  )
   // quoteShouldbeVisibleTestCase(
   //   organizationName,
   //   quotes.OrganizationAdmin.quotes1,

@@ -28,7 +28,7 @@ describe('Organization B - Cost Center B1 - Approver Scenario', () => {
   } = b2b.OrganizationB
 
   loginToStoreFront(users.Approver1, ROLE_DROP_DOWN.Approver)
-  verifySession(b2b.OrganizationB)
+  verifySession(b2b.OrganizationB, costCenter1.name, ROLE_DROP_DOWN.Approver)
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
   // quoteShouldbeVisibleTestCase(
   //   organizationName,

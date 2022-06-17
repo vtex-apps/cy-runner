@@ -39,7 +39,7 @@ describe('Organization A - Cost Center A1 - Organization Admin2 Scenario', () =>
     // organizationName,
     nonAvailableProduct,
     // product,
-    // costCenter2,
+    costCenter2,
     users,
     // quotes,
   } = b2b.OrganizationA
@@ -48,7 +48,11 @@ describe('Organization A - Cost Center A1 - Organization Admin2 Scenario', () =>
   //   b2b.OrganizationB
 
   loginToStoreFront(users.OrganizationAdmin2, ROLE_DROP_DOWN.OrganizationAdmin)
-  verifySession(b2b.OrganizationA)
+  verifySession(
+    b2b.OrganizationA,
+    costCenter2.name,
+    ROLE_DROP_DOWN.OrganizationAdmin
+  )
   userShouldNotImpersonateThisUser(
     ROLE_DROP_DOWN.OrganizationAdmin,
     roleObject.SalesManager.role

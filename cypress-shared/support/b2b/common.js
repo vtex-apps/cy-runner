@@ -85,7 +85,21 @@ export function addPaymentTermsCollectionPriceTablesTestCase(organization) {
   )
 }
 
-export function verifySession(organization) {
+function verifyWidget(organization, costCenter, role) {
+  cy.get(selectors.UserWidget)
+    .eq(0)
+    .should('contain', `Organization: ${organization.organizationName}`)
+  cy.get(`${selectors.UserWidget} ${selectors.Tag}`).should(
+    'have.text',
+    'Active'
+  )
+  cy.get(selectors.UserWidget)
+    .eq(1)
+    .should('contain', `Cost Center: ${costCenter}`)
+  cy.get(selectors.UserWidget).eq(2).should('contain', `My Role: ${role}`)
+}
+
+export function verifySession(organization, costCenter, role) {
   it(
     'Verifying Session items must have expected priceTable and collections',
     { retries: 3 },
@@ -100,6 +114,7 @@ export function verifySession(organization) {
             .join('')
         )
       })
+      verifyWidget(organization, costCenter, role)
     }
   )
 }
@@ -113,18 +128,6 @@ export function productShouldNotbeAvailableTestCase(product) {
       cy.get(selectors.PageNotFound).should('be.visible')
     }
   )
-}
-
-export function userAndCostCenterShouldNotBeAdded(
-  organization,
-  _costCenter,
-  role
-) {
-  it(`Trying to add user and cost center in ${organization} with role ${role.dropDownText}`, () => {
-    cy.gotoMyOrganization()
-    cy.get(selectors.AddUser).should('be.visible').should('be.disabled')
-    cy.get(selectors.AddCostCenter).should('be.visible').should('be.disabled')
-  })
 }
 
 export function userAndCostCenterShouldNotBeEditable(
@@ -141,7 +144,14 @@ export function userAndCostCenterShouldNotBeEditable(
       'have.class',
       'c-disabled'
     )
-    cy.contains(costCenter).should('be.visible').click()
+    cy.get(selectors.AddUser).should('be.visible').should('be.disabled')
+    cy.get(selectors.AddCostCenter).should('be.visible').should('be.disabled')
+    cy.get(
+      '.vtex-table__container .ReactVirtualized__Grid__innerScrollContainer'
+    )
+      .eq(1)
+      .contains(costCenter)
+      .click()
     cy.get(selectors.CostCenterHeader)
       .contains(BUTTON_LABEL.save)
       .should('be.disabled')
@@ -151,47 +161,89 @@ export function userAndCostCenterShouldNotBeEditable(
   })
 }
 
-function performImpersonation(user) {
-  cy.gotoMyOrganization(false)
-  cy.get(selectors.PageBlock)
-    .eq(1)
-    .find(selectors.MyOrganizationUserContainer)
-    .then(($els) => {
-      let texts = Array.from($els, (el) => el.innerText)
+export function performImpersonation(user1, user2, email) {
+  cy.getVtexItems().then((vtex) => {
+    const re = /Manager|Representative/i
 
-      texts = texts.splice(4, texts.length)
-      const indexOfUser = texts.indexOf(user)
-      const childIndex = Math.ceil(indexOfUser / 3) * 4
+    const isSalesManagerOrRep = !!user1.match(re)
 
-      cy.get(
-        `div[class=ReactVirtualized__Grid__innerScrollContainer] > div:nth-child(${childIndex}) > div`
-      )
-        .should('be.visible')
-        .click()
-      cy.get(selectors.ImpersonateButton)
-        .should('have.text', 'Impersonate User')
-        .click()
-    })
+    cy.gotoMyOrganization(false, isSalesManagerOrRep)
+    cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
+      if (req.body.operationName === GRAPHL_OPERATIONS.GetUsers) {
+        req.continue()
+      }
+    }).as(GRAPHL_OPERATIONS.GetUsers)
+    cy.get('input[type=search]')
+      .should('be.visible')
+      .clear()
+      .type(`${email}{enter}`)
+    cy.wait(`@${GRAPHL_OPERATIONS.GetUsers}`)
+    const childIndex = isSalesManagerOrRep ? 4 : 5
+
+    cy.get(
+      `div[class=ReactVirtualized__Grid__innerScrollContainer] > div:nth-child(${childIndex}) > div`,
+      { timeout: 8000 }
+    )
+      .should('be.visible')
+      .click()
+
+    cy.get(selectors.ImpersonateButton)
+      .should('have.text', 'Impersonate User')
+      .click()
+  })
 }
 
-export function userShouldNotImpersonateThisUser(user1, user2) {
+export function userShouldNotImpersonateThisUser(user1, user2, email) {
   it(`Verifying ${user1} is not able to impersonate ${user2}`, () => {
-    performImpersonation(user2)
+    cy.performImpersonation(user1, user2, email)
     validateToastMsg(TOAST_MSG.impersonatePermissionError)
   })
 }
 
-export function salesUserShouldImpersonateNonSalesUser(user1, user2) {
+function validateImpersonation(user1, user2, email) {
+  cy.performImpersonation(user1, user2, email)
+  cy.getVtexItems().then((vtex) => {
+    cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
+      if (req.body.operationName === GRAPHL_OPERATIONS.Session) {
+        req.continue()
+      }
+    }).as(GRAPHL_OPERATIONS.Session)
+  })
+  validateToastMsg(TOAST_MSG.initializing)
+  cy.wait(`@${GRAPHL_OPERATIONS.Session}`)
+  // cy.get(selectors.UserWidget).eq(2).should('contain', `My Role: ${user2}`)
+  cy.get(selectors.UserImpersonationWidget)
+    .should('be.visible')
+    .should('contain', `Impersonating: ${email}`)
+  cy.get('span').contains(email).should('be.visible')
+  cy.get(selectors.MyQuotes).should('be.visible')
+  cy.contains('Stop Impersonation').should('be.visible')
+}
+
+export function salesUserShouldImpersonateNonSalesUser(user1, user2, email) {
   it(`Verifying ${user1} is able to impersonate ${user2}`, () => {
-    performImpersonation(user2)
+    validateImpersonation(user1, user2, email)
+    cy.get('input[type=search]').should('be.visible')
+  })
+}
+
+export function stopImpersonation() {
+  it(`Verifying stopImpersonation`, () => {
     cy.getVtexItems().then((vtex) => {
       cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
-        if (req.body.operationName === GRAPHL_OPERATIONS.ImpersonateUser) {
+        if (req.body.operationName === GRAPHL_OPERATIONS.GetQuotes) {
           req.continue()
         }
-      }).as(GRAPHL_OPERATIONS.ImpersonateUser)
+      }).as(GRAPHL_OPERATIONS.GetQuotes)
+      cy.contains('Stop Impersonation').should('be.visible').click()
+      cy.waitForSession()
+      cy.wait(`@${GRAPHL_OPERATIONS.GetQuotes}`)
+      cy.get(selectors.UserImpersonationWidget).should('not.exist')
+      cy.get(selectors.ProfileLabel).should('be.visible')
+      cy.get(`${selectors.UserWidget} ${selectors.Tag}`).should(
+        'have.text',
+        'Active'
+      )
     })
-    validateToastMsg(TOAST_MSG.initializing)
-    cy.wait(`@${GRAPHL_OPERATIONS.ImpersonateUser}`)
   })
 }

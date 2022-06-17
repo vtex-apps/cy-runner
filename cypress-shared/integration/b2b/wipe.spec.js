@@ -4,11 +4,14 @@
 import { getCostCenterName } from '../../support/b2b/utils.js'
 import b2b from '../../support/b2b/constants.js'
 import {
-  ENTITIES,
   FAIL_ON_STATUS_CODE,
   VTEX_AUTH_HEADER,
 } from '../../support/common/constants.js'
-import { updateRetry, testSetup } from '../../support/common/support.js'
+import {
+  testSetup,
+  updateRetry,
+  preserveCookie,
+} from '../../support/common/support.js'
 import { deleteOrganization } from '../../support/b2b/graphql.js'
 
 const config = Cypress.env()
@@ -57,16 +60,67 @@ function deleteCostCenter(organization, costCenter) {
   })
 }
 
-function deleteUsersFromMasterData() {
-  /* eslint-disable jest/expect-expect */
-  it('Delete Users from master data', () => {
-    cy.searchInMasterData(
-      ENTITIES.CLIENTS,
-      `*${Cypress.env().workspace.name}*`
-    ).then((datas) => {
-      for (const { id } of datas) {
-        cy.deleteDocumentInMasterData(ENTITIES.CLIENTS, id)
-      }
+function deleteUsers() {
+  it('Delete users via graphql', updateRetry(2), () => {
+    cy.getVtexItems().then((vtex) => {
+      cy.url().then((url) => {
+        if (url.includes('blank')) {
+          cy.visit('/')
+        }
+      })
+      const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${APP}`
+
+      const GRAPHQL_DELETE_ORAGANIZATION_MUTATION =
+        'mutation' +
+        '($id: ID!,$email:String!,$clId: ID!)' +
+        '{removeUser(id: $id,email:$email,clId:$clId){status}}'
+
+      const GRAPHQL_GET_USERS_QUERY =
+        'query' +
+        '($pageSize: Int,$search: String)' +
+        '{getUsersPaginated(pageSize: $pageSize,search: $search){data{id,email,clId}}}'
+
+      cy.request({
+        method: 'POST',
+        url: CUSTOM_URL,
+        body: {
+          query: GRAPHQL_GET_USERS_QUERY,
+          variables: {
+            pageSize: 100,
+            search: name,
+          },
+        },
+        headers: { VtexIdclientAutCookie: vtex.userAuthCookieValue },
+        ...FAIL_ON_STATUS_CODE,
+      }).then((response) => {
+        expect(response.status).to.equal(200)
+        const clients = response.body.data.getUsersPaginated.data
+
+        expect(clients).to.not.equal(null)
+        if (clients.length > 0) {
+          for (const { clId, id, email } of clients) {
+            cy.request({
+              method: 'POST',
+              url: CUSTOM_URL,
+              body: {
+                query: GRAPHQL_DELETE_ORAGANIZATION_MUTATION,
+                variables: {
+                  id,
+                  email,
+                  clId,
+                },
+              },
+              headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
+              ...FAIL_ON_STATUS_CODE,
+            }).then((removeUserResponse) => {
+              expect(removeUserResponse.status).to.equal(200)
+              expect(removeUserResponse.body.data.removeUser.status).to.equal(
+                'success'
+              )
+            })
+          }
+        }
+      })
     })
   })
 }
@@ -83,14 +137,11 @@ describe('Wipe datas', () => {
 
   testSetup(false)
 
-  deleteUsersFromMasterData()
+  deleteUsers()
   deleteCostCenter(organizationA, costCenter1)
   deleteCostCenter(organizationA, costCenter2)
   deleteCostCenter(organizationB, costCenterB1)
-  it(`Deleting Organizations which we created in this workspace ${name}`, () => {
-    deleteOrganization(name)
-  })
-  it(`Deleting Organizations Requests which we created in this workspace ${name}`, () => {
-    deleteOrganization(name, true)
-  })
+  deleteOrganization(name)
+  deleteOrganization(name, true)
+  preserveCookie()
 })

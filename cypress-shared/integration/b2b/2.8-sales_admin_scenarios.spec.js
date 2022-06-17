@@ -3,7 +3,7 @@ import b2b from '../../support/b2b/constants.js'
 import {
   ROLE_ID_EMAIL_MAPPING as roleObject,
   ROLE_DROP_DOWN,
-  ROLE_DROP_DOWN_EMAIL_MAPPING as role,
+  // ROLE_DROP_DOWN_EMAIL_MAPPING as role,
   // STATUSES,
 } from '../../support/b2b/utils.js'
 import { loginToStoreFront } from '../../support/b2b/login.js'
@@ -12,6 +12,7 @@ import {
   salesUserShouldImpersonateNonSalesUser,
   userShouldNotImpersonateThisUser,
   verifySession,
+  stopImpersonation,
 } from '../../support/b2b/common.js'
 // import {
 //   checkoutProduct,
@@ -20,14 +21,8 @@ import {
 //   verifyPayment,
 // } from '../../support/b2b/checkout.js'
 import {
-  addCostCenter,
-  deleteCostCenter,
-  updateCostCenter,
-} from '../../support/b2b/cost_center.js'
-import { addAndupdateUser } from '../../support/b2b/add_users.js'
-import {
-  // searchQuote,
-  // createQuote,
+  searchQuote,
+  createQuote,
   // discountSliderShouldNotExist,
   // updateQuote,
   // rejectQuote,
@@ -58,12 +53,9 @@ describe('Organization A - Cost Center A1 - Sales Admin Scenario', () => {
   testSetup(false)
 
   const {
-    // product,
-    organizationName,
+    product,
     nonAvailableProduct,
     costCenter1,
-    costCenter2,
-    costCenter4,
     users,
     // quotes,
   } = b2b.OrganizationA
@@ -71,34 +63,30 @@ describe('Organization A - Cost Center A1 - Sales Admin Scenario', () => {
   // const { organizationName: organizationB, quotes: organizationBQuote } =
   //   b2b.OrganizationB
 
-  const impersonatedRole = ROLE_DROP_DOWN.OrganizationAdmin
+  const impersonatedRole = ROLE_DROP_DOWN.Approver
 
   loginToStoreFront(users.SalesAdmin, roleObject.SalesAdmin.role)
-  verifySession(b2b.OrganizationA)
+  verifySession(b2b.OrganizationA, costCenter1.name, roleObject.SalesAdmin.role)
+  productShouldNotbeAvailableTestCase(nonAvailableProduct)
 
   // Impersonate users
   userShouldNotImpersonateThisUser(
     roleObject.SalesAdmin.role,
-    roleObject.SalesManager.role
+    roleObject.SalesManager.role,
+    users.SalesManager
   )
   // QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
-  // Cost Center 3 - Scenarios
-  addCostCenter(
-    organizationName,
-    costCenter4.temporaryName,
-    costCenter4.addresses[0]
-  )
-  updateCostCenter(costCenter4.temporaryName, costCenter4.name)
-  deleteCostCenter(costCenter4.name)
-
-  // Add/Update users for costcenter2
-  addAndupdateUser(
-    organizationName,
-    { currentCostCenter: costCenter1.name, updateCostCenter: costCenter2.name },
-    { currentRole: role.OrganizationAdmin2, updatedRole: role.Buyer2 }
+  salesUserShouldImpersonateNonSalesUser(
+    roleObject.SalesAdmin.role,
+    impersonatedRole,
+    users.Approver1
   )
 
-  productShouldNotbeAvailableTestCase(nonAvailableProduct)
+  userShouldNotImpersonateThisUser(
+    impersonatedRole,
+    roleObject.SalesManager.role,
+    users.SalesManager
+  )
   verifyQuotesAndSavedCarts()
 
   // searchQuote(quotes.Buyer.quotes1)
@@ -116,25 +104,22 @@ describe('Organization A - Cost Center A1 - Sales Admin Scenario', () => {
   // fillContactInfo()
   // verifyAddress(costCenter1.addresses)
   // verifyPayment()
-  salesUserShouldImpersonateNonSalesUser(
-    roleObject.SalesAdmin.role,
-    impersonatedRole
-  )
+
   // QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
 
-  userShouldNotImpersonateThisUser(
+  const quote = 'IMPERSONATE_QUOTE_1'
+
+  createQuote({
+    product,
+    quoteEnv: quote,
+    role: roleObject.SalesManager.role,
     impersonatedRole,
-    roleObject.SalesManager.role
+  })
+  searchQuote(quote, users.Approver1)
+  stopImpersonation(
+    b2b.OrganizationA,
+    costCenter1.name,
+    roleObject.SalesAdmin.role
   )
-  // const quote = 'IMPERSONATE_QUOTE_1'
-
-  // createQuote({
-  //   product,
-  //   quoteEnv: quote,
-  //   role: roleObject.SalesManager.role,
-  //   impersonatedRole,
-  // })
-  // searchQuote(quote, users.OrganizationAdmin1)
-
   preserveCookie()
 })

@@ -3,10 +3,12 @@ import {
   searchInMasterData,
   deleteDocumentInMasterData,
 } from './common/wipe.js'
+import { performImpersonation } from './b2b/common.js'
 import 'cypress-file-upload'
 
 Cypress.Commands.add('searchInMasterData', searchInMasterData)
 Cypress.Commands.add('deleteDocumentInMasterData', deleteDocumentInMasterData)
+Cypress.Commands.add('performImpersonation', performImpersonation)
 
 Cypress.Commands.add('waitForSession', (selector = null) => {
   cy.getVtexItems().then((vtex) => {
@@ -51,19 +53,27 @@ Cypress.Commands.add('fillAddressInCostCenter', (costCenter) => {
     .should('have.value', receiverName)
 })
 
-Cypress.Commands.add('gotoMyOrganization', (waitforSession = true) => {
-  cy.url().then((url) => {
-    if (!url.includes('account')) {
-      cy.get(selectors.ProfileLabel).should('be.visible')
-      cy.get(selectors.SignInBtn).click()
-      cy.get(selectors.MyAccount).click()
-      if (waitforSession) cy.waitForSession()
-    }
+Cypress.Commands.add(
+  'gotoMyOrganization',
+  (waitforSession = true, salesRepOrManager = false) => {
+    cy.url().then((url) => {
+      if (!url.includes('account')) {
+        cy.get(selectors.ProfileLabel).should('be.visible')
+        cy.get(selectors.SignInBtn).click()
+        cy.get(selectors.MyAccount).click()
+        if (waitforSession) cy.waitForSession()
+      }
 
-    cy.get(selectors.MyOrganization).click()
-    cy.get(selectors.MyOrganizationCostCenterUserDiv).should('have.length', 4)
-  })
-})
+      cy.get(selectors.MyOrganization).click()
+      const noOfdivision = salesRepOrManager ? 2 : 4
+
+      cy.get(selectors.MyOrganizationCostCenterUserDiv).should(
+        'have.length',
+        noOfdivision
+      )
+    })
+  }
+)
 Cypress.Commands.add('gotoCostCenter', (costCenter) => {
   cy.get('body').then(($body) => {
     if ($body.find('div[class*=pageHeader__title]').length) {
