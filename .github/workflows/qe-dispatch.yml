@@ -1,0 +1,87 @@
+name: '[DCH] Quality Engineering'
+
+on:
+  workflow_dispatch:
+    inputs:
+      REPO:
+        description: 'The git repository you want to test in the format company/repo'
+        required: true
+      BRANCH:
+        description: 'The branch to test on the desired repository'
+        required: false
+        default: 'main'
+
+jobs:
+  quality-engineering:
+    name: QE
+    uses: vtex-apps/usqa/.github/workflows/quality-engineering.yml@main
+    with:
+      nodeLint: true
+      nodeTest: true
+      nodeSonar: true
+      nodeSonarProjectKey: vtex-apps_cy-runner
+      nodeSonarOrganization: vtex-apps
+    secrets:
+      githubToken: ${{ secrets.GITHUB_TOKEN }}
+      sonarToken: ${{ secrets.SONAR_TOKEN }}
+
+  cy-runner:
+    name: CY-R
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [quality-engineering]
+    concurrency:
+      group: ${{ github.workflow }}
+    steps:
+      - name: Check the input
+        run: |
+          if [ "x${{ inputs.REPO }}" == 'x' ]; then
+            echo "You must pass the repo in format company/repo to use this Action"
+            exit 1
+          fi
+      - name: Checkout Application
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ inputs.REPO }}
+          ref: ${{ inputs.BRANCH }}
+          path: 'app'
+      - name: Checkout Cypress Runner
+        uses: actions/checkout@v3
+        with:
+          path: 'app/cy-runner'
+      - name: 'Set up NodeJS'
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: yarn
+        continue-on-error: true
+      - name: 'Install packages'
+        run: |
+          for DIR in '.' 'node' 'react'; do
+            if [[ -f "$DIR/package.json" ]]; then
+              echo -e "\nInstalling $DIR packages...\n"
+              cd "$DIR"
+              yarn install --frozen-lockfile
+              cd -
+            fi
+          done
+      - name: 'Install Cy-Runner'
+        run: |
+          yarn install --frozen-lockfile
+          rm -rf .git
+          yarn cypress info
+        working-directory: cy-runner
+      - name: 'Run Cy-Runner'
+        run: yarn cy-r
+        env:
+          VTEX_QE: ${{ secrets.VTEX_QE }}
+          NODE_NO_WARNINGS: 1
+      - name: Save results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: cy-runner-logs
+          path: |
+            cy-runner/logs
+          retention-days: 3
+
