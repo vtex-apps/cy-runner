@@ -5,6 +5,7 @@ import { BUTTON_LABEL } from '../validation_text.js'
 import { FAIL_ON_STATUS_CODE } from '../common/constants.js'
 import { OrganizationRequestStatus } from './constants.js'
 import { updateRetry } from '../common/support.js'
+import { deleteOrganization } from './graphql.js'
 
 // Define constants
 const APP_NAME = 'vtex.b2b-organizations-graphql'
@@ -110,6 +111,7 @@ export function createOrganizationTestCase(
     `Creating ${organization.name} via storefront & Approving ${organization.name} via graphql`,
     { retries: 2 },
     () => {
+      deleteOrganization(organization.email, true)
       cy.getVtexItems().then((vtex) => {
         const { name, b2bCustomerAdmin, defaultCostCenter } =
           getOrganisationPayload(
