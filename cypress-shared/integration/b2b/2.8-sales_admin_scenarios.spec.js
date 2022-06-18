@@ -82,11 +82,6 @@ describe('Organization A - Cost Center A1 - Sales Admin Scenario', () => {
     users.Approver1
   )
 
-  userShouldNotImpersonateThisUser(
-    impersonatedRole,
-    roleObject.SalesManager.role,
-    users.SalesManager
-  )
   verifyQuotesAndSavedCarts()
 
   // searchQuote(quotes.Buyer.quotes1)

@@ -171,11 +171,15 @@ export function performImpersonation(user1, user2, email) {
         req.continue()
       }
     }).as(GRAPHL_OPERATIONS.GetUsers)
-    cy.get('input[type=search]')
-      .should('be.visible')
-      .clear()
-      .type(`${email}{enter}`)
-    cy.wait(`@${GRAPHL_OPERATIONS.GetUsers}`)
+    cy.get('input[type=search]').should('be.visible').clear().type(`${email}`)
+
+    cy.waitForGraphql(
+      GRAPHL_OPERATIONS.CreateOrganizationRequest,
+      'input[type=search] ~ span > div > span > svg[class*=search]'
+    ).then(({ response }) => {
+      expect(response.body.data.getUsersPaginated.data[0].email).to.equal(email)
+    })
+
     const SalesAdmin = !!user1.match(/Sales Admin/i)
     const childIndex = SalesAdmin ? 5 : 4
 
@@ -239,10 +243,6 @@ export function stopImpersonation() {
       cy.wait(`@${GRAPHL_OPERATIONS.GetQuotes}`)
       cy.get(selectors.UserImpersonationWidget).should('not.exist')
       cy.get(selectors.ProfileLabel).should('be.visible')
-      cy.get(`${selectors.UserWidget} ${selectors.Tag}`).should(
-        'have.text',
-        'Active'
-      )
     })
   })
 }
