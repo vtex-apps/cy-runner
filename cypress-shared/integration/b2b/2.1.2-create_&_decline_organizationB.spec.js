@@ -14,7 +14,7 @@ describe('Create & Decline OrganizationB', () => {
     {
       costCenterName: b2b.OrganizationB.costCenter1.name,
       costCenterAddress: b2b.OrganizationB.costCenter1.addresses[0],
-      declined: true,
+      approved: true,
     }
   )
 })
