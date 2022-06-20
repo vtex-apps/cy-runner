@@ -172,13 +172,9 @@ export function performImpersonation(user1, email) {
       }
     }).as(GRAPHL_OPERATIONS.GetUsers)
     cy.get('input[type=search]').should('be.visible').clear().type(`${email}`)
-
-    cy.waitForGraphql(
-      GRAPHL_OPERATIONS.CreateOrganizationRequest,
-      'input[type=search] ~ span > div > span > svg[class*=search]'
-    ).then(({ response }) => {
-      expect(response.body.data.getUsersPaginated.data[0].email).to.equal(email)
-    })
+    cy.get('input[type=search] ~ span > div > span > svg[class*=search]')
+      .should('be.visible')
+      .click()
 
     cy.get(
       `.vtex-table__container:nth-child(1) div[role=rowgroup] > div:nth-child(1)> span.c-disabled`
@@ -209,7 +205,7 @@ export function userShouldNotImpersonateThisUser(user1, user2, email) {
   })
 }
 
-function validateImpersonation(user1, user2, email) {
+function validateImpersonation(user1, email) {
   cy.performImpersonation(user1, email)
   cy.getVtexItems().then((vtex) => {
     cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
@@ -231,7 +227,7 @@ function validateImpersonation(user1, user2, email) {
 
 export function salesUserShouldImpersonateNonSalesUser(user1, user2, email) {
   it(`Verifying ${user1} is able to impersonate ${user2}`, () => {
-    validateImpersonation(user1, user2, email)
+    validateImpersonation(user1, email)
     cy.get('input[type=search]').should('be.visible')
   })
 }
