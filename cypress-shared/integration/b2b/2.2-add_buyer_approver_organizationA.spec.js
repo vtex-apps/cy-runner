@@ -18,11 +18,6 @@ import {
   ROLE_DROP_DOWN_EMAIL_MAPPING as role,
   PAYMENT_TERMS,
 } from '../../support/b2b/utils.js'
-// import {
-//   createQuote,
-//   filterQuote,
-//   searchQuote,
-// } from '../../support/b2b/quotes.js'
 
 describe('OrganizationA - Create a Buyer and Approver, associate Cost Center and assign payment terms', () => {
   testSetup(false)
@@ -67,21 +62,8 @@ describe('OrganizationA - Create a Buyer and Approver, associate Cost Center and
   addUser(organizationName, costCenter2.name, role.Buyer2)
 
   // Add/Update users for costcenter2 - Hold bug
-  // addAndupdateUser(
-  //   organizationName,
-  //   { currentCostCenter: costCenter1.name, updateCostCenter: costCenter2.name },
-  //   { currentRole: role.OrganizationAdmin2, updatedRole: role.Buyer2 }
-  // )
   addUser(organizationName, costCenter2.name, role.OrganizationAdmin2)
   addUser(organizationName, costCenter2.name, role.Approver2)
-
-  // createQuote({
-  //   product,
-  //   quoteEnv: quotes.OrganizationAdmin.quotes1,
-  //   role: ROLE_DROP_DOWN.OrganizationAdmin,
-  // })
-  // searchQuote(quotes.OrganizationAdmin.quotes1)
-  // filterQuote(costCenter1.name)
 
   preserveCookie()
 })
