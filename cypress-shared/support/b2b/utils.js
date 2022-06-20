@@ -77,7 +77,7 @@ export const PAYMENT_TERMS = {
 }
 
 export function validateToastMsg(msg) {
-  cy.get(selectors.ToastMsgInB2B, { timeout: 5000 })
+  cy.get(selectors.ToastMsgInB2B, { timeout: 8000 })
     .should('be.visible')
     .contains(msg)
 }

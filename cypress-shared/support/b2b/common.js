@@ -6,6 +6,7 @@ import {
 } from './utils.js'
 import { BUTTON_LABEL, TOAST_MSG } from '../validation_text.js'
 import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
+import { updateRetry } from '../common/support.js'
 
 // Define constants
 const APP_NAME = 'vtex.b2b-organizations-graphql'
@@ -199,10 +200,14 @@ export function performImpersonation(user1, email) {
 }
 
 export function userShouldNotImpersonateThisUser(user1, user2, email) {
-  it(`Verifying ${user1} is not able to impersonate ${user2}`, () => {
-    cy.performImpersonation(user1, email)
-    validateToastMsg(TOAST_MSG.impersonatePermissionError)
-  })
+  it(
+    `Verifying ${user1} is not able to impersonate ${user2}`,
+    updateRetry(2),
+    () => {
+      cy.performImpersonation(user1, email)
+      validateToastMsg(TOAST_MSG.impersonatePermissionError)
+    }
+  )
 }
 
 function validateImpersonation(user1, email) {
