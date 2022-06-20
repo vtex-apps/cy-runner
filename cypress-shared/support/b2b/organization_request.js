@@ -111,7 +111,7 @@ export function createOrganizationTestCase(
     `Creating ${organization.name} via storefront & Approving ${organization.name} via graphql`,
     { retries: 2 },
     () => {
-      deleteOrganization(organization.email, true)
+      deleteOrganization(organization.email, organization.name, true)
       cy.getVtexItems().then((vtex) => {
         const { name, b2bCustomerAdmin, defaultCostCenter } =
           getOrganisationPayload(
@@ -162,7 +162,7 @@ function updateOrganizationRequestStatus({ vtex, verify = true }, org, status) {
     const GRAPHQL_ORAGANIZATION_UPDATE_MUTATION =
       'mutation' +
       '($id: ID!,$status: String!)' +
-      '{updateOrganizationRequest(id: $id,status:$status){id}}'
+      '{updateOrganizationRequest(id: $id,status:$status){id,status}}'
 
     const variables = {
       id: items[org],

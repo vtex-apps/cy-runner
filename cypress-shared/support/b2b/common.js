@@ -161,7 +161,7 @@ export function userAndCostCenterShouldNotBeEditable(
   })
 }
 
-export function performImpersonation(user1, user2, email) {
+export function performImpersonation(user1, email) {
   cy.getVtexItems().then((vtex) => {
     const isSalesManagerOrRep = !!user1.match(/Manager|Representative/i)
 
@@ -179,6 +179,12 @@ export function performImpersonation(user1, user2, email) {
     ).then(({ response }) => {
       expect(response.body.data.getUsersPaginated.data[0].email).to.equal(email)
     })
+
+    cy.get(
+      `.vtex-table__container:nth-child(1) div[role=rowgroup] > div:nth-child(1) > span`
+    )
+      .last()
+      .should('have.text', email)
 
     const SalesAdmin = !!user1.match(/Sales Admin/i)
     const childIndex = SalesAdmin ? 5 : 4
@@ -198,13 +204,13 @@ export function performImpersonation(user1, user2, email) {
 
 export function userShouldNotImpersonateThisUser(user1, user2, email) {
   it(`Verifying ${user1} is not able to impersonate ${user2}`, () => {
-    cy.performImpersonation(user1, user2, email)
+    cy.performImpersonation(user1, email)
     validateToastMsg(TOAST_MSG.impersonatePermissionError)
   })
 }
 
 function validateImpersonation(user1, user2, email) {
-  cy.performImpersonation(user1, user2, email)
+  cy.performImpersonation(user1, email)
   cy.getVtexItems().then((vtex) => {
     cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
       if (req.body.operationName === GRAPHL_OPERATIONS.Session) {
