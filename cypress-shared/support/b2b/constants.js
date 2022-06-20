@@ -5,8 +5,8 @@ import {
   generateEmailId,
 } from './utils.js'
 
-const ORGANIZATION_A = 'OrganizationA'
-const ORGANIZATION_B = 'OrganizationB'
+const ORGANIZATION_A = `OrganizationA-${Cypress.env().workspace.name}`
+const ORGANIZATION_B = `OrganizationB-${Cypress.env().workspace.name}`
 
 export const OrganizationRequestStatus = {
   approved: 'approved',
@@ -64,6 +64,7 @@ function quotesListForOrganizationA() {
   const Buyer2 = {
     quotes1: `${ORGANIZATION_A}-b2q1`, // created from quickorder - by categories
     quotes2: `${ORGANIZATION_A}-b2q2`, // created from quickorder - by categories with quantity 50
+    quotes3: `${ORGANIZATION_A}-b2q3`, // create quote with discounted product. so that further discount is not possibled
   }
 
   const OrganizationAdmin2 = {
@@ -163,8 +164,9 @@ export default {
       },
     ],
     priceTables: 'gold',
-    product: PRODUCTS.tshirt,
+    product: PRODUCTS.orange,
     product2: PRODUCTS.coconut,
+    product3: PRODUCTS.tshirt,
     nonAvailableProduct: PRODUCTS.irobot,
     quotes: quotesListForOrganizationA(),
     users: {

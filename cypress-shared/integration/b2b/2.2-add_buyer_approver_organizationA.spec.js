@@ -12,7 +12,7 @@ import {
   updatePaymentTermsinCostCenter,
 } from '../../support/b2b/cost_center.js'
 import { loginToStoreFront } from '../../support/b2b/login.js'
-import { addUser, addAndupdateUser } from '../../support/b2b/add_users.js'
+import { addUser } from '../../support/b2b/add_users.js'
 import {
   ROLE_DROP_DOWN,
   ROLE_DROP_DOWN_EMAIL_MAPPING as role,
@@ -22,8 +22,15 @@ import {
 describe('OrganizationA - Create a Buyer and Approver, associate Cost Center and assign payment terms', () => {
   testSetup(false)
 
-  const { organizationName, costCenter1, costCenter2, costCenter3, users } =
-    b2b.OrganizationA
+  const {
+    organizationName,
+    costCenter1,
+    costCenter2,
+    costCenter3,
+    users,
+    // product,
+    // quotes,
+  } = b2b.OrganizationA
 
   loginToStoreFront(users.OrganizationAdmin1, ROLE_DROP_DOWN.OrganizationAdmin)
 
@@ -39,7 +46,7 @@ describe('OrganizationA - Create a Buyer and Approver, associate Cost Center and
   )
   addAddressinCostCenter(costCenter2.name, costCenter2.addresses[1])
 
-  // Cost Center 3 - Scenarios
+  // // Cost Center 3 - Scenarios
   addCostCenter(
     organizationName,
     costCenter3.temporaryName,
@@ -48,16 +55,13 @@ describe('OrganizationA - Create a Buyer and Approver, associate Cost Center and
   updateCostCenter(costCenter3.temporaryName, costCenter3.name)
   deleteCostCenter(costCenter3.name)
 
-  // Add/Delete users in costcenter1
+  // // Add/Delete users in costcenter1
   addUser(organizationName, costCenter1.name, role.Buyer1)
   addUser(organizationName, costCenter1.name, role.Approver1)
 
-  // Add/Update users for costcenter2
-  addAndupdateUser(
-    organizationName,
-    { currentCostCenter: costCenter1.name, updateCostCenter: costCenter2.name },
-    { currentRole: role.OrganizationAdmin2, updatedRole: role.Buyer2 }
-  )
+  addUser(organizationName, costCenter2.name, role.Buyer2)
+
+  // Add/Update users for costcenter2 - Hold bug
   addUser(organizationName, costCenter2.name, role.OrganizationAdmin2)
   addUser(organizationName, costCenter2.name, role.Approver2)
 

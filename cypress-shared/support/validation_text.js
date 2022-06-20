@@ -3,6 +3,8 @@ export const TOAST_MSG = {
   updated: 'updated',
   deleted: 'deleted',
   addedToTheCart: 'added to the cart',
+  initializing: 'initializing',
+  impersonatePermissionError: 'do not have permission to impersonate',
 }
 
 export const BUTTON_LABEL = {

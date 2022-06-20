@@ -4,8 +4,8 @@ import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
 import { BUTTON_LABEL } from '../validation_text.js'
 import { FAIL_ON_STATUS_CODE } from '../common/constants.js'
 import { OrganizationRequestStatus } from './constants.js'
-import { deleteOrganization } from './graphql.js'
 import { updateRetry } from '../common/support.js'
+import { deleteOrganization } from './graphql.js'
 
 // Define constants
 const APP_NAME = 'vtex.b2b-organizations-graphql'
@@ -162,7 +162,7 @@ function updateOrganizationRequestStatus({ vtex, verify = true }, org, status) {
     const GRAPHQL_ORAGANIZATION_UPDATE_MUTATION =
       'mutation' +
       '($id: ID!,$status: String!)' +
-      '{updateOrganizationRequest(id: $id,status:$status){id}}'
+      '{updateOrganizationRequest(id: $id,status:$status){id,status}}'
 
     const variables = {
       id: items[org],

@@ -190,12 +190,20 @@ export default {
   MyQuote: 'a[href*=quote]:nth-child(1)',
   CreateQuote: 'a[href*=quote]',
   PageHeader: 'div[class*=vtex-pageHeader__title]',
+  UserWidget: 'div[class*=userWidgetItem]',
+  UserImpersonationWidget: 'div[class*=userWidgetImpersonationItem]',
+  Tag: '.vtex-tag',
   // *************B2B Account: My Organization Constants start here************ //
+  QuotesAndSavedCarts: 'Quotes and Saved Carts',
   Profile: 'a[href*=profile]',
   MyOrganization: 'a[href*=organization]',
+  MyOrganizationUserContainer:
+    'div[class=ReactVirtualized__Grid__innerScrollContainer] > div > span',
   MyOrganizationCostCenterUserDiv:
     '.ReactVirtualized__Grid__innerScrollContainer',
   PageNotFound: 'div[class*=notFound]',
+  PageBlock: 'div[class*=styleguide__pageBlock]',
+  ImpersonateButton: 'button[data-testid=menu-option-0] > span',
 
   // *************B2B Account: My Organization - Add Cost Center Constants start here************ //
   AddCostCenter:
@@ -286,8 +294,9 @@ export default {
   QuoteNotFound:
     '[data-testid=totalizer-item-subtotal] [data-testid=totalizer-value]',
   Notes: '.vtex-textarea > textarea',
-  RequestQuote: 'div[class*=request i] > button',
-  SaveForLater: 'div[class*=SaveQuote i] > button',
+  RequestQuote: /Request Quote/i,
+  SaveQuote: /Save Quote/i,
+  SaveForLater: /Save for Later/i,
   QuoteStatus: 'div[class*=vtex-tag]',
   CurrencyContainer: 'span[class*=currencyContainer]',
   QuoteStatusInMyQuotesPage:
@@ -297,7 +306,8 @@ export default {
   ToggleFields: '#toggleFieldsBtn',
   // *************B2B Constants My Quotes start here************ //
   MyQuotes: 'span[class*=orderQuote]',
-  QuoteSearch: 'input[type=search]',
+  QuoteSearchQuery: 'input[type=search]',
+  QuoteSearch: '#toolbar svg[class*=search]',
   QuotesToolBar: '#toolbar',
   QuotesFilterByStatus: '.ma2:nth-child(1) button',
   StatusLabel: 'label[class*=label]',
@@ -312,6 +322,8 @@ export default {
   // *************B2B Constants Quote Details section start here************ //
   PriceField: 'input[name=price]',
   QuoteTotal: 'div[data-testid=totalizer-value]',
+  Discount:
+    'div[data-testid*=percentage-discount] div[data-testid=totalizer-value]',
   NewProductPrice: '.new-product-price',
   DiscountSliderContainer: '.vtex-slider__selector-container',
   SliderSelector: '.vtex-slider__selector',
@@ -319,7 +331,6 @@ export default {
   SliderContainer: '.vtex-slider-container',
   QuantityField: 'input[name=quantity]',
   Decline: '.nowrap > span:nth-child(1) button',
-  SaveQuote: '.nowrap > span:nth-child(2) button',
   SubmitToSalesRep: 'Submit',
   UseQuote: 'Use Quote',
   BackBtn: 'div[class*=pageHeader] span',

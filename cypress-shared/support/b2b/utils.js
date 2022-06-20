@@ -10,11 +10,13 @@ export function getCostCenterName(organization, costCenter) {
 
 export function generateEmailId(organization, role) {
   const [basename, domain] = Cypress.env().base.gmail.id.split('@')
+  const email = `${basename}+${
+    Cypress.env().workspace.name
+  }${organization.slice(0, 3)}${organization
+    .split('-')[0]
+    .slice(-1)}${role}a@${domain}`
 
-  return `${basename}+${Cypress.env().workspace.name}${organization.slice(
-    0,
-    3
-  )}${organization.slice(-1)}${role}@${domain}`
+  return email.toLowerCase()
 }
 
 export const STATUSES = {
@@ -75,7 +77,7 @@ export const PAYMENT_TERMS = {
 }
 
 export function validateToastMsg(msg) {
-  cy.get(selectors.ToastMsgInB2B, { timeout: 5000 })
+  cy.get(selectors.ToastMsgInB2B, { timeout: 8000 })
     .should('be.visible')
     .contains(msg)
 }

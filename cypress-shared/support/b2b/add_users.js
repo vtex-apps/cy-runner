@@ -199,6 +199,10 @@ export function addUserViaGraphql(roleKey) {
             email: generateEmailId(organizationName, email),
           }
 
+          expect(variables.roleId).to.not.be.undefined
+          expect(variables.orgId).to.not.be.undefined
+          expect(variables.costId).to.not.be.undefined
+
           cy.request({
             method: 'POST',
             url: CUSTOM_URL,

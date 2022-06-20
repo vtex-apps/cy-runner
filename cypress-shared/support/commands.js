@@ -3,10 +3,12 @@ import {
   searchInMasterData,
   deleteDocumentInMasterData,
 } from './common/wipe.js'
+import { performImpersonation } from './b2b/common.js'
 import 'cypress-file-upload'
 
 Cypress.Commands.add('searchInMasterData', searchInMasterData)
 Cypress.Commands.add('deleteDocumentInMasterData', deleteDocumentInMasterData)
+Cypress.Commands.add('performImpersonation', performImpersonation)
 
 Cypress.Commands.add('waitForSession', (selector = null) => {
   cy.getVtexItems().then((vtex) => {
@@ -16,7 +18,7 @@ Cypress.Commands.add('waitForSession', (selector = null) => {
       }
     }).as('Session')
     if (selector) cy.get(selector).last().click()
-    cy.wait('@Session', { timeout: 40000 })
+    cy.wait('@Session', { timeout: 20000 })
   })
 })
 
@@ -51,19 +53,27 @@ Cypress.Commands.add('fillAddressInCostCenter', (costCenter) => {
     .should('have.value', receiverName)
 })
 
-Cypress.Commands.add('gotoMyOrganization', () => {
-  cy.url().then((url) => {
-    if (!url.includes('account')) {
-      cy.get(selectors.ProfileLabel).should('be.visible')
-      cy.get(selectors.SignInBtn).click()
-      cy.get(selectors.MyAccount).click()
-      cy.waitForSession()
-    }
+Cypress.Commands.add(
+  'gotoMyOrganization',
+  (waitforSession = true, salesRepOrManager = false) => {
+    cy.url().then((url) => {
+      if (!url.includes('account')) {
+        cy.get(selectors.ProfileLabel).should('be.visible')
+        cy.get(selectors.SignInBtn).click()
+        cy.get(selectors.MyAccount).click()
+        if (waitforSession) cy.waitForSession()
+      }
 
-    cy.get(selectors.MyOrganization).click()
-    cy.get(selectors.MyOrganizationCostCenterUserDiv).should('have.length', 4)
-  })
-})
+      cy.get(selectors.MyOrganization).click()
+      const noOfdivision = salesRepOrManager ? 2 : 4
+
+      cy.get(selectors.MyOrganizationCostCenterUserDiv).should(
+        'have.length',
+        noOfdivision
+      )
+    })
+  }
+)
 Cypress.Commands.add('gotoCostCenter', (costCenter) => {
   cy.get('body').then(($body) => {
     if ($body.find('div[class*=pageHeader__title]').length) {
@@ -80,7 +90,7 @@ Cypress.Commands.add('gotoMyQuotes', () => {
   cy.get(selectors.ProfileLabel, { timeout: 90000 }).should('be.visible')
   cy.get('body').then(($body) => {
     if (!$body.find(selectors.MyQuotes).length) cy.visit('/')
-    if (!$body.find(selectors.QuoteSearch).length) {
+    if (!$body.find(selectors.QuoteSearchQuery).length) {
       cy.get(selectors.MyQuotes).should('be.visible').click()
     }
 

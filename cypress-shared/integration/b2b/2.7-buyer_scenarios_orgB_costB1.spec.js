@@ -10,10 +10,11 @@ import {
 describe('Organization B - Cost Center B1 - Buyer Scenario', () => {
   testSetup(false)
 
-  const { users, nonAvailableProduct } = b2b.OrganizationB
+  const { users, nonAvailableProduct, costCenter1 } = b2b.OrganizationB
 
   loginToStoreFront(users.Buyer1, ROLE_DROP_DOWN.Buyer)
-  verifySession(b2b.OrganizationB)
+  verifySession(b2b.OrganizationB, costCenter1.name, ROLE_DROP_DOWN.Buyer)
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
+
   preserveCookie()
 })

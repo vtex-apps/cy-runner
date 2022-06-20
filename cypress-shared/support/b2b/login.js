@@ -10,15 +10,10 @@ export function visitHomePage() {
   cy.wait('@EVENTS')
 }
 
-export function loginWithCookiesStoredInJSON(emailId) {
-  cy.log('Logging with saved cookies')
+export function loginWithCookiesStoredInJSON(cookieValue) {
   cy.getVtexItems().then((vtex) => {
-    cy.getOrganizationItems().then((organization) => {
-      cy.setCookie(
-        `${vtex.authCookieName}_${vtex.account}`,
-        organization[emailId],
-        { log: false }
-      )
+    cy.setCookie(`${vtex.authCookieName}_${vtex.account}`, cookieValue, {
+      log: false,
     })
   })
   visitHomePage()
@@ -41,8 +36,10 @@ export function loginToStoreFront(emailId, role) {
     () => {
       cy.getOrganizationItems().then((organization) => {
         if (organization[emailId]) {
+          cy.log('Logging with saved cookies')
+          cy.log(emailId)
           // If we already logged in to this user in previous testcase, then use that cookie to re-login
-          loginWithCookiesStoredInJSON(emailId)
+          loginWithCookiesStoredInJSON(organization[emailId])
         } else {
           visitHomePage()
           cy.get('body').then(async ($body) => {
