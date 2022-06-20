@@ -181,7 +181,7 @@ export function performImpersonation(user1, email) {
     })
 
     cy.get(
-      `.vtex-table__container:nth-child(1) div[role=rowgroup] > div:nth-child(1) > span`
+      `.vtex-table__container:nth-child(1) div[role=rowgroup] > div:nth-child(1)> span.c-disabled`
     )
       .last()
       .should('have.text', email)
