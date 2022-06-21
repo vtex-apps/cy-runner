@@ -205,6 +205,7 @@ export function updateShippingInformation({
   postalCode,
   pickup = false,
   invalid = false,
+  timeout = 5000,
 }) {
   const { deliveryScreenAddress } = addressList[postalCode]
 
@@ -213,22 +214,20 @@ export function updateShippingInformation({
   cy.intercept('**/shippingData').as('shippingData')
   cy.fillAddress(postalCode).then(() => {
     if (invalid) {
-      cy.get(selectors.DeliveryUnavailable, { timeout: 5000 }).contains(
+      cy.get(selectors.DeliveryUnavailable, { timeout }).contains(
         'cannot be shipped to the given address.'
       )
-      cy.get(selectors.DeliveryAddressText, { timeout: 5000 }).click()
+      cy.get(selectors.DeliveryAddressText, { timeout }).click()
     } else if (pickup) {
       cy.wait('@shippingData')
-      cy.get(selectors.PickupInStore, { timeout: 5000 })
-        .should('be.visible')
-        .click()
-      cy.get(selectors.PickupItems, { timeout: 5000 })
+      cy.get(selectors.PickupInStore, { timeout }).should('be.visible').click()
+      cy.get(selectors.PickupItems, { timeout })
         .should('be.visible')
         .contains('Pickup')
       cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
     } else {
       cy.get(selectors.CartTimeline).should('be.visible').click({ force: true })
-      cy.get(selectors.DeliveryAddressText, { timeout: 5000 })
+      cy.get(selectors.DeliveryAddressText, { timeout })
         .invoke('text')
         .should(
           'match',
