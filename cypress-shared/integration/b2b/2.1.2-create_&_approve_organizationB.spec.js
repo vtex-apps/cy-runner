@@ -10,10 +10,13 @@ describe('Create & Approve OrganizationB', () => {
     {
       name: b2b.OrganizationB.organizationName,
       email: b2b.OrganizationB.users.OrganizationAdmin1,
+      tradeName: 'OB',
     },
     {
       costCenterName: b2b.OrganizationB.costCenter1.name,
       costCenterAddress: b2b.OrganizationB.costCenter1.addresses[0],
+      phoneNumber: '(304) 123 4556',
+      businessDocument: 'FR40303265045',
       approved: true,
     }
   )

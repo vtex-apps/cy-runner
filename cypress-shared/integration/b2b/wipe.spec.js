@@ -138,10 +138,10 @@ describe('Wipe datas', () => {
   testSetup(false)
 
   deleteUsers()
+  deleteOrganization(name)
+  deleteOrganization(name, true)
   deleteCostCenter(organizationA, costCenter1)
   deleteCostCenter(organizationA, costCenter2)
   deleteCostCenter(organizationB, costCenterB1)
-  deleteOrganization(name)
-  deleteOrganization(name, true)
   preserveCookie()
 })

@@ -222,6 +222,7 @@ export default {
   },
   OrganizationB: {
     organizationName: ORGANIZATION_B,
+    tradeName: 'ABC',
     costCenter1: { name: 'CostCenterB1', addresses: [USA_ADDRESS_2] },
     collections: [
       {

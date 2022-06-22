@@ -1,3 +1,7 @@
+function generatecostCenterSectionSelectors(location) {
+  return `div.layout__container > div:nth-child(3) div[class*=b2b]:nth-child(${location}) input[type=text]`
+}
+
 export default {
   // *************HomePage Constants start here************ //
 
@@ -169,15 +173,17 @@ export default {
   Header: 'h3[class*=Title]',
   Submit: 'div[class*=login] > button[type=submit]',
   Token: 'input[name=token]',
-  OrganizationName: 'div.layout__container > div:nth-child(1) input[type=text]',
+  OrganizationName: 'div.layout__container > div:nth-child(1) input[required]',
+  TradeName: 'div.layout__container > div:nth-child(1) input',
   FirstNameinB2B:
     'div.layout__container > div:nth-child(2) div[class*=b2b]:nth-child(1) input[type=text]',
   LastNameinB2B:
     'div.layout__container > div:nth-child(2) div[class*=b2b]:nth-child(2) input[type=text]',
   EmailinB2B:
     'div.layout__container > div:nth-child(2) div[class*=b2b]:nth-child(3) input[type=text]',
-  CostCenter:
-    'div.layout__container > div:nth-child(3) div[class*=b2b]:nth-child(1) input[type=text]',
+  CostCenter: generatecostCenterSectionSelectors(1),
+  PhoneNumber: generatecostCenterSectionSelectors(2),
+  BusinessDocument: generatecostCenterSectionSelectors(3),
   PostalCode: 'input[name=postalCode]',
   Street: 'input[name=street]',
   Country: 'select[name=country]',

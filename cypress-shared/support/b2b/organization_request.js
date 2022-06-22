@@ -13,12 +13,13 @@ const APP_VERSION = '0.x'
 const APP = `${APP_NAME}@${APP_VERSION}`
 
 function getOrganisationPayload(
-  organisation,
-  { costCenterName, costCenterAddress },
+  { name, tradeName },
+  { costCenterName, costCenterAddress, phoneNumber, businessDocument },
   email
 ) {
   return {
-    name: organisation,
+    name,
+    tradeName,
     b2bCustomerAdmin: {
       firstName: 'Robot',
       lastName: email,
@@ -26,13 +27,21 @@ function getOrganisationPayload(
     },
     defaultCostCenter: {
       name: costCenterName,
+      phoneNumber,
+      businessDocument,
       ...costCenterAddress,
     },
   }
 }
 
-function verifyOrganizationData(
-  { name, b2bCustomerAdmin },
+function fillAndVerifyData(selector, text) {
+  text
+    ? cy.get(selector).last().clear().type(text).should('have.value', text)
+    : cy.get(selector).last().clear()
+}
+
+function fillOrganizationRequest(
+  { name, tradeName, b2bCustomerAdmin },
   defaultCostCenter,
   invalidEmail = false
 ) {
@@ -64,29 +73,27 @@ function verifyOrganizationData(
       .should('be.visible')
       .click()
     cy.get(selectors.PageNotFound, { timeout: 10000 }).should('not.exist')
-    name
-      ? cy
-          .get(selectors.OrganizationName)
-          .clear()
-          .type(name)
-          .should('have.value', name)
-      : cy.get(selectors.OrganizationName).clear()
-    cy.get(selectors.FirstNameinB2B)
-      .clear()
-      .type(firstName)
-      .should('have.value', firstName)
-    cy.get(selectors.LastNameinB2B)
-      .clear()
-      .type(lastName)
-      .should('have.value', lastName)
 
-    cy.get(selectors.EmailinB2B).clear().type(email).should('have.value', email)
+    // Organization Name & TradeName Section
+    fillAndVerifyData(selectors.OrganizationName, name)
+    fillAndVerifyData(selectors.TradeName, tradeName)
+
+    // User to become Organization Admin Section
+    fillAndVerifyData(selectors.FirstNameinB2B, firstName)
+    fillAndVerifyData(selectors.LastNameinB2B, lastName)
+    fillAndVerifyData(selectors.EmailinB2B, email)
+
+    // Default cost center Section
     if (defaultCostCenter) {
-      cy.get(selectors.CostCenter)
-        .clear()
-        .type(defaultCostCenter.name)
-        .should('have.value', defaultCostCenter.name)
+      fillAndVerifyData(selectors.CostCenter, defaultCostCenter.name)
+      fillAndVerifyData(selectors.PhoneNumber, defaultCostCenter.phoneNumber)
+      fillAndVerifyData(
+        selectors.BusinessDocument,
+        defaultCostCenter.businessDocument
+      )
       cy.fillAddressInCostCenter(defaultCostCenter)
+    } else {
+      cy.log('Filling costCenter is disabled')
     }
   })
 }
@@ -105,7 +112,14 @@ function submitOrganization(org) {
 
 export function createOrganizationTestCase(
   organization,
-  { costCenterName, costCenterAddress, approved = false, declined = false }
+  {
+    costCenterName,
+    costCenterAddress,
+    phoneNumber,
+    businessDocument,
+    approved = false,
+    declined = false,
+  }
 ) {
   it(
     `Creating ${organization.name} via storefront & Approving ${organization.name} via graphql`,
@@ -113,17 +127,22 @@ export function createOrganizationTestCase(
     () => {
       deleteOrganization(organization.email, organization.name, true)
       cy.getVtexItems().then((vtex) => {
-        const { name, b2bCustomerAdmin, defaultCostCenter } =
+        const { name, tradeName, b2bCustomerAdmin, defaultCostCenter } =
           getOrganisationPayload(
-            organization.name,
+            organization,
             {
               costCenterName,
               costCenterAddress,
+              phoneNumber,
+              businessDocument,
             },
             organization.email
           )
 
-        verifyOrganizationData({ name, b2bCustomerAdmin }, defaultCostCenter)
+        fillOrganizationRequest(
+          { name, b2bCustomerAdmin, tradeName },
+          defaultCostCenter
+        )
         submitOrganization(organization.name)
         if (approved) {
           updateOrganizationRequestStatus(
@@ -202,9 +221,9 @@ export function requestOrganizationAndVerifyPopup(
     `Creating ${organization.name} via storefront and verify we are getting this message ${msg} in popup`,
     updateRetry(2),
     () => {
-      const { name, b2bCustomerAdmin, defaultCostCenter } =
+      const { name, tradeName, b2bCustomerAdmin, defaultCostCenter } =
         getOrganisationPayload(
-          organization.name,
+          organization,
           {
             costCenterName,
             costCenterAddress,
@@ -212,8 +231,8 @@ export function requestOrganizationAndVerifyPopup(
           organization.email
         )
 
-      verifyOrganizationData(
-        { name, b2bCustomerAdmin },
+      fillOrganizationRequest(
+        { name, b2bCustomerAdmin, tradeName },
         defaultCostCenter,
         organization.email
       )
@@ -235,7 +254,7 @@ export function createOrganizationRequestTestCase(
   email
 ) {
   it(`Creating ${organization.name} via storefront`, () => {
-    const { name, b2bCustomerAdmin, defaultCostCenter } =
+    const { name, b2bCustomerAdmin, defaultCostCenter, tradeName } =
       getOrganisationPayload(
         organization,
         {
@@ -245,8 +264,8 @@ export function createOrganizationRequestTestCase(
         email
       )
 
-    verifyOrganizationData(
-      { name, b2bCustomerAdmin },
+    fillOrganizationRequest(
+      { name, b2bCustomerAdmin, tradeName },
       defaultCostCenter,
       organization.email
     )
@@ -260,7 +279,7 @@ export function createOrganizationWithInvalidEmail(
   email
 ) {
   it(`Creating ${organization} with invalid email`, () => {
-    const { name, b2bCustomerAdmin, defaultCostCenter } =
+    const { name, tradeName, b2bCustomerAdmin, defaultCostCenter } =
       getOrganisationPayload(
         organization,
         {
@@ -272,8 +291,8 @@ export function createOrganizationWithInvalidEmail(
 
     const invalidEmail = 'dev+test.com'
 
-    verifyOrganizationData(
-      { name, b2bCustomerAdmin },
+    fillOrganizationRequest(
+      { name, b2bCustomerAdmin, tradeName },
       defaultCostCenter,
       invalidEmail
     )
@@ -289,7 +308,7 @@ export function createOrganizationWithoutCostCenterNameAndAddress(
   email
 ) {
   it(`Creating Organization without cost center name & address`, () => {
-    const { name, b2bCustomerAdmin } = getOrganisationPayload(
+    const { name, tradeName, b2bCustomerAdmin } = getOrganisationPayload(
       organization,
       {
         costCenterName,
@@ -298,7 +317,7 @@ export function createOrganizationWithoutCostCenterNameAndAddress(
       email
     )
 
-    verifyOrganizationData({ name, b2bCustomerAdmin }, null, null)
+    fillOrganizationRequest({ name, b2bCustomerAdmin, tradeName }, null, null)
 
     cy.get(selectors.SubmitOrganization)
       .should('be.visible')
@@ -312,14 +331,15 @@ export function createOrganizationWithoutName(
   email
 ) {
   it(`Creating Organization without name`, () => {
-    const { b2bCustomerAdmin, defaultCostCenter } = getOrganisationPayload(
-      organization,
-      { costCenterName, costCenterAddress },
-      email
-    )
+    const { b2bCustomerAdmin, defaultCostCenter, tradeName } =
+      getOrganisationPayload(
+        organization,
+        { costCenterName, costCenterAddress },
+        email
+      )
 
-    verifyOrganizationData(
-      { name: null, b2bCustomerAdmin },
+    fillOrganizationRequest(
+      { name: null, b2bCustomerAdmin, tradeName },
       defaultCostCenter,
       null
     )
