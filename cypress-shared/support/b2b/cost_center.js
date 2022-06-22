@@ -15,10 +15,13 @@ export function addCostCenter(organization, costCenter, costCenterAddress) {
           cy.log('CostCenter already added')
         } else {
           cy.get(selectors.AddCostCenter).click()
-          cy.get(selectors.Street).should('be.visible').should('be.enabled')
           cy.get(selectors.CostCenterName)
             .type(costCenter)
             .should('have.value', costCenter)
+          cy.get(selectors.Street)
+            .scrollIntoView()
+            .should('be.visible')
+            .should('be.enabled')
           cy.fillAddressInCostCenter(costCenterAddress)
           cy.waitForGraphql(
             GRAPHL_OPERATIONS.GetCostCentersByOrganizationIdStorefront,
