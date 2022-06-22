@@ -169,7 +169,7 @@ export default {
   Header: 'h3[class*=Title]',
   Submit: 'div[class*=login] > button[type=submit]',
   Token: 'input[name=token]',
-  OrganizationName: 'div.layout__container > div:nth-child(1) input[type=text]',
+  OrganizationName: 'div.layout__container > div:nth-child(1) input[required]',
   FirstNameinB2B:
     'div.layout__container > div:nth-child(2) div[class*=b2b]:nth-child(1) input[type=text]',
   LastNameinB2B:
