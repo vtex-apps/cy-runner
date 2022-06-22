@@ -113,12 +113,7 @@ async function doLinkApp(config) {
 
     testApp = JSON.parse(testApp)
     const app = `${testApp.vendor}.${testApp.name}`
-    const [version] = testApp.version.split('.')
 
-    qe.msg(`Uninstalling ${app} if needed`, true, true)
-    await qe.toolbelt(config.base.vtex.bin, `uninstall ${app}`)
-    qe.msg(`Unlinking ${app} if needed`, true, true)
-    await qe.toolbelt(config.base.vtex.bin, `unlink ${app}@${version}.x`)
     const ignoreFile = path.join('..', '.vtexignore')
     const exclusions = [
       'cypress',
