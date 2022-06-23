@@ -43,7 +43,7 @@ async function searchIssue(account, authorization, JIRA_JQL) {
 }
 
 // Create issues on Jira
-async function createIssue(vtexJson, testErrors) {
+async function createIssue(vtexJson, projectId, testErrors) {
   // GitHub and Cypress
   const GH_REPO = process.env.GITHUB_REPOSITORY
 
@@ -55,7 +55,7 @@ async function createIssue(vtexJson, testErrors) {
     const GH_PR = process.env.GITHUB_RUN_NUMBER
     const GH_ACTOR = process.env.GITHUB_ACTOR
     const PR_URL = `${GH_URL}/${GH_REPO}/pull/${GH_REF}`
-    const CY_URL = 'https://dashboard.cypress.io/projects/9myhsu/runs'
+    const CY_URL = `https://dashboard.cypress.io/projects/${projectId}/runs`
     const RUN_URL = `${GH_URL}/${GH_REPO}/actions/runs/${GH_RUN}`
     // Jira
     const ERRORS = testErrors.join(', ')
@@ -147,6 +147,14 @@ async function createIssue(vtexJson, testErrors) {
         },
         issuetype: {
           name: issueType,
+        },
+        // Priority - Lowest, Low, Medium, High, Highest
+        priority: {
+          name: 'Medium',
+        },
+        // Bug priority - Must Fix, Should Fix, Unbreak Now
+        customfield_10115: {
+          value: 'Should Fix',
         },
       },
       update: {},

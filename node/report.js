@@ -39,7 +39,11 @@ module.exports.report = async (control, config) => {
     } else {
       if (config.base.jira.enabled) {
         qe.msg('Create JIRA Issue is enabled', true, true)
-        await jira(config.base.jira, control.specsFailed)
+        await jira(
+          config.base.jira,
+          config.base.cypress.projectId,
+          control.specsFailed
+        )
       } else {
         qe.msg('Create JIRA Issue is disabled', true, true)
       }
