@@ -59,7 +59,12 @@ async function createIssue(vtexJson, projectId, testErrors) {
     const RUN_URL = `${GH_URL}/${GH_REPO}/actions/runs/${GH_RUN}`
     // Jira
     const ERRORS = testErrors.join(', ')
-    const { account, authorization, board, issueType } = vtexJson
+    const { account, authorization, issueType } = vtexJson
+
+    // For JIRA, we are on testing phase.
+    // So, Instead of creating on particular project board
+    // we will create tickets on ENGINEERS board
+    const board = 'ENGINEERS'
 
     const JIRA_SUMMARY = `PR #${GH_PR}: ${GH_PROJECT} E2E test failed`
     const JIRA_JQL =
