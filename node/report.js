@@ -1,20 +1,4 @@
 const qe = require('./utils')
-const { jira } = require('./jira')
-
-async function handleFailure(config, control) {
-  if (config.base.jira.enabled) {
-    qe.msg('Create JIRA Issue is enabled', true, true)
-    await jira(
-      config.base.jira,
-      config.base.cypress.projectId,
-      control.specsFailed
-    )
-  } else {
-    qe.msg('Create JIRA Issue is disabled', true, true)
-  }
-
-  qe.fail(`The test failed!`)
-}
 
 module.exports.report = async (control, config) => {
   qe.msgSection('Execution report')
@@ -52,7 +36,7 @@ module.exports.report = async (control, config) => {
     if (control.specsFailed.length < 1) {
       qe.success('The test ran successfully, well done!')
     } else {
-      await handleFailure(config, control)
+      qe.fail(`The test failed!`)
     }
   }
 }

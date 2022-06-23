@@ -5,6 +5,7 @@ const { workspace } = require('./node/workspace')
 const { credentials } = require('./node/credential')
 const { strategy } = require('./node/test')
 const { teardown } = require('./node/teardown')
+const { issue } = require('./node/jira')
 const { report } = require('./node/report')
 
 // Controls test state
@@ -54,6 +55,12 @@ async function main() {
     control.specsFailed = call.specsFailed
     control.specsSkipped = call.specsSkipped
     control.specsPassed = call.specsPassed
+    // Jira Integration
+    control.specsFailed.push('In testing 01.spec.js')
+    control.specsFailed.push('In testing 02.spec.js')
+    if (config.base.jira.enabled && control.specsFailed.length) {
+      issue(config, control.specsFailed)
+    }
   }
 
   // Teardown

@@ -2,192 +2,48 @@ const axios = require('axios')
 
 const qe = require('./utils')
 
-// Search issues on Jira
-async function searchIssue(account, authorization, JIRA_JQL) {
-  // Payload
-  const data = JSON.stringify({
-    expand: [],
-    jql: JIRA_JQL,
-    maxResults: 1,
-    fieldsByKeys: false,
-    fields: ['summary', 'status', 'assignee'],
-    startAt: 0,
-  })
+module.exports.issue = async (config, specsFailed) => {
+  qe.msgSection('Jira integration')
 
-  // Configuration
-  const config = {
-    method: 'post',
-    url: `https://${account}.atlassian.net/rest/api/3/search`,
-    headers: {
-      Authorization: `Basic ${authorization}`,
-      'Content-Type': 'application/json',
-    },
-    data,
-  }
-
-  let key = false
-
-  await axios(config)
-    .then((response) => {
-      if (response.data.total) {
-        key = response.data.issues[0].key
-        process.stdout.write(`[QE] ===> Key ${key} found, uptating it...\n`)
-      }
-    })
-    .catch((_error) => {
-      process.stderr.write(`[QE] ===> Error searching the issue on Jira.\n`)
-      key = 'error'
-    })
-
-  return key
-}
-
-// Create issues on Jira
-async function createIssue(vtexJson, projectId, testErrors) {
   // GitHub and Cypress
-  const GH_REPO = process.env.GITHUB_REPOSITORY
+  const JIRA = config.base.jira
+  const CI = process.env.CI ?? false
+  const GH_REPO = process.env.GITHUB_REPOSITORY ?? 'example/App-Teste'
+  const GITHUB_REF = process.env.GITHUB_REF ?? 'refs/pull/77/merge'
+  const [, GH_PROJECT] = GH_REPO.split('/')
+  const [, , GH_REF] = GITHUB_REF.split('/')
+  const GH_RUN = process.env.GITHUB_RUN_ID ?? 7777777777
+  const GH_URL = process.env.GITHUB_SERVER_URL ?? 'https://github.com'
+  const GH_PR = process.env.GITHUB_RUN_NUMBER ?? 7
+  const GH_ACTOR = process.env.GITHUB_ACTOR ?? 'cy-runner'
+  const PR_URL = `${GH_URL}/${GH_REPO}/pull/${GH_REF}`
+  const CY_URL = `https://dashboard.cypress.io/projects/${config.base.cypress.projectId}/runs`
+  const RUN_URL = `${GH_URL}/${GH_REPO}/actions/runs/${GH_RUN}`
 
-  if (GH_REPO) {
-    const [, GH_PROJECT] = GH_REPO.split('/')
-    const [, , GH_REF] = process.env.GITHUB_REF.split('/')
-    const GH_RUN = process.env.GITHUB_RUN_ID
-    const GH_URL = process.env.GITHUB_SERVER_URL
-    const GH_PR = process.env.GITHUB_RUN_NUMBER
-    const GH_ACTOR = process.env.GITHUB_ACTOR
-    const PR_URL = `${GH_URL}/${GH_REPO}/pull/${GH_REF}`
-    const CY_URL = `https://dashboard.cypress.io/projects/${projectId}/runs`
-    const RUN_URL = `${GH_URL}/${GH_REPO}/actions/runs/${GH_RUN}`
-    // Jira
-    const ERRORS = testErrors.join(', ')
-    const { account, authorization, issueType } = vtexJson
+  // Jira - You can set config.base.jira.testing as true for tests
+  JIRA.board = JIRA.testing || !CI ? 'ENGINEERS' : JIRA.board
+  const SUMMARY = `PR #${GH_PR}: ${GH_PROJECT} E2E test failed`
+  const JQL = `summary ~ "${SUMMARY}" AND project = "${JIRA.board}" AND statusCategory IN ("undefined", "In Progress", "To Do")`
+  const PRIORITY = JIRA.priority ?? 'High'
+  const JIRA_KEY = await searchIssue(JIRA.account, JIRA.authorization, JQL)
 
-    // For JIRA, we are on testing phase.
-    // So, Instead of creating on particular project board
-    // we will create tickets on ENGINEERS board
-    const board = 'ENGINEERS'
-
-    const JIRA_SUMMARY = `PR #${GH_PR}: ${GH_PROJECT} E2E test failed`
-    const JIRA_JQL =
-      `summary ~ "${JIRA_SUMMARY}" AND project = "${board}"` +
-      'AND statusCategory IN ("undefined", "In Progress", "To Do")'
-    // Payload for ticket creation
-
-    const dataCreation = JSON.stringify({
-      fields: {
-        project: {
-          key: board,
-        },
-        summary: JIRA_SUMMARY,
-        description: {
-          type: 'doc',
-          version: 1,
-          content: [
-            {
-              type: 'paragraph',
-              content: [
-                {
-                  type: 'text',
-                  text: 'E2E test for ',
-                },
-                {
-                  type: 'text',
-                  text: `PR #${GH_PR}`,
-                  marks: [
-                    {
-                      type: 'link',
-                      attrs: {
-                        href: PR_URL,
-                      },
-                    },
-                  ],
-                },
-                {
-                  type: 'text',
-                  text: ` created by ${GH_ACTOR} failed on test number(s) ${ERRORS}.`,
-                },
-              ],
-            },
-            {
-              type: 'paragraph',
-              content: [
-                {
-                  type: 'text',
-                  text: 'To get more information about the errors, please take a look at ',
-                },
-                {
-                  type: 'text',
-                  text: `artifacts on GitHub Action`,
-                  marks: [
-                    {
-                      type: 'link',
-                      attrs: {
-                        href: RUN_URL,
-                      },
-                    },
-                  ],
-                },
-                {
-                  type: 'text',
-                  text: ' or ',
-                },
-                {
-                  type: 'text',
-                  text: `Cypress Dashboard`,
-                  marks: [
-                    {
-                      type: 'link',
-                      attrs: {
-                        href: CY_URL,
-                      },
-                    },
-                  ],
-                },
-                {
-                  type: 'text',
-                  text: '.',
-                },
-              ],
-            },
-          ],
-        },
-        issuetype: {
-          name: issueType,
-        },
-        // Priority - Lowest, Low, Medium, High, Highest
-        priority: {
-          name: 'Medium',
-        },
-        // Bug priority - Must Fix, Should Fix, Unbreak Now
-        customfield_10115: {
-          value: 'Should Fix',
-        },
+  // Payload for ticket creation
+  const TICKET_CREATION = JSON.stringify({
+    fields: {
+      project: {
+        key: JIRA.board,
       },
-      update: {},
-    })
-
-    // Config for ticket creation
-    const configCreation = {
-      method: 'post',
-      url: `https://${account}.atlassian.net/rest/api/3/issue`,
-      headers: {
-        Authorization: `Basic ${authorization}`,
-        'Content-Type': 'application/json',
-      },
-      data: dataCreation,
-    }
-
-    // Payload for ticket update
-    const dataUpdate = JSON.stringify({
-      body: {
-        version: 1,
+      summary: SUMMARY,
+      description: {
         type: 'doc',
+        version: 1,
         content: [
           {
             type: 'paragraph',
             content: [
               {
                 type: 'text',
-                text: 'E2E test for ',
+                text: 'Cypress test for ',
               },
               {
                 type: 'text',
@@ -203,83 +59,175 @@ async function createIssue(vtexJson, projectId, testErrors) {
               },
               {
                 type: 'text',
-                text: ` failed on test number(s) ${ERRORS}.`,
+                text: ` created by ${GH_ACTOR} failed on tests ${specsFailed.join()}.`,
+              },
+            ],
+          },
+          {
+            type: 'paragraph',
+            content: [
+              {
+                type: 'text',
+                text: 'To get more information about the errors, please take a look at ',
+              },
+              {
+                type: 'text',
+                text: `artifacts on GitHub Action`,
+                marks: [
+                  {
+                    type: 'link',
+                    attrs: {
+                      href: RUN_URL,
+                    },
+                  },
+                ],
+              },
+              {
+                type: 'text',
+                text: ' or ',
+              },
+              {
+                type: 'text',
+                text: `Cypress Dashboard`,
+                marks: [
+                  {
+                    type: 'link',
+                    attrs: {
+                      href: CY_URL,
+                    },
+                  },
+                ],
+              },
+              {
+                type: 'text',
+                text: '.',
               },
             ],
           },
         ],
       },
-      visibility: null,
-    })
-
-    process.stdout.write(`[QE] ===> Searching by this issue on Jira...\n`)
-
-    const JIRA_EXISTENT_KEY = await searchIssue(
-      account,
-      authorization,
-      JIRA_JQL
-    )
-
-    // Config for ticket update
-    const configUpdate = {
-      method: 'post',
-      url: `https://${account}.atlassian.net/rest/api/3/issue/${JIRA_EXISTENT_KEY}/comment`,
-      headers: {
-        Authorization: `Basic ${authorization}`,
-        'Content-Type': 'application/json',
+      issuetype: {
+        name: JIRA.issueType,
       },
-      data: dataUpdate,
-    }
+      // Priority - Lowest, Low, Medium, High, Highest
+      priority: {
+        name: PRIORITY,
+      },
+      // Bug priority - Must Fix, Should Fix, Unbreak Now
+      customfield_10115: {
+        value: 'Should Fix',
+      },
+    },
+    update: {},
+  })
 
-    // Update or create the issue
-    switch (JIRA_EXISTENT_KEY) {
-      // Error on search for Jira ticket
-      case 'error':
-        process.stderr.write(
-          `[QE] ===> Same error happen when searching by this issue on Jira... avoiding issue creation.\n`
-        )
-        break
-
-      // Issue doesn't exist, create it
-      case false:
-        process.stdout.write(`[QE] ===> Creating an issue on Jira...\n`)
-        // Creation
-        await axios(configCreation)
-          .then((response) => {
-            const { key: ISSUE_KEY } = response.data
-
-            process.stdout.write(
-              `[QE] ===> Issue ${ISSUE_KEY} created on Jira.\n`
-            )
-          })
-          .catch((_error) => {
-            process.stderr.write(`[QE] ===> Error creating issue on Jira.\n`)
-          })
-        break
-
-      // Issue exists, update it
-      default: {
-        await axios(configUpdate)
-          .then((response) => {
-            const { status } = response
-
-            process.stdout.write(
-              `[QE] ===> Issue update got ${
-                status === 201 ? 'success' : 'failed'
-              }.\n`
-            )
-          })
-          .catch((_error) => {
-            process.stderr.write(
-              `[QE] ===> Error updating the ${_error} issue.\n`
-            )
-          })
-        break
-      }
-    }
-  } else {
-    qe.msg('Creating JIRA Issue for local tests failure is not allowed')
+  const CFG_TICKET_CREATION = {
+    method: 'post',
+    url: `https://${JIRA.account}.atlassian.net/rest/api/3/issue`,
+    headers: {
+      Authorization: `Basic ${JIRA.authorization}`,
+      'Content-Type': 'application/json',
+    },
+    SEARCH: TICKET_CREATION,
   }
+
+  // Payload for ticket update
+  const TICKET_UPDATE = JSON.stringify({
+    body: {
+      version: 1,
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: [
+            {
+              type: 'text',
+              text: 'E2E test for ',
+            },
+            {
+              type: 'text',
+              text: `PR #${GH_PR}`,
+              marks: [
+                {
+                  type: 'link',
+                  attrs: {
+                    href: PR_URL,
+                  },
+                },
+              ],
+            },
+            {
+              type: 'text',
+              text: ` failed again on tests ${specsFailed.join()}.`,
+            },
+          ],
+        },
+      ],
+    },
+    visibility: null,
+  })
+
+  const CFG_TICKET_UPDATE = {
+    method: 'post',
+    url: `https://${JIRA.account}.atlassian.net/rest/api/3/issue/${JIRA_KEY}/comment`,
+    headers: {
+      Authorization: `Basic ${JIRA.authorization}`,
+      'Content-Type': 'application/json',
+    },
+    SEARCH: TICKET_UPDATE,
+  }
+
+  // Update or create the issue
+  const CFG = JIRA_KEY ? CFG_TICKET_UPDATE : CFG_TICKET_CREATION
+
+  await axios(CFG)
+    .then((response) => {
+      const { key: ISSUE_KEY } = response.SEARCH
+
+      qe.msg(`Issue ${ISSUE_KEY} created on Jira`, 'ok', false, false)
+    })
+    .catch((e) => {
+      qe.msg('Error creating or updating issue', 'error', false, false)
+      qe.msg(e, true, true, false)
+    })
 }
 
-module.exports = { jira: createIssue }
+// Search issues on Jira
+async function searchIssue(account, authorization, jiraJQL) {
+  let key = 0
+  const SEARCH = JSON.stringify({
+    expand: [],
+    jql: jiraJQL,
+    maxResults: 1,
+    fieldsByKeys: false,
+    fields: ['summary', 'status', 'assignee'],
+    startAt: 0,
+  })
+
+  // Configuration
+  const CFG_SEARCH = {
+    method: 'post',
+    url: `https://${account}.atlassian.net/rest/api/3/search`,
+    headers: {
+      Authorization: `Basic ${authorization}`,
+      'Content-Type': 'application/json',
+    },
+    SEARCH,
+  }
+
+  await axios(CFG_SEARCH)
+    .then((response) => {
+      if (response.data.total) {
+        key = response.data.issues[0].key
+        qe.msg(`Issue ${key} found, it'll be updated`, 'warn')
+      } else {
+        qe.msg(`Issue not found, it'll be created`, 'ok')
+      }
+    })
+    .catch((e) => {
+      qe.msg('Error consuming Jira API', 'error')
+      qe.msg(e, true, true, false)
+    })
+
+  return key
+}
