@@ -6,6 +6,7 @@ const qe = require('./utils')
 let specsFailed = []
 let specsSkipped = []
 let specsPassed = []
+let runUrl = null
 
 module.exports.strategy = async (config) => {
   const START = qe.tick()
@@ -56,13 +57,14 @@ module.exports.strategy = async (config) => {
     specsFailed,
     specsSkipped,
     specsPassed,
+    runUrl,
   }
 }
 
 async function runTest(test, config, group) {
   let testsPassed = false
-  const hardTries = test.hardTries + 1
   let thisTry = 1
+  const hardTries = test.hardTries + 1
   const addOptions = {
     parallel: test.parallel,
   }
@@ -82,6 +84,7 @@ async function runTest(test, config, group) {
     testsPassed = true
     // eslint-disable-next-line no-loop-func
     testsResult.forEach((testResult) => {
+      if (!runUrl) runUrl = testResult.runUrl
       testResult.runs.forEach((run) => {
         if (run.stats.failures) {
           testsPassed = false

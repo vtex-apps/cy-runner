@@ -15,6 +15,7 @@ const control = {
   specsFailed: [],
   specsSkipped: [],
   specsPassed: [],
+  runUrl: null,
 }
 
 async function main() {
@@ -55,8 +56,9 @@ async function main() {
     control.specsFailed = call.specsFailed
     control.specsSkipped = call.specsSkipped
     control.specsPassed = call.specsPassed
+    control.runUrl = call.runUrl
     if (config.base.jira.enabled && control.specsFailed.length) {
-      await issue(config, control.specsFailed)
+      await issue(config, control.specsFailed, control.runUrl)
     }
   }
 

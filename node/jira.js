@@ -2,7 +2,7 @@ const axios = require('axios')
 
 const qe = require('./utils')
 
-module.exports.issue = async (config, specsFailed) => {
+module.exports.issue = async (config, specsFailed, runUrl) => {
   qe.msgSection('Jira integration')
 
   // GitHub and Cypress
@@ -28,19 +28,24 @@ module.exports.issue = async (config, specsFailed) => {
 
   // Prepare failures with links
   const FAILURES = []
+  let MARKS = []
+
+  if (typeof runUrl !== 'undefined') {
+    MARKS = [
+      {
+        type: 'link',
+        attrs: {
+          href: `${runUrl}/test-results?statuses=[{"value":"FAILED","label":"FAILED"}]`,
+        },
+      },
+    ]
+  }
 
   specsFailed.forEach((fail) => {
     FAILURES.push({
       type: 'text',
       text: `\n==> ${fail}`,
-      marks: [
-        {
-          type: 'link',
-          attrs: {
-            href: `https://google.com/?search${fail}`,
-          },
-        },
-      ],
+      marks: MARKS,
     })
   })
 
@@ -226,10 +231,10 @@ module.exports.issue = async (config, specsFailed) => {
       const { key: ISSUE_KEY } = response.data
 
       KEY = typeof ISSUE_KEY === 'undefined' ? JIRA_KEY : ISSUE_KEY
-      qe.msg(`Issue ${KEY} ${MSG}d on Jira`, 'ok', false, false)
+      qe.msg(`Issue ${KEY} ${MSG}d`, 'ok', false, false)
     })
     .catch((e) => {
-      qe.msg(`Fail to ${MSG} issue on Jira`, 'error', false, false)
+      qe.msg(`Fail to ${MSG} issue`, 'error', false, false)
       qe.msg(e, true, true, false)
     })
 }
