@@ -45,12 +45,12 @@ module.exports.issue = async (config, specsFailed) => {
   })
 
   // Payload for ticket creation
-  const TICKET_CREATION = JSON.stringify({
+  const ADD_ISSUE = JSON.stringify({
     fields: {
       project: {
         key: JIRA.board,
       },
-      summary: SUMMARY,
+      summary: `${SUMMARY} E2E test failed for ${GH_REPO}`,
       description: {
         type: 'doc',
         version: 1,
@@ -76,8 +76,9 @@ module.exports.issue = async (config, specsFailed) => {
               },
               {
                 type: 'text',
-                text: ` created by ${GH_ACTOR} failed on tests ${specsFailed.join()}.`,
+                text: ` created by ${GH_ACTOR} failed on\n`,
               },
+              ...FAILURES,
             ],
           },
           {
@@ -85,7 +86,7 @@ module.exports.issue = async (config, specsFailed) => {
             content: [
               {
                 type: 'text',
-                text: 'To get more information about the errors, please take a look at ',
+                text: '\nTo get more information about the errors, please take a look at ',
               },
               {
                 type: 'text',
@@ -138,18 +139,22 @@ module.exports.issue = async (config, specsFailed) => {
     update: {},
   })
 
-  const CFG_TICKET_CREATION = {
+  const CFG_ADD_ISSUE = {
     method: 'post',
     url: `https://${JIRA.account}.atlassian.net/rest/api/3/issue`,
     headers: {
       Authorization: `Basic ${JIRA.authorization}`,
       'Content-Type': 'application/json',
     },
-    data: TICKET_CREATION,
+    params: {
+      updateHistory: true,
+      applyDefaultValues: false,
+    },
+    data: ADD_ISSUE,
   }
 
   // Payload for ticket update
-  const TICKET_UPDATE = JSON.stringify({
+  const UPDATE_ISSUE = JSON.stringify({
     body: {
       version: 1,
       type: 'doc',
@@ -185,14 +190,14 @@ module.exports.issue = async (config, specsFailed) => {
     visibility: null,
   })
 
-  const CFG_TICKET_UPDATE = {
+  const CFG_UPDATE_ISSUE = {
     method: 'post',
     url: `https://${JIRA.account}.atlassian.net/rest/api/3/issue/${JIRA_KEY}/comment`,
     headers: {
       Authorization: `Basic ${JIRA.authorization}`,
       'Content-Type': 'application/json',
     },
-    data: TICKET_UPDATE,
+    data: UPDATE_ISSUE,
   }
 
   // Update or create the issue
@@ -207,12 +212,12 @@ module.exports.issue = async (config, specsFailed) => {
       return
 
     case 'create':
-      CFG = CFG_TICKET_CREATION
+      CFG = CFG_ADD_ISSUE
       MSG = 'create'
       break
 
     default:
-      CFG = CFG_TICKET_UPDATE
+      CFG = CFG_UPDATE_ISSUE
       MSG = 'update'
   }
 
@@ -228,6 +233,11 @@ module.exports.issue = async (config, specsFailed) => {
       qe.msg(e, true, true, false)
     })
 }
+
+// As curl
+// curl 'https://vtex-dev.atlassian.net/rest/api/3/issue?updateHistory=true&applyDefaultValues=false' \
+//   -H 'content-type: application/json' \
+//   --data-raw '{"fields":{"project":{"id":"10494"},"issuetype":{"id":"10004"},"summary":"Test","components":[],"description":{"version":1,"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Just a test"}]}]},"fixVersions":[],"labels":[],"priority":{"id":"2","name":"High","iconUrl":"https://vtex-dev.atlassian.net/images/icons/priorities/high.svg"},"customfield_10115":{"id":"10313","value":"Should Fix"},"versions":[]},"update":{}}' \
 
 // Search issues on Jira
 async function searchIssue(account, authorization, jiraJQL) {
