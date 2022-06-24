@@ -37,12 +37,12 @@ async function main() {
   control.timing.vtexCli = call.time
 
   // Configure workspace (create, install, uninstall, link app)
-  // control.timing.workspace = await workspace(config)
+  control.timing.workspace = await workspace(config)
 
   // Get credentials
-  // call = await credentials(config)
-  // config = call.config
-  // control.timing.credentials = call.time
+  call = await credentials(config)
+  config = call.config
+  control.timing.credentials = call.time
 
   // Tests
   if (config.base.cypress.devMode) {
@@ -50,21 +50,18 @@ async function main() {
     qe.msg('When you finish, please wait the process flow', 'warn')
     await qe.openCypress()
   } else {
-    // call = await strategy(config)
-    // control.timing.strategy = call.time
-    // control.specsFailed = call.specsFailed
-    // control.specsSkipped = call.specsSkipped
-    // control.specsPassed = call.specsPassed
-    // Jira Integration
-    control.specsFailed.push('In-testing-01.spec.js')
-    control.specsFailed.push('In-testing-02.spec.js')
+    call = await strategy(config)
+    control.timing.strategy = call.time
+    control.specsFailed = call.specsFailed
+    control.specsSkipped = call.specsSkipped
+    control.specsPassed = call.specsPassed
     if (config.base.jira.enabled && control.specsFailed.length) {
       await issue(config, control.specsFailed)
     }
   }
 
   // Teardown
-  // control.timing.teardown = await teardown(config)
+  control.timing.teardown = await teardown(config)
 
   // Final Report
   control.timing.total = qe.tock(control.start)
