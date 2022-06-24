@@ -234,11 +234,6 @@ module.exports.issue = async (config, specsFailed) => {
     })
 }
 
-// As curl
-// curl 'https://vtex-dev.atlassian.net/rest/api/3/issue?updateHistory=true&applyDefaultValues=false' \
-//   -H 'content-type: application/json' \
-//   --data-raw '{"fields":{"project":{"id":"10494"},"issuetype":{"id":"10004"},"summary":"Test","components":[],"description":{"version":1,"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Just a test"}]}]},"fixVersions":[],"labels":[],"priority":{"id":"2","name":"High","iconUrl":"https://vtex-dev.atlassian.net/images/icons/priorities/high.svg"},"customfield_10115":{"id":"10313","value":"Should Fix"},"versions":[]},"update":{}}' \
-
 // Search issues on Jira
 async function searchIssue(account, authorization, jiraJQL) {
   let key = null
