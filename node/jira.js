@@ -10,11 +10,10 @@ module.exports.issue = async (config, specsFailed) => {
   const CI = process.env.CI ?? false
   const GH_REPO = process.env.GITHUB_REPOSITORY ?? 'example/App-Teste'
   const GITHUB_REF = process.env.GITHUB_REF ?? 'refs/pull/77/merge'
-  const [, GH_PROJECT] = GH_REPO.split('/')
   const [, , GH_REF] = GITHUB_REF.split('/')
   const GH_RUN = process.env.GITHUB_RUN_ID ?? 7777777777
   const GH_URL = process.env.GITHUB_SERVER_URL ?? 'https://github.com'
-  const GH_PR = process.env.GITHUB_RUN_NUMBER ?? 7
+  const GH_PR = process.env.GITHUB_RUN_NUMBER ?? 34
   const GH_ACTOR = process.env.GITHUB_ACTOR ?? 'cy-runner'
   const PR_URL = `${GH_URL}/${GH_REPO}/pull/${GH_REF}`
   const CY_URL = `https://dashboard.cypress.io/projects/${config.base.cypress.projectId}/runs`
@@ -22,10 +21,28 @@ module.exports.issue = async (config, specsFailed) => {
 
   // Jira - You can set config.base.jira.testing as true for tests
   JIRA.board = JIRA.testing || !CI ? 'ENGINEERS' : JIRA.board
-  const SUMMARY = `PR #${GH_PR}: ${GH_PROJECT} E2E test failed`
-  const JQL = `summary ~ "${SUMMARY}" AND project = "${JIRA.board}" AND statusCategory IN ("undefined", "In Progress", "To Do")`
+  const SUMMARY = `PR #${GH_PR}:`
+  const JQL = `summary ~ '${SUMMARY}' AND project = '${JIRA.board}' AND statusCategory IN ('undefined', 'In Progress', 'To Do')`
   const PRIORITY = JIRA.priority ?? 'High'
   const JIRA_KEY = await searchIssue(JIRA.account, JIRA.authorization, JQL)
+
+  // Prepare failures with links
+  const FAILURES = []
+
+  specsFailed.forEach((fail) => {
+    FAILURES.push({
+      type: 'text',
+      text: `\n==> ${fail}`,
+      marks: [
+        {
+          type: 'link',
+          attrs: {
+            href: `https://google.com/?search${fail}`,
+          },
+        },
+      ],
+    })
+  })
 
   // Payload for ticket creation
   const TICKET_CREATION = JSON.stringify({
@@ -43,7 +60,7 @@ module.exports.issue = async (config, specsFailed) => {
             content: [
               {
                 type: 'text',
-                text: 'Cypress test for ',
+                text: 'E2E test for ',
               },
               {
                 type: 'text',
@@ -128,7 +145,7 @@ module.exports.issue = async (config, specsFailed) => {
       Authorization: `Basic ${JIRA.authorization}`,
       'Content-Type': 'application/json',
     },
-    SEARCH: TICKET_CREATION,
+    data: TICKET_CREATION,
   }
 
   // Payload for ticket update
@@ -158,8 +175,9 @@ module.exports.issue = async (config, specsFailed) => {
             },
             {
               type: 'text',
-              text: ` failed again on tests ${specsFailed.join()}.`,
+              text: ` failed again on:`,
             },
+            ...FAILURES,
           ],
         },
       ],
@@ -174,58 +192,78 @@ module.exports.issue = async (config, specsFailed) => {
       Authorization: `Basic ${JIRA.authorization}`,
       'Content-Type': 'application/json',
     },
-    SEARCH: TICKET_UPDATE,
+    data: TICKET_UPDATE,
   }
 
   // Update or create the issue
-  const CFG = JIRA_KEY ? CFG_TICKET_UPDATE : CFG_TICKET_CREATION
+  let CFG = null
+  let MSG = null
+  let KEY = null
+
+  switch (JIRA_KEY) {
+    case 'abort':
+      qe.msg('Issue creation skipped due an JQL error', 'error')
+
+      return
+
+    case 'create':
+      CFG = CFG_TICKET_CREATION
+      MSG = 'create'
+      break
+
+    default:
+      CFG = CFG_TICKET_UPDATE
+      MSG = 'update'
+  }
 
   await axios(CFG)
     .then((response) => {
-      const { key: ISSUE_KEY } = response.SEARCH
+      const { key: ISSUE_KEY } = response.data
 
-      qe.msg(`Issue ${ISSUE_KEY} created on Jira`, 'ok', false, false)
+      KEY = typeof ISSUE_KEY === 'undefined' ? JIRA_KEY : ISSUE_KEY
+      qe.msg(`Issue ${KEY} ${MSG}d on Jira`, 'ok', false, false)
     })
     .catch((e) => {
-      qe.msg('Error creating or updating issue', 'error', false, false)
+      qe.msg(`Fail to ${MSG} issue on Jira`, 'error', false, false)
       qe.msg(e, true, true, false)
     })
 }
 
 // Search issues on Jira
 async function searchIssue(account, authorization, jiraJQL) {
-  let key = 0
-  const SEARCH = JSON.stringify({
-    expand: [],
-    jql: jiraJQL,
-    maxResults: 1,
-    fieldsByKeys: false,
-    fields: ['summary', 'status', 'assignee'],
-    startAt: 0,
-  })
+  let key = null
 
   // Configuration
-  const CFG_SEARCH = {
-    method: 'post',
+  const CFG = {
+    method: 'get',
     url: `https://${account}.atlassian.net/rest/api/3/search`,
     headers: {
       Authorization: `Basic ${authorization}`,
       'Content-Type': 'application/json',
     },
-    SEARCH,
+    params: {
+      jql: jiraJQL,
+      startAt: 0,
+      maxResults: 2,
+    },
   }
 
-  await axios(CFG_SEARCH)
+  await axios(CFG)
     .then((response) => {
-      if (response.data.total) {
+      if (response.data.total === 1) {
         key = response.data.issues[0].key
-        qe.msg(`Issue ${key} found, it'll be updated`, 'warn')
+        qe.msg(`Opened issue ${key} found, it'll be updated`, 'warn')
+      } else if (response.data.total > 1) {
+        key = 'abort'
+        qe.msg('More than one issue found, aborting', 'error')
+        qe.msg(`JQL used: ${jiraJQL}`)
       } else {
+        key = 'create'
         qe.msg(`Issue not found, it'll be created`, 'ok')
       }
     })
     .catch((e) => {
-      qe.msg('Error consuming Jira API', 'error')
+      qe.msg('Querying Jira API', 'error')
       qe.msg(e, true, true, false)
     })
 
