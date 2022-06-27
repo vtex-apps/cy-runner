@@ -24,5 +24,7 @@ describe('Create & Approve OrganizationA', () => {
     }
   )
   
-  throw new Error("Testing Jira integration")
+  it("It should trigger an error", => {
+     throw new Error("Testing Jira integration")
+  })
 })
