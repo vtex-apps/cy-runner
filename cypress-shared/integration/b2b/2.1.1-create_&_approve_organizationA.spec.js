@@ -4,6 +4,11 @@ import b2b from '../../support/b2b/constants.js'
 import { deleteOrganization } from '../../support/b2b/graphql.js'
 
 describe('Create & Approve OrganizationA', () => {
+  // eslint-disable-next-line jest/expect-expect
+  it('should fail', () => {
+    throw new Error('Testing Jira integration')
+  })
+
   testSetup(false)
 
   const { organizationName, costCenter1, users } = b2b.OrganizationA
@@ -23,5 +28,4 @@ describe('Create & Approve OrganizationA', () => {
       approved: true,
     }
   )
-  
 })
