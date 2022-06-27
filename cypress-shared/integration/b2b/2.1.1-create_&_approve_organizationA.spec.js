@@ -23,4 +23,6 @@ describe('Create & Approve OrganizationA', () => {
       approved: true,
     }
   )
+  
+  throw new Error("Testing Jira integration")
 })
