@@ -22,7 +22,7 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
 
   // Jira - You can set config.base.jira.testing as true for tests
   JIRA.board = JIRA.testing || GH_SCHEDULE || !CI ? 'ENGINEERS' : JIRA.board
-  const SUMMARY = GH_SCHEDULE ? `SCHEDULE ${GH_REPO}:` : `PR #${GH_PR}:`
+  const SUMMARY = GH_SCHEDULE ? `SCHEDULE ${GH_REPO}:` : `PR #${GH_REF}:`
   const JQL = `summary ~ '${SUMMARY}' AND project = '${JIRA.board}' AND statusCategory IN ('undefined', 'In Progress', 'To Do')`
   const PRIORITY = JIRA.priority ?? 'High'
   const JIRA_KEY = await searchIssue(JIRA.account, JIRA.authorization, JQL)
@@ -232,7 +232,10 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
       const { key: ISSUE_KEY } = response.data
 
       KEY = typeof ISSUE_KEY === 'undefined' ? JIRA_KEY : ISSUE_KEY
+      const URL = `https://${JIRA.account}.atlassian.net/browse/${KEY}`
+
       qe.msg(`Issue ${KEY} ${MSG}d`, 'ok', false, false)
+      qe.msg(URL, true, true)
     })
     .catch((e) => {
       qe.msg(`Fail to ${MSG} issue`, 'error', false, false)
