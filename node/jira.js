@@ -18,17 +18,11 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
   const PR_URL = `${GH_URL}/${GH_REPO}/pull/${GH_REF}`
   const CY_URL = `https://dashboard.cypress.io/projects/${config.base.cypress.projectId}/runs`
   const RUN_URL = `${GH_URL}/${GH_REPO}/actions/runs/${GH_RUN}`
-  let isScheduled = false
-  let github = process.env.INPUT_GITHUB
-
-  if (github) {
-    github = JSON.parse(github)
-    isScheduled = github.event_name === 'schedule'
-  }
+  const GH_SCHEDULE = process.env.GITHUB_EVENT_NAME === 'schedule' ?? false
 
   // Jira - You can set config.base.jira.testing as true for tests
-  JIRA.board = JIRA.testing || isScheduled || !CI ? 'ENGINEERS' : JIRA.board
-  const SUMMARY = isScheduled ? `SC #${GH_RUN}:` : `PR #${GH_PR}:`
+  JIRA.board = JIRA.testing || GH_SCHEDULE || !CI ? 'ENGINEERS' : JIRA.board
+  const SUMMARY = GH_SCHEDULE ? `SCHEDULE ${GH_REPO}:` : `PR #${GH_PR}:`
   const JQL = `summary ~ '${SUMMARY}' AND project = '${JIRA.board}' AND statusCategory IN ('undefined', 'In Progress', 'To Do')`
   const PRIORITY = JIRA.priority ?? 'High'
   const JIRA_KEY = await searchIssue(JIRA.account, JIRA.authorization, JQL)
