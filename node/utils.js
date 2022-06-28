@@ -208,7 +208,7 @@ exports.storage = (source, action, destination = null) => {
 
       case 'append':
         if (destination == null) this.crash('You must inform what to add')
-        if (!this.storage(source, 'exists')) fs.writeFileSync(source, ' ')
+        if (!this.storage(source, 'exists')) fs.writeFileSync(source, '')
 
         return fs.appendFileSync(source, destination)
 
@@ -578,15 +578,16 @@ exports.runCypress = async (test, config, addOptions = {}) => {
       cypress.run(options).then((result) => {
         // TODO Check the result.failures better
         if (result.failures) this.msg(JSON.stringify(result), 'error')
-        testResult.push(result)
 
+        const output = {}
         const cleanResult = result
         const logName = result.runs[0].spec.name.replace('.js', '.yml')
         const logSpec = path.join(logPath, logName)
 
         delete cleanResult.config
-        this.storage(logSpec, 'append', `# ${this.tick()} ################\n\n`)
-        this.storage(logSpec, 'append', yaml.dump(cleanResult))
+        output[`epoc-${this.tick()}`] = cleanResult
+        this.storage(logSpec, 'append', yaml.dump(output))
+        testResult.push(cleanResult)
       })
     )
   }

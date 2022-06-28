@@ -5,6 +5,7 @@ const { workspace } = require('./node/workspace')
 const { credentials } = require('./node/credential')
 const { strategy } = require('./node/test')
 const { teardown } = require('./node/teardown')
+const { issue } = require('./node/jira')
 const { report } = require('./node/report')
 
 // Controls test state
@@ -14,6 +15,7 @@ const control = {
   specsFailed: [],
   specsSkipped: [],
   specsPassed: [],
+  runUrl: null,
 }
 
 async function main() {
@@ -54,6 +56,10 @@ async function main() {
     control.specsFailed = call.specsFailed
     control.specsSkipped = call.specsSkipped
     control.specsPassed = call.specsPassed
+    control.runUrl = call.runUrl
+    if (config.base.jira.enabled && control.specsFailed.length) {
+      await issue(config, control.specsFailed, control.runUrl)
+    }
   }
 
   // Teardown
