@@ -36,7 +36,7 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
   }
 
   // Jira - You can set config.base.jira.testing as true for tests
-  JIRA.board = JIRA.testing || IS_SCH 'ENGINEERS' : JIRA.board
+  JIRA.board = JIRA.testing || IS_SCH ? 'ENGINEERS' : JIRA.board
   const SUMMARY = IS_SCH ? `SCHEDULE ${GH_REPO}:` : `PR #${GH_REF}:`
   const JQL = `summary ~ '${SUMMARY}' AND project = '${JIRA.board}' AND statusCategory IN ('undefined', 'In Progress', 'To Do')`
   const PRIORITY = JIRA.priority ?? 'High'
