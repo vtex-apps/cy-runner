@@ -15,12 +15,19 @@ const APP = `${APP_NAME}@${APP_VERSION}`
 
 export function setOrganizationIdInJSON(organization, costCenter) {
   it(
-    'Getting Organization Id from session and set in OrganizationItem',
+    'Getting Organization,CostCenter Id from session and set this in organizations.json file',
     { retries: 3, responseTimeout: 5000 },
     () => {
       cy.request('/api/sessions?items=*').then((response) => {
         expect(response.body.namespaces).to.be.exist
         expect(response.body.namespaces['storefront-permissions']).to.be.exist
+        expect(
+          response.body.namespaces['storefront-permissions'].organization.value
+        ).to.contain('-')
+        expect(
+          response.body.namespaces['storefront-permissions'].costcenter.value
+        ).to.contain('-')
+
         // Saving organization & costcenter id in organization.json and this id will be deleted this wipe.spec.js
         cy.setOrganizationItem(
           organization,
