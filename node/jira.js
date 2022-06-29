@@ -13,7 +13,6 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
   const [, , GH_REF] = GITHUB_REF.split('/')
   const GH_RUN = process.env.GITHUB_RUN_ID ?? 7777777777
   const GH_URL = process.env.GITHUB_SERVER_URL ?? 'https://github.com'
-  const GH_PR = process.env.GITHUB_RUN_NUMBER ?? 0
   const GH_ACTOR = process.env.GITHUB_ACTOR ?? 'cy-runner'
   const PR_URL = `${GH_URL}/${GH_REPO}/pull/${GH_REF}`
   const CY_URL = `https://dashboard.cypress.io/projects/${config.base.cypress.projectId}/runs`
