@@ -9,11 +9,14 @@ import b2b from './constants.js'
 import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
 import { BUTTON_LABEL, TOAST_MSG } from '../validation_text.js'
 
-export function addUserFn({ userName, emailId }, costCenter, dropDownText) {
+export function addUserFn(
+  { userName, emailId, costCenter, duplicateUser = false },
+  dropDownText
+) {
   cy.gotoMyOrganization()
   cy.get(selectors.AddUser).should('be.visible')
   cy.get('body').then(($body) => {
-    if ($body.text().includes(emailId)) {
+    if ($body.text().includes(emailId) && !duplicateUser) {
       cy.log('User already added')
     } else {
       cy.get(selectors.AddUser).click()
@@ -33,7 +36,7 @@ export function addUserFn({ userName, emailId }, costCenter, dropDownText) {
   })
 }
 
-export function addUser(organizationName, costCenter, role) {
+export function addUser({ organizationName, costCenter, role }) {
   const { email, dropDownText } = role
 
   it(
@@ -43,7 +46,37 @@ export function addUser(organizationName, costCenter, role) {
       const userName = generateName(email)
       const emailId = generateEmailId(organizationName, email)
 
-      addUserFn({ userName, emailId }, costCenter, dropDownText)
+      addUserFn({ userName, emailId, costCenter }, dropDownText)
+    }
+  )
+}
+
+export function duplicateUserTestCase({
+  organizationName,
+  costCenter,
+  role,
+  sameOrganization = true,
+  // If sameOrganization is false then user is from different organization
+}) {
+  const { email, dropDownText } = role
+  const subTitle = sameOrganization ? 'same' : 'different'
+
+  it(
+    `Add duplicate user from ${subTitle} organization and verify popup`,
+    { retries: 3 },
+    () => {
+      const userName = generateName(email)
+      const emailId = generateEmailId(organizationName, email)
+
+      addUserFn(
+        { userName, emailId, costCenter, duplicateUser: true },
+        dropDownText
+      )
+      validateToastMsg(
+        sameOrganization
+          ? TOAST_MSG.userAlreadyRegisteredInThisOrganization
+          : TOAST_MSG.userAlreadyRegisteredInAnotherOrganization
+      )
     }
   )
 }
@@ -60,7 +93,7 @@ export function addAndupdateUser(
   it(`Adding ${emailId} & update its role & Costcenter`, { retries: 3 }, () => {
     const { dropDownText: previous } = currentRole
 
-    addUserFn({ userName, emailId }, currentCostCenter, previous)
+    addUserFn({ userName, emailId, costCenter: currentCostCenter }, previous)
     cy.contains(emailId).should('be.visible').click()
     cy.get(selectors.CostCenterDropDownInEdit, { timeout: 2000 }).select(
       updateCostCenter
@@ -85,8 +118,8 @@ export function addSameUserAgainInOrganization(
     `Adding ${emailId} with role ${previous} & update the role to ${dropDownText}`,
     { retries: 3 },
     () => {
-      addUserFn({ userName, emailId }, costCenter, previous)
-      addUserFn({ userName, emailId }, costCenter, dropDownText)
+      addUserFn({ userName, emailId, costCenter }, previous)
+      addUserFn({ userName, emailId, costCenter }, dropDownText)
     }
   )
 }
@@ -97,7 +130,7 @@ export function addAnddeleteUser(organization, costCenter, role) {
   const emailId = generateEmailId(organization, email)
 
   it(`Add & Delete a user ${emailId}`, () => {
-    addUserFn({ userName, emailId }, costCenter, dropDownText)
+    addUserFn({ userName, emailId, costCenter }, dropDownText)
     cy.contains(emailId).click()
     cy.get(`input[value='${emailId}']`).should('be.disabled')
     cy.get(selectors.Remove)

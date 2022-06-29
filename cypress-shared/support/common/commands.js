@@ -28,7 +28,15 @@ Cypress.Commands.add('addDelayBetweenRetries', (delay) => {
 })
 
 Cypress.Commands.add('closeCart', () => {
-  cy.get(selectors.CloseCart).click()
+  cy.get('body').then(($body) => {
+    if ($body.find(selectors.CloseCart).length) {
+      cy.get(selectors.CloseCart).then(($el) => {
+        if (Cypress.dom.isVisible($el)) {
+          cy.get(selectors.CloseCart).click()
+        }
+      })
+    }
+  })
 })
 
 Cypress.Commands.add('getIframeBody', (selector) => {

@@ -25,7 +25,7 @@ export default {
   PickupInStore: '.srp-toggle__pickup',
   PickupItems: '.srp-items',
   ProductsQAShipping: "input[value='Productusqa2']",
-  CloseCart: '.vtex-minicart-2-x-closeIconButton',
+  CloseCart: 'button[class*=minicart]',
   // Below products are from sandboxusdev
   AddtoCartBtnForHat: "a[href*='003/p'] > article > button",
   AddtoCartBtnForAdidas: "a[href*='adidas01/p'] > article > button",
