@@ -18,11 +18,19 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
   const PR_URL = `${GH_URL}/${GH_REPO}/pull/${GH_REF}`
   const CY_URL = `https://dashboard.cypress.io/projects/${config.base.cypress.projectId}/runs`
   const RUN_URL = `${GH_URL}/${GH_REPO}/actions/runs/${GH_RUN}`
-  const GH_SCHEDULE = process.env.GITHUB_EVENT_NAME === 'schedule' ?? false
+  const IS_SCH = process.env.GITHUB_EVENT_NAME === 'schedule' ?? false
+  const IS_DIS = process.env.GITHUB_EVENT_NAME === 'workflow_dispatch' ?? false
+
+  // If DISPATCH, avoid any ticket creation
+  if (IS_DIS) {
+    qe.msg('Running as dispatch, skipping any ticket creation', 'ok')
+
+    return
+  }
 
   // Jira - You can set config.base.jira.testing as true for tests
-  JIRA.board = JIRA.testing || GH_SCHEDULE || !CI ? 'ENGINEERS' : JIRA.board
-  const SUMMARY = GH_SCHEDULE ? `SCHEDULE ${GH_REPO}:` : `PR #${GH_PR}:`
+  JIRA.board = JIRA.testing || IS_SCH || !CI ? 'ENGINEERS' : JIRA.board
+  const SUMMARY = IS_SCH ? `SCHEDULE ${GH_REPO}:` : `PR #${GH_PR}:`
   const JQL = `summary ~ '${SUMMARY}' AND project = '${JIRA.board}' AND statusCategory IN ('undefined', 'In Progress', 'To Do')`
   const PRIORITY = JIRA.priority ?? 'High'
   const JIRA_KEY = await searchIssue(JIRA.account, JIRA.authorization, JQL)
@@ -70,7 +78,7 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
               },
               {
                 type: 'text',
-                text: `PR #${GH_PR}`,
+                text: `${SUMMARY} ${GH_PR}`,
                 marks: [
                   {
                     type: 'link',
@@ -174,7 +182,7 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
             },
             {
               type: 'text',
-              text: `PR #${GH_PR}`,
+              text: `${SUMMARY} ${GH_PR}`,
               marks: [
                 {
                   type: 'link',
