@@ -87,23 +87,25 @@ export function addPaymentTermsCollectionPriceTablesTestCase(organization) {
 }
 
 function verifyWidget(organization, costCenter, role) {
-  cy.get(selectors.UserWidget)
+  cy.get(selectors.UserWidget, { timeout: 15000 })
     .eq(0)
     .should('contain', `Organization: ${organization.organizationName}`)
-  cy.get(`${selectors.UserWidget} ${selectors.Tag}`).should(
+  cy.get(`${selectors.UserWidget} ${selectors.Tag}`, { timeout: 3000 }).should(
     'have.text',
     'Active'
   )
-  cy.get(selectors.UserWidget)
+  cy.get(selectors.UserWidget, { timeout: 3000 })
     .eq(1)
     .should('contain', `Cost Center: ${costCenter}`)
-  cy.get(selectors.UserWidget).eq(2).should('contain', `My Role: ${role}`)
+  cy.get(selectors.UserWidget, { timeout: 3000 })
+    .eq(2)
+    .should('contain', `My Role: ${role}`)
 }
 
 export function verifySession(organization, costCenter, role) {
   it(
     'Verifying Session items must have expected priceTable and collections',
-    { retries: 3 },
+    { retries: 1 },
     () => {
       cy.request('/api/sessions?items=*').then((response) => {
         expect(response.body.namespaces.profile.priceTables.value).to.equal(

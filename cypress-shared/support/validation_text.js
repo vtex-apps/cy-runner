@@ -5,6 +5,10 @@ export const TOAST_MSG = {
   addedToTheCart: 'added to the cart',
   initializing: 'initializing',
   impersonatePermissionError: 'do not have permission to impersonate',
+  userAlreadyRegisteredInThisOrganization:
+    'This user is already registered in this organization.',
+  userAlreadyRegisteredInAnotherOrganization:
+    'This user is already registered in another organization.',
 }
 
 export const BUTTON_LABEL = {
