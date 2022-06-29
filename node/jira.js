@@ -30,7 +30,7 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
 
   // Jira - You can set config.base.jira.testing as true for tests
   JIRA.board = JIRA.testing || IS_SCH || !CI ? 'ENGINEERS' : JIRA.board
-  const SUMMARY = IS_SCH ? `SCHEDULE ${GH_REPO}:` : `PR #${GH_PR}:`
+  const SUMMARY = IS_SCH ? `SCHEDULE ${GH_REPO}:` : `PR #${GH_REF}:`
   const JQL = `summary ~ '${SUMMARY}' AND project = '${JIRA.board}' AND statusCategory IN ('undefined', 'In Progress', 'To Do')`
   const PRIORITY = JIRA.priority ?? 'High'
   const JIRA_KEY = await searchIssue(JIRA.account, JIRA.authorization, JQL)
@@ -78,7 +78,7 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
               },
               {
                 type: 'text',
-                text: `${SUMMARY} ${GH_PR}`,
+                text: `${SUMMARY} ${GH_REF}`,
                 marks: [
                   {
                     type: 'link',
@@ -182,7 +182,7 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
             },
             {
               type: 'text',
-              text: `${SUMMARY} ${GH_PR}`,
+              text: `${SUMMARY} ${GH_REF}`,
               marks: [
                 {
                   type: 'link',
