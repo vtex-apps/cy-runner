@@ -240,7 +240,10 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
       const { key: ISSUE_KEY } = response.data
 
       KEY = typeof ISSUE_KEY === 'undefined' ? JIRA_KEY : ISSUE_KEY
+      const URL = `https://${JIRA.account}.atlassian.net/browse/${KEY}`
+
       qe.msg(`Issue ${KEY} ${MSG}d`, 'ok', false, false)
+      qe.msg(URL, true, true)
     })
     .catch((e) => {
       qe.msg(`Fail to ${MSG} issue`, 'error', false, false)

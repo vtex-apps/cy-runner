@@ -28,14 +28,9 @@ export function fillQuoteInformation({
         'be.visible'
       )
 
-      // cy.get(selectors.QuoteTotal, { timeout: 5000 })
-      //   .invoke('text')
-      //   .then((text) => {
-      //     cy.log(text)
-      //     if (text.includes('$0.00')) {
-      //       cy.reload()
-      //     }
-      //   })
+      cy.get(selectors.QuoteTotal, { timeout: 8000 })
+        .first()
+        .should('not.contain', '$0.00')
 
       cy.get(selectors.QuoteName).should('be.visible').type(quoteEnv)
       if (notes) cy.get(selectors.Notes).should('be.visible').type(notes)
@@ -93,7 +88,10 @@ export function createQuote(
     ? `Create Quote by ${role} who impersonated ${impersonatedRole}, verify state is ${expectedStatus} and store in env ${quoteEnv}`
     : `Create Quote as ${role}, verify state is ${expectedStatus} and store in env ${quoteEnv}`
 
-  it(title, { retries: 3 }, () => {
+  const retries = impersonatedRole ? 1 : 3
+
+  it(title, { retries }, () => {
+    cy.closeCart()
     cy.searchProductinB2B(product)
     cy.waitForGraphql('addToCart', selectors.B2BAddtoCart)
     fillQuoteInformation({ quoteEnv, requestQuote, notes, impersonatedRole })

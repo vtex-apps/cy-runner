@@ -3,7 +3,7 @@ import { BUTTON_LABEL } from '../validation_text.js'
 import { PAYMENT_TERMS } from './utils.js'
 
 export function checkoutProduct(product) {
-  it('Checkout the Product', { retries: 3 }, () => {
+  it('Checkout the Product', { retries: 1 }, () => {
     cy.searchProductinB2B(product)
     cy.get(selectors.searchResult)
       .first()
