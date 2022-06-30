@@ -1,5 +1,5 @@
 import selectors from '../common/selectors.js'
-import { getCostCenterName, validateToastMsg } from './utils.js'
+import { validateToastMsg } from './utils.js'
 import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
 import { BUTTON_LABEL, TOAST_MSG } from '../validation_text.js'
 
@@ -28,7 +28,7 @@ export function addCostCenter(organization, costCenter, costCenterAddress) {
             selectors.SubmitCostCenter
           ).then((req) => {
             cy.setOrganizationItem(
-              getCostCenterName(organization, costCenter),
+              costCenter,
               req.response.body.data.createCostCenter.id
             )
           })
