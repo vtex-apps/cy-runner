@@ -226,8 +226,7 @@ export function addUserViaGraphql(roleKey) {
           const variables = {
             roleId: organizationItems[`${role}-id`],
             orgId: organizationItems[organizationName],
-            costId:
-              organizationItems[`${organizationName}-${costCenter1.name}`],
+            costId: organizationItems[costCenter1.name],
             name: generateName(role),
             email: generateEmailId(organizationName, email),
           }

@@ -1,9 +1,5 @@
 import selectors from '../common/selectors.js'
-import {
-  getCostCenterName,
-  generateEmailId,
-  validateToastMsg,
-} from './utils.js'
+import { generateEmailId, validateToastMsg } from './utils.js'
 import { BUTTON_LABEL, TOAST_MSG } from '../validation_text.js'
 import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
 import { updateRetry } from '../common/support.js'
@@ -21,22 +17,18 @@ export function setOrganizationIdInJSON(organization, costCenter) {
       cy.request('/api/sessions?items=*').then((response) => {
         expect(response.body.namespaces).to.be.exist
         expect(response.body.namespaces['storefront-permissions']).to.be.exist
-        expect(
+        const organizationId =
           response.body.namespaces['storefront-permissions'].organization.value
-        ).to.contain('-')
-        expect(
+
+        const costCenterId =
           response.body.namespaces['storefront-permissions'].costcenter.value
-        ).to.contain('-')
+
+        expect(organizationId).to.contain('-')
+        expect(costCenterId).to.contain('-')
 
         // Saving organization & costcenter id in organization.json and this id will be deleted this wipe.spec.js
-        cy.setOrganizationItem(
-          organization,
-          response.body.namespaces['storefront-permissions'].organization.value
-        )
-        cy.setOrganizationItem(
-          getCostCenterName(organization, costCenter),
-          response.body.namespaces['storefront-permissions'].costcenter.value
-        )
+        cy.setOrganizationItem(organization, organizationId)
+        cy.setOrganizationItem(costCenter, costCenterId)
       })
     }
   )
