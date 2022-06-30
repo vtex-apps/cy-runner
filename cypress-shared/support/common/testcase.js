@@ -158,7 +158,7 @@ export function startE2E(app, workspace) {
         // if the workspace was blocked longer than 30 minutes then
         // skip validation & force update taxConfiguration
 
-        if (minutes === 30) {
+        if (minutes >= 30) {
           const [WORKSPACE_IN_TAX_CONFIG] = url.split('//')[1].split('--')
 
           cy.log(
