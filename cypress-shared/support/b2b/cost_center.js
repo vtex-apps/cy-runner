@@ -16,6 +16,7 @@ export function addCostCenter(organization, costCenter, costCenterAddress) {
         } else {
           cy.get(selectors.AddCostCenter).click()
           cy.get(selectors.CostCenterName)
+            .clear()
             .type(costCenter)
             .should('have.value', costCenter)
           cy.get(selectors.Street)
