@@ -101,7 +101,7 @@ export function configureTaxConfigurationInOrderForm(workspace = null) {
                 authorizationHeader,
                 allowExecutionAfterErrors: false,
                 integratedAuthentication: false,
-                appId: null,
+                appId: new Date(),
               }
             : {}
           cy.request({
@@ -147,7 +147,26 @@ export function startE2E(app, workspace) {
       if (!taxConfiguration) {
         expect(response.body.taxConfiguration).to.be.null
       } else {
-        expect(response.body.taxConfiguration.url).to.include(workspace)
+        const { appId, url } = response.body.taxConfiguration
+        const minutes = parseInt(
+          (Math.abs(new Date().getTime() - new Date(appId).getTime()) /
+            (1000 * 60)) %
+            60,
+          10
+        )
+
+        // if the workspace was blocked longer than 30 minutes then
+        // skip validation & force update taxConfiguration
+
+        if (minutes >= 30) {
+          const [WORKSPACE_IN_TAX_CONFIG] = url.split('//')[1].split('--')
+
+          cy.log(
+            `TaxConfiguration is used by this workspace ${WORKSPACE_IN_TAX_CONFIG} for more than or equal to 30 minutes`
+          )
+        } else {
+          expect(url).to.include(workspace)
+        }
       }
     })
   })
