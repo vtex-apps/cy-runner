@@ -58,6 +58,7 @@ export function loginToStoreFront(emailId, role) {
                 cy.get(selectors.Email)
                   .should('be.visible')
                   .focus()
+                  .clear()
                   .type(emailId)
                 cy.get(selectors.Submit)
                   .click()
@@ -68,7 +69,7 @@ export function loginToStoreFront(emailId, role) {
                       accessToken
                     )
 
-                    cy.get(selectors.Token).type(newAccessToken)
+                    cy.get(selectors.Token).clear().type(newAccessToken)
                     cy.get(selectors.Submit).click()
                     cy.waitForSession()
                     cy.get(selectors.ProfileLabel).should('be.visible')

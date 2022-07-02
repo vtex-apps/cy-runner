@@ -32,8 +32,11 @@ export function fillQuoteInformation({
         .first()
         .should('not.contain', '$0.00')
 
-      cy.get(selectors.QuoteName).should('be.visible').type(quoteEnv)
-      if (notes) cy.get(selectors.Notes).should('be.visible').type(notes)
+      cy.get(selectors.QuoteName).should('be.visible').clear().type(quoteEnv)
+      if (notes) {
+        cy.get(selectors.Notes).should('be.visible').clear().type(notes)
+      }
+
       cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
         if (req.body.operationName === GRAPHL_OPERATIONS.CreateQuote) {
           req.continue()
@@ -243,7 +246,7 @@ function updateNotes(notes, saveQuote) {
     .then((notesDescription) => {
       if (notesDescription !== `Notes:\n${notes}`) {
         cy.wrap(true).as(saveQuote)
-        cy.get(selectors.Notes).type(notes)
+        cy.get(selectors.Notes).clear().type(notes)
       }
     })
 }
@@ -418,11 +421,12 @@ function fillFilterBy(data, organization = false, multi = false) {
     cy.contains(/More/i).click()
     cy.contains(/Select a filter/i)
       .click()
+      .clear()
       .type(downarrowCount)
     cy.get(selectors.FilterLabel).contains(filterBy, {
       matchCase: false,
     })
-    cy.get(selectors.FilterInput).type(data)
+    cy.get(selectors.FilterInput).clear().type(data)
     cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
       if (req.body.operationName === GRAPHL_OPERATIONS.GetQuotes) {
         req.continue()
@@ -536,6 +540,7 @@ export function preventQuoteUpdation() {
         .should('be.visible')
         .should('not.be.disabled')
         .focus()
+        .clear()
         .type(`{backspace}5{enter}`)
       cy.get('#clear-cart').should('be.visible')
     }

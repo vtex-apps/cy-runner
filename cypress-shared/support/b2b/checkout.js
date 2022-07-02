@@ -35,7 +35,9 @@ export function fillContactInfo() {
         cy.get(selectors.ProceedtoShipping).should('be.visible').click()
         cy.get('body').then(($body) => {
           if ($body.find(selectors.ReceiverName).length) {
-            cy.get(selectors.ReceiverName, { timeout: 5000 }).type('Syed')
+            cy.get(selectors.ReceiverName, { timeout: 5000 })
+              .clear()
+              .type('Syed')
           }
         })
         cy.get(selectors.GotoPaymentBtn, { timeout: 5000 }).should('be.visible')
