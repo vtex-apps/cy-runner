@@ -68,18 +68,7 @@ export function quickOrderBySkuAnd51QuantityTestCase(role) {
 }
 
 function searchOneByOneProduct(search, { product, quantity }, number) {
-  // cy.getVtexItems().then((vtex) => {
-  //   cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
-  //     if (req.body.operationName === GRAPHL_OPERATIONS.Autocomplete) {
-  //       req.continue()
-  //     }
-  //   }).as(GRAPHL_OPERATIONS.Autocomplete)
-  // cy.intercept('POST', '**/jpg**').as('JPG')
   cy.get(search).should('be.visible').should('be.enabled').clear().type(product)
-  // cy.wait('@JPG')
-
-  //   cy.wait(`@${GRAPHL_OPERATIONS.Autocomplete}`, { timeout: 20000 })
-  // })
   cy.get('button .pr2 .truncate').should('be.visible')
   cy.get(search).type('{downarrow}{enter}')
   cy.get(quantity, { timeout: 10000 }).should('be.visible').clear().type(number)

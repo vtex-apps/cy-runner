@@ -21,7 +21,7 @@ import {
 } from '../../support/b2b/checkout.js'
 import {
   searchQuote,
-  rejectQuote,
+  // rejectQuote,
   filterQuoteByStatus,
   quoteShouldbeVisibleTestCase,
   quoteShouldNotBeVisibleTestCase,
@@ -81,10 +81,10 @@ describe('Organization A - Cost Center A1 - Organization Admin2 Scenario', () =>
     organizationB
   )
   searchQuote(quotes.OrganizationAdmin.quotes1)
-  rejectQuote(
-    quotes.OrganizationAdmin2.declineQuote,
-    ROLE_DROP_DOWN.OrganizationAdmin
-  )
+  // rejectQuote(
+  //   quotes.OrganizationAdmin2.declineQuote,
+  //   ROLE_DROP_DOWN.OrganizationAdmin
+  // )
   quickOrderBySkuAndQuantityTestCase1(
     ROLE_DROP_DOWN.OrganizationAdmin,
     quotes.OrganizationAdmin2.quotes1
