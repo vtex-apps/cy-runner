@@ -384,9 +384,6 @@ exports.writeCypressJson = (config) => {
         retries: 0,
         screenshotsFolder: 'logs/screenshots',
         videosFolder: 'logs/videos',
-        fixturesFolder: baseUrl.includes('b2b')
-          ? 'cypress-shared/fixtures'
-          : 'cypress/fixtures',
       })
     )
     this.msg(`${CYPRESS_JSON_FILE} created successfully`)
@@ -503,6 +500,7 @@ exports.openCypress = async () => {
     config: {
       integrationFolder: `${baseDir}/integration`,
       supportFile: `${baseDir}/support`,
+      fixturesFolder: `${baseDir}/fixtures`,
     },
   }
 

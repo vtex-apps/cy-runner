@@ -110,8 +110,8 @@ export function quoteShouldNotBeVisibleTestCase(
     `${organization} user created Quote - ${quoteId} should not be visible for ${currentOrganization} user`,
     { retries: 2 },
     () => {
-      cy.gotoMyQuotes()
-      cy.get(selectors.QuoteFromMyQuotesPage)
+      viewQuote(quoteId, false)
+      cy.get(selectors.QuoteFromMyQuotesPage, { timeout: 10000 })
         .invoke('text')
         .should('not.include', quoteId)
     }
@@ -127,8 +127,8 @@ export function quoteShouldbeVisibleTestCase(
     `${organization} user created Quote - ${quoteId} should be visible for ${currentOrganization} user`,
     { retries: 2 },
     () => {
-      cy.gotoMyQuotes()
-      cy.get(selectors.QuoteFromMyQuotesPage)
+      viewQuote(quoteId, false)
+      cy.get(selectors.QuoteFromMyQuotesPage, { timeout: 10000 })
         .invoke('text')
         .should('include', quoteId)
     }
@@ -244,11 +244,10 @@ function updateNotes(notes, saveQuote) {
     .then((notesDescription) => {
       if (notesDescription !== `Notes:\n${notes}`) {
         cy.wrap(true).as(saveQuote)
-        cy.get(selectors.Notes)
-          .scrollIntoView()
-          .should('be.visible')
-          .clear()
-          .type(notes)
+        cy.scrollTo('bottom')
+        cy.get(selectors.Notes).should('be.visible').clear().type(notes)
+      } else {
+        cy.wrap(false).as(saveQuote)
       }
     })
 }
@@ -276,16 +275,20 @@ function updateQuantity(quantity, saveQuote) {
   })
 }
 
-function viewQuote(quote) {
+function viewQuote(quote, open = true) {
   cy.gotoMyQuotes()
   cy.get(selectors.QuoteSearchQuery).clear().type(quote)
   cy.get(selectors.QuoteSearch).should('be.visible').click()
-  cy.contains(quote).click()
-  cy.get(selectors.ProfileLabel).should('be.visible')
-  cy.get(selectors.PageHeader)
-    .should('be.visible')
-    .should('have.text', BUTTON_LABEL.QuoteDetails)
-  cy.get(selectors.QuoteStatus).should('be.visible')
+  if (open) {
+    cy.contains(quote).click()
+    cy.get(selectors.ProfileLabel).should('be.visible')
+    cy.get(selectors.PageHeader)
+      .should('be.visible')
+      .should('have.text', BUTTON_LABEL.QuoteDetails)
+    cy.get(selectors.QuoteStatus).should('be.visible')
+  } else {
+    cy.log('Opening Quote is not allowed')
+  }
 }
 
 export function updateQuote(
@@ -505,7 +508,7 @@ export function filterQuoteByStatus(expectedStatus1, expectedStatus2 = null) {
     expectedStatus2 ? `and ${expectedStatus2}` : ''
   }`
 
-  it(title, () => {
+  it(title, updateRetry(2), () => {
     cy.gotoMyQuotes()
     cy.get(selectors.QuoteSearchQuery).clear()
     cy.get(selectors.QuotesFilterByStatus).click()
