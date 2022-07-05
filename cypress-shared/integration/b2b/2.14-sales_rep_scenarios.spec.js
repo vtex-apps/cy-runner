@@ -3,6 +3,7 @@ import b2b from '../../support/b2b/constants.js'
 import {
   ROLE_DROP_DOWN,
   ROLE_ID_EMAIL_MAPPING as roleObject,
+  STATUSES,
 } from '../../support/b2b/utils.js'
 import { loginToStoreFront } from '../../support/b2b/login.js'
 import {
@@ -12,12 +13,45 @@ import {
   verifySession,
   stopImpersonation,
 } from '../../support/b2b/common.js'
-import { searchQuote, createQuote } from '../../support/b2b/quotes.js'
+import {
+  searchQuote,
+  createQuote,
+  updateQuote,
+  filterQuoteByStatus,
+  quoteShouldbeVisibleTestCase,
+  quoteShouldNotBeVisibleTestCase,
+} from '../../support/b2b/quotes.js'
+
+function QuotesAccess(
+  { organizationName, quotes },
+  organizationB,
+  organizationBQuote
+) {
+  quoteShouldNotBeVisibleTestCase(
+    organizationName,
+    quotes.Buyer2.quotes1,
+    organizationName
+  )
+  quoteShouldNotBeVisibleTestCase(
+    organizationName,
+    organizationBQuote.OrganizationAdmin.quotes1,
+    organizationB
+  )
+  quoteShouldbeVisibleTestCase(
+    organizationName,
+    quotes.OrganizationAdmin.quotes1,
+    organizationName
+  )
+}
 
 describe('Organization A - Cost Center A1 - Sales Rep Scenario', () => {
   testSetup(false)
 
-  const { nonAvailableProduct, users, product, costCenter1 } = b2b.OrganizationA
+  const { nonAvailableProduct, users, product, costCenter1, quotes } =
+    b2b.OrganizationA
+
+  const { organizationName: organizationB, quotes: organizationBQuote } =
+    b2b.OrganizationB
 
   const impersonatedRole = ROLE_DROP_DOWN.Buyer
 
@@ -29,12 +63,19 @@ describe('Organization A - Cost Center A1 - Sales Rep Scenario', () => {
   )
 
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
-  // QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
+  QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
   userShouldNotImpersonateThisUser(
     roleObject.SalesRepresentative.role,
     roleObject.SalesManager.role,
     users.SalesManager
   )
+
+  searchQuote(quotes.SalesRep.updateQuote)
+  const price = '30.00'
+
+  updateQuote(quotes.SalesRep.updateQuote, { price })
+  filterQuoteByStatus(STATUSES.revised)
+  QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
 
   salesUserShouldImpersonateNonSalesUser(
     roleObject.SalesRepresentative.role,

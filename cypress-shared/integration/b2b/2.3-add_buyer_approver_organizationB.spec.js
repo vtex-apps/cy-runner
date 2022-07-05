@@ -10,11 +10,14 @@ import {
   ROLE_DROP_DOWN_EMAIL_MAPPING as role,
   ROLE_DROP_DOWN,
 } from '../../support/b2b/utils.js'
+import { createQuote } from '../../support/b2b/quotes.js'
 
 describe('OrganizationB - Create a Buyer and Approver associate Cost Center and assign payment terms', () => {
   testSetup(false)
 
-  const { organizationName, costCenter1, users } = b2b.OrganizationB
+  const { organizationName, costCenter1, users, product, quotes } =
+    b2b.OrganizationB
+
   const { organizationName: organizationA } = b2b.OrganizationA
 
   loginToStoreFront(users.OrganizationAdmin1, ROLE_DROP_DOWN.OrganizationAdmin)
@@ -36,6 +39,11 @@ describe('OrganizationB - Create a Buyer and Approver associate Cost Center and 
     costCenter: costCenter1.name,
     role: role.OrganizationAdmin1,
     sameOrganization: false,
+  })
+  createQuote({
+    product,
+    quoteEnv: quotes.OrganizationAdmin.quotes1,
+    role: ROLE_DROP_DOWN.OrganizationAdmin,
   })
   preserveCookie()
 })
