@@ -107,7 +107,13 @@ Cypress.Commands.add('gotoCostCenter', (costCenter) => {
 
 Cypress.Commands.add('gotoMyQuotes', () => {
   cy.get(selectors.ProfileLabel, { timeout: 20000 }).should('be.visible')
-  cy.get(selectors.MyQuotes, { timeout: 10000 }).should('be.visible').click()
+  cy.get('body').then(($body) => {
+    if (!$body.find(selectors.ToggleFields).length) {
+      cy.get(selectors.MyQuotes, { timeout: 10000 })
+        .should('be.visible')
+        .click()
+    }
+  })
   cy.get(selectors.QuotesToolBar, { timeout: 20000 }).should('be.visible')
 })
 
