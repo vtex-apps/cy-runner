@@ -25,6 +25,8 @@ export function setOrganizationIdInJSON(organization, costCenter) {
 
         expect(organizationId).to.contain('-')
         expect(costCenterId).to.contain('-')
+        expect(organizationId).to.not.be.undefined
+        expect(costCenterId).to.not.be.undefined
 
         // Saving organization & costcenter id in organization.json and this id will be deleted this wipe.spec.js
         cy.setOrganizationItem(organization, organizationId)

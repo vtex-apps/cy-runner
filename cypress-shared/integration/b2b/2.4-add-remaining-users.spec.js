@@ -1,10 +1,23 @@
 /* eslint-disable jest/valid-expect */
 import { testSetup } from '../../support/common/support.js'
-import { ROLE_ID_EMAIL_MAPPING, OTHER_ROLES } from '../../support/b2b/utils.js'
 import { addUserViaGraphql } from '../../support/b2b/add_users.js'
+import b2b from '../../support/b2b/constants.js'
+import {
+  ROLE_DROP_DOWN,
+  ROLE_ID_EMAIL_MAPPING,
+  OTHER_ROLES,
+} from '../../support/b2b/utils.js'
+import { loginToStoreFront } from '../../support/b2b/login.js'
+import { setOrganizationIdInJSON } from '../../support/b2b/common.js'
 
 describe('Add Sales Users via Graphql', () => {
   testSetup(false)
+
+  const { organizationName, costCenter1, users } = b2b.OrganizationA
+
+  loginToStoreFront(users.OrganizationAdmin1, ROLE_DROP_DOWN.OrganizationAdmin)
+
+  setOrganizationIdInJSON(organizationName, costCenter1.name)
 
   it('Set roles in organization JSON', { retries: 3 }, () => {
     cy.getVtexItems().then((vtex) => {
