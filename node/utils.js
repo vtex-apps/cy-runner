@@ -357,6 +357,12 @@ function generateBaseUrl(config) {
 
 exports.generateBaseUrl = generateBaseUrl
 
+function getBaseDir(storage) {
+  if (storage(path.join('cypress', 'integration'))) return 'cypress'
+
+  return 'cypress-shared'
+}
+
 exports.writeCypressJson = (config) => {
   const CYPRESS_JSON_FILE = 'cypress.json'
   const CYPRESS = config.base.cypress
@@ -384,6 +390,7 @@ exports.writeCypressJson = (config) => {
         retries: 0,
         screenshotsFolder: 'logs/screenshots',
         videosFolder: 'logs/videos',
+        fixturesFolder: `${getBaseDir(this.storage)}/fixtures`,
       })
     )
     this.msg(`${CYPRESS_JSON_FILE} created successfully`)
@@ -493,9 +500,8 @@ exports.stopOnFail = async (config, step) => {
 }
 
 exports.openCypress = async () => {
-  let baseDir = 'cypress-shared'
+  const baseDir = getBaseDir(this.storage)
 
-  if (this.storage(path.join('cypress', 'integration'))) baseDir = 'cypress'
   const options = {
     config: {
       integrationFolder: `${baseDir}/integration`,
