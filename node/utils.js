@@ -390,7 +390,6 @@ exports.writeCypressJson = (config) => {
         retries: 0,
         screenshotsFolder: 'logs/screenshots',
         videosFolder: 'logs/videos',
-        fixturesFolder: `${getBaseDir(this.storage)}/fixtures`,
       })
     )
     this.msg(`${CYPRESS_JSON_FILE} created successfully`)
@@ -506,6 +505,7 @@ exports.openCypress = async () => {
     config: {
       integrationFolder: `${baseDir}/integration`,
       supportFile: `${baseDir}/support`,
+      fixturesFolder: `${baseDir}/fixtures`,
     },
   }
 
@@ -520,6 +520,7 @@ exports.openCypress = async () => {
 exports.runCypress = async (test, config, addOptions = {}) => {
   // If mix base path for specs, stop it
   const specPath = path.parse(test.specs[0]).dir
+  const baseDir = getBaseDir(this.storage)
 
   test.specs.forEach((spec) => {
     const pathToCheck = path.parse(spec).dir
@@ -540,6 +541,7 @@ exports.runCypress = async (test, config, addOptions = {}) => {
     config: {
       integrationFolder: specPath,
       supportFile: `${specPath.split(path.sep)[0]}/support`,
+      fixturesFolder: `${baseDir}/fixtures`,
     },
     env: {
       DISPLAY: '',
