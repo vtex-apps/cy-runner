@@ -94,6 +94,7 @@ Cypress.Commands.add(
   }
 )
 Cypress.Commands.add('gotoCostCenter', (costCenter) => {
+  if (cy.state('runnable')._currentRetry > 0) cy.gotoMyOrganization()
   cy.get('body').then(($body) => {
     if ($body.find('div[class*=pageHeader__title]').length) {
       cy.get('div[class*=pageHeader__title]')
