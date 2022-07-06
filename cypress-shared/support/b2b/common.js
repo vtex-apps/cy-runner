@@ -12,25 +12,35 @@ const APP = `${APP_NAME}@${APP_VERSION}`
 export function setOrganizationIdInJSON(organization, costCenter) {
   it(
     'Getting Organization,CostCenter Id from session and set this in organizations.json file',
-    { retries: 3, responseTimeout: 5000 },
+    { retries: 3, responseTimeout: 8000 },
     () => {
-      cy.request('/api/sessions?items=*').then((response) => {
-        expect(response.body.namespaces).to.be.exist
-        expect(response.body.namespaces['storefront-permissions']).to.be.exist
-        const organizationId =
-          response.body.namespaces['storefront-permissions'].organization.value
+      cy.getOrganizationItems().then((organizationItems) => {
+        if (
+          !organizationItems[organization] &&
+          !organizationItems[costCenter]
+        ) {
+          cy.request('/api/sessions?items=*').then((response) => {
+            expect(response.body.namespaces).to.be.exist
+            expect(response.body.namespaces['storefront-permissions']).to.be
+              .exist
+            const organizationId =
+              response.body.namespaces['storefront-permissions'].organization
+                .value
 
-        const costCenterId =
-          response.body.namespaces['storefront-permissions'].costcenter.value
+            const costCenterId =
+              response.body.namespaces['storefront-permissions'].costcenter
+                .value
 
-        expect(organizationId).to.contain('-')
-        expect(costCenterId).to.contain('-')
-        expect(organizationId).to.not.be.undefined
-        expect(costCenterId).to.not.be.undefined
+            expect(organizationId).to.contain('-')
+            expect(costCenterId).to.contain('-')
+            expect(organizationId).to.not.be.undefined
+            expect(costCenterId).to.not.be.undefined
 
-        // Saving organization & costcenter id in organization.json and this id will be deleted this wipe.spec.js
-        cy.setOrganizationItem(organization, organizationId)
-        cy.setOrganizationItem(costCenter, costCenterId)
+            // Saving organization & costcenter id in organization.json and this id will be deleted this wipe.spec.js
+            cy.setOrganizationItem(organization, organizationId)
+            cy.setOrganizationItem(costCenter, costCenterId)
+          })
+        }
       })
     }
   )

@@ -17,8 +17,6 @@ describe('Add Sales Users via Graphql', () => {
 
   loginToStoreFront(users.OrganizationAdmin1, ROLE_DROP_DOWN.OrganizationAdmin)
 
-  setOrganizationIdInJSON(organizationName, costCenter1.name)
-
   it('Set roles in organization JSON', { retries: 3 }, () => {
     cy.getVtexItems().then((vtex) => {
       const APP_NAME = 'vtex.storefront-permissions'
@@ -44,6 +42,8 @@ describe('Add Sales Users via Graphql', () => {
       })
     })
   })
+
+  setOrganizationIdInJSON(organizationName, costCenter1.name)
 
   const roles = Object.keys(ROLE_ID_EMAIL_MAPPING)
 
