@@ -301,6 +301,30 @@ export function createOrganizationWithInvalidEmail(
       .should('be.disabled')
   })
 }
+export function createOrganizationWithInvalidPhoneNumber(
+  organization,
+  { costCenterName, costCenterAddress ,phoneNumber},
+  email
+) {
+  it(`Creating Organization with Invalid phone number`, () => {
+    const { name, defaultCostCenter, b2bCustomerAdmin,tradeName } = getOrganisationPayload(
+      organization,
+      {
+        costCenterName,
+        costCenterAddress,
+        phoneNumber
+      },
+      email
+    )
+
+    fillOrganizationRequest({ name, b2bCustomerAdmin, tradeName },defaultCostCenter)
+
+    cy.get(selectors.SubmitOrganization)
+      .should('be.visible')
+      .should('be.disabled')
+  })
+}
+
 
 export function createOrganizationWithoutCostCenterNameAndAddress(
   organization,

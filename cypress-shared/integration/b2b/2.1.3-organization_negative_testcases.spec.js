@@ -3,6 +3,7 @@ import {
   createOrganizationWithInvalidEmail,
   createOrganizationWithoutName,
   createOrganizationWithoutCostCenterNameAndAddress,
+  createOrganizationWithInvalidPhoneNumber
 } from '../../support/b2b/organization_request.js'
 import b2b from '../../support/b2b/constants.js'
 
@@ -32,6 +33,16 @@ describe('Organization Negative TestCases', () => {
     {
       costCenterName: b2b.OrganizationA.costCenter1.name,
       costCenterAddress: b2b.OrganizationA.costCenter1.addresses[0],
+    },
+    emailId
+  )
+  createOrganizationWithInvalidPhoneNumber(
+    b2b.OrganizationA.organizationName,
+    {
+      costCenterName: b2b.OrganizationA.costCenter1.name,
+      costCenterAddress: b2b.OrganizationA.costCenter1.addresses[0],
+      phoneNumber:'adef54872de'
+
     },
     emailId
   )

@@ -3,7 +3,13 @@ import { getCostCenterName, validateToastMsg } from './utils.js'
 import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
 import { BUTTON_LABEL, TOAST_MSG } from '../validation_text.js'
 
-export function addCostCenter(organization, costCenter, costCenterAddress) {
+export function addCostCenter(
+  organization,
+  costCenter,
+  costCenterAddress,
+  phoneNumber = false,
+  businessDocument = false
+) {
   it(
     `Adding Cost Center ${costCenter} in ${organization}`,
     { retries: 2 },
@@ -19,6 +25,11 @@ export function addCostCenter(organization, costCenter, costCenterAddress) {
           cy.get(selectors.CostCenterName)
             .type(costCenter)
             .should('have.value', costCenter)
+          if (phoneNumber && businessDocument) {
+            cy.get(selectors.phoneNumber).type(phoneNumber)
+            cy.get(selectors.businessDocument).type(businessDocument)
+          }
+
           cy.fillAddressInCostCenter(costCenterAddress)
           cy.waitForGraphql(
             GRAPHL_OPERATIONS.GetCostCentersByOrganizationIdStorefront,

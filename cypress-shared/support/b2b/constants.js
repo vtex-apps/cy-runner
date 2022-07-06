@@ -128,6 +128,8 @@ export default {
       deleteAddress: USA_ADDRESS_3,
       temporaryAddress: USA_ADDRESS_2,
       receiverName: 'Robo2',
+      phoneNumber: '(304) 123 4556',
+      businessDocument: 'FR40303265045',
     },
     costCenter3: {
       temporaryName: 'cost3',

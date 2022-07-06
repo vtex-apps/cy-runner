@@ -85,6 +85,7 @@ export default {
   FirstName: '#client-first-name',
   LastName: '#client-last-name',
   Phone: '#client-phone',
+  Company: '#client-company-name',
   ProceedtoShipping: '#go-to-shipping',
   GoToPayment: '#go-to-payment',
   // *************Contact Form Page Constants end here************ //
@@ -216,6 +217,10 @@ export default {
     'div[class*=layout__container] > div:nth-child(1) #toolbar button',
   CostCenterName:
     'div[class*=scroll] > div:nth-of-type(1) div[class*=input] input[type=text]',
+    phoneNumber:
+    'div[class*=scroll] > div:nth-of-type(2) div[class*=input] input[type=text]',
+  businessDocument:
+    'div[class*=scroll] > div:nth-of-type(3) div[class*=input] input[type=text]',
   CostCenterHeader: 'div[class*=vtex-pageHeader]',
   CloseModal: 'div[class*=modal__close]',
   SubmitCostCenter: '.nowrap > span:last-child > button',

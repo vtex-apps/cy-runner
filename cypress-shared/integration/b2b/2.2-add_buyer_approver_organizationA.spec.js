@@ -38,7 +38,7 @@ describe('OrganizationA - Create a Buyer and Approver, associate Cost Center and
   addPaymentTermsCollectionPriceTablesTestCase(b2b.OrganizationA)
 
   // CostCenter 2 - Scenarios
-  addCostCenter(organizationName, costCenter2.name, costCenter2.addresses[0])
+  addCostCenter(organizationName, costCenter2.name, costCenter2.addresses[0],costCenter2.phoneNumber,costCenter2.businessDocument)
   updatePaymentTermsinCostCenter(
     organizationName,
     costCenter2.name,

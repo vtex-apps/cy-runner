@@ -1,8 +1,9 @@
 import selectors from '../common/selectors.js'
 import { BUTTON_LABEL } from '../validation_text.js'
 import { PAYMENT_TERMS } from './utils.js'
+import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
 
-export function checkoutProduct(product) {
+export function checkoutProduct(product, businessDocument = false) {
   it('Checkout the Product', { retries: 3 }, () => {
     cy.searchProductinB2B(product)
     cy.get(selectors.searchResult)
@@ -21,17 +22,27 @@ export function checkoutProduct(product) {
         cy.get(selectors.DeliveryAddress).should('be.visible')
       }
     })
-    cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
+
+    cy.waitForGraphql(
+      GRAPHL_OPERATIONS.GetOrderForm,
+      selectors.ProceedtoPaymentBtn
+    ).then((req) => {
+        expect(req.response.body.clientProfileData.corporateDocument).to.equal(businessDocument)
+    })
   })
 }
 
-export function fillContactInfo() {
+export function fillContactInfo(phoneNumber = false) {
   it('Fill Contact Information', { retries: 3 }, () => {
     cy.get(selectors.FirstName).then(($el) => {
       if (Cypress.dom.isVisible($el)) {
         cy.get(selectors.FirstName).clear().type('Syed', { delay: 50 })
         cy.get(selectors.LastName).clear().type('Mujeeb', { delay: 50 })
-        cy.get(selectors.Phone).clear().type('(304) 123 4556', { delay: 50 })
+        if (phoneNumber) {
+          cy.get(selectors.Phone).should('have.value', phoneNumber)
+        } else {
+          cy.get(selectors.Phone).clear().type('(304) 123 4556', { delay: 50 })
+        }
         cy.get(selectors.ProceedtoShipping).should('be.visible').click()
         cy.get('body').then(($body) => {
           if ($body.find(selectors.ReceiverName).length) {
