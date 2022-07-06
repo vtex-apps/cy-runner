@@ -29,7 +29,7 @@ export default {
   PickupInStore: '.srp-toggle__pickup',
   PickupItems: '.srp-items',
   ProductsQAShipping: "input[value='Productusqa2']",
-  CloseCart: '.vtex-minicart-2-x-closeIconButton',
+  CloseCart: 'button[class*=minicart]',
   // Below products are from sandboxusdev
   AddtoCartBtnForHat: "a[href*='003/p'] > article > button",
   AddtoCartBtnForAdidas: "a[href*='adidas01/p'] > article > button",
@@ -217,7 +217,7 @@ export default {
     'div[class*=layout__container] > div:nth-child(1) #toolbar button',
   CostCenterName:
     'div[class*=scroll] > div:nth-of-type(1) div[class*=input] input[type=text]',
-    phoneNumber:
+  phoneNumber:
     'div[class*=scroll] > div:nth-of-type(2) div[class*=input] input[type=text]',
   businessDocument:
     'div[class*=scroll] > div:nth-of-type(3) div[class*=input] input[type=text]',

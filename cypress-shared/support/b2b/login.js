@@ -32,7 +32,7 @@ export function storeUserCookie(emailId) {
 export function loginToStoreFront(emailId, role) {
   it(
     `Logging in to storefront as ${role}`,
-    { defaultCommandTimeout: 60000, retries: 3 },
+    { defaultCommandTimeout: 45000, retries: 1 },
     () => {
       cy.getOrganizationItems().then((organization) => {
         if (organization[emailId]) {
@@ -58,6 +58,7 @@ export function loginToStoreFront(emailId, role) {
                 cy.get(selectors.Email)
                   .should('be.visible')
                   .focus()
+                  .clear()
                   .type(emailId)
                 cy.get(selectors.Submit)
                   .click()
@@ -68,7 +69,7 @@ export function loginToStoreFront(emailId, role) {
                       accessToken
                     )
 
-                    cy.get(selectors.Token).type(newAccessToken)
+                    cy.get(selectors.Token).clear().type(newAccessToken)
                     cy.get(selectors.Submit).click()
                     cy.waitForSession()
                     cy.get(selectors.ProfileLabel).should('be.visible')

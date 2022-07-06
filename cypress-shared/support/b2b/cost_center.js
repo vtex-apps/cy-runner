@@ -1,5 +1,5 @@
 import selectors from '../common/selectors.js'
-import { getCostCenterName, validateToastMsg } from './utils.js'
+import { validateToastMsg } from './utils.js'
 import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
 import { BUTTON_LABEL, TOAST_MSG } from '../validation_text.js'
 
@@ -21,8 +21,8 @@ export function addCostCenter(
           cy.log('CostCenter already added')
         } else {
           cy.get(selectors.AddCostCenter).click()
-          cy.get(selectors.Street).should('be.visible').should('be.enabled')
           cy.get(selectors.CostCenterName)
+            .clear()
             .type(costCenter)
             .should('have.value', costCenter)
           if (phoneNumber && businessDocument) {
@@ -30,13 +30,17 @@ export function addCostCenter(
             cy.get(selectors.businessDocument).type(businessDocument)
           }
 
+          cy.get(selectors.Street)
+            .scrollIntoView()
+            .should('be.visible')
+            .should('be.enabled')
           cy.fillAddressInCostCenter(costCenterAddress)
           cy.waitForGraphql(
             GRAPHL_OPERATIONS.GetCostCentersByOrganizationIdStorefront,
             selectors.SubmitCostCenter
           ).then((req) => {
             cy.setOrganizationItem(
-              getCostCenterName(organization, costCenter),
+              costCenter,
               req.response.body.data.createCostCenter.id
             )
           })

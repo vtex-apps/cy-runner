@@ -5,7 +5,6 @@ import { BUTTON_LABEL } from '../validation_text.js'
 import { FAIL_ON_STATUS_CODE } from '../common/constants.js'
 import { OrganizationRequestStatus } from './constants.js'
 import { updateRetry } from '../common/support.js'
-import { deleteOrganization } from './graphql.js'
 
 // Define constants
 const APP_NAME = 'vtex.b2b-organizations-graphql'
@@ -125,7 +124,6 @@ export function createOrganizationTestCase(
     `Creating ${organization.name} via storefront & Approving ${organization.name} via graphql`,
     { retries: 2 },
     () => {
-      deleteOrganization(organization.email, organization.name, true)
       cy.getVtexItems().then((vtex) => {
         const { name, tradeName, b2bCustomerAdmin, defaultCostCenter } =
           getOrganisationPayload(
@@ -301,30 +299,34 @@ export function createOrganizationWithInvalidEmail(
       .should('be.disabled')
   })
 }
+
 export function createOrganizationWithInvalidPhoneNumber(
   organization,
-  { costCenterName, costCenterAddress ,phoneNumber},
+  { costCenterName, costCenterAddress, phoneNumber },
   email
 ) {
   it(`Creating Organization with Invalid phone number`, () => {
-    const { name, defaultCostCenter, b2bCustomerAdmin,tradeName } = getOrganisationPayload(
-      organization,
-      {
-        costCenterName,
-        costCenterAddress,
-        phoneNumber
-      },
-      email
-    )
+    const { name, defaultCostCenter, b2bCustomerAdmin, tradeName } =
+      getOrganisationPayload(
+        organization,
+        {
+          costCenterName,
+          costCenterAddress,
+          phoneNumber,
+        },
+        email
+      )
 
-    fillOrganizationRequest({ name, b2bCustomerAdmin, tradeName },defaultCostCenter)
+    fillOrganizationRequest(
+      { name, b2bCustomerAdmin, tradeName },
+      defaultCostCenter
+    )
 
     cy.get(selectors.SubmitOrganization)
       .should('be.visible')
       .should('be.disabled')
   })
 }
-
 
 export function createOrganizationWithoutCostCenterNameAndAddress(
   organization,

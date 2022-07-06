@@ -28,17 +28,15 @@ export function fillQuoteInformation({
         'be.visible'
       )
 
-      // cy.get(selectors.QuoteTotal, { timeout: 5000 })
-      //   .invoke('text')
-      //   .then((text) => {
-      //     cy.log(text)
-      //     if (text.includes('$0.00')) {
-      //       cy.reload()
-      //     }
-      //   })
+      cy.get(selectors.QuoteTotal, { timeout: 8000 })
+        .first()
+        .should('not.contain', '$0.00')
 
-      cy.get(selectors.QuoteName).should('be.visible').type(quoteEnv)
-      if (notes) cy.get(selectors.Notes).should('be.visible').type(notes)
+      cy.get(selectors.QuoteName).should('be.visible').clear().type(quoteEnv)
+      if (notes) {
+        cy.get(selectors.Notes).should('be.visible').clear().type(notes)
+      }
+
       cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
         if (req.body.operationName === GRAPHL_OPERATIONS.CreateQuote) {
           req.continue()
@@ -93,7 +91,10 @@ export function createQuote(
     ? `Create Quote by ${role} who impersonated ${impersonatedRole}, verify state is ${expectedStatus} and store in env ${quoteEnv}`
     : `Create Quote as ${role}, verify state is ${expectedStatus} and store in env ${quoteEnv}`
 
-  it(title, { retries: 3 }, () => {
+  const retries = impersonatedRole ? 1 : 3
+
+  it(title, { retries }, () => {
+    cy.closeCart()
     cy.searchProductinB2B(product)
     cy.waitForGraphql('addToCart', selectors.B2BAddtoCart)
     fillQuoteInformation({ quoteEnv, requestQuote, notes, impersonatedRole })
@@ -245,7 +246,7 @@ function updateNotes(notes, saveQuote) {
     .then((notesDescription) => {
       if (notesDescription !== `Notes:\n${notes}`) {
         cy.wrap(true).as(saveQuote)
-        cy.get(selectors.Notes).type(notes)
+        cy.get(selectors.Notes).clear().type(notes)
       }
     })
 }
@@ -420,11 +421,12 @@ function fillFilterBy(data, organization = false, multi = false) {
     cy.contains(/More/i).click()
     cy.contains(/Select a filter/i)
       .click()
+      .clear()
       .type(downarrowCount)
     cy.get(selectors.FilterLabel).contains(filterBy, {
       matchCase: false,
     })
-    cy.get(selectors.FilterInput).type(data)
+    cy.get(selectors.FilterInput).clear().type(data)
     cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
       if (req.body.operationName === GRAPHL_OPERATIONS.GetQuotes) {
         req.continue()
@@ -538,6 +540,7 @@ export function preventQuoteUpdation() {
         .should('be.visible')
         .should('not.be.disabled')
         .focus()
+        .clear()
         .type(`{backspace}5{enter}`)
       cy.get('#clear-cart').should('be.visible')
     }

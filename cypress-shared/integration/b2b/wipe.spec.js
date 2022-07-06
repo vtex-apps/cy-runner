@@ -1,7 +1,6 @@
 /* eslint-disable jest/no-conditional-expect */
 /* eslint-disable jest/consistent-test-it */
 /* eslint-disable jest/valid-expect */
-import { getCostCenterName } from '../../support/b2b/utils.js'
 import b2b from '../../support/b2b/constants.js'
 import {
   FAIL_ON_STATUS_CODE,
@@ -33,8 +32,7 @@ function deleteCostCenter(organization, costCenter) {
         'mutation' + '($id: ID!)' + '{deleteCostCenter(id: $id){status}}'
 
       cy.getOrganizationItems().then((items) => {
-        const costCenterId =
-          items[getCostCenterName(organization, costCenter.name)]
+        const costCenterId = items[costCenter.name]
 
         if (costCenterId) {
           cy.request({

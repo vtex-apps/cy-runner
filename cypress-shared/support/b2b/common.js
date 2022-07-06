@@ -1,9 +1,5 @@
 import selectors from '../common/selectors.js'
-import {
-  getCostCenterName,
-  generateEmailId,
-  validateToastMsg,
-} from './utils.js'
+import { generateEmailId, validateToastMsg } from './utils.js'
 import { BUTTON_LABEL, TOAST_MSG } from '../validation_text.js'
 import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
 import { updateRetry } from '../common/support.js'
@@ -15,21 +11,24 @@ const APP = `${APP_NAME}@${APP_VERSION}`
 
 export function setOrganizationIdInJSON(organization, costCenter) {
   it(
-    'Getting Organization Id from session and set in OrganizationItem',
+    'Getting Organization,CostCenter Id from session and set this in organizations.json file',
     { retries: 3, responseTimeout: 5000 },
     () => {
       cy.request('/api/sessions?items=*').then((response) => {
         expect(response.body.namespaces).to.be.exist
         expect(response.body.namespaces['storefront-permissions']).to.be.exist
-        // Saving organization & costcenter id in organization.json and this id will be deleted this wipe.spec.js
-        cy.setOrganizationItem(
-          organization,
+        const organizationId =
           response.body.namespaces['storefront-permissions'].organization.value
-        )
-        cy.setOrganizationItem(
-          getCostCenterName(organization, costCenter),
+
+        const costCenterId =
           response.body.namespaces['storefront-permissions'].costcenter.value
-        )
+
+        expect(organizationId).to.contain('-')
+        expect(costCenterId).to.contain('-')
+
+        // Saving organization & costcenter id in organization.json and this id will be deleted this wipe.spec.js
+        cy.setOrganizationItem(organization, organizationId)
+        cy.setOrganizationItem(costCenter, costCenterId)
       })
     }
   )
@@ -87,23 +86,25 @@ export function addPaymentTermsCollectionPriceTablesTestCase(organization) {
 }
 
 function verifyWidget(organization, costCenter, role) {
-  cy.get(selectors.UserWidget)
+  cy.get(selectors.UserWidget, { timeout: 15000 })
     .eq(0)
     .should('contain', `Organization: ${organization.organizationName}`)
-  cy.get(`${selectors.UserWidget} ${selectors.Tag}`).should(
+  cy.get(`${selectors.UserWidget} ${selectors.Tag}`, { timeout: 3000 }).should(
     'have.text',
     'Active'
   )
-  cy.get(selectors.UserWidget)
+  cy.get(selectors.UserWidget, { timeout: 3000 })
     .eq(1)
     .should('contain', `Cost Center: ${costCenter}`)
-  cy.get(selectors.UserWidget).eq(2).should('contain', `My Role: ${role}`)
+  cy.get(selectors.UserWidget, { timeout: 3000 })
+    .eq(2)
+    .should('contain', `My Role: ${role}`)
 }
 
 export function verifySession(organization, costCenter, role) {
   it(
     'Verifying Session items must have expected priceTable and collections',
-    { retries: 3 },
+    { retries: 1 },
     () => {
       cy.request('/api/sessions?items=*').then((response) => {
         expect(response.body.namespaces.profile.priceTables.value).to.equal(

@@ -4,10 +4,6 @@ export function generateName(role) {
   return `${role}-Robot`
 }
 
-export function getCostCenterName(organization, costCenter) {
-  return `${organization}-${costCenter}`
-}
-
 export function generateEmailId(organization, role) {
   const [basename, domain] = Cypress.env().base.gmail.id.split('@')
   const email = `${basename}+${

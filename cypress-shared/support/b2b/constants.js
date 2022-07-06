@@ -225,6 +225,8 @@ export default {
   OrganizationB: {
     organizationName: ORGANIZATION_B,
     tradeName: 'ABC',
+    phoneNumber: '(304) 123 4556',
+    businessDocument: 'FR40303265045',
     costCenter1: { name: 'CostCenterB1', addresses: [USA_ADDRESS_2] },
     collections: [
       {

@@ -38,7 +38,13 @@ describe('OrganizationA - Create a Buyer and Approver, associate Cost Center and
   addPaymentTermsCollectionPriceTablesTestCase(b2b.OrganizationA)
 
   // CostCenter 2 - Scenarios
-  addCostCenter(organizationName, costCenter2.name, costCenter2.addresses[0],costCenter2.phoneNumber,costCenter2.businessDocument)
+  addCostCenter(
+    organizationName,
+    costCenter2.name,
+    costCenter2.addresses[0],
+    costCenter2.phoneNumber,
+    costCenter2.businessDocument
+  )
   updatePaymentTermsinCostCenter(
     organizationName,
     costCenter2.name,
@@ -55,15 +61,27 @@ describe('OrganizationA - Create a Buyer and Approver, associate Cost Center and
   updateCostCenter(costCenter3.temporaryName, costCenter3.name)
   deleteCostCenter(costCenter3.name)
 
-  // // Add/Delete users in costcenter1
-  addUser(organizationName, costCenter1.name, role.Buyer1)
-  addUser(organizationName, costCenter1.name, role.Approver1)
+  addUser({ organizationName, costCenter: costCenter1.name, role: role.Buyer1 })
+  addUser({
+    organizationName,
+    costCenter: costCenter1.name,
+    role: role.Approver1,
+  })
 
-  addUser(organizationName, costCenter2.name, role.Buyer2)
+  addUser({ organizationName, costCenter: costCenter2.name, role: role.Buyer2 })
 
+  // Add/Delete users in costcenter1 - Hold
   // Add/Update users for costcenter2 - Hold bug
-  addUser(organizationName, costCenter2.name, role.OrganizationAdmin2)
-  addUser(organizationName, costCenter2.name, role.Approver2)
 
+  addUser({
+    organizationName,
+    costCenter: costCenter2.name,
+    role: role.OrganizationAdmin2,
+  })
+  addUser({
+    organizationName,
+    costCenter: costCenter2.name,
+    role: role.Approver2,
+  })
   preserveCookie()
 })

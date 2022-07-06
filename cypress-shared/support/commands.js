@@ -6,6 +6,14 @@ import {
 import { performImpersonation } from './b2b/common.js'
 import 'cypress-file-upload'
 
+function closeModalIfOpened() {
+  cy.get('body').then(($body) => {
+    if ($body.find('div[class*=vtex-modal__close]').length) {
+      cy.get('div[class*=vtex-modal__close]').click()
+    }
+  })
+}
+
 Cypress.Commands.add('searchInMasterData', searchInMasterData)
 Cypress.Commands.add('deleteDocumentInMasterData', deleteDocumentInMasterData)
 Cypress.Commands.add('performImpersonation', performImpersonation)
@@ -64,6 +72,7 @@ Cypress.Commands.add(
         if (waitforSession) cy.waitForSession()
       }
 
+      closeModalIfOpened()
       cy.get(selectors.MyOrganization).click()
       const noOfdivision = salesRepOrManager ? 2 : 4
 

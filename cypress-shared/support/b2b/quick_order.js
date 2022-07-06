@@ -69,7 +69,7 @@ export function quickOrderBySkuAnd51QuantityTestCase(role) {
 function searchOneByOneProduct(search, { product, quantity }, number) {
   cy.get(search).should('be.visible').should('be.enabled').clear().type(product)
   cy.get('button .pr2 .truncate').should('be.visible')
-  cy.get(search).type('{downarrow}{enter}')
+  cy.get(search).clear().type('{downarrow}{enter}')
   cy.get(quantity).should('be.visible').clear().type(number)
 }
 

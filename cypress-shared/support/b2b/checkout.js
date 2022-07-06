@@ -4,7 +4,7 @@ import { PAYMENT_TERMS } from './utils.js'
 import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
 
 export function checkoutProduct(product, businessDocument = false) {
-  it('Checkout the Product', { retries: 3 }, () => {
+  it('Checkout the Product', { retries: 1 }, () => {
     cy.searchProductinB2B(product)
     cy.get(selectors.searchResult)
       .first()
@@ -27,7 +27,9 @@ export function checkoutProduct(product, businessDocument = false) {
       GRAPHL_OPERATIONS.GetOrderForm,
       selectors.ProceedtoPaymentBtn
     ).then((req) => {
-        expect(req.response.body.clientProfileData.corporateDocument).to.equal(businessDocument)
+      expect(req.response.body.clientProfileData.corporateDocument).to.equal(
+        businessDocument
+      )
     })
   })
 }
@@ -43,10 +45,13 @@ export function fillContactInfo(phoneNumber = false) {
         } else {
           cy.get(selectors.Phone).clear().type('(304) 123 4556', { delay: 50 })
         }
+
         cy.get(selectors.ProceedtoShipping).should('be.visible').click()
         cy.get('body').then(($body) => {
           if ($body.find(selectors.ReceiverName).length) {
-            cy.get(selectors.ReceiverName, { timeout: 5000 }).type('Syed')
+            cy.get(selectors.ReceiverName, { timeout: 5000 })
+              .clear()
+              .type('Syed')
           }
         })
         cy.get(selectors.GotoPaymentBtn, { timeout: 5000 }).should('be.visible')
