@@ -80,7 +80,7 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
             content: [
               {
                 type: 'text',
-                text: 'E2E test for ',
+                text: 'E2E test ',
               },
               {
                 type: 'text',
@@ -96,7 +96,7 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
               },
               {
                 type: 'text',
-                text: ` created by ${GH_ACTOR} failed on\n`,
+                text: ` created by ${GH_ACTOR}; failed on\n`,
               },
               ...FAILURES,
             ],
