@@ -84,7 +84,7 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
               },
               {
                 type: 'text',
-                text: `${SUMMARY} ${GH_REF}`,
+                text: `${SUMMARY}`,
                 marks: [
                   {
                     type: 'link',
