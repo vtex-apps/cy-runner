@@ -80,10 +80,14 @@ async function startBackground(vtex, browser) {
   try {
     qe.msg('Toolbelt version', true, true, true)
     qe.exec(`${TOOLBELT_BIN} --version`, 'inherit')
-    qe.msg(`Removing old ${TOOLBELT_URL}, if any`, true, true)
-    if (qe.storage(TOOLBELT_URL)) qe.storage(TOOLBELT_URL, 'rm')
-    qe.msg('Logging out from any other sessions', true, true)
-    qe.exec(`${TOOLBELT_BIN} logout`)
+    // Only if not in CI
+    if (!process.env.CI) {
+      qe.msg(`Removing old ${TOOLBELT_URL}, if any`, true, true)
+      if (qe.storage(TOOLBELT_URL)) qe.storage(TOOLBELT_URL, 'rm')
+      qe.msg('Logging out from any other sessions', true, true)
+      qe.exec(`${TOOLBELT_BIN} logout`)
+    }
+
     qe.msg(`Calling toolbelt`, true, true, true)
     qe.exec(`${TOOLBELT_BIN} login ${vtex.account} 1> ${TOOLBELT_URL} &`)
     let size = 0
