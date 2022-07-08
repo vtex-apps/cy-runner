@@ -3,6 +3,8 @@ import b2b from '../../support/b2b/constants.js'
 import {
   ROLE_ID_EMAIL_MAPPING as roleObject,
   ROLE_DROP_DOWN,
+  // ROLE_DROP_DOWN_EMAIL_MAPPING as role,
+  STATUSES,
 } from '../../support/b2b/utils.js'
 import { loginToStoreFront } from '../../support/b2b/login.js'
 import {
@@ -16,12 +18,39 @@ import {
   searchQuote,
   createQuote,
   verifyQuotesAndSavedCarts,
+  // discountSliderShouldNotExist,
+  updateQuote,
+  // rejectQuote,
+  // filterQuote,
+  filterQuoteByStatus,
+  quoteShouldbeVisibleTestCase,
 } from '../../support/b2b/quotes.js'
+
+function QuotesAccess(
+  { organizationName, quotes },
+  organizationB,
+  organizationBQuote
+) {
+  quoteShouldbeVisibleTestCase(
+    organizationName,
+    quotes.Buyer2.quotes1,
+    organizationName
+  )
+  quoteShouldbeVisibleTestCase(
+    organizationName,
+    organizationBQuote.OrganizationAdmin.quotes1,
+    organizationB
+  )
+}
 
 describe('Organization A - Cost Center A1 - Sales Admin Scenario', () => {
   testSetup(false)
 
-  const { product, nonAvailableProduct, costCenter1, users } = b2b.OrganizationA
+  const { product, nonAvailableProduct, costCenter1, users, quotes } =
+    b2b.OrganizationA
+
+  const { organizationName: organizationB, quotes: organizationBQuote } =
+    b2b.OrganizationB
 
   const impersonatedRole = ROLE_DROP_DOWN.Approver
 
@@ -35,13 +64,31 @@ describe('Organization A - Cost Center A1 - Sales Admin Scenario', () => {
     roleObject.SalesManager.role,
     users.SalesManager
   )
+
+  verifyQuotesAndSavedCarts()
+  QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
+  searchQuote(quotes.Buyer.quotes1)
+
+  // filterQuote(costCenter1.name, organizationB)
+
+  // discountSliderShouldNotExist(quotes.Buyer2.quotes3)
+
+  updateQuote(quotes.Buyer.quotes1, { discount: '20' })
+  updateQuote(quotes.Buyer.quotes2, { notes: 'Notes' })
+  const price = '250.00'
+  const quantity = '10'
+
+  updateQuote(quotes.Buyer.quotes6, { price, quantity })
+  // rejectQuote(quotes.Buyer.quotes3, roleObject.SalesAdmin.role)
+  filterQuoteByStatus(STATUSES.ready, STATUSES.declined)
+
   salesUserShouldImpersonateNonSalesUser(
     roleObject.SalesAdmin.role,
     impersonatedRole,
     users.Approver1
   )
 
-  verifyQuotesAndSavedCarts()
+  QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
 
   const quote = 'IMPERSONATE_QUOTE_1'
 

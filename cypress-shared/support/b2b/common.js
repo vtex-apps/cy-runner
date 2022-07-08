@@ -124,7 +124,7 @@ export function verifySession(organization, costCenter, role) {
 export function productShouldNotbeAvailableTestCase(product) {
   it(
     'Products from outside collection should not be visible to the user',
-    { retries: 2 },
+    { retries: 1 },
     () => {
       cy.searchProductinB2B(product)
       cy.get(selectors.PageNotFound).should('be.visible')

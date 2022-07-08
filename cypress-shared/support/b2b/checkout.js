@@ -3,7 +3,26 @@ import { BUTTON_LABEL } from '../validation_text.js'
 import { PAYMENT_TERMS } from './utils.js'
 import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
 
-export function checkoutProduct(product, businessDocument = false) {
+export function verifyOrderFormData(costCenter) {
+  const { businessDocument, phoneNumber, tradeName } = costCenter
+
+  cy.waitForGraphql(
+    GRAPHL_OPERATIONS.GetOrderForm,
+    selectors.ProceedtoPaymentBtn
+  ).then((req) => {
+    const {
+      corporateDocument,
+      corporatePhone,
+      tradeName: TradeName,
+    } = req.response.body.clientProfileData
+
+    businessDocument && expect(corporateDocument).to.equal(businessDocument)
+    phoneNumber && expect(corporatePhone).to.equal(phoneNumber)
+    tradeName && expect(TradeName).to.equal(tradeName)
+  })
+}
+
+export function checkoutProduct(product, costCenter = false) {
   it('Checkout the Product', { retries: 1 }, () => {
     cy.searchProductinB2B(product)
     cy.get(selectors.searchResult)
@@ -22,15 +41,7 @@ export function checkoutProduct(product, businessDocument = false) {
         cy.get(selectors.DeliveryAddress).should('be.visible')
       }
     })
-
-    cy.waitForGraphql(
-      GRAPHL_OPERATIONS.GetOrderForm,
-      selectors.ProceedtoPaymentBtn
-    ).then((req) => {
-      expect(req.response.body.clientProfileData.corporateDocument).to.equal(
-        businessDocument
-      )
-    })
+    verifyOrderFormData(costCenter)
   })
 }
 

@@ -2,12 +2,18 @@ import { getAccessToken } from '../extract.js'
 import selectors from '../common/selectors.js'
 
 export function visitHomePage() {
-  cy.intercept('POST', 'https://rc.vtex.com.br/api/events').as('EVENTS')
-  cy.visit('/', {
-    retryOnStatusCodeFailure: true,
-    retryOnNetworkFailure: true,
+  cy.url().then((url) => {
+    if (url.includes('blank')) {
+      cy.intercept('POST', 'https://rc.vtex.com.br/api/events').as('EVENTS')
+      cy.visit('/', {
+        retryOnStatusCodeFailure: true,
+        retryOnNetworkFailure: true,
+      })
+      cy.wait('@EVENTS')
+    } else {
+      cy.log('Already logged in')
+    }
   })
-  cy.wait('@EVENTS')
 }
 
 export function loginWithCookiesStoredInJSON(cookieValue) {

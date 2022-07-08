@@ -30,17 +30,27 @@ Cypress.Commands.add('waitForSession', (selector = null) => {
   })
 })
 
-Cypress.Commands.add('waitForGraphql', (operationName, selector = null) => {
-  cy.getVtexItems().then((vtex) => {
-    cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
-      if (req.body.operationName === operationName) {
-        req.continue()
+Cypress.Commands.add(
+  'waitForGraphql',
+  (operationName, selector = null, contains = null) => {
+    cy.getVtexItems().then((vtex) => {
+      cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
+        if (req.body.operationName === operationName) {
+          req.continue()
+        }
+      }).as(operationName)
+
+      if (selector && contains) {
+        cy.scrollTo('top')
+        cy.contains(selector).click()
+      } else if (selector) {
+        cy.get(selector).last().click()
       }
-    }).as(operationName)
-    if (selector) cy.get(selector).last().click()
-    cy.wait(`@${operationName}`, { timeout: 40000 })
-  })
-})
+
+      cy.wait(`@${operationName}`, { timeout: 40000 })
+    })
+  }
+)
 
 Cypress.Commands.add('fillAddressInCostCenter', (costCenter) => {
   const { country, postalCode, street, receiverName } = costCenter
@@ -96,15 +106,15 @@ Cypress.Commands.add('gotoCostCenter', (costCenter) => {
 })
 
 Cypress.Commands.add('gotoMyQuotes', () => {
-  cy.get(selectors.ProfileLabel, { timeout: 90000 }).should('be.visible')
+  cy.get(selectors.ProfileLabel, { timeout: 20000 }).should('be.visible')
   cy.get('body').then(($body) => {
-    if (!$body.find(selectors.MyQuotes).length) cy.visit('/')
-    if (!$body.find(selectors.QuoteSearchQuery).length) {
-      cy.get(selectors.MyQuotes).should('be.visible').click()
+    if (!$body.find(selectors.ToggleFields).length) {
+      cy.get(selectors.MyQuotes, { timeout: 10000 })
+        .should('be.visible')
+        .click()
     }
-
-    cy.get(selectors.QuotesToolBar).should('be.visible')
   })
+  cy.get(selectors.QuotesToolBar, { timeout: 20000 }).should('be.visible')
 })
 
 Cypress.Commands.add('gotoQuickOrder', () => {

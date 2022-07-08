@@ -291,9 +291,9 @@ export default {
         clear: '.vtex__icon-clear',
       },
       categories: {
-        title: '.vtex-rich-text-0-x-heading--quickTitle',
+        title: 'h3[class*=Quickorder]',
         product: 'Sporting',
-        quantity: 'div[class*=category] input[type=text]',
+        quantity: 'div[class*=category] input[type=number]',
         addtoCart: 'div[class*=categoryProduct] button',
       },
     }
@@ -308,7 +308,7 @@ export default {
   RequestQuote: /Request Quote/i,
   SaveQuote: /Save Quote/i,
   SaveForLater: /Save for Later/i,
-  QuoteStatus: 'div[class*=vtex-tag]',
+  QuoteStatus: '[data-testid=totalizer-value] > .vtex-tag',
   CurrencyContainer: 'span[class*=currencyContainer]',
   QuoteStatusInMyQuotesPage:
     '.ReactVirtualized__Grid:nth-child(2) div[role="rowgroup"] > div[class*=items] div[class*=tag]',
@@ -318,6 +318,7 @@ export default {
   // *************B2B Constants My Quotes start here************ //
   MyQuotes: 'span[class*=orderQuote]',
   QuoteSearchQuery: 'input[type=search]',
+  QuoteLink: 'a[href*=quote]',
   QuoteSearch: '#toolbar svg[class*=search]',
   QuotesToolBar: '#toolbar',
   QuotesFilterByStatus: '.ma2:nth-child(1) button',
@@ -332,16 +333,20 @@ export default {
   // *************B2B Constants My Quotes section end here************ //
   // *************B2B Constants Quote Details section start here************ //
   PriceField: 'input[name=price]',
-  QuoteTotal: 'div[data-testid=totalizer-value]',
+  QuoteOrginalTotal:
+    'div[data-testid=totalizer-item-original-subtotal] div[data-testid=totalizer-value]',
+  QuoteTotal:
+    'div[data-testid=totalizer-item-quoted-subtotal] div[data-testid=totalizer-value]',
   Discount:
     'div[data-testid*=percentage-discount] div[data-testid=totalizer-value]',
-  NewProductPrice: '.new-product-price',
+  SubTotalLabel: '.totalizers-list > tr > td.info',
+  NewProductPrice: '.totalizers-list > tr > td.monetary',
   DiscountSliderContainer: '.vtex-slider__selector-container',
   SliderSelector: '.vtex-slider__selector',
   SliderToolTip: '.vtex-slider__selector-tooltip',
   SliderContainer: '.vtex-slider-container',
   QuantityField: 'input[name=quantity]',
-  Decline: '.nowrap > span:nth-child(1) button',
+  Decline: 'button[class*=danger]',
   SubmitToSalesRep: 'Submit',
   UseQuote: 'Use Quote',
   BackBtn: 'div[class*=pageHeader] span',
