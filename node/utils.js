@@ -133,6 +133,15 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
     /* falls through */
 
     case 'uninstall':
+      // Check if we are on workspace master
+      stdout = this.exec(`${bin} whoami`, 'pipe').toString()
+      check = /master/.test(stdout)
+      if (check) {
+        this.crash(
+          'You should not install or uninstall apps on workspace master',
+          `${bin} ${cmd}\n${stdout}`
+        )
+      }
     /* falls through */
 
     case 'unlink':
