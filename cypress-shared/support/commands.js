@@ -14,6 +14,14 @@ function closeModalIfOpened() {
   })
 }
 
+function scroll() {
+  // So, scroll first then look for selectors
+  cy.scrollTo(0, 1000)
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
+  cy.wait(1000)
+  cy.scrollTo(0, -100)
+}
+
 Cypress.Commands.add('searchInMasterData', searchInMasterData)
 Cypress.Commands.add('deleteDocumentInMasterData', deleteDocumentInMasterData)
 Cypress.Commands.add('performImpersonation', performImpersonation)
@@ -158,3 +166,52 @@ Cypress.Commands.add(
       })
   }
 )
+
+function fillContactInfo() {
+  cy.get(selectors.QuantityBadge).should('be.visible')
+  cy.get(selectors.SummaryCart).should('be.visible')
+  cy.get(selectors.FirstName).clear().type('Syed', {
+    delay: 50,
+  })
+  cy.get(selectors.LastName).clear().type('Mujeeb', {
+    delay: 50,
+  })
+  cy.get(selectors.Phone).clear().type('(304) 123 4556', {
+    delay: 50,
+  })
+  cy.get(selectors.ProceedtoShipping).should('be.visible').click()
+  cy.get(selectors.ProceedtoShipping, { timeout: 1000 }).should(
+    'not.be.visible'
+  )
+  cy.get('body').then(($shippingBlock) => {
+    if ($shippingBlock.find(selectors.ReceiverName).length) {
+      cy.get(selectors.ReceiverName, { timeout: 5000 }).type('Syed', {
+        delay: 50,
+      })
+      cy.get(selectors.GotoPaymentBtn).should('be.visible').click()
+    }
+  })
+}
+
+Cypress.Commands.add('orderProduct', () => {
+  cy.get(selectors.FirstName).then(($el) => {
+    if (Cypress.dom.isVisible($el)) {
+      fillContactInfo()
+    }
+  })
+  cy.get(selectors.PromissoryPayment).click()
+  cy.get(selectors.BuyNowBtn).last().click()
+})
+
+Cypress.Commands.add('openStoreFront', (login = false) => {
+  cy.intercept('**/rc.vtex.com.br/api/events').as('events')
+  cy.visit('/')
+  cy.wait('@events')
+  if (login === true) {
+    cy.get(selectors.ProfileLabel, { timeout: 20000 })
+      .should('be.visible')
+      .should('have.contain', `Hello,`)
+  }
+
+  scroll()
+})
