@@ -13,6 +13,21 @@ exports.getConfig = async (configFile) => {
   // Load secrets and parse it
   const secrets = qe.loadSecrets(config)
 
+  // Do check to avoid waste of time on CI environments
+  const isCI = process.env.CI ?? false
+  const skipAutoConfigOnCI = config.base.skipAutoConfigOnCI ?? false
+
+  // Checks to avoid silly configuration errors on CI
+  if (isCI && !skipAutoConfigOnCI) {
+    // TODO: Refactor to be possible run E2E without deployCli
+    qe.msg('CI detected, enabling deployCli, getCookies, Twilio and Quite mode')
+    qe.msg('To avoid auto config, enable base.skipAutoConfigOnCI', true, true)
+    config.base.vtex.deployCli.enabled = true
+    config.cypress.getCookies.enabled = true
+    config.twilio.enabled = true
+    config.cypress.quiet = true
+  }
+
   if (secrets) config = qe.mergeSecrets(config, secrets)
   // Get workspace to run tests
   config.workspace.name = qe.getWorkspaceName(config)
