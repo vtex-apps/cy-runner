@@ -33,7 +33,7 @@ exports.getConfig = async (configFile) => {
     config.base.cypress.trashAssetsBeforeRuns = false
     config.base.cypress.video = true    
     config.base.cypress.watchForFileChanges = false
-    config.base.cypress.browser = chrome
+    config.base.cypress.browser = 'chrome'
     config.base.cypress.sorry = false
   }
 
