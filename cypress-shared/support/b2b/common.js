@@ -53,7 +53,7 @@ function addPaymentTermsCollectionPriceTables(organizationItems, organization) {
 export function addPaymentTermsCollectionPriceTablesTestCase(organization) {
   it(
     `Add Payment Terms/Collections/Price Tables for ${organization.organizationName}`,
-    { retries: 3 },
+    updateRetry(3),
     () => {
       cy.getVtexItems().then((vtex) => {
         cy.getOrganizationItems().then((organizationItems) => {
@@ -104,7 +104,7 @@ function verifyWidget(organization, costCenter, role) {
 export function verifySession(organization, costCenter, role) {
   it(
     'Verifying Session items must have expected priceTable and collections',
-    { retries: 1 },
+    updateRetry(2),
     () => {
       cy.request('/api/sessions?items=*').then((response) => {
         expect(response.body.namespaces.profile.priceTables.value).to.equal(
@@ -124,7 +124,7 @@ export function verifySession(organization, costCenter, role) {
 export function productShouldNotbeAvailableTestCase(product) {
   it(
     'Products from outside collection should not be visible to the user',
-    { retries: 1 },
+    updateRetry(2),
     () => {
       cy.searchProductinB2B(product)
       cy.get(selectors.PageNotFound).should('be.visible')
@@ -137,30 +137,34 @@ export function userAndCostCenterShouldNotBeEditable(
   costCenter,
   role
 ) {
-  it(`Trying to update user and cost center in ${organization} with role ${role.dropDownText}`, () => {
-    const { email } = role
+  it(
+    `Trying to update user and cost center in ${organization} with role ${role.dropDownText}`,
+    updateRetry(1),
+    () => {
+      const { email } = role
 
-    cy.gotoMyOrganization()
-    cy.get(selectors.AddUser).should('be.visible')
-    cy.contains(generateEmailId(organization, email)).should(
-      'have.class',
-      'c-disabled'
-    )
-    cy.get(selectors.AddUser).should('be.visible').should('be.disabled')
-    cy.get(selectors.AddCostCenter).should('be.visible').should('be.disabled')
-    cy.get(
-      '.vtex-table__container .ReactVirtualized__Grid__innerScrollContainer'
-    )
-      .eq(1)
-      .contains(costCenter)
-      .click()
-    cy.get(selectors.CostCenterHeader)
-      .contains(BUTTON_LABEL.save)
-      .should('be.disabled')
-    cy.get(selectors.CostCenterHeader)
-      .contains(BUTTON_LABEL.delete)
-      .should('be.disabled')
-  })
+      cy.gotoMyOrganization()
+      cy.get(selectors.AddUser).should('be.visible')
+      cy.contains(generateEmailId(organization, email)).should(
+        'have.class',
+        'c-disabled'
+      )
+      cy.get(selectors.AddUser).should('be.visible').should('be.disabled')
+      cy.get(selectors.AddCostCenter).should('be.visible').should('be.disabled')
+      cy.get(
+        '.vtex-table__container .ReactVirtualized__Grid__innerScrollContainer'
+      )
+        .eq(1)
+        .contains(costCenter)
+        .click()
+      cy.get(selectors.CostCenterHeader)
+        .contains(BUTTON_LABEL.save)
+        .should('be.disabled')
+      cy.get(selectors.CostCenterHeader)
+        .contains(BUTTON_LABEL.delete)
+        .should('be.disabled')
+    }
+  )
 }
 
 export function performImpersonation(user1, email) {

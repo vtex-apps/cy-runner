@@ -21,50 +21,62 @@ function checkBackButtonIsVisible(tableContainer, button) {
 }
 
 export function quickOrderBySkuAndQuantityTestCase2(role) {
-  it(`Verify ${role} is able remove invalid skus in quick order - [Sku's Code],[Quantity]`, () => {
-    const { textArea, validate, addtoCart, tableContainer, button } =
-      selectors.QuickOrderPage().skus
+  it(
+    `Verify ${role} is able remove invalid skus in quick order - [Sku's Code],[Quantity]`,
+    updateRetry(1),
+    () => {
+      const { textArea, validate, addtoCart, tableContainer, button } =
+        selectors.QuickOrderPage().skus
 
-    cy.gotoQuickOrder()
-    checkBackButtonIsVisible(tableContainer, button)
-    fillSkuAndQuantity(textArea, validate, '880270a,2{enter}1,2{enter}')
-    cy.get(`${tableContainer} ${button}`).last().click()
-    cy.get(addtoCart).should('be.visible')
-  })
+      cy.gotoQuickOrder()
+      checkBackButtonIsVisible(tableContainer, button)
+      fillSkuAndQuantity(textArea, validate, '880270a,2{enter}1,2{enter}')
+      cy.get(`${tableContainer} ${button}`).last().click()
+      cy.get(addtoCart).should('be.visible')
+    }
+  )
 }
 
 export function quickOrderBySkuAndQuantityTestCase1(role, quoteEnv) {
-  it(`Verify ${role} is able to create quote by quick order - [Sku's Code],[Quantity]`, () => {
-    cy.gotoQuickOrder()
-    const { textArea, validate, invalid, content, addtoCart } =
-      selectors.QuickOrderPage().skus
+  it(
+    `Verify ${role} is able to create quote by quick order - [Sku's Code],[Quantity]`,
+    updateRetry(1),
+    () => {
+      cy.gotoQuickOrder()
+      const { textArea, validate, invalid, content, addtoCart } =
+        selectors.QuickOrderPage().skus
 
-    fillSkuAndQuantity(textArea, validate, '1,2{enter}')
-    cy.get(invalid).should('be.visible')
-    cy.get(content).clear().type('880270a,2{enter}').focus()
-    cy.get(invalid).click()
-    cy.waitForGraphql(GRAPHL_OPERATIONS.addToCart, addtoCart)
-    validateToastMsg(TOAST_MSG.addedToTheCart)
-    cy.get(selectors.OpenCart).first().should('be.visible').click()
-    fillQuoteInformation({ quoteEnv })
-  })
+      fillSkuAndQuantity(textArea, validate, '1,2{enter}')
+      cy.get(invalid).should('be.visible')
+      cy.get(content).clear().type('880270a,2{enter}').focus()
+      cy.get(invalid).click()
+      cy.waitForGraphql(GRAPHL_OPERATIONS.addToCart, addtoCart)
+      validateToastMsg(TOAST_MSG.addedToTheCart)
+      cy.get(selectors.OpenCart).first().should('be.visible').click()
+      fillQuoteInformation({ quoteEnv })
+    }
+  )
 }
 
 export function quickOrderBySkuAnd51QuantityTestCase(role) {
-  it(`Verify ${role} is able to add 50 products to cart with 51 quantity by quick order - [Sku's Code],[Quantity]`, () => {
-    const { textArea, validate, addtoCart, remove, button } =
-      selectors.QuickOrderPage().skus
+  it(
+    `Verify ${role} is able to add 50 products to cart with 51 quantity by quick order - [Sku's Code],[Quantity]`,
+    updateRetry(1),
+    () => {
+      const { textArea, validate, addtoCart, remove, button } =
+        selectors.QuickOrderPage().skus
 
-    cy.gotoQuickOrder()
-    cy.get(button).contains(BUTTON_LABEL.back).click()
-    fillSkuAndQuantity(textArea, validate, '880270a,51{enter}')
-    cy.waitForGraphql(GRAPHL_OPERATIONS.addToCart, addtoCart)
-    validateToastMsg(POPUP_MSG)
-    cy.get(selectors.OpenCart).first().should('be.visible').click()
-    cy.get(selectors.QuantityInCart).should('have.value', 50)
-    cy.get(remove).click()
-    cy.get(selectors.CloseCart).click()
-  })
+      cy.gotoQuickOrder()
+      cy.get(button).contains(BUTTON_LABEL.back).click()
+      fillSkuAndQuantity(textArea, validate, '880270a,51{enter}')
+      cy.waitForGraphql(GRAPHL_OPERATIONS.addToCart, addtoCart)
+      validateToastMsg(POPUP_MSG)
+      cy.get(selectors.OpenCart).first().should('be.visible').click()
+      cy.get(selectors.QuantityInCart).should('have.value', 50)
+      cy.get(remove).click()
+      cy.get(selectors.CloseCart).click()
+    }
+  )
 }
 
 function searchOneByOneProduct(search, { product, quantity }, number) {
@@ -136,7 +148,7 @@ function quickOrderCategory(quoteEnv, number) {
 export function quickOrderByCategory(role, quoteEnv) {
   it(
     `Verify ${role} is able to create quote by quick order - Categories`,
-    { retries: 2 },
+    updateRetry(2),
     () => {
       quickOrderCategory(quoteEnv, 1)
     }
@@ -146,7 +158,7 @@ export function quickOrderByCategory(role, quoteEnv) {
 export function quickOrderByCategoryNegativeTestCase(role, quoteEnv) {
   it(
     `Verify ${role} is able to create quote by quick order with 51 products - Categories`,
-    { retries: 2 },
+    updateRetry(2),
     () => {
       quickOrderCategory(quoteEnv, 51)
     }
@@ -176,28 +188,20 @@ function uploadXLS(filePath) {
 }
 
 export function quickOrderByXLS(quoteEnv) {
-  it(
-    `Create quick order by uploading excel`,
-    {
-      retries: 3,
-    },
-    () => {
-      cy.getVtexItems().then((vtex) => {
-        const filePath = 'model-quickorder.xls'
+  it(`Create quick order by uploading excel`, updateRetry(3), () => {
+    cy.getVtexItems().then((vtex) => {
+      const filePath = 'model-quickorder.xls'
 
-        uploadXLS(filePath)
-        validateForm(quoteEnv, vtex, 2)
-      })
-    }
-  )
+      uploadXLS(filePath)
+      validateForm(quoteEnv, vtex, 2)
+    })
+  })
 }
 
 export function quickOrderByXLSNegativeTestCase(quoteEnv) {
   it(
     `Create quick order by uploading xls with one valid and one invalid sku line item`,
-    {
-      retries: 3,
-    },
+    updateRetry(3),
     () => {
       cy.getVtexItems().then((vtex) => {
         const filePath = 'model-quickorder1.xls'
