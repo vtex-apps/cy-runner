@@ -306,7 +306,7 @@ export function updateQuote(
       quantity,
       price,
     })} - ${quote} and verify status ${expectedStatus}`,
-    { retries: 3, scrollBehavior: false },
+    updateRetry(3),
     () => {
       cy.wrap(false).as(saveQuote)
       viewQuote(quote)
@@ -571,9 +571,13 @@ export function discountSliderShouldNotExist(quote) {
 }
 
 export function verifyQuotesAndSavedCarts() {
-  it(`Verify when we click QuotesAndSavedCarts section it should redirect us to quotes page`, () => {
-    cy.gotoMyOrganization()
-    cy.contains(selectors.QuotesAndSavedCarts).should('be.visible').click()
-    cy.get(selectors.MyQuotes).should('be.visible').click()
-  })
+  it(
+    `Verify when we click QuotesAndSavedCarts section it should redirect us to quotes page`,
+    updateRetry(1),
+    () => {
+      cy.gotoMyOrganization()
+      cy.contains(selectors.QuotesAndSavedCarts).should('be.visible').click()
+      cy.get(selectors.MyQuotes).should('be.visible').click()
+    }
+  )
 }
