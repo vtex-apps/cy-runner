@@ -12,4 +12,5 @@ export const GRAPHL_OPERATIONS = {
   Session: 'Session',
   GetOrderForm: 'GetOrderForm',
   CheckImpersonation: 'ViewLists',
+  Autocomplete: 'Autocomplete',
 }

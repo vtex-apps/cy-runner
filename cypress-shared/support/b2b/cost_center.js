@@ -1,12 +1,13 @@
 import selectors from '../common/selectors.js'
-import { getCostCenterName, validateToastMsg } from './utils.js'
+import { validateToastMsg } from './utils.js'
 import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
 import { BUTTON_LABEL, TOAST_MSG } from '../validation_text.js'
+import { updateRetry } from '../common/support.js'
 
 export function addCostCenter(organization, costCenter, costCenterAddress) {
   it(
     `Adding Cost Center ${costCenter} in ${organization}`,
-    { retries: 2 },
+    updateRetry(2),
     () => {
       cy.gotoMyOrganization()
       cy.get(selectors.AddCostCenter).should('be.visible')
@@ -16,6 +17,7 @@ export function addCostCenter(organization, costCenter, costCenterAddress) {
         } else {
           cy.get(selectors.AddCostCenter).click()
           cy.get(selectors.CostCenterName)
+            .clear()
             .type(costCenter)
             .should('have.value', costCenter)
           cy.get(selectors.Street)
@@ -28,7 +30,7 @@ export function addCostCenter(organization, costCenter, costCenterAddress) {
             selectors.SubmitCostCenter
           ).then((req) => {
             cy.setOrganizationItem(
-              getCostCenterName(organization, costCenter),
+              costCenter,
               req.response.body.data.createCostCenter.id
             )
           })
@@ -39,7 +41,7 @@ export function addCostCenter(organization, costCenter, costCenterAddress) {
 }
 
 export function updateCostCenter(oldcostCenterName, updatedcostcenterName) {
-  it(`Update cost center ${oldcostCenterName}`, () => {
+  it(`Update cost center ${oldcostCenterName}`, updateRetry(1), () => {
     cy.gotoCostCenter(oldcostCenterName)
     cy.get(`input[value='${oldcostCenterName}']`)
       .should('be.visible')
@@ -54,7 +56,7 @@ export function updateCostCenter(oldcostCenterName, updatedcostcenterName) {
 }
 
 export function deleteCostCenter(costcenter) {
-  it(`Delete cost center ${costcenter}`, () => {
+  it(`Delete cost center ${costcenter}`, updateRetry(1), () => {
     cy.gotoCostCenter(costcenter)
     cy.get('div').contains(BUTTON_LABEL.delete).should('be.visible').click()
     cy.get(selectors.ModalConfirmation).should('be.visible')
@@ -95,7 +97,7 @@ export function addAddressinCostCenter(
   costCenterAddress,
   updatedAddress = false
 ) {
-  it(`Adding New Address for ${costCenter}`, { retries: 2 }, () => {
+  it(`Adding New Address for ${costCenter}`, updateRetry(2), () => {
     cy.gotoCostCenter(costCenter)
     const { postalCode } = costCenterAddress
 
@@ -145,48 +147,56 @@ export function updateAddress(
   currentCostCenterAddress,
   newCostCenterAddress
 ) {
-  it(`Updating address & receiver in ${costCenter} for this postalCode ${currentCostCenterAddress.postalCode} to ${newCostCenterAddress.postalCode}`, () => {
-    cy.gotoCostCenter(costCenter)
-    cy.get(selectors.PostalCodeInAddressList).then(($els) => {
-      const postalCodes = [...$els].map((el) => el.innerText)
-      const newCostCenterAddressLoc = postalCodes.indexOf(
-        newCostCenterAddress.postalCode
-      )
+  it(
+    `Updating address & receiver in ${costCenter} for this postalCode ${currentCostCenterAddress.postalCode} to ${newCostCenterAddress.postalCode}`,
+    updateRetry(1),
+    () => {
+      cy.gotoCostCenter(costCenter)
+      cy.get(selectors.PostalCodeInAddressList).then(($els) => {
+        const postalCodes = [...$els].map((el) => el.innerText)
+        const newCostCenterAddressLoc = postalCodes.indexOf(
+          newCostCenterAddress.postalCode
+        )
 
-      if (newCostCenterAddressLoc !== -1) {
-        cy.log('Address already updated')
-      } else {
-        openOptionsForAddress(currentCostCenterAddress)
-        cy.get(selectors.CostCenterAddressEditOption).click()
-        const { postalCode } = newCostCenterAddress
+        if (newCostCenterAddressLoc !== -1) {
+          cy.log('Address already updated')
+        } else {
+          openOptionsForAddress(currentCostCenterAddress)
+          cy.get(selectors.CostCenterAddressEditOption).click()
+          const { postalCode } = newCostCenterAddress
 
-        cy.fillAddressInCostCenter(newCostCenterAddress)
-        submitAddressInCostCenter(postalCode)
-      }
-    })
-  })
+          cy.fillAddressInCostCenter(newCostCenterAddress)
+          submitAddressInCostCenter(postalCode)
+        }
+      })
+    }
+  )
 }
 
 export function deleteAddressFromCostCenter(costCenter, costCenterAddress) {
   const { postalCode } = costCenterAddress
 
-  it(`Delete Address ${postalCode} from cost center ${costCenter}`, () => {
-    cy.gotoCostCenter(costCenter)
-    openOptionsForAddress(costCenterAddress)
-    cy.get(selectors.CostCenterAddressDeleteOption).click()
-    cy.get(selectors.ModalConfirmation).should('be.visible')
-    cy.get(selectors.ModalConfirmation)
-      .contains(BUTTON_LABEL.delete)
-      .last()
-      .should('be.visible')
-      .click()
-    cy.get(selectors.PostalCodeInAddressList).should(
-      'not.have.text',
-      postalCode
-    )
-    cy.contains(BUTTON_LABEL.save).should('be.visible').click()
-    cy.gotoMyOrganization()
-  })
+  it(
+    `Delete Address ${postalCode} from cost center ${costCenter}`,
+    updateRetry(1),
+    () => {
+      cy.gotoCostCenter(costCenter)
+      openOptionsForAddress(costCenterAddress)
+      cy.get(selectors.CostCenterAddressDeleteOption).click()
+      cy.get(selectors.ModalConfirmation).should('be.visible')
+      cy.get(selectors.ModalConfirmation)
+        .contains(BUTTON_LABEL.delete)
+        .last()
+        .should('be.visible')
+        .click()
+      cy.get(selectors.PostalCodeInAddressList).should(
+        'not.have.text',
+        postalCode
+      )
+      cy.contains(BUTTON_LABEL.save).should('be.visible').click()
+      cy.gotoMyOrganization()
+    }
+  )
 }
 
 export function updatePaymentTermsinCostCenter(
@@ -196,7 +206,7 @@ export function updatePaymentTermsinCostCenter(
 ) {
   it(
     `Verify Organization Admin is able to disable ${costCenter} the payment terms ${paymentTerms} in ${organization}`,
-    { retries: 2 },
+    updateRetry(2),
     () => {
       cy.gotoCostCenter(costCenter)
       cy.get(selectors.PromissoryCheckbox)

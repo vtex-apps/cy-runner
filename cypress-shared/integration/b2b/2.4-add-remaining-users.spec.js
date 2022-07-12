@@ -1,10 +1,27 @@
 /* eslint-disable jest/valid-expect */
-import { testSetup } from '../../support/common/support.js'
+import { testSetup, updateRetry } from '../../support/common/support.js'
 import { ROLE_ID_EMAIL_MAPPING, OTHER_ROLES } from '../../support/b2b/utils.js'
 import { addUserViaGraphql } from '../../support/b2b/add_users.js'
 
+const config = Cypress.env()
+
+// Constants
+const { name } = config.workspace
+
 describe('Add Sales Users via Graphql', () => {
   testSetup(false)
+
+  // eslint-disable-next-line jest/expect-expect
+  it(
+    'Sync Checkout UI Custom & Add Sales Users via Graphql',
+    updateRetry(2),
+    () => {
+      cy.visit('admin/app/vtex-checkout-ui-custom/')
+      cy.contains('Publish', { timeout: 20000 }).should('be.visible').click()
+      cy.contains('History', { timeout: 20000 }).should('be.visible').click()
+      cy.contains(name, { timeout: 5000 }).should('be.visible')
+    }
+  )
 
   it('Set roles in organization JSON', { retries: 3 }, () => {
     cy.getVtexItems().then((vtex) => {

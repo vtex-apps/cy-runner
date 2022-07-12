@@ -13,7 +13,7 @@ export function fillQuoteInformation({
   notes = false,
 }) {
   cy.getVtexItems().then((vtex) => {
-    cy.get(selectors.ItemsPriceInCart).then(($div) => {
+    cy.get(selectors.ItemsPriceInCart, { timeout: 15000 }).then(($div) => {
       // Make sure remove button is visible
       cy.get(selectors.RemoveProduct).should('be.visible')
       cy.get('#total-price div[class*=checkout-summary]')
@@ -28,17 +28,15 @@ export function fillQuoteInformation({
         'be.visible'
       )
 
-      // cy.get(selectors.QuoteTotal, { timeout: 5000 })
-      //   .invoke('text')
-      //   .then((text) => {
-      //     cy.log(text)
-      //     if (text.includes('$0.00')) {
-      //       cy.reload()
-      //     }
-      //   })
+      cy.get(selectors.QuoteTotal, { timeout: 8000 })
+        .first()
+        .should('not.contain', '$0.00')
 
-      cy.get(selectors.QuoteName).should('be.visible').type(quoteEnv)
-      if (notes) cy.get(selectors.Notes).should('be.visible').type(notes)
+      cy.get(selectors.QuoteName).should('be.visible').clear().type(quoteEnv)
+      if (notes) {
+        cy.get(selectors.Notes).should('be.visible').clear().type(notes)
+      }
+
       cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
         if (req.body.operationName === GRAPHL_OPERATIONS.CreateQuote) {
           req.continue()
@@ -93,7 +91,10 @@ export function createQuote(
     ? `Create Quote by ${role} who impersonated ${impersonatedRole}, verify state is ${expectedStatus} and store in env ${quoteEnv}`
     : `Create Quote as ${role}, verify state is ${expectedStatus} and store in env ${quoteEnv}`
 
-  it(title, { retries: 3 }, () => {
+  const retries = impersonatedRole ? 1 : 3
+
+  it(title, { retries }, () => {
+    cy.closeCart()
     cy.searchProductinB2B(product)
     cy.waitForGraphql('addToCart', selectors.B2BAddtoCart)
     fillQuoteInformation({ quoteEnv, requestQuote, notes, impersonatedRole })
@@ -109,8 +110,8 @@ export function quoteShouldNotBeVisibleTestCase(
     `${organization} user created Quote - ${quoteId} should not be visible for ${currentOrganization} user`,
     { retries: 2 },
     () => {
-      cy.gotoMyQuotes()
-      cy.get(selectors.QuoteFromMyQuotesPage)
+      viewQuote(quoteId, false)
+      cy.get(selectors.QuoteFromMyQuotesPage, { timeout: 10000 })
         .invoke('text')
         .should('not.include', quoteId)
     }
@@ -126,8 +127,8 @@ export function quoteShouldbeVisibleTestCase(
     `${organization} user created Quote - ${quoteId} should be visible for ${currentOrganization} user`,
     { retries: 2 },
     () => {
-      cy.gotoMyQuotes()
-      cy.get(selectors.QuoteFromMyQuotesPage)
+      viewQuote(quoteId, false)
+      cy.get(selectors.QuoteFromMyQuotesPage, { timeout: 10000 })
         .invoke('text')
         .should('include', quoteId)
     }
@@ -166,7 +167,7 @@ function updateDiscount(discount, expectedStatus, saveQuote) {
 
   const transformAttribute = 'transform: translateX(50px) translateX(-50%)'
 
-  cy.get(selectors.QuoteTotal)
+  cy.get(selectors.QuoteOrginalTotal)
     .first()
     .should('not.have.text', DEFAULT_QUOTE_TOTAL)
     .invoke('text')
@@ -181,8 +182,6 @@ function updateDiscount(discount, expectedStatus, saveQuote) {
             const amount = +amountText.replace('$', '')
 
             const discountedPrice = amount * ((100 - discount) / 100)
-
-            cy.log(amountText, amount, discountedPrice, transformAttribute)
 
             cy.get(DiscountSliderContainer)
               .invoke('attr', 'style', transformAttribute)
@@ -226,7 +225,7 @@ function updateDiscount(discount, expectedStatus, saveQuote) {
 
                     cy.get(SliderSelector).should('be.visible').click()
 
-                    cy.get(QuoteTotal)
+                    cy.get(QuoteTotal, { timeout: 8000 })
                       .first()
                       .should('have.text', `$${discountedPrice.toFixed(2)}`)
                   })
@@ -245,7 +244,10 @@ function updateNotes(notes, saveQuote) {
     .then((notesDescription) => {
       if (notesDescription !== `Notes:\n${notes}`) {
         cy.wrap(true).as(saveQuote)
-        cy.get(selectors.Notes).type(notes)
+        cy.scrollTo('bottom')
+        cy.get(selectors.Notes).should('be.visible').clear().type(notes)
+      } else {
+        cy.wrap(false).as(saveQuote)
       }
     })
 }
@@ -273,16 +275,20 @@ function updateQuantity(quantity, saveQuote) {
   })
 }
 
-function viewQuote(quote) {
+function viewQuote(quote, open = true) {
   cy.gotoMyQuotes()
   cy.get(selectors.QuoteSearchQuery).clear().type(quote)
   cy.get(selectors.QuoteSearch).should('be.visible').click()
-  cy.contains(quote).click()
-  cy.get(selectors.ProfileLabel).should('be.visible')
-  cy.get(selectors.PageHeader)
-    .should('be.visible')
-    .should('have.text', BUTTON_LABEL.QuoteDetails)
-  cy.get(selectors.QuoteStatus).should('be.visible')
+  if (open) {
+    cy.contains(quote).click()
+    cy.get(selectors.ProfileLabel).should('be.visible')
+    cy.get(selectors.PageHeader)
+      .should('be.visible')
+      .should('have.text', BUTTON_LABEL.QuoteDetails)
+    cy.get(selectors.QuoteStatus).should('be.visible')
+  } else {
+    cy.log('Opening Quote is not allowed')
+  }
 }
 
 export function updateQuote(
@@ -300,7 +306,7 @@ export function updateQuote(
       quantity,
       price,
     })} - ${quote} and verify status ${expectedStatus}`,
-    { retries: 3, scrollBehavior: false },
+    updateRetry(3),
     () => {
       cy.wrap(false).as(saveQuote)
       viewQuote(quote)
@@ -313,16 +319,30 @@ export function updateQuote(
 
       if (quantity) updateQuantity(quantity, saveQuote)
 
-      cy.get(`@${saveQuote}`).then((response) => {
-        if (response) {
-          cy.waitForGraphql(GRAPHL_OPERATIONS.UpdateQuote, selectors.SaveQuote)
-        } else {
-          cy.log('Quote already got updated')
-        }
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(2000)
 
-        cy.get(selectors.QuoteStatus)
-          .first()
-          .should('have.text', expectedStatus)
+      cy.get(`@${saveQuote}`).then((response) => {
+        cy.get(selectors.QuoteStatus, { timeout: 8000 })
+          .invoke('text')
+          .then((currentStatus) => {
+            if (currentStatus !== expectedStatus) {
+              if (response) {
+                cy.waitForGraphql(
+                  GRAPHL_OPERATIONS.UpdateQuote,
+                  selectors.SaveQuote,
+                  true
+                )
+              } else {
+                cy.log('Quote already got updated')
+              }
+
+              cy.get(selectors.QuoteStatus, { timeout: 8000 }).should(
+                'have.text',
+                expectedStatus
+              )
+            }
+          })
       })
     }
   )
@@ -333,6 +353,7 @@ export function rejectQuote(quote, role) {
 
   it(`Decline quote from ${role}`, { retries: 2 }, () => {
     cy.gotoMyQuotes()
+    cy.get(selectors.QuoteSearchQuery).clear().type(`${quote}{enter}`)
     cy.contains(quote).click()
     cy.get(selectors.ProfileLabel).should('be.visible')
     cy.get(selectors.QuoteStatus).should('be.visible')
@@ -342,9 +363,7 @@ export function rejectQuote(quote, role) {
     cy.checkStatusAndReject(expectedStatus).then((reject) => {
       if (reject) {
         cy.waitForGraphql(GRAPHL_OPERATIONS.UpdateQuote, selectors.Decline)
-        cy.get(selectors.QuoteStatus)
-          .first()
-          .should('have.text', expectedStatus)
+        cy.get(selectors.QuoteStatus).last().should('have.text', expectedStatus)
       } else {
         cy.log('Quote already rejeted')
       }
@@ -353,9 +372,9 @@ export function rejectQuote(quote, role) {
 }
 
 export function useQuoteForPlacingTheOrder(quote, role) {
-  it(`Verify quote and Place the order from ${role}`, { retries: 3 }, () => {
+  it(`Verify quote and Place the order from ${role}`, () => {
     cy.gotoMyQuotes()
-    cy.get(selectors.QuoteSearchQuery).clear()
+    cy.get(selectors.QuoteSearchQuery).clear().type(`${quote}{enter}`)
     cy.contains(quote).click()
     cy.get(selectors.ProfileLabel).should('be.visible')
     cy.get(selectors.QuoteStatus).should('be.visible')
@@ -364,17 +383,21 @@ export function useQuoteForPlacingTheOrder(quote, role) {
       .should('not.have.text', DEFAULT_QUOTE_TOTAL)
       .invoke('text')
       .then((amountText) => {
-        const text = amountText.replace(/ /g, '')
-        const amount = +text.replace('$', '')
+        const amount = parseFloat(
+          amountText.replace(/ /g, '').replace('$', ''),
+          10
+        )
 
         cy.waitForGraphql(
           GRAPHL_OPERATIONS.UpdateQuote,
           selectors.UseQuoteButton
         )
-        cy.get(selectors.NewProductPrice).should(
-          'have.text',
-          `$ ${amount.toFixed(2)}`
-        )
+        cy.get(selectors.ProceedtoPaymentBtn).should('be.visible')
+        cy.get(selectors.SubTotalLabel)
+          .should('be.visible')
+          .contains('Subtotal')
+          .siblings('td.monetary')
+          .should('have.text', `$ ${amount.toFixed(2)}`)
         cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
       })
   })
@@ -420,11 +443,12 @@ function fillFilterBy(data, organization = false, multi = false) {
     cy.contains(/More/i).click()
     cy.contains(/Select a filter/i)
       .click()
+      .clear()
       .type(downarrowCount)
     cy.get(selectors.FilterLabel).contains(filterBy, {
       matchCase: false,
     })
-    cy.get(selectors.FilterInput).type(data)
+    cy.get(selectors.FilterInput).clear().type(data)
     cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
       if (req.body.operationName === GRAPHL_OPERATIONS.GetQuotes) {
         req.continue()
@@ -484,7 +508,7 @@ export function filterQuoteByStatus(expectedStatus1, expectedStatus2 = null) {
     expectedStatus2 ? `and ${expectedStatus2}` : ''
   }`
 
-  it(title, () => {
+  it(title, updateRetry(2), () => {
     cy.gotoMyQuotes()
     cy.get(selectors.QuoteSearchQuery).clear()
     cy.get(selectors.QuotesFilterByStatus).click()
@@ -527,17 +551,11 @@ export function preventQuoteUpdation() {
     'In checkout page, Quote should not be able to update',
     updateRetry(3),
     () => {
-      // cy.get('tr:nth-child(1) > div > td.quantity.item-disabled').should(
-      //   'be.visible'
-      // )
-      // .should('not.be.disabled')
-      // .focus()
-      // .type(`{backspace}5{enter}`)
-
       cy.get('tr:nth-child(1) > div > td.quantity > input')
         .should('be.visible')
         .should('not.be.disabled')
         .focus()
+        .clear()
         .type(`{backspace}5{enter}`)
       cy.get('#clear-cart').should('be.visible')
     }
@@ -553,9 +571,13 @@ export function discountSliderShouldNotExist(quote) {
 }
 
 export function verifyQuotesAndSavedCarts() {
-  it(`Verify when we click QuotesAndSavedCarts section it should redirect us to quotes page`, () => {
-    cy.gotoMyOrganization()
-    cy.contains(selectors.QuotesAndSavedCarts).should('be.visible').click()
-    cy.get(selectors.MyQuotes).should('be.visible').click()
-  })
+  it(
+    `Verify when we click QuotesAndSavedCarts section it should redirect us to quotes page`,
+    updateRetry(1),
+    () => {
+      cy.gotoMyOrganization()
+      cy.contains(selectors.QuotesAndSavedCarts).should('be.visible').click()
+      cy.get(selectors.MyQuotes).should('be.visible').click()
+    }
+  )
 }
