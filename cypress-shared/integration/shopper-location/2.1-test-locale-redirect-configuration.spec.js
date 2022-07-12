@@ -7,12 +7,17 @@ import {
   updateRetry,
 } from '../../support/common/support'
 import { updateSettings } from '../../support/shopper-location/settings'
-import { canadaDetails } from '../../support/shopper-location/output.validation'
+import {
+  canadaDetails,
+  location,
+} from '../../support/shopper-location/output.validation'
 import shopperLocationSelectors from '../../support/shopper-location/selectors'
 import selectors from '../../support/common/selectors.js'
 import { addAddress } from '../../support/shopper-location/common'
+import { scroll } from '../../support/commands'
 
 const { country, url, canadaPostalCode } = canadaDetails
+const { lat, long } = location
 
 describe('Testing local redirect configuration', () => {
   before(() => {
@@ -29,7 +34,12 @@ describe('Testing local redirect configuration', () => {
     'Go to store front and add canada shipping address',
     updateRetry(1),
     () => {
-      addAddress(country, canadaPostalCode)
+      addAddress({ country, canadaPostalCode, lat, long })
+      cy.get(shopperLocationSelectors.addressContainer).should('be.visible')
+      scroll()
+      cy.get(shopperLocationSelectors.addressUpdation)
+        .should('be.visible')
+        .contains('Essex County, ON, N9V 1K8')
     }
   )
 
@@ -43,6 +53,7 @@ describe('Testing local redirect configuration', () => {
   it('Page will be redirected to google page', () => {
     cy.url().should('eq', 'https://www.google.com/')
   })
+  preserveCookie()
 
   preserveCookie()
 })

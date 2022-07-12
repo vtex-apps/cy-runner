@@ -1,7 +1,10 @@
 /* eslint-disable cypress/no-unnecessary-waiting */
 
 import { updateSettings } from '../../support/shopper-location/settings'
-import { canadaDetails } from '../../support/shopper-location/output.validation'
+import {
+  canadaDetails,
+  location,
+} from '../../support/shopper-location/output.validation'
 import {
   loginAsAdmin,
   loginAsUser,
@@ -11,6 +14,7 @@ import {
 import { addAddress } from '../../support/shopper-location/common'
 
 const { country, url, canadaPostalCode } = canadaDetails
+const { lat, long } = location
 
 describe('Test Locale with Auto redirect', () => {
   // testSetup()
@@ -27,7 +31,7 @@ describe('Test Locale with Auto redirect', () => {
     'Go to store front and add canada shipping address',
     updateRetry(2),
     () => {
-      addAddress(country, canadaPostalCode)
+      addAddress({ country, canadaPostalCode, lat, long })
     }
   )
 
