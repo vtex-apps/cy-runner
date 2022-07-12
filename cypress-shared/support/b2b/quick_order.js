@@ -21,20 +21,16 @@ function checkBackButtonIsVisible(tableContainer, button) {
 }
 
 export function quickOrderBySkuAndQuantityTestCase2(role) {
-  it(
-    `Verify ${role} is able remove invalid skus in quick order - [Sku's Code],[Quantity]`,
-    updateRetry(1),
-    () => {
-      const { textArea, validate, addtoCart, tableContainer, button } =
-        selectors.QuickOrderPage().skus
+  it(`Verify ${role} is able remove invalid skus in quick order - [Sku's Code],[Quantity]`, () => {
+    const { textArea, validate, addtoCart, tableContainer, button } =
+      selectors.QuickOrderPage().skus
 
-      cy.gotoQuickOrder()
-      checkBackButtonIsVisible(tableContainer, button)
-      fillSkuAndQuantity(textArea, validate, '880270a,2{enter}1,2{enter}')
-      cy.get(`${tableContainer} ${button}`).last().click()
-      cy.get(addtoCart).should('be.visible')
-    }
-  )
+    cy.gotoQuickOrder()
+    checkBackButtonIsVisible(tableContainer, button)
+    fillSkuAndQuantity(textArea, validate, '880270a,2{enter}1,2{enter}')
+    cy.get(`${tableContainer} ${button}`).last().click()
+    cy.get(addtoCart).should('be.visible')
+  })
 }
 
 export function quickOrderBySkuAndQuantityTestCase1(role, quoteEnv) {
