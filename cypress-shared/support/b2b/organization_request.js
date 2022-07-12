@@ -106,9 +106,9 @@ function generateSubTitle(approved, declined) {
   let subTitle = 'organization is in pending state'
 
   if (approved) {
-    subTitle = `& we are able to Approve via graphql`
+    subTitle = `we are able to Approve via graphql`
   } else if (declined) {
-    subTitle = `& we are able to Decline via graphql`
+    subTitle = `we are able to Decline via graphql`
   }
 
   return subTitle
@@ -121,7 +121,7 @@ export function createOrganizationTestCase(
   const msg = generateSubTitle(approved, declined)
 
   it(
-    `Creating ${organization.name} via storefront ${msg}, verify`,
+    `Creating ${organization.name} via storefront & verify ${msg}`,
     updateRetry(2),
     () => {
       cy.getVtexItems().then((vtex) => {
