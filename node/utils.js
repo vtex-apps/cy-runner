@@ -133,6 +133,15 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
     /* falls through */
 
     case 'uninstall':
+      // Check if we are on workspace master
+      stdout = this.exec(`${bin} whoami`, 'pipe').toString()
+      check = /master/.test(stdout)
+      if (check) {
+        this.crash(
+          'You should not install or uninstall apps on workspace master',
+          `${bin} ${cmd}\n${stdout}`
+        )
+      }
     /* falls through */
 
     case 'unlink':
@@ -357,6 +366,12 @@ function generateBaseUrl(config) {
 
 exports.generateBaseUrl = generateBaseUrl
 
+function getBaseDir(storage) {
+  if (storage(path.join('cypress', 'integration'))) return 'cypress'
+
+  return 'cypress-shared'
+}
+
 exports.writeCypressJson = (config) => {
   const CYPRESS_JSON_FILE = 'cypress.json'
   const CYPRESS = config.base.cypress
@@ -493,13 +508,13 @@ exports.stopOnFail = async (config, step) => {
 }
 
 exports.openCypress = async () => {
-  let baseDir = 'cypress-shared'
+  const baseDir = getBaseDir(this.storage)
 
-  if (this.storage(path.join('cypress', 'integration'))) baseDir = 'cypress'
   const options = {
     config: {
       integrationFolder: `${baseDir}/integration`,
       supportFile: `${baseDir}/support`,
+      fixturesFolder: `${baseDir}/fixtures`,
     },
   }
 
@@ -514,6 +529,7 @@ exports.openCypress = async () => {
 exports.runCypress = async (test, config, addOptions = {}) => {
   // If mix base path for specs, stop it
   const specPath = path.parse(test.specs[0]).dir
+  const baseDir = getBaseDir(this.storage)
 
   test.specs.forEach((spec) => {
     const pathToCheck = path.parse(spec).dir
@@ -534,6 +550,7 @@ exports.runCypress = async (test, config, addOptions = {}) => {
     config: {
       integrationFolder: specPath,
       supportFile: `${specPath.split(path.sep)[0]}/support`,
+      fixturesFolder: `${baseDir}/fixtures`,
     },
     env: {
       DISPLAY: '',

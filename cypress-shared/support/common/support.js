@@ -142,6 +142,7 @@ export function fillAddress(postalCode) {
 
       cy.get(selectors.PostalCodeInput, { timeout: 10000 })
         .should('be.visible')
+        .clear()
         .type(postalCode)
 
       return cy.wrap(true)
@@ -179,7 +180,7 @@ function fillContactInfo() {
 function fillAddressLine1(deliveryScreenAddress) {
   cy.get('body').then(($shippingBlock) => {
     if ($shippingBlock.find(selectors.ShipStreet).length) {
-      cy.get(selectors.ShipStreet).type(deliveryScreenAddress)
+      cy.get(selectors.ShipStreet).clear().type(deliveryScreenAddress)
       cy.get(selectors.GotoPaymentBtn).should('be.visible').click()
     }
   })

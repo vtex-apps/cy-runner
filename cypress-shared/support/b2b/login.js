@@ -2,12 +2,18 @@ import { getAccessToken } from '../extract.js'
 import selectors from '../common/selectors.js'
 
 export function visitHomePage() {
-  cy.intercept('POST', 'https://rc.vtex.com.br/api/events').as('EVENTS')
-  cy.visit('/', {
-    retryOnStatusCodeFailure: true,
-    retryOnNetworkFailure: true,
+  cy.url().then((url) => {
+    if (url.includes('blank')) {
+      cy.intercept('POST', 'https://rc.vtex.com.br/api/events').as('EVENTS')
+      cy.visit('/', {
+        retryOnStatusCodeFailure: true,
+        retryOnNetworkFailure: true,
+      })
+      cy.wait('@EVENTS')
+    } else {
+      cy.log('Already logged in')
+    }
   })
-  cy.wait('@EVENTS')
 }
 
 export function loginWithCookiesStoredInJSON(cookieValue) {
@@ -32,7 +38,7 @@ export function storeUserCookie(emailId) {
 export function loginToStoreFront(emailId, role) {
   it(
     `Logging in to storefront as ${role}`,
-    { defaultCommandTimeout: 60000, retries: 3 },
+    { defaultCommandTimeout: 45000 },
     () => {
       cy.getOrganizationItems().then((organization) => {
         if (organization[emailId]) {
@@ -58,6 +64,7 @@ export function loginToStoreFront(emailId, role) {
                 cy.get(selectors.Email)
                   .should('be.visible')
                   .focus()
+                  .clear()
                   .type(emailId)
                 cy.get(selectors.Submit)
                   .click()
@@ -68,7 +75,7 @@ export function loginToStoreFront(emailId, role) {
                       accessToken
                     )
 
-                    cy.get(selectors.Token).type(newAccessToken)
+                    cy.get(selectors.Token).clear().type(newAccessToken)
                     cy.get(selectors.Submit).click()
                     cy.waitForSession()
                     cy.get(selectors.ProfileLabel).should('be.visible')
