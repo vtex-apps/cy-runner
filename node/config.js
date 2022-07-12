@@ -20,7 +20,10 @@ exports.getConfig = async (configFile) => {
   // Checks to avoid silly configuration errors on CI
   if (isCI && !skipAutoConfigOnCI) {
     // TODO: Refactor to be possible run E2E without deployCli
-    qe.msg('CI detected, auto configuring deployCli, Twilio, and some Cypress flags', 'warn')
+    qe.msg(
+      'CI detected, auto configuring deployCli, Twilio, and some Cypress flags',
+      'warn'
+    )
     qe.msg('To avoid auto config, enable base.skipAutoConfigOnCI', true, true)
     config.base.vtex.deployCli.enabled = true
     config.base.twilio.enabled = true
@@ -28,10 +31,8 @@ exports.getConfig = async (configFile) => {
     config.base.cypress.runHeaded = false
     config.base.cypress.getCookies = true
     config.base.cypress.quiet = true
-    config.base.cypress.video = true
     config.base.cypress.videoUploadOnPasses = false
     config.base.cypress.trashAssetsBeforeRuns = false
-    config.base.cypress.video = true    
     config.base.cypress.watchForFileChanges = false
     config.base.cypress.browser = 'chrome'
     config.base.cypress.sorry = false
