@@ -7,22 +7,21 @@ import {
 } from '../../support/shopper-location/output.validation'
 import {
   loginAsAdmin,
-  loginAsUser,
   preserveCookie,
   updateRetry,
 } from '../../support/common/support'
 import { addAddress } from '../../support/shopper-location/common'
 
-const { country, url, canadaPostalCode } = canadaDetails
+const { country, url, postalCode } = canadaDetails
 const { lat, long } = location
 
 describe('Test Locale with Auto redirect', () => {
   // testSetup()
   before(() => {
     loginAsAdmin()
-    cy.getVtexItems().then((vtex) => {
-      loginAsUser(vtex.robotMail, vtex.robotPassword)
-    })
+    // cy.getVtexItems().then((vtex) => {
+    //   loginAsUser(vtex.robotMail, vtex.robotPassword)
+    // })
   })
   updateSettings(country, url, { automaticRedirect: true })
 
@@ -31,7 +30,7 @@ describe('Test Locale with Auto redirect', () => {
     'Go to store front and add canada shipping address',
     updateRetry(2),
     () => {
-      addAddress({ country, canadaPostalCode, lat, long })
+      addAddress({ country, postalCode, lat, long })
     }
   )
 

@@ -2,7 +2,6 @@
 
 import {
   loginAsAdmin,
-  loginAsUser,
   preserveCookie,
   updateRetry,
 } from '../../support/common/support'
@@ -16,15 +15,15 @@ import selectors from '../../support/common/selectors.js'
 import { addAddress } from '../../support/shopper-location/common'
 import { scroll } from '../../support/commands'
 
-const { country, url, canadaPostalCode } = canadaDetails
+const { country, url, postalCode } = canadaDetails
 const { lat, long } = location
 
 describe('Testing local redirect configuration', () => {
   before(() => {
     loginAsAdmin()
-    cy.getVtexItems().then((vtex) => {
-      loginAsUser(vtex.robotMail, vtex.robotPassword)
-    })
+    // cy.getVtexItems().then((vtex) => {
+    //   loginAsUser(vtex.robotMail, vtex.robotPassword)
+    // })
   })
 
   updateSettings(country, url)
@@ -34,7 +33,7 @@ describe('Testing local redirect configuration', () => {
     'Go to store front and add canada shipping address',
     updateRetry(1),
     () => {
-      addAddress({ country, canadaPostalCode, lat, long })
+      addAddress({ country, postalCode, lat, long })
       cy.get(shopperLocationSelectors.addressContainer).should('be.visible')
       scroll()
       cy.get(shopperLocationSelectors.addressUpdation)

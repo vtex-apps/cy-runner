@@ -2,7 +2,7 @@ export default {
   canadaDetails: {
     country: 'CAN',
     url: 'https://www.google.com',
-    canadaPostalCode: 'N9V 1K8',
+    postalCode: 'N9V 1K8',
   },
   UsDetails: {
     country: 'United States',
