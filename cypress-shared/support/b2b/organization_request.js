@@ -102,14 +102,26 @@ function submitOrganization(org) {
   })
 }
 
+function generateSubTitle(approved, declined) {
+  let subTitle = 'organization is in pending state'
+
+  if (approved) {
+    subTitle = `& we are able to Approve via graphql`
+  } else if (declined) {
+    subTitle = `& we are able to Decline via graphql`
+  }
+
+  return subTitle
+}
+
 export function createOrganizationTestCase(
   organization,
   { costCenterName, costCenterAddress, approved = false, declined = false }
 ) {
-  const msg = approved ? 'Approving' : declined ? 'Decline' : ''
+  const msg = generateSubTitle(approved, declined)
 
   it(
-    `Creating ${organization.name} via storefront & ${msg} ${organization.name} via graphql`,
+    `Creating ${organization.name} via storefront ${msg}, verify`,
     updateRetry(2),
     () => {
       cy.getVtexItems().then((vtex) => {
