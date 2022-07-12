@@ -38,7 +38,7 @@ export function storeUserCookie(emailId) {
 export function loginToStoreFront(emailId, role) {
   it(
     `Logging in to storefront as ${role}`,
-    { defaultCommandTimeout: 45000 },
+    { defaultCommandTimeout: 60000 },
     () => {
       cy.getOrganizationItems().then((organization) => {
         if (organization[emailId]) {

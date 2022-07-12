@@ -106,8 +106,10 @@ export function createOrganizationTestCase(
   organization,
   { costCenterName, costCenterAddress, approved = false, declined = false }
 ) {
+  const msg = approved ? 'Approving' : declined ? 'Decline' : ''
+
   it(
-    `Creating ${organization.name} via storefront & Approving ${organization.name} via graphql`,
+    `Creating ${organization.name} via storefront & ${msg} ${organization.name} via graphql`,
     updateRetry(2),
     () => {
       cy.getVtexItems().then((vtex) => {
