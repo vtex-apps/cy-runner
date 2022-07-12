@@ -7,6 +7,7 @@ import {
 } from '../../support/common/support'
 import shopperLocationConstants from '../../support/shopper-location/constants'
 import shopperLocationSelectors from '../../support/shopper-location/selectors'
+import { location } from '../../support/shopper-location/output.validation'
 
 const prefix = 'Enable location'
 
@@ -19,8 +20,8 @@ describe('Location validation', () => {
   })
 
   // eslint-disable-next-line jest/no-disabled-tests
-  it.skip(`${prefix} - Test negative scenarios`, updateRetry(3), () => {
-    verifyLocation()
+  it(`${prefix} - Test negative scenarios`, updateRetry(3), () => {
+    verifyLocation(location.lat, location.long)
     cy.get(shopperLocationSelectors.AddressErrorContainer).contains(
       shopperLocationConstants.locationNotAvailable
     )

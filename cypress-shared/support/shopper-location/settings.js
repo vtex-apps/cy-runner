@@ -1,5 +1,5 @@
-import { FAIL_ON_STATUS_CODE } from './common/constants'
-import { updateRetry } from './common/support'
+import { FAIL_ON_STATUS_CODE } from '../common/constants'
+import { updateRetry } from '../common/support'
 
 const version = '*.x'
 const app = 'vtex.shopper-location'
