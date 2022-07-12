@@ -13,6 +13,31 @@ exports.getConfig = async (configFile) => {
   // Load secrets and parse it
   const secrets = qe.loadSecrets(config)
 
+  // Do check to avoid waste of time on CI environments
+  const isCI = process.env.CI ?? false
+  const skipAutoConfigOnCI = config.base.skipAutoConfigOnCI ?? false
+
+  // Checks to avoid silly configuration errors on CI
+  if (isCI && !skipAutoConfigOnCI) {
+    // TODO: Refactor to be possible run E2E without deployCli
+    qe.msg(
+      'CI detected, auto configuring deployCli, Twilio, and some Cypress flags',
+      'warn'
+    )
+    qe.msg('To avoid auto config, enable base.skipAutoConfigOnCI', true, true)
+    config.base.vtex.deployCli.enabled = true
+    config.base.twilio.enabled = true
+    config.base.cypress.devMode = false
+    config.base.cypress.runHeaded = false
+    config.base.cypress.getCookies = true
+    config.base.cypress.quiet = true
+    config.base.cypress.videoUploadOnPasses = false
+    config.base.cypress.trashAssetsBeforeRuns = false
+    config.base.cypress.watchForFileChanges = false
+    config.base.cypress.browser = 'chrome'
+    config.base.cypress.sorry = false
+  }
+
   if (secrets) config = qe.mergeSecrets(config, secrets)
   // Get workspace to run tests
   config.workspace.name = qe.getWorkspaceName(config)
