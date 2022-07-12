@@ -14,7 +14,7 @@ function closeModalIfOpened() {
   })
 }
 
-function scroll() {
+export function scroll() {
   // So, scroll first then look for selectors
   cy.scrollTo(0, 1000)
   // eslint-disable-next-line cypress/no-unnecessary-waiting

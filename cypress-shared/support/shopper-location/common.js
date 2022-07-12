@@ -2,14 +2,7 @@ import selectors from '../common/selectors'
 import { updateRetry } from '../common/support'
 import shopperLocationSelectors from './selectors'
 import { mockLocation } from './geolocation'
-
-function scroll() {
-  // So, scroll first then look for selectors
-  cy.scrollTo(0, 1000)
-  // eslint-disable-next-line cypress/no-unnecessary-waiting
-  cy.wait(1000)
-  cy.scrollTo(0, -100)
-}
+import { scroll } from '../commands'
 
 export function verifyShopperLocation() {
   cy.get(shopperLocationSelectors.verifyLocationInHome).should('be.visible')
