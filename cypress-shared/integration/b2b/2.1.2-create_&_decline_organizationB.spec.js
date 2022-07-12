@@ -3,7 +3,7 @@ import { createOrganizationTestCase } from '../../support/b2b/organization_reque
 import b2b from '../../support/b2b/constants.js'
 import { deleteOrganization } from '../../support/b2b/graphql.js'
 
-describe('Create & Approve OrganizationB', () => {
+describe('Create & Decline OrganizationB', () => {
   testSetup(false)
 
   const { organizationName, costCenter1, users } = b2b.OrganizationB
@@ -11,7 +11,7 @@ describe('Create & Approve OrganizationB', () => {
   deleteOrganization(organizationName, true)
   deleteOrganization(organizationName)
 
-  // Create and approve Organization B
+  // Create and decline Organization B
   createOrganizationTestCase(
     {
       name: organizationName,
@@ -20,7 +20,7 @@ describe('Create & Approve OrganizationB', () => {
     {
       costCenterName: costCenter1.name,
       costCenterAddress: costCenter1.addresses[0],
-      approved: true,
+      declined: true,
     }
   )
 })
