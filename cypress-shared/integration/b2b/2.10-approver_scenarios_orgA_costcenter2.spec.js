@@ -19,6 +19,7 @@ import {
   quoteShouldbeVisibleTestCase,
   quoteShouldNotBeVisibleTestCase,
   useQuoteForPlacingTheOrder,
+  verifySubTotal,
 } from '../../support/b2b/quotes.js'
 
 describe('Organization A - Cost Center A2 - Approver Scenario', () => {
@@ -48,6 +49,7 @@ describe('Organization A - Cost Center A2 - Approver Scenario', () => {
     quotes.Approver2.updateQuote,
     role.Approver2.dropDownText
   )
+  verifySubTotal(quotes.Approver2.updateQuote)
   fillContactInfo()
   verifyAddress(costCenter2.addresses)
   verifyPayment(false)

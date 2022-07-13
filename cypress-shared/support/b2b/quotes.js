@@ -189,10 +189,6 @@ function updateDiscount(discount, expectedStatus, saveQuote) {
               .trigger('change')
 
             cy.get(SliderToolTip).click()
-            // cy.get(SliderSelector).click()
-            // .trigger('mouseover')
-            // .wait(1000)
-            // .click('center', { ctrlKey: true })
 
             cy.get(SliderToolTip)
               .should('not.have.text', '0%')
@@ -372,7 +368,7 @@ export function rejectQuote(quote, role) {
 }
 
 export function useQuoteForPlacingTheOrder(quote, role) {
-  it(`Verify quote and Place the order from ${role}`, () => {
+  it(`Use Quote from ${role}`, updateRetry(2), () => {
     cy.gotoMyQuotes()
     cy.get(selectors.QuoteSearchQuery).clear().type(`${quote}{enter}`)
     cy.contains(quote).click()
@@ -388,18 +384,27 @@ export function useQuoteForPlacingTheOrder(quote, role) {
           10
         )
 
+        cy.setQuoteItem(`${quote}-price`, amount)
+
         cy.waitForGraphql(
           GRAPHL_OPERATIONS.UpdateQuote,
           selectors.UseQuoteButton
         )
-        cy.get(selectors.ProceedtoPaymentBtn).should('be.visible')
-        cy.get(selectors.SubTotalLabel)
-          .should('be.visible')
-          .contains('Subtotal')
-          .siblings('td.monetary')
-          .should('have.text', `$ ${amount.toFixed(2)}`)
-        cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
       })
+  })
+}
+
+export function verifySubTotal(quote) {
+  it(`Verify SubTotal in checkoutPage`, updateRetry(2), () => {
+    cy.getQuotesItems().then((quotes) => {
+      cy.get(selectors.ProceedtoPaymentBtn).should('be.visible')
+      cy.get(selectors.SubTotalLabel, { timeout: 10000 })
+        .should('be.visible')
+        .contains('Subtotal')
+        .siblings('td.monetary', { timeout: 3000 })
+        .should('have.text', `$ ${quotes[`${quote}-price`].toFixed(2)}`)
+      cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
+    })
   })
 }
 
