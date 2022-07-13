@@ -1,7 +1,6 @@
-/* eslint-disable cypress/no-unnecessary-waiting */
-
 import {
   loginAsAdmin,
+  loginAsUser,
   preserveCookie,
   updateRetry,
 } from '../../support/common/support'
@@ -21,9 +20,9 @@ const { lat, long } = location
 describe('Testing local redirect configuration', () => {
   before(() => {
     loginAsAdmin()
-    // cy.getVtexItems().then((vtex) => {
-    //   loginAsUser(vtex.robotMail, vtex.robotPassword)
-    // })
+    cy.getVtexItems().then((vtex) => {
+      loginAsUser(vtex.robotMail, vtex.robotPassword)
+    })
   })
 
   updateSettings(country, url)
@@ -52,7 +51,5 @@ describe('Testing local redirect configuration', () => {
   it('Page will be redirected to google page', () => {
     cy.url().should('eq', 'https://www.google.com/')
   })
-  preserveCookie()
-
   preserveCookie()
 })

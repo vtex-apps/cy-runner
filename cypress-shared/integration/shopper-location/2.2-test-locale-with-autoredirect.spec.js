@@ -1,34 +1,33 @@
-/* eslint-disable cypress/no-unnecessary-waiting */
-
+import {
+  loginAsAdmin,
+  loginAsUser,
+  preserveCookie,
+  updateRetry,
+} from '../../support/common/support'
 import { updateSettings } from '../../support/shopper-location/settings'
 import {
   canadaDetails,
   location,
 } from '../../support/shopper-location/output.validation'
-import {
-  loginAsAdmin,
-  preserveCookie,
-  updateRetry,
-} from '../../support/common/support'
 import { addAddress } from '../../support/shopper-location/common'
 
 const { country, url, postalCode } = canadaDetails
 const { lat, long } = location
 
 describe('Test Locale with Auto redirect', () => {
-  // testSetup()
   before(() => {
     loginAsAdmin()
-    // cy.getVtexItems().then((vtex) => {
-    //   loginAsUser(vtex.robotMail, vtex.robotPassword)
-    // })
+    cy.getVtexItems().then((vtex) => {
+      loginAsUser(vtex.robotMail, vtex.robotPassword)
+    })
   })
+
   updateSettings(country, url, { automaticRedirect: true })
 
   // eslint-disable-next-line jest/expect-expect
   it(
     'Go to store front and add canada shipping address',
-    updateRetry(2),
+    updateRetry(1),
     () => {
       addAddress({ country, postalCode, lat, long })
     }

@@ -21,7 +21,7 @@ describe('Location validation', () => {
 
   // eslint-disable-next-line jest/no-disabled-tests
   // eslint-disable-next-line jest/expect-expect
-  it(`${prefix} - Test negative scenarios`, updateRetry(3), () => {
+  it(`${prefix} - Test negative scenarios`, updateRetry(2), () => {
     verifyLocation(location.lat, location.long)
     cy.get(shopperLocationSelectors.AddressErrorContainer).contains(
       shopperLocationConstants.locationNotAvailable
