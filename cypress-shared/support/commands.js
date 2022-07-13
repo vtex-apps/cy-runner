@@ -178,7 +178,7 @@ Cypress.Commands.add(
   }
 )
 
-function fillContactInfo() {
+export function fillContactInfo() {
   cy.get(selectors.QuantityBadge).should('be.visible')
   cy.get(selectors.SummaryCart).should('be.visible')
   cy.get(selectors.FirstName).clear().type('Syed', {
@@ -207,6 +207,7 @@ function fillContactInfo() {
 Cypress.Commands.add('orderProduct', () => {
   cy.get(selectors.FirstName).then(($el) => {
     if (Cypress.dom.isVisible($el)) {
+      cy.wait('@v8')
       fillContactInfo()
     }
   })
