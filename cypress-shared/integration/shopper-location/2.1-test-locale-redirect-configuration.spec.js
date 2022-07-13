@@ -31,6 +31,7 @@ describe('Testing local redirect configuration', () => {
 
   // eslint-disable-next-line jest/expect-expect
   it('Verify address', updateRetry(2), () => {
+    cy.get(shopperLocationSelectors.AddressModelLayout).should('not.be.visible')
     cy.get(shopperLocationSelectors.addressContainer).should('be.visible')
     scroll()
     cy.get(shopperLocationSelectors.addressUpdation)

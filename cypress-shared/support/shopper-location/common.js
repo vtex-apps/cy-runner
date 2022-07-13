@@ -100,9 +100,6 @@ export function addAddress({ country, postalCode, lat, long }) {
         .should(() => {
           expect(localStorage.getItem('orderform')).not.to.be.empty
         })
-      cy.get(shopperLocationSelectors.AddressModelLayout).should(
-        'not.be.visible'
-      )
     }
   )
 }
