@@ -27,19 +27,16 @@ describe('Testing local redirect configuration', () => {
 
   updateSettings(country, url)
 
+  addAddress({ country, postalCode, lat, long })
+
   // eslint-disable-next-line jest/expect-expect
-  it(
-    'Go to store front and add canada shipping address',
-    updateRetry(1),
-    () => {
-      addAddress({ country, postalCode, lat, long })
-      cy.get(shopperLocationSelectors.addressContainer).should('be.visible')
-      scroll()
-      cy.get(shopperLocationSelectors.addressUpdation)
-        .should('be.visible')
-        .contains('Essex County, ON, N9V 1K8')
-    }
-  )
+  it('Verify address', updateRetry(2), () => {
+    cy.get(shopperLocationSelectors.addressContainer).should('be.visible')
+    scroll()
+    cy.get(shopperLocationSelectors.addressUpdation)
+      .should('be.visible')
+      .contains('Essex County, ON, N9V 1K8')
+  })
 
   // eslint-disable-next-line jest/expect-expect
   it('Get popup with switch button', updateRetry(2), () => {

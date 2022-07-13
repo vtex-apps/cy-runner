@@ -10,7 +10,9 @@ export function updateSettings(
   { automaticRedirect = false } = {}
 ) {
   it(
-    `Configuring automatic redirect with country ${country} in ${app}`,
+    `Configuring ${
+      automaticRedirect ? 'automatic' : ''
+    } redirect with country ${country} in ${app}`,
     updateRetry(2),
     () => {
       cy.getVtexItems().then((vtex) => {

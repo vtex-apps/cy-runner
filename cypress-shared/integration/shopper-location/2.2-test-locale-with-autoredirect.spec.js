@@ -2,7 +2,6 @@ import {
   loginAsAdmin,
   loginAsUser,
   preserveCookie,
-  updateRetry,
 } from '../../support/common/support'
 import { updateSettings } from '../../support/shopper-location/settings'
 import {
@@ -24,14 +23,7 @@ describe('Test Locale with Auto redirect', () => {
 
   updateSettings(country, url, { automaticRedirect: true })
 
-  // eslint-disable-next-line jest/expect-expect
-  it(
-    'Go to store front and add canada shipping address',
-    updateRetry(1),
-    () => {
-      addAddress({ country, postalCode, lat, long })
-    }
-  )
+  addAddress({ country, postalCode, lat, long })
 
   // eslint-disable-next-line jest/expect-expect
   it('Now site should force redirect to google', () => {

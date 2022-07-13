@@ -7,15 +7,11 @@ import { scroll } from '../commands'
 
 export function verifyShopperLocation() {
   cy.get(shopperLocationSelectors.verifyLocationInHome).should('be.visible')
-  // .contains('Baltimore, MD, 21287')
   // eslint-disable-next-line cypress/no-force
   cy.get(shopperLocationSelectors.AddToCart)
     .contains('Add to cart')
     .click({ force: true })
   cy.get(shopperLocationSelectors.ProceedToCheckOut).click()
-  // cy.get(shopperLocationSelectors.verifyLocationInCheckOut)
-  //   .should('be.visible')
-  //   .contains('Orleans Street')
   cy.get(shopperLocationSelectors.orderButton).should('be.visible').click()
 }
 
@@ -35,11 +31,6 @@ export function addLocation(data) {
     .clear()
     .should('be.visible')
     .type(data.postalCode)
-  // cy.get(shopperLocationSelectors.Address)
-  //   .should('be.visible')
-  //   .clear()
-  //   .type('Orleans Street')
-  // cy.intercept('**/maps.googleapis.com/maps/api/geocode/json').as('events')
   cy.getVtexItems().then((vtex) => {
     cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
       if (req.body.operationName === 'setRegionId') {
@@ -69,39 +60,49 @@ export function verifyLocation(lat, long) {
 }
 
 export function addAddress({ country, postalCode, lat, long }) {
-  cy.intercept('**/rc.vtex.com.br/api/events').as('events')
-  cy.visit('/', mockLocation(lat, long))
-  cy.wait('@events')
-  cy.get(selectors.ProfileLabel, { timeout: 20000 })
-    .should('be.visible')
-    .should('have.contain', `Hello,`)
-  scroll()
-  cy.get(shopperLocationSelectors.addressContainer).should('be.visible').click()
-  cy.get(shopperLocationSelectors.findMyLocation).click()
-  cy.get(shopperLocationSelectors.AddressErrorContainer).contains(
-    shopperLocationConstants.locationNotAvailable
+  it(
+    'Go to store front and add canada shipping address',
+    updateRetry(1),
+    () => {
+      cy.intercept('**/rc.vtex.com.br/api/events').as('events')
+      cy.visit('/', mockLocation(lat, long))
+      cy.wait('@events')
+      cy.get(selectors.ProfileLabel, { timeout: 20000 })
+        .should('be.visible')
+        .should('have.contain', `Hello,`)
+      scroll()
+      cy.get(shopperLocationSelectors.addressContainer)
+        .should('be.visible')
+        .click()
+      cy.get(shopperLocationSelectors.findMyLocation).click()
+      cy.get(shopperLocationSelectors.AddressErrorContainer).contains(
+        shopperLocationConstants.locationNotAvailable
+      )
+      cy.get(shopperLocationSelectors.closeButton).click()
+      scroll()
+      cy.get(shopperLocationSelectors.verifyLocationInHome).should('be.visible')
+      // .contains('Add Location')
+      cy.get(shopperLocationSelectors.addressContainer)
+        .should('be.visible')
+        .click()
+      cy.get(shopperLocationSelectors.countryDropdown).select(country)
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.get(shopperLocationSelectors.addressInputContainer)
+        .find('input')
+        .first()
+        .clear()
+        .type(postalCode)
+        .wait(500)
+      autocomplete('Essex County', 'Ontario')
+      cy.get(shopperLocationSelectors.saveButton)
+        .find('button')
+        .click()
+        .should(() => {
+          expect(localStorage.getItem('orderform')).not.to.be.empty
+        })
+      // cy.get(shopperLocationSelectors.AddressModelLayout).should('not.be.visible')
+    }
   )
-  cy.get(shopperLocationSelectors.closeButton).click()
-  scroll()
-  cy.get(shopperLocationSelectors.verifyLocationInHome).should('be.visible')
-  // .contains('Add Location')
-  cy.get(shopperLocationSelectors.addressContainer).should('be.visible').click()
-  cy.get(shopperLocationSelectors.countryDropdown).select(country)
-  // eslint-disable-next-line cypress/no-unnecessary-waiting
-  cy.get(shopperLocationSelectors.addressInputContainer)
-    .find('input')
-    .first()
-    .clear()
-    .type(postalCode)
-    .wait(500)
-  autocomplete('Essex County', 'Ontario')
-  cy.get(shopperLocationSelectors.saveButton)
-    .find('button')
-    .click()
-    .should(() => {
-      expect(localStorage.getItem('orderform')).not.to.be.empty
-    })
-  cy.get(shopperLocationSelectors.AddressModelLayout).should('not.be.visible')
 }
 
 export function autocomplete(city, province) {
