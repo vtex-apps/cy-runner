@@ -5,6 +5,7 @@ import {
 } from './common/wipe.js'
 import { performImpersonation } from './b2b/common.js'
 import 'cypress-file-upload'
+import { fillContactInfo, scroll } from './common/support.js'
 
 function closeModalIfOpened() {
   cy.get('body').then(($body) => {
@@ -169,3 +170,26 @@ Cypress.Commands.add(
       })
   }
 )
+
+Cypress.Commands.add('orderProduct', () => {
+  cy.get(selectors.FirstName).then(($el) => {
+    if (Cypress.dom.isVisible($el)) {
+      fillContactInfo()
+    }
+  })
+  cy.get(selectors.PromissoryPayment).click()
+  cy.get(selectors.BuyNowBtn).last().click()
+})
+
+Cypress.Commands.add('openStoreFront', (login = false) => {
+  cy.intercept('**/rc.vtex.com.br/api/events').as('events')
+  cy.visit('/')
+  cy.wait('@events')
+  if (login === true) {
+    cy.get(selectors.ProfileLabel, { timeout: 20000 })
+      .should('be.visible')
+      .should('have.contain', `Hello,`)
+  }
+
+  scroll()
+})
