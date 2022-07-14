@@ -19,5 +19,5 @@ export const BUTTON_LABEL = {
   completeOrder: /Complete Order/i,
   AddToCart: /Add to Cart/i,
   QuickOrder: /Quick Order/i,
-  QuoteDetails: /Quote Details/i,
+  QuoteDetails: 'Quote Details',
 }

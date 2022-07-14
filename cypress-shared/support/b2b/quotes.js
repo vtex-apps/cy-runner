@@ -280,7 +280,7 @@ function viewQuote(quote, open = true) {
     cy.get(selectors.ProfileLabel).should('be.visible')
     cy.get(selectors.PageHeader)
       .should('be.visible')
-      .contains(BUTTON_LABEL.QuoteDetails)
+      .should('contain', BUTTON_LABEL.QuoteDetails)
     cy.get(selectors.QuoteStatus).should('be.visible')
   } else {
     cy.log('Opening Quote is not allowed')
@@ -397,12 +397,14 @@ export function useQuoteForPlacingTheOrder(quote, role) {
 export function verifySubTotal(quote) {
   it(`Verify SubTotal in checkoutPage`, updateRetry(2), () => {
     cy.getQuotesItems().then((quotes) => {
+      const price = quotes[`${quote}-price`]
+
       cy.get(selectors.ProceedtoPaymentBtn).should('be.visible')
       cy.get(selectors.SubTotalLabel, { timeout: 10000 })
         .should('be.visible')
-        .contains('Subtotal')
+        .contains('Subtotal', { timeout: 6000 })
         .siblings('td.monetary', { timeout: 3000 })
-        .should('have.text', `$ ${quotes[`${quote}-price`].toFixed(2)}`)
+        .should('have.text', `$ ${price.toFixed(2)}`)
       cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
     })
   })
