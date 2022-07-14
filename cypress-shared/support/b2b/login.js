@@ -66,6 +66,12 @@ export function loginToStoreFront(emailId, role) {
                   .focus()
                   .clear()
                   .type(emailId)
+
+                // wait randomly between 1 to 2 seconds
+                // This is added to solve access code not getting issue
+                // eslint-disable-next-line cypress/no-unnecessary-waiting
+                cy.wait(Math.floor(Math.random() * (2000 - 1000)) + 1000)
+
                 cy.get(selectors.Submit)
                   .click()
                   .then(async () => {
