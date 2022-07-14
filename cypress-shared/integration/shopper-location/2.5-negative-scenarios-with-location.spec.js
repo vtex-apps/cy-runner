@@ -7,7 +7,7 @@ import {
 } from '../../support/common/support'
 import shopperLocationConstants from '../../support/shopper-location/constants'
 import shopperLocationSelectors from '../../support/shopper-location/selectors'
-import { location } from '../../support/shopper-location/output.validation'
+import { location } from '../../support/shopper-location/outputvalidation'
 
 const prefix = 'Enable location'
 

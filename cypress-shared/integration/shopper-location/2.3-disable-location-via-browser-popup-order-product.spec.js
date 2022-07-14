@@ -4,14 +4,11 @@ import {
   loginAsUser,
 } from '../../support/common/support'
 import { orderProductTestCase } from '../../support/shopper-location/common'
-import {
-  UsDetails,
-  location,
-} from '../../support/shopper-location/output.validation'
+import { UsDetails } from '../../support/shopper-location/outputvalidation'
 
 const { country, postalCode } = UsDetails
 
-const prefix = 'Enable location'
+const prefix = 'Disable location'
 
 describe(`${prefix}- via browser popup - Order the Product`, () => {
   before(() => {
@@ -21,12 +18,7 @@ describe(`${prefix}- via browser popup - Order the Product`, () => {
     })
   })
 
-  orderProductTestCase({
-    lat: location.lat,
-    long: location.long,
-    country,
-    postalCode,
-  })
+  orderProductTestCase({ country, postalCode })
 
   preserveCookie()
 })

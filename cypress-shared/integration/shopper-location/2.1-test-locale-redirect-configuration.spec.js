@@ -9,7 +9,7 @@ import { updateSettings } from '../../support/shopper-location/settings'
 import {
   canadaDetails,
   location,
-} from '../../support/shopper-location/output.validation'
+} from '../../support/shopper-location/outputvalidation'
 import shopperLocationSelectors from '../../support/shopper-location/selectors'
 import selectors from '../../support/common/selectors.js'
 import { addAddress } from '../../support/shopper-location/common'

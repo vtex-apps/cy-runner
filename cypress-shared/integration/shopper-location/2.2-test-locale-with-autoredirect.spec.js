@@ -7,7 +7,7 @@ import { updateSettings } from '../../support/shopper-location/settings'
 import {
   canadaDetails,
   location,
-} from '../../support/shopper-location/output.validation'
+} from '../../support/shopper-location/outputvalidation'
 import { addAddress } from '../../support/shopper-location/common'
 
 const { country, url, postalCode } = canadaDetails
