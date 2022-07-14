@@ -33,7 +33,7 @@ describe('Testing local redirect configuration', () => {
   it('Verify address', updateRetry(2), () => {
     cy.get(shopperLocationSelectors.AddressModelLayout).should('not.be.visible')
     cy.get(shopperLocationSelectors.addressContainer).should('be.visible')
-    scroll
+    scroll()
     cy.get(shopperLocationSelectors.addressUpdation)
       .should('be.visible')
       .contains('Essex County, ON, N9V 1K8')
