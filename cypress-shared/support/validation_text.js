@@ -1,14 +1,12 @@
 export const TOAST_MSG = {
-  added: 'added',
-  updated: 'updated',
-  deleted: 'deleted',
-  addedToTheCart: 'added to the cart',
-  initializing: 'initializing',
-  impersonatePermissionError: 'do not have permission to impersonate',
-  userAlreadyRegisteredInThisOrganization:
-    'This user is already registered in this organization.',
-  userAlreadyRegisteredInAnotherOrganization:
-    'This user is already registered in another organization.',
+  added: /added/i,
+  updated: /updated/i,
+  deleted: /deleted/i,
+  addedToTheCart: /added to the cart/i,
+  initializing: /initializing/i,
+  impersonatePermissionError: /do not have permission to impersonate/i,
+  userAlreadyRegisteredInThisOrganization: /this organization/,
+  userAlreadyRegisteredInAnotherOrganization: /another organization/i,
 }
 
 export const BUTTON_LABEL = {
@@ -20,6 +18,6 @@ export const BUTTON_LABEL = {
   back: /back/i,
   completeOrder: /Complete Order/i,
   AddToCart: /Add to Cart/i,
-  QuickOrder: 'Quick Order',
-  QuoteDetails: 'Quote Details',
+  QuickOrder: /Quick Order/i,
+  QuoteDetails: /Quote Details/i,
 }

@@ -280,7 +280,7 @@ function viewQuote(quote, open = true) {
     cy.get(selectors.ProfileLabel).should('be.visible')
     cy.get(selectors.PageHeader)
       .should('be.visible')
-      .should('have.text', BUTTON_LABEL.QuoteDetails)
+      .contains(BUTTON_LABEL.QuoteDetails)
     cy.get(selectors.QuoteStatus).should('be.visible')
   } else {
     cy.log('Opening Quote is not allowed')

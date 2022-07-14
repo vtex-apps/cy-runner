@@ -126,7 +126,7 @@ function quickOrderCategory(quoteEnv, number) {
   const { product, addtoCart, quantity, title } =
     selectors.QuickOrderPage().categories
 
-  cy.get(title).should('have.text', BUTTON_LABEL.QuickOrder)
+  cy.get(title).contains(BUTTON_LABEL.QuickOrder)
   cy.contains(product).should('be.visible').click()
   cy.get(quantity, { timeout: 5000 })
     .first()
@@ -175,7 +175,7 @@ function uploadXLS(filePath) {
   const { menu, title, link } = selectors.QuickOrderPage().uploadXLS
 
   cy.get(menu).click()
-  cy.get(title).should('have.text', BUTTON_LABEL.QuickOrder)
+  cy.get(title).contains(BUTTON_LABEL.QuickOrder)
   cy.get(link).click()
   cy.get(selectors.QuickOrderPage().uploadXLS.file, {
     timeout: 10000,
