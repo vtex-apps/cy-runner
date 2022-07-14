@@ -1,9 +1,8 @@
 import selectors from '../common/selectors'
-import { updateRetry } from '../common/support'
+import { scroll, updateRetry } from '../common/support'
 import shopperLocationSelectors from './selectors'
 import shopperLocationConstants from './constants'
 import { mockLocation } from './geolocation'
-import { scroll } from '../commands'
 
 export function verifyShopperLocation() {
   cy.get(shopperLocationSelectors.verifyLocationInHome).should('be.visible')

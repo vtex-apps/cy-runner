@@ -2,6 +2,7 @@ import {
   loginAsAdmin,
   loginAsUser,
   preserveCookie,
+  scroll,
   updateRetry,
 } from '../../support/common/support'
 import { updateSettings } from '../../support/shopper-location/settings'
@@ -12,7 +13,6 @@ import {
 import shopperLocationSelectors from '../../support/shopper-location/selectors'
 import selectors from '../../support/common/selectors.js'
 import { addAddress } from '../../support/shopper-location/common'
-import { scroll } from '../../support/commands'
 
 const { country, url, postalCode } = canadaDetails
 const { lat, long } = location
@@ -33,7 +33,7 @@ describe('Testing local redirect configuration', () => {
   it('Verify address', updateRetry(2), () => {
     cy.get(shopperLocationSelectors.AddressModelLayout).should('not.be.visible')
     cy.get(shopperLocationSelectors.addressContainer).should('be.visible')
-    scroll()
+    scroll
     cy.get(shopperLocationSelectors.addressUpdation)
       .should('be.visible')
       .contains('Essex County, ON, N9V 1K8')
