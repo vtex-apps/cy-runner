@@ -66,6 +66,7 @@ export function loginToStoreFront(emailId, role) {
                   .focus()
                   .clear()
                   .type(emailId)
+
                 cy.get(selectors.Submit)
                   .click()
                   .then(async () => {

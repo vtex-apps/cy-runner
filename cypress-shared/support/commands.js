@@ -48,7 +48,7 @@ Cypress.Commands.add(
         cy.get(selector).last().click()
       }
 
-      cy.wait(`@${operationName}`, { timeout: 40000 })
+      cy.wait(`@${operationName}`, { timeout: 30000 })
     })
   }
 )

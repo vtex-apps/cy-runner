@@ -182,11 +182,8 @@ export function performImpersonation(user1, email) {
       .should('be.visible')
       .click()
 
-    cy.get(
-      `.vtex-table__container:nth-child(1) div[role=rowgroup] > div:nth-child(1)> span.c-disabled`
-    )
-      .last()
-      .should('have.text', email)
+    cy.get('svg[class*=dots]').should('have.length', 1)
+    cy.get('div[role=rowgroup] > div > span').contains(email)
 
     const SalesAdmin = !!user1.match(/Sales Admin/i)
     const childIndex = SalesAdmin ? 5 : 4
