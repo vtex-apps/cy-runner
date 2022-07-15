@@ -11,7 +11,7 @@ export function visitHomePage() {
       })
       cy.wait('@EVENTS')
     } else {
-      cy.log('Already logged in')
+      cy.log('We are in storefront homepage')
     }
   })
 }
@@ -38,7 +38,7 @@ export function storeUserCookie(emailId) {
 export function loginToStoreFront(emailId, role) {
   it(
     `Logging in to storefront as ${role}`,
-    { defaultCommandTimeout: 60000 },
+    { defaultCommandTimeout: 70000 },
     () => {
       cy.getOrganizationItems().then((organization) => {
         if (organization[emailId]) {
@@ -59,7 +59,7 @@ export function loginToStoreFront(emailId, role) {
 
                 const accessToken = await getAccessToken(emailId, gmailCreds)
 
-                cy.get(selectors.SignInBtn).click()
+                cy.get(selectors.SignInBtn).should('be.visible').click()
                 cy.get(selectors.AccessCode).should('be.visible').click()
                 cy.get(selectors.Email)
                   .should('be.visible')
