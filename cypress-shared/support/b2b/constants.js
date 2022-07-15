@@ -118,25 +118,32 @@ function quotesListForOrganizationB() {
   }
 }
 
+function generateCostCenterName(organizationName, costCenterName) {
+  return `${organizationName}-${costCenterName}`
+}
+
 export default {
   OrganizationA: {
     organizationName: ORGANIZATION_A,
-    costCenter1: { name: 'CostCenterA1', addresses: [USA_ADDRESS_1] },
+    costCenter1: {
+      name: generateCostCenterName(ORGANIZATION_A, 'CostCenterA1'),
+      addresses: [USA_ADDRESS_1],
+    },
     costCenter2: {
-      name: 'CostCenterA2',
+      name: generateCostCenterName(ORGANIZATION_A, 'CostCenterA2'),
       addresses: [USA_ADDRESS_1, USA_ADDRESS_4],
       deleteAddress: USA_ADDRESS_3,
       temporaryAddress: USA_ADDRESS_2,
       receiverName: 'Robo2',
     },
     costCenter3: {
-      temporaryName: 'cost3',
-      name: 'CostCenterA3',
+      temporaryName: generateCostCenterName(ORGANIZATION_A, 'cost3'),
+      name: generateCostCenterName(ORGANIZATION_A, 'CostCenterA3'),
       addresses: [USA_ADDRESS_3],
     },
     costCenter4: {
-      temporaryName: 'costA',
-      name: 'CostCenterA4',
+      temporaryName: generateCostCenterName(ORGANIZATION_A, 'costA'),
+      name: generateCostCenterName(ORGANIZATION_A, 'CostCenterA4'),
       addresses: [USA_ADDRESS_1, USA_ADDRESS_2, USA_ADDRESS_3],
     },
     collections: [
@@ -222,7 +229,10 @@ export default {
   },
   OrganizationB: {
     organizationName: ORGANIZATION_B,
-    costCenter1: { name: 'CostCenterB1', addresses: [USA_ADDRESS_2] },
+    costCenter1: {
+      name: generateCostCenterName(ORGANIZATION_B, 'CostCenterB1'),
+      addresses: [USA_ADDRESS_2],
+    },
     collections: [
       {
         id: '143',
