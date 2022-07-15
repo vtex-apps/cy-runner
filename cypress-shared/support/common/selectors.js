@@ -267,9 +267,7 @@ export default {
         title: '.vtex-rich-text-0-x-heading--quickTitle',
       },
       uploadXLS: {
-        menu: '.vtex-store-drawer-0-x-menuIcon',
-        title: '.vtex-rich-text-0-x-heading--quickTitle',
-        link: '.vtex-store-link-0-x-link--quickLink',
+        deleteFile: 'svg[class*=icon-delete]',
         file: 'input[type=file]',
         validate: 'div[class*=validate i]:nth-of-type(2) > button',
       },

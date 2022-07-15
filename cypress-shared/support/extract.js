@@ -36,6 +36,6 @@ export async function getAccessToken(email, gmailCreds, accessToken = null) {
       return currentAccessToken
     }
 
-    await delay(5000)
+    await delay(5500)
   }
 }

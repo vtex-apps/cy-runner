@@ -27,6 +27,10 @@ Cypress.Commands.add('addDelayBetweenRetries', (delay) => {
   if (cy.state('runnable')._currentRetry > 0) cy.wait(delay)
 })
 
+Cypress.Commands.add('addReloadBetweenRetries', () => {
+  if (cy.state('runnable')._currentRetry > 0) cy.reload()
+})
+
 Cypress.Commands.add('closeCart', () => {
   cy.get('body').then(($body) => {
     if ($body.find(selectors.CloseCart).length) {
