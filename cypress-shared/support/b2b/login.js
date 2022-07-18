@@ -36,9 +36,9 @@ export function storeUserCookie(emailId) {
 }
 
 export function loginToStoreFront(emailId, role) {
-  it(
+  it.only(
     `Logging in to storefront as ${role}`,
-    { defaultCommandTimeout: 60000 },
+    { defaultCommandTimeout: 70000, retries: 1 },
     () => {
       cy.getOrganizationItems().then((organization) => {
         if (organization[emailId]) {
@@ -61,7 +61,6 @@ export function loginToStoreFront(emailId, role) {
 
                 cy.intercept('POST', '**/startlogin').as('startlogin')
                 cy.intercept('POST', '**/accesskey/send').as('send')
-                cy.intercept('GET', '**.js').as('js')
 
                 cy.get(selectors.SignInBtn).should('be.visible').click()
                 cy.get(selectors.AccessCode).should('be.visible').click()
@@ -80,7 +79,6 @@ export function loginToStoreFront(emailId, role) {
                     cy.wait('@send')
                       .its('response.statusCode')
                       .should('eq', 200)
-                    cy.wait('@js').its('response.statusCode').should('eq', 200)
                     const newAccessToken = await getAccessToken(
                       emailId,
                       gmailCreds,
