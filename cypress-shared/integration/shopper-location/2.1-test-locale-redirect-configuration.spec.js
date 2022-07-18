@@ -29,7 +29,7 @@ describe('Testing local redirect configuration', () => {
   addAddress({ country, postalCode, lat, long })
   // eslint-disable-next-line jest/expect-expect
   it('Verify address', updateRetry(2), () => {
-    cy.get(selectors.AddressModelLayout).should('not.be.visible')
+    cy.get(selectors.AddressModelLayout).should('not.exist')
     cy.get(selectors.addressContainer).should('be.visible')
     scroll()
     cy.get(selectors.addressUpdation)

@@ -1,7 +1,4 @@
-import {
-  FAIL_ON_STATUS_CODE,
-  VTEX_AUTH_HEADER,
-} from '../../../../cypress/support/common/constants'
+import { FAIL_ON_STATUS_CODE, VTEX_AUTH_HEADER } from '../common/constants'
 import selectors from '../common/selectors'
 import { updateRetry } from '../common/support'
 import { getPickupPoints, deletePickupPoint } from './pickup-points.api'
