@@ -10,7 +10,6 @@ import {
   canadaDetails,
   location,
 } from '../../support/shopper-location/outputvalidation'
-import shopperLocationSelectors from '../../support/shopper-location/selectors'
 import selectors from '../../support/common/selectors.js'
 import { addAddress } from '../../support/shopper-location/common'
 
@@ -28,23 +27,20 @@ describe('Testing local redirect configuration', () => {
   updateSettings(country, url)
 
   addAddress({ country, postalCode, lat, long })
-
   // eslint-disable-next-line jest/expect-expect
   it('Verify address', updateRetry(2), () => {
-    cy.get(shopperLocationSelectors.AddressModelLayout).should('not.be.visible')
-    cy.get(shopperLocationSelectors.addressContainer).should('be.visible')
+    cy.get(selectors.AddressModelLayout).should('not.be.visible')
+    cy.get(selectors.addressContainer).should('be.visible')
     scroll()
-    cy.get(shopperLocationSelectors.addressUpdation)
+    cy.get(selectors.addressUpdation)
       .should('be.visible')
       .contains('Essex County, ON, N9V 1K8')
   })
-
   // eslint-disable-next-line jest/expect-expect
   it('Get popup with switch button', updateRetry(2), () => {
     cy.get(selectors.ToastMsgInB2B).should('be.visible')
-    cy.get(shopperLocationSelectors.switchButton).click()
+    cy.get(selectors.switchButton).click()
   })
-
   // eslint-disable-next-line jest/expect-expect
   it('Page will be redirected to google page', () => {
     cy.url().should('eq', 'https://www.google.com/')

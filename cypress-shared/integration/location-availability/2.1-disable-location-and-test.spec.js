@@ -1,11 +1,9 @@
 import {
-  loginAsAdmin,
-  loginAsUser,
   preserveCookie,
   updateRetry,
+  loginAsAdmin,
+  loginAsUser,
 } from '../../support/common/support'
-import { verifyLocation } from '../../support/shopper-location/common'
-import shopperLocationConstants from '../../support/shopper-location/constants'
 import selectors from '../../support/common/selectors'
 
 const prefix = 'Disable location'
@@ -19,11 +17,13 @@ describe('Location validation', () => {
   })
 
   // eslint-disable-next-line jest/expect-expect
-  it(`${prefix} - Test negative scenarios`, updateRetry(2), () => {
-    verifyLocation()
-    cy.get(selectors.AddressErrorContainer).should(
+  it(`${prefix} - Open product`, updateRetry(3), () => {
+    cy.openStoreFront()
+    cy.get(selectors.addressContainer).should('be.visible')
+    cy.openProduct('coconuts', true)
+    cy.get(selectors.NoAvailabilityHeader).should(
       'have.text',
-      shopperLocationConstants.faildFindLocation
+      'Set your location to check availability'
     )
   })
 
