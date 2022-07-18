@@ -36,7 +36,7 @@ export function storeUserCookie(emailId) {
 }
 
 export function loginToStoreFront(emailId, role) {
-  it.only(
+  it(
     `Logging in to storefront as ${role}`,
     { defaultCommandTimeout: 70000, retries: 1 },
     () => {
