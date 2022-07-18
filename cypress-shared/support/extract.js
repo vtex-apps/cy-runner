@@ -16,7 +16,7 @@ export async function getAccessToken(email, gmailCreds, accessToken = null) {
   const gmail = new GmailAPI(gmailCreds)
   const ToEmail = email.replace('+', '%2B')
   let currentAccessToken
-  const totalRetry = !accessToken ? 0 : 8
+  const totalRetry = 8
 
   /* eslint-disable no-await-in-loop */
   for (let currentRetry = 0; currentRetry <= totalRetry; currentRetry++) {
@@ -28,14 +28,10 @@ export async function getAccessToken(email, gmailCreds, accessToken = null) {
         gmailCreds
       )
     )
-    if (accessToken === null) {
+    if (accessToken === null || currentAccessToken !== accessToken) {
       return currentAccessToken
     }
 
-    if (currentAccessToken !== accessToken) {
-      return currentAccessToken
-    }
-
-    await delay(5000)
+    await delay(5500)
   }
 }
