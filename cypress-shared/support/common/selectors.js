@@ -355,8 +355,7 @@ export default {
 
   // *************** Location availability & Shopper location ********
 
-  province:
-    'section[class*=changeLocationAddressContainer] div[class*=fields-container] div[class*=dropdown__container] select',
+  province: 'div[class*=dropdown__container] > select',
   addressInputContainer: 'div[class*=addressInputContainer] input',
   saveButton: '.vtex-shopper-location-1-x-changeLocationSubmitContainer',
   countryDropdown: 'div[class*=address-form] > select',

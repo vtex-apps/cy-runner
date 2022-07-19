@@ -227,7 +227,6 @@ Cypress.Commands.add('openProduct', (product, detailPage = false) => {
   cy.get(selectors.Search).should('be.not.disabled').should('be.visible')
 
   cy.get(selectors.Search)
-    .should('be.visible')
     .should('be.enabled')
     .clear()
     .type(product)

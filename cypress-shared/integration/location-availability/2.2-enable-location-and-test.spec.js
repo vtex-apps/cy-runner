@@ -4,7 +4,7 @@ import {
   loginAsAdmin,
   loginAsUser,
 } from '../../support/common/support'
-import { franceDetails } from '../../support/shopper-location/outputvalidation'
+import { canadaDetails } from '../../support/shopper-location/outputvalidation'
 import selectors from '../../support/common/selectors'
 import { verifyUpdatedAddress } from '../../support/location-availability/support'
 import { addAddress } from '../../support/shopper-location/common'
@@ -21,7 +21,7 @@ describe('Location validation', () => {
     })
   })
 
-  addAddress({ address: franceDetails })
+  addAddress({ address: canadaDetails })
 
   // eslint-disable-next-line jest/expect-expect
   it(`${prefix} - Open product`, updateRetry(1), () => {
