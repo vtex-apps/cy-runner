@@ -63,8 +63,8 @@ export function addAddress({ address, lat, long }) {
       .should('be.visible')
       .should('have.contain', `Hello,`)
     scroll()
-    cy.waitForGraphql('address', selectors.addressContainer)
-    // cy.get(selectors.addressContainer).should('be.visible').click()
+    // cy.waitForGraphql('address', selectors.addressContainer)
+    cy.get(selectors.addressContainer).should('be.visible').click()
     cy.get(selectors.findMyLocation).click()
 
     cy.get(selectors.countryDropdown).select(address.country)
