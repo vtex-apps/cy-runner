@@ -204,7 +204,10 @@ export function fillContactInfo() {
       cy.get(selectors.ReceiverName, { timeout: 5000 }).type('Syed', {
         delay: 50,
       })
+      cy.get(selectors.NormalShipping).should('be.visible').click()
       cy.get(selectors.GotoPaymentBtn).should('be.visible').click()
+    } else {
+      cy.log('Shipping block is not shown! May be ReceiverName already filled')
     }
   })
 }
@@ -265,7 +268,6 @@ export function updateProductQuantity(
   } = {}
 ) {
   cy.get(selectors.CartTimeline).should('be.visible').click({ force: true })
-  cy.get(selectors.ShippingPreview).should('be.visible')
   if (multiProduct) {
     // Set First product quantity and don't verify subtotal because we passed false
     setProductQuantity(
@@ -409,7 +411,9 @@ export function searchProduct(searchKey) {
     .type(searchKey)
     .type('{enter}')
   // Page should load successfully now searchResult & Filter should be visible
-  cy.get(selectors.searchResult).should('have.text', searchKey.toLowerCase())
+  cy.get(selectors.searchResult)
+    .should('be.visible')
+    .should('have.text', searchKey.toLowerCase())
   cy.get(selectors.FilterHeading).should('be.visible')
 }
 
