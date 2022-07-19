@@ -3,6 +3,8 @@ export default {
     country: 'CAN',
     url: 'https://www.google.com',
     postalCode: 'N9V 1K8',
+    city: 'Essex County',
+    state: 'Ontario',
   },
   UsDetails: {
     country: 'United States',
@@ -15,11 +17,13 @@ export default {
   },
   franceDetails: {
     country: 'FRA',
-    PostalCode: '93200',
+    postalCode: '93200',
+    city: 'Saint-Denis',
+    state: 'IDF',
   },
   canadaDetails1: {
     country: 'Canada',
-    PostalCode: 'N9V 1K8',
+    postalCode: 'N9V 1K8',
   },
   UsDetails1: {
     country1: 'United States',

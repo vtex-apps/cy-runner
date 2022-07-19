@@ -13,7 +13,7 @@ import {
 import selectors from '../../support/common/selectors.js'
 import { addAddress } from '../../support/shopper-location/common'
 
-const { country, url, postalCode } = canadaDetails
+const { country, url } = canadaDetails
 const { lat, long } = location
 
 describe('Testing local redirect configuration', () => {
@@ -26,7 +26,7 @@ describe('Testing local redirect configuration', () => {
 
   updateSettings(country, url)
 
-  addAddress({ country, postalCode, lat, long })
+  addAddress({ address: canadaDetails, lat, long })
   // eslint-disable-next-line jest/expect-expect
   it('Verify address', updateRetry(2), () => {
     cy.get(selectors.AddressModelLayout).should('not.exist')

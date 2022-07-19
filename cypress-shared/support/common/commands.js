@@ -7,6 +7,7 @@ import {
   updateProductQuantity,
   updateShippingInformation,
 } from './support.js'
+import { generateAddtoCartCardSelector } from './utils.js'
 
 Cypress.Commands.add('addProduct', addProduct)
 Cypress.Commands.add('fillAddress', fillAddress)
@@ -55,4 +56,12 @@ Cypress.Commands.add('getIframeBody', (selector) => {
       // https://on.cypress.io/wrap
       .then(cy.wrap)
   )
+})
+
+Cypress.Commands.add('gotoProductDetailPage', () => {
+  cy.get(selectors.ProductAnchorElement)
+    .should('have.attr', 'href')
+    .then((href) => {
+      cy.get(generateAddtoCartCardSelector(href)).first().click()
+    })
 })

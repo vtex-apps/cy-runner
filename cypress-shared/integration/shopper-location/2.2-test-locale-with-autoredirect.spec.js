@@ -10,7 +10,7 @@ import {
 } from '../../support/shopper-location/outputvalidation'
 import { addAddress } from '../../support/shopper-location/common'
 
-const { country, url, postalCode } = canadaDetails
+const { country, url } = canadaDetails
 const { lat, long } = location
 
 describe('Test Locale with Auto redirect', () => {
@@ -23,7 +23,7 @@ describe('Test Locale with Auto redirect', () => {
 
   updateSettings(country, url, { automaticRedirect: true })
 
-  addAddress({ country, postalCode, lat, long })
+  addAddress({ address: canadaDetails, lat, long })
 
   // eslint-disable-next-line jest/expect-expect
   it('Now site should force redirect to google', () => {

@@ -1,4 +1,4 @@
-import { FAIL_ON_STATUS_CODE } from './common/constants'
+import { FAIL_ON_STATUS_CODE } from '../common/constants'
 
 const config = Cypress.env()
 

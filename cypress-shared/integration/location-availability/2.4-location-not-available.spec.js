@@ -10,7 +10,7 @@ import locationAvailabilityProducts from '../../support/location-availability/pr
 import selectors from '../../support/common/selectors'
 import { addLocation } from '../../support/shopper-location/common'
 
-const { country, PostalCode } = canadaDetails1
+const { country, postalCode } = canadaDetails1
 
 describe('Location deliverable', () => {
   before(() => {
@@ -22,25 +22,17 @@ describe('Location deliverable', () => {
 
   // eslint-disable-next-line jest/expect-expect
   it('HomePage', updateRetry(3), () => {
-    addLocation({ country, PostalCode })
-    cy.scrollTo(0, 500)
+    addLocation({ country, postalCode })
     cy.get(locationAvailabilityProducts.orange.link).should('be.visible')
     cy.get(selectors.shippingUnavailable).contains('Unavailable for')
   })
 
-  // eslint-disable-next-line jest/expect-expect
-  it('Search results', updateRetry(3), () => {
-    cy.searchProduct(locationAvailabilityProducts.orange.name)
-    cy.get(locationAvailabilityProducts.orange.link).should('be.visible')
-  })
-
-  it('Product specification page', updateRetry(2), () => {
-    cy.get(locationAvailabilityProducts.orange.link)
-      .should('be.visible')
-      .click()
-    cy.get(selectors.unavailableLocation)
+  it('Open product specfication page and verify', updateRetry(3), () => {
+    cy.openProduct(locationAvailabilityProducts.orange.name, true)
+    cy.get(selectors.shippingUnavailabilityInformation)
       .should('be.visible')
       .contains('The selected item cannot be shipped to your location.')
   })
+
   preserveCookie()
 })

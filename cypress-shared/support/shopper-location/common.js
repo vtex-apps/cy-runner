@@ -1,6 +1,5 @@
 import selectors from '../common/selectors'
 import { scroll, updateRetry } from '../common/support'
-import shopperLocationConstants from './constants'
 import { mockLocation } from './geolocation'
 
 export function verifyShopperLocation() {
@@ -55,7 +54,7 @@ export function verifyLocation(lat, long) {
   cy.get(selectors.ChangeLocationButton).click()
 }
 
-export function addAddress({ country, postalCode, lat, long }) {
+export function addAddress({ address, lat, long }) {
   it(
     'Go to store front and add canada shipping address',
     updateRetry(1),
@@ -69,23 +68,16 @@ export function addAddress({ country, postalCode, lat, long }) {
       scroll()
       cy.get(selectors.addressContainer).should('be.visible').click()
       cy.get(selectors.findMyLocation).click()
-      cy.get(selectors.AddressErrorContainer).contains(
-        shopperLocationConstants.locationNotAvailable
-      )
-      cy.get(selectors.closeButton).click()
-      scroll()
-      cy.get(selectors.verifyLocationInHome).should('be.visible')
-      // .contains('Add Location')
-      cy.get(selectors.addressContainer).should('be.visible').click()
-      cy.get(selectors.countryDropdown).select(country)
+
+      cy.get(selectors.countryDropdown).select(address.country)
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.get(selectors.addressInputContainer)
         // .find('input')
         .first()
         .clear()
-        .type(postalCode)
+        .type(address.postalCode)
         .wait(500)
-      autocomplete('Essex County', 'Ontario')
+      autocomplete(address.state, address.city)
       cy.get(selectors.saveButton)
         .find('button')
         .click()
@@ -105,9 +97,14 @@ export function autocomplete(city, province) {
       .last()
       .invoke('val')
       .should('equal', city)
-    cy.get(selectors.province)
-      .find('option:selected')
-      .should('have.text', province)
+    cy.get(selectors.addressInputContainer)
+      // .find('input')
+      .eq(2)
+      .invoke('val')
+      .should('equal', province)
+    // cy.get(selectors.province)
+    //   .find('option:selected')
+    //   .should('have.text', province)
   })
 }
 
