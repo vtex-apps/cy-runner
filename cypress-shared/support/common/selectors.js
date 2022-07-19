@@ -383,6 +383,8 @@ export default {
   shippingContent:
     'div[class*=container] > p  > span[class*=freeShipping] span[class*=freeShippingLabel]',
   shippingUnavailabilityInformation:
+    'div[class*=shippingListContainer] > div[class*=shippingListEmptyMessage]',
+  storeUnavailabilityInformation:
     'div[class*=storeListContainer] > div[class*=storeListEmptyMessage]',
   shippingUnavailable: 'div[class*=container] > p',
   unavailableLocation:

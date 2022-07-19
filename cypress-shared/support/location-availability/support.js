@@ -16,9 +16,13 @@ export function verifyUpdatedAddress(postalCode) {
   })
   it('Verify updated address is shown in the screen', updateRetry(3), () => {
     cy.getVtexItems().then((vtex) => {
-      cy.intercept('POST', `${vtex.baseUrl}/**`).as('Session')
+      cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
+        if (req.body.operationName === 'updateOrderFormShipping') {
+          req.continue()
+        }
+      }).as('updateOrderFormShipping')
       cy.get(selectors.AvailabilityHeader).should('have.text', postalCode)
-      cy.wait('@Session', { timeout: 20000 })
+      cy.wait('@updateOrderFormShipping', { timeout: 20000 })
     })
     cy.get(selectors.AddtoCart).contains('Add to cart').click({ force: true })
     cy.get(selectors.ProceedtoCheckout).click()

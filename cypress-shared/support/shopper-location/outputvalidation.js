@@ -29,6 +29,10 @@ export default {
     country1: 'United States',
     postalCode1: '91766',
   },
+  UsDetails2: {
+    country: 'United States',
+    postalCode: '93206',
+  },
   pickupTestCase: {
     postalCode: '91766',
     pickupPointName: '1481 Maple View Dr,Pomona,CA 91766,USA',

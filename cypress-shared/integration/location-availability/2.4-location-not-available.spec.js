@@ -5,12 +5,12 @@ import {
   loginAsUser,
   updateRetry,
 } from '../../support/common/support'
-import { canadaDetails1 } from '../../support/shopper-location/outputvalidation'
+import { UsDetails2 } from '../../support/shopper-location/outputvalidation'
 import locationAvailabilityProducts from '../../support/location-availability/product'
 import selectors from '../../support/common/selectors'
 import { addLocation } from '../../support/shopper-location/common'
 
-const { country, postalCode } = canadaDetails1
+const { country, postalCode } = UsDetails2
 
 describe('Location deliverable', () => {
   before(() => {
