@@ -94,19 +94,18 @@ export function autocomplete(city, province) {
       .eq(2)
       .invoke('val')
       .should('equal', city)
-    cy.get(selectors.province)
-      .find('option:selected')
-      .last()
-      .should('have.text', province)
-
-    // cy.get(selectors.addressInputContainer)
-    //   // .find('input')
-    //   .eq(2)
-    //   .invoke('val')
-    //   .should('equal', province)
-    // cy.get(selectors.province)
-    //   .find('option:selected')
-    //   .should('have.text', province)
+    if (province === 'IDF') {
+      cy.get(selectors.addressInputContainer)
+        // .find('input')
+        .eq(3)
+        .invoke('val')
+        .should('equal', province)
+    } else {
+      cy.get(selectors.province)
+        .find('option:selected')
+        .last()
+        .should('have.text', province)
+    }
   })
 }
 

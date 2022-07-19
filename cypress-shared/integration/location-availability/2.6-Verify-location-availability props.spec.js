@@ -19,19 +19,24 @@ describe('Verify-Location-availability', () => {
     })
   })
 
-  // eslint-disable-next-line jest/expect-expect
-  it('Adding Location & Verify location Availability', updateRetry(1), () => {
-    cy.addNewLocation(country1, postalCode1)
-    cy.get('div[class*=vtex-modal-layout]').should('not.be.visible')
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(10000)
-    cy.scrollTo(0, 500)
-    cy.get(selectors.AddressCity).contains('Pomona')
-    cy.get(selectors.AddressZip).contains('91766')
-    cy.get(selectors.Distance).contains('Distance:')
-  })
+  // eslint-disable-next-line jest/no-disabled-tests
+  it.skip(
+    'Adding Location & Verify location Availability',
+    updateRetry(1),
+    () => {
+      cy.addNewLocation(country1, postalCode1)
+      cy.get('div[class*=vtex-modal-layout]').should('not.be.visible')
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(10000)
+      cy.scrollTo(0, 500)
+      cy.get(selectors.AddressCity).contains('Pomona')
+      cy.get(selectors.AddressZip).contains('91766')
+      cy.get(selectors.Distance).contains('Distance:')
+    }
+  )
 
-  it('Search results & product specification', updateRetry(3), () => {
+  // eslint-disable-next-line jest/no-disabled-tests
+  it.skip('Search results & product specification', updateRetry(3), () => {
     cy.searchProduct(locationAvailabilityProducts.orange.name)
     cy.get(locationAvailabilityProducts.orange.link)
       .should('be.visible')
