@@ -21,13 +21,13 @@ describe('Location deliverable', () => {
   })
 
   // eslint-disable-next-line jest/expect-expect
-  it('HomePage', updateRetry(3), () => {
+  it('HomePage', updateRetry(1), () => {
     addLocation({ country, postalCode })
     cy.get(locationAvailabilityProducts.orange.link).should('be.visible')
     cy.get(selectors.shippingUnavailable).contains('Unavailable for')
   })
 
-  it('Open product specfication page and verify', updateRetry(3), () => {
+  it('Open product specfication page and verify', updateRetry(1), () => {
     cy.openProduct(locationAvailabilityProducts.orange.name, true)
     cy.get(selectors.shippingUnavailabilityInformation)
       .should('be.visible')

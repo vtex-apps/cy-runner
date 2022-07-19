@@ -20,7 +20,7 @@ describe('Verify-Location-availability', () => {
   })
 
   // eslint-disable-next-line jest/expect-expect
-  it('Adding Location & Verify location Availability', updateRetry(3), () => {
+  it('Adding Location & Verify location Availability', updateRetry(1), () => {
     cy.addNewLocation(country1, postalCode1)
     cy.get('div[class*=vtex-modal-layout]').should('not.be.visible')
     // eslint-disable-next-line cypress/no-unnecessary-waiting

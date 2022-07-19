@@ -5,8 +5,8 @@ import { getPickupPoints, deletePickupPoint } from './pickup-points.api'
 
 export function verifyUpdatedAddress(postalCode) {
   it('Verify on click to postal code it opens the location popup', () => {
+    cy.get(selectors.AvailabilityHeader).click()
     cy.get(selectors.AddressModelLayout).should('be.visible')
-    cy.get(selectors.NoAvailabilityHeader).click()
     cy.get(selectors.countryDropdown).select('USA')
     cy.get(selectors.addressInputContainer).eq(0).clear().type(postalCode)
     cy.waitForGraphql('address', selectors.SaveButton)
@@ -15,7 +15,11 @@ export function verifyUpdatedAddress(postalCode) {
     })
   })
   it('Verify updated address is shown in the screen', updateRetry(3), () => {
-    cy.get(selectors.AvailabilityHeader).should('have.text', postalCode)
+    cy.getVtexItems().then((vtex) => {
+      cy.intercept('POST', `${vtex.baseUrl}/**`).as('Session')
+      cy.get(selectors.AvailabilityHeader).should('have.text', postalCode)
+      cy.wait('@Session', { timeout: 20000 })
+    })
     cy.get(selectors.AddtoCart).contains('Add to cart').click({ force: true })
     cy.get(selectors.ProceedtoCheckout).click()
     cy.get(selectors.orderButton).should('be.visible').click()

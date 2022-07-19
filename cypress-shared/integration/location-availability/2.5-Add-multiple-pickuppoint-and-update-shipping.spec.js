@@ -21,7 +21,7 @@ describe('Adding Multiple pickup point & Update Shipping', () => {
   })
 
   // eslint-disable-next-line jest/expect-expect
-  it('Add Multiple PickUp Point', updateRetry(3), () => {
+  it('Add Multiple PickUp Point', updateRetry(1), () => {
     cy.visit('/admin/app/pickup-points')
     for (let id = 1; id <= 4; id++) {
       addPickUpPoint(`Location availability pickup Point ${id}`, id)

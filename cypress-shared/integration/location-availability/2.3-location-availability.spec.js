@@ -20,7 +20,7 @@ describe('Location deliverable', () => {
   addAddress({ address: franceDetails })
 
   // eslint-disable-next-line jest/expect-expect
-  it('Verify shipping content', updateRetry(3), () => {
+  it('Verify shipping content', updateRetry(1), () => {
     cy.get(locationAvailabilityProducts.orange.link).should('be.visible')
     cy.get(selectors.shippingContent)
       .should('be.visible')
@@ -28,7 +28,7 @@ describe('Location deliverable', () => {
   })
 
   // eslint-disable-next-line jest/expect-expect
-  it('Open product specfication page and verify', updateRetry(3), () => {
+  it('Open product specfication page and verify', updateRetry(1), () => {
     cy.openProduct(locationAvailabilityProducts.orange.name, true)
     cy.get(selectors.shippingUnavailabilityInformation)
       .should('be.visible')

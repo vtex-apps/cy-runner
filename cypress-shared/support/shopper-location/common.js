@@ -55,37 +55,33 @@ export function verifyLocation(lat, long) {
 }
 
 export function addAddress({ address, lat, long }) {
-  it(
-    'Go to store front and add canada shipping address',
-    updateRetry(1),
-    () => {
-      cy.intercept('**/rc.vtex.com.br/api/events').as('events')
-      cy.visit('/', mockLocation(lat, long))
-      cy.wait('@events')
-      cy.get(selectors.ProfileLabel, { timeout: 20000 })
-        .should('be.visible')
-        .should('have.contain', `Hello,`)
-      scroll()
-      cy.get(selectors.addressContainer).should('be.visible').click()
-      cy.get(selectors.findMyLocation).click()
+  it('Go to store front and add shipping address', updateRetry(1), () => {
+    cy.intercept('**/rc.vtex.com.br/api/events').as('events')
+    cy.visit('/', mockLocation(lat, long))
+    cy.wait('@events')
+    cy.get(selectors.ProfileLabel, { timeout: 20000 })
+      .should('be.visible')
+      .should('have.contain', `Hello,`)
+    scroll()
+    cy.get(selectors.addressContainer).should('be.visible').click()
+    cy.get(selectors.findMyLocation).click()
 
-      cy.get(selectors.countryDropdown).select(address.country)
-      // eslint-disable-next-line cypress/no-unnecessary-waiting
-      cy.get(selectors.addressInputContainer)
-        // .find('input')
-        .first()
-        .clear()
-        .type(address.postalCode)
-        .wait(500)
-      autocomplete(address.city, address.state)
-      cy.get(selectors.saveButton)
-        .find('button')
-        .click()
-        .should(() => {
-          expect(localStorage.getItem('orderform')).not.to.be.empty
-        })
-    }
-  )
+    cy.get(selectors.countryDropdown).select(address.country)
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.get(selectors.addressInputContainer)
+      // .find('input')
+      .first()
+      .clear()
+      .type(address.postalCode)
+      .wait(500)
+    autocomplete(address.city, address.state)
+    cy.get(selectors.saveButton)
+      .find('button')
+      .click()
+      .should(() => {
+        expect(localStorage.getItem('orderform')).not.to.be.empty
+      })
+  })
 }
 
 export function autocomplete(city, province) {
@@ -94,12 +90,17 @@ export function autocomplete(city, province) {
     cy.wait('@events')
     cy.get(selectors.addressInputContainer)
       // .find('input')
-      .last()
+      .eq(2)
       .invoke('val')
       .should('equal', city)
-    cy.get(selectors.province)
-      .find('option:selected')
-      .should('have.text', province)
+    cy.get(selectors.addressInputContainer)
+      // .find('input')
+      .last()
+      .invoke('val')
+      .should('equal', province)
+    // cy.get(selectors.province)
+    //   .find('option:selected')
+    //   .should('have.text', province)
 
     // cy.get(selectors.addressInputContainer)
     //   // .find('input')
