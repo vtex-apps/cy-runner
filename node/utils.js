@@ -162,7 +162,10 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
       linkApp = new RegExp(linkApp)
       while (!check && thisTry < MAX_TRIES) {
         thisTry++
-        stdout = this.exec(`${bin} ls`, 'pipe').toString()
+        stdout =
+          stdout === 'error'
+            ? this.exec(cmd, 'pipe').toString()
+            : this.exec(`${bin} ls`, 'pipe').toString()
         await delay(thisTry * 1000)
         check = linkApp.test(stdout)
       }
