@@ -183,7 +183,7 @@ function startShipping() {
   })
 }
 
-export function fillContactInfo() {
+export function fillContactInfo(shippingStrategySelector) {
   cy.get(selectors.QuantityBadge).should('be.visible')
   cy.get(selectors.SummaryCart).should('be.visible')
   cy.get(selectors.FirstName).clear().type('Syed', {
@@ -204,7 +204,8 @@ export function fillContactInfo() {
       cy.get(selectors.ReceiverName, { timeout: 5000 }).type('Syed', {
         delay: 50,
       })
-      cy.get(selectors.NormalShipping).should('be.visible').click()
+      shippingStrategySelector &&
+        cy.get(shippingStrategySelector).should('be.visible').click()
       cy.get(selectors.GotoPaymentBtn).should('be.visible').click()
     } else {
       cy.log('Shipping block is not shown! May be ReceiverName already filled')
@@ -217,6 +218,7 @@ export function updateShippingInformation({
   pickup = false,
   invalid = false,
   timeout = 5000,
+  shippingStrategySelector = null,
 }) {
   const { deliveryScreenAddress } = addressList[postalCode]
 
@@ -250,7 +252,7 @@ export function updateShippingInformation({
     cy.get(selectors.FirstName).then(($el) => {
       if (Cypress.dom.isVisible($el)) {
         cy.wait('@v8')
-        fillContactInfo()
+        fillContactInfo(shippingStrategySelector)
       }
     })
 
