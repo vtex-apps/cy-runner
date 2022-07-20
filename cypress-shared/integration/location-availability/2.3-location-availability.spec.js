@@ -21,7 +21,7 @@ describe('Location deliverable', () => {
 
   // eslint-disable-next-line jest/expect-expect
   it('Verify shipping content', updateRetry(2), () => {
-    cy.get(PRODUCTS_LINK_MAPPING.orange).should('be.visible')
+    cy.get(PRODUCTS_LINK_MAPPING.orange.link).should('be.visible')
     cy.getVtexItems().then((vtex) => {
       cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
         if (req.body.operationName === 'updateOrderFormShipping') {
@@ -37,7 +37,7 @@ describe('Location deliverable', () => {
 
   // eslint-disable-next-line jest/expect-expect
   it('Open product specfication page and verify', updateRetry(2), () => {
-    cy.openProduct(PRODUCTS_LINK_MAPPING.orange, true)
+    cy.openProduct(PRODUCTS_LINK_MAPPING.orange.name, true)
     cy.get(selectors.storeUnavailabilityInformation)
       .should('be.visible')
       .contains(
