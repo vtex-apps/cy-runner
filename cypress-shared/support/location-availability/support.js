@@ -31,7 +31,7 @@ export function verifyUpdatedAddress(postalCode) {
 }
 
 export function addPickUpPoint(pickPointName, pickUpId) {
-  cy.get(selectors.AddPickUpButton).click()
+  cy.contains('Add pickup point').click()
   cy.get(selectors.PickUpPointName).clear().type(pickPointName)
   cy.get(selectors.PickUpPointId).should('be.visible').type(pickUpId)
   cy.get('select')
@@ -45,11 +45,11 @@ export function addPickUpPoint(pickPointName, pickUpId) {
     .wait(500)
     .type('{downarrow}{enter}')
   cy.get(selectors.CheckBox).click()
-  cy.get(selectors.WorkStartTime).type('10:00')
-  cy.get(selectors.WorkEndTime).type('19:00')
+  cy.get(selectors.WorkStartTime).eq(1).type('10:00')
+  cy.get(selectors.WorkEndTime).eq(1).type('19:00')
   cy.get(selectors.SaveChanges).click()
   cy.get(selectors.ChangesSaved).should('be.visible').contains('Changes saved')
-  cy.get('.vtex-button > .flex > .ml3').click()
+  cy.contains('Back to pickup points').click()
 }
 
 export function deleteAllPickupPoints() {

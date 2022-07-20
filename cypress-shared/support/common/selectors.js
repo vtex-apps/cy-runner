@@ -390,22 +390,16 @@ export default {
   unavailableLocation:
     'div[class*=shippingListContainer] > div[class*=shippingListEmptyMessage]',
   AddPickUpButton: '.w-70-ns > :nth-child(2) > .vtex-button__label',
-  PickUpPointName:
-    '.w-60-ns > .vtex-input > .vtex-input-prefix__group > .vtex-styleguide-9-x-input',
-  PickUpPointId:
-    '.pl5-ns > .vtex-input > .vtex-input-prefix__group > .vtex-styleguide-9-x-input',
-  PickUpAddress:
-    '.w-70-m > .vtex-input > .vtex-input-prefix__group > .vtex-styleguide-9-x-input',
-  CheckBox:
-    ':nth-child(3) > .w-40-m > .vtex-checkbox__line-container > .vtex-checkbox__container > .vtex-checkbox__input',
-  WorkStartTime:
-    ':nth-child(3) > .flex-ns > :nth-child(1) > .vtex-input > .vtex-input-prefix__group > .vtex-styleguide-9-x-input',
-  WorkEndTime:
-    ':nth-child(3) > .flex-ns > :nth-child(3) > .vtex-input > .vtex-input-prefix__group > .vtex-styleguide-9-x-input',
+  PickUpPointName: 'input[name=name]',
+  PickUpPointId: 'input[name=id]',
+  PickUpAddress: '.vtex-input .pac-target-input',
+  CheckBox: 'input[value="monday-active"]',
+  WorkStartTime: 'input[name="openingTime"]',
+  WorkEndTime: 'input[name="closingTime"]',
   SaveChanges: '.flex.justify-end > .pb7 > .vtex-button > .vtex-button__label',
   ChangesSaved: 'div[class*=vtex-toast] .pr5',
   VtexButton: '.vtex-button',
-  UploadInput: '.nr2 > :nth-child(2) > div',
+  UploadInput: 'input[type=file]',
   CloseIcon: '.vtex-modal__close-icon',
   VtexAlert: '.vtex-alert .ph5',
   AddressCity:
@@ -423,4 +417,5 @@ export default {
   closeButton: 'div[class*=closeButtonContainer] > button[class*=closeButton]',
   addressUpdation:
     'div[class*=userAddressContainer] > section > div[class*=flex] > div[class*=flex-auto] > div[class*=items-center] > div[class*=addressInfoTextContainer] > div[class*=addressInfoAddressContainer]',
+  InputText: "input[type='text']",
 }

@@ -26,7 +26,6 @@ describe('Location validation', () => {
   // eslint-disable-next-line jest/expect-expect
   it(`${prefix} - Open product`, updateRetry(1), () => {
     cy.get(selectors.addressContainer).should('be.visible')
-    // cy.get(selectors.AddressModelLayout).should('not.exist')
     cy.openProduct(product, true)
   })
 

@@ -21,10 +21,6 @@ export default {
     city: 'Saint-Denis',
     state: 'IDF',
   },
-  canadaDetails1: {
-    country: 'Canada',
-    postalCode: 'N9V 1K8',
-  },
   UsDetails1: {
     country1: 'United States',
     postalCode1: '91766',
@@ -32,9 +28,5 @@ export default {
   UsDetails2: {
     country: 'United States',
     postalCode: '93206',
-  },
-  pickupTestCase: {
-    postalCode: '91766',
-    pickupPointName: '1481 Maple View Dr,Pomona,CA 91766,USA',
   },
 }

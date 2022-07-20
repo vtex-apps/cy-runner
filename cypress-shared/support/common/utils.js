@@ -17,3 +17,14 @@ export function generateAddtoCartSelector(href) {
 export function generateAddtoCartCardSelector(href) {
   return `a[href='${href}']`
 }
+
+export const PRODUCTS_LINK_MAPPING = {
+  orange: {
+    name: 'Navel Oranges Grown Large Fresh Fruit',
+    link: 'a[href*="/navel-oranges-grown-large-fresh-fruit/p"]',
+  },
+  coconut: {
+    name: 'Fresh Coconuts',
+    link: 'a[href="/fresh-coconuts/p"]',
+  },
+}
