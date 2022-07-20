@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - main
+      - feature/action-workspace
 
 jobs:
   quality-engineering:
