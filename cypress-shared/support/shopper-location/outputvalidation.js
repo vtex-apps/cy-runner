@@ -9,6 +9,8 @@ export default {
   UsDetails: {
     country: 'United States',
     postalCode: '21287',
+    city: 'Baltimore',
+    state: 'Maryland',
   },
   location: {
     lat: '13.0827',
