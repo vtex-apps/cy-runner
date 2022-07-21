@@ -112,8 +112,8 @@ exports.exec = (cmd, output) => {
   return result
 }
 
-exports.toolbelt = async (bin, cmd, linkApp) => {
-  const MAX_TRIES = 5
+exports.toolbelt = async (bin, cmd) => {
+  const MAX_TRIES = 3
   let stdout
   let check = false
   let thisTry = 0
@@ -148,26 +148,21 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
       while (!check && thisTry < MAX_TRIES) {
         thisTry++
         stdout = this.exec(`echo y | ${bin} ${cmd}`, 'pipe').toString()
-        await delay(thisTry * 2000)
         check = /uccessfully|App not installed| unlinked|No linked apps/.test(
           stdout
         )
+        if (!check) await delay(thisTry * 3000)
       }
 
       break
 
     case 'link':
       cmd = `cd .. && echo y | ${bin} ${cmd}`
-      stdout = this.exec(cmd, 'pipe').toString()
-      linkApp = new RegExp(linkApp)
       while (!check && thisTry < MAX_TRIES) {
         thisTry++
-        stdout =
-          stdout === 'error'
-            ? this.exec(cmd, 'pipe').toString()
-            : this.exec(`${bin} ls`, 'pipe').toString()
-        await delay(thisTry * 1000)
-        check = linkApp.test(stdout)
+        stdout = this.exec(cmd, 'pipe').toString()
+        check = /App linked successfully/.test(stdout)
+        if (!check) await delay(thisTry * 3000)
       }
 
       break
@@ -180,10 +175,6 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
     default:
       stdout = this.exec(`${bin} ${cmd}`, 'pipe').toString()
       check = true
-  }
-
-  if (!check) {
-    this.msg(`Toolbelt command failed: ${bin} ${cmd}\n${stdout}`, 'error')
   }
 
   return { success: check, stdout }

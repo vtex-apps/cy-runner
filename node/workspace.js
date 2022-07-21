@@ -133,9 +133,9 @@ async function doLinkApp(config) {
     if (tlb.success) {
       qe.msg('App linked successfully')
     } else {
-      qe.msg(`Error linking ${app}`, 'error')
+      qe.msg('Error linking App', 'error')
       await teardown(config)
-      qe.crash('Prematurely exit duo a link failure')
+      qe.crash(`Link ${app} to test failed`)
     }
   }
 }
