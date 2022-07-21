@@ -183,7 +183,7 @@ function startShipping() {
   })
 }
 
-export function fillContactInfo() {
+export function fillContactInfo(shippingStrategySelector) {
   cy.get(selectors.QuantityBadge).should('be.visible')
   cy.get(selectors.SummaryCart).should('be.visible')
   cy.get(selectors.FirstName).clear().type('Syed', {
@@ -204,7 +204,11 @@ export function fillContactInfo() {
       cy.get(selectors.ReceiverName, { timeout: 5000 }).type('Syed', {
         delay: 50,
       })
+      shippingStrategySelector &&
+        cy.get(shippingStrategySelector).should('be.visible').click()
       cy.get(selectors.GotoPaymentBtn).should('be.visible').click()
+    } else {
+      cy.log('Shipping block is not shown! May be ReceiverName already filled')
     }
   })
 }
@@ -214,6 +218,7 @@ export function updateShippingInformation({
   pickup = false,
   invalid = false,
   timeout = 5000,
+  shippingStrategySelector = null,
 }) {
   const { deliveryScreenAddress } = addressList[postalCode]
 
@@ -247,7 +252,7 @@ export function updateShippingInformation({
     cy.get(selectors.FirstName).then(($el) => {
       if (Cypress.dom.isVisible($el)) {
         cy.wait('@v8')
-        fillContactInfo()
+        fillContactInfo(shippingStrategySelector)
       }
     })
 
@@ -265,7 +270,6 @@ export function updateProductQuantity(
   } = {}
 ) {
   cy.get(selectors.CartTimeline).should('be.visible').click({ force: true })
-  cy.get(selectors.ShippingPreview).should('be.visible')
   if (multiProduct) {
     // Set First product quantity and don't verify subtotal because we passed false
     setProductQuantity(
@@ -409,7 +413,9 @@ export function searchProduct(searchKey) {
     .type(searchKey)
     .type('{enter}')
   // Page should load successfully now searchResult & Filter should be visible
-  cy.get(selectors.searchResult).should('have.text', searchKey.toLowerCase())
+  cy.get(selectors.searchResult)
+    .should('be.visible')
+    .should('have.text', searchKey.toLowerCase())
   cy.get(selectors.FilterHeading).should('be.visible')
 }
 

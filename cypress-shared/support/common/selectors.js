@@ -65,7 +65,7 @@ export default {
 
   // *************Product Page Constants starts here************ //
   AddressForm: 'div[class*=addressForm]',
-  NormalShipping: "input[value='Normal']",
+  NormalShipping: 'label[id=Normal]',
   FilterHeading: 'h5[class*="filter"]',
 
   // *************Product Page Constants end here************ //
