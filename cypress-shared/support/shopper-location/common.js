@@ -69,6 +69,7 @@ export function addAddress({ address, lat, long }) {
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.get(selectors.addressInputContainer)
       .first()
+      .should('not.be.disabled')
       .clear()
       .type(address.postalCode)
       .wait(500)

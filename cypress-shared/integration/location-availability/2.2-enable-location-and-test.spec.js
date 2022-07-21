@@ -3,7 +3,10 @@ import {
   updateRetry,
   loginViaAPI,
 } from '../../support/common/support'
-import { canadaDetails } from '../../support/shopper-location/outputvalidation'
+import {
+  canadaDetails,
+  location,
+} from '../../support/shopper-location/outputvalidation'
 import selectors from '../../support/common/selectors'
 import { verifyUpdatedAddress } from '../../support/location-availability/support'
 import { addAddress } from '../../support/shopper-location/common'
@@ -15,7 +18,7 @@ const product = 'coconuts'
 describe('Location validation', () => {
   loginViaAPI()
 
-  addAddress({ address: canadaDetails })
+  addAddress({ address: canadaDetails, lat: location.lat, long: location.long })
 
   // eslint-disable-next-line jest/expect-expect
   it(`${prefix} - Open product`, updateRetry(1), () => {
