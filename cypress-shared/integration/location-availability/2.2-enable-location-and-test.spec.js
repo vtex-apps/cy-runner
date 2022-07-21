@@ -1,7 +1,7 @@
 import {
   preserveCookie,
   updateRetry,
-  testSetup2,
+  loginViaAPI,
 } from '../../support/common/support'
 import { canadaDetails } from '../../support/shopper-location/outputvalidation'
 import selectors from '../../support/common/selectors'
@@ -13,7 +13,7 @@ const postalCode = '90290'
 const product = 'coconuts'
 
 describe('Location validation', () => {
-  testSetup2()
+  loginViaAPI()
 
   addAddress({ address: canadaDetails })
 

@@ -1,7 +1,7 @@
 import {
   updateRetry,
   preserveCookie,
-  testSetup2,
+  loginViaAPI,
 } from '../../support/common/support'
 import { addPickUpPoint } from '../../support/location-availability/support'
 import {
@@ -11,7 +11,7 @@ import {
 import data from '../../support/location-availability/shipping-policy.json'
 
 describe('Adding Multiple pickup point & Update Shipping', () => {
-  testSetup2()
+  loginViaAPI()
 
   // eslint-disable-next-line jest/expect-expect
   it('Add Multiple PickUp Point', updateRetry(1), () => {

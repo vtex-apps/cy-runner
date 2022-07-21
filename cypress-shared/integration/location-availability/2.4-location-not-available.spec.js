@@ -2,7 +2,7 @@
 import {
   preserveCookie,
   updateRetry,
-  testSetup2,
+  loginViaAPI,
 } from '../../support/common/support'
 import { UsDetails2 } from '../../support/shopper-location/outputvalidation'
 import selectors from '../../support/common/selectors'
@@ -12,7 +12,7 @@ import { PRODUCTS_LINK_MAPPING } from '../../support/common/utils'
 const { country, postalCode } = UsDetails2
 
 describe('Location deliverable', () => {
-  testSetup2()
+  loginViaAPI()
 
   // eslint-disable-next-line jest/expect-expect
   it('HomePage', updateRetry(1), () => {

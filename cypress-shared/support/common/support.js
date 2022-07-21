@@ -420,7 +420,7 @@ export function stopTestCaseOnFailure() {
   afterEach()
      a) Stop Execution if testcase gets failed in all retries
 */
-
+// TODO: Update this functionName to be called as loginViaCookies()
 export function testSetup(storeFrontCookie = true, stop = true) {
   before(() => {
     // Inject cookies
@@ -442,14 +442,14 @@ export function testSetup(storeFrontCookie = true, stop = true) {
   if (stop) stopTestCaseOnFailure()
 }
 
-/* Test Setup - Use API for login
+/* loginViaAPI - Use API for login
    before()
      a) Inject Authentication cookie
   afterEach()
      a) Stop Execution if testcase gets failed in all retries
 */
 
-export function testSetup2(stop = true) {
+export function loginViaAPI(stop = true) {
   before(() => {
     // LoginAsAdmin
     loginAsAdmin()

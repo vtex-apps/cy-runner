@@ -1,7 +1,7 @@
 import {
   preserveCookie,
   updateRetry,
-  testSetup2,
+  loginViaAPI,
 } from '../../support/common/support'
 import { franceDetails } from '../../support/shopper-location/outputvalidation'
 import selectors from '../../support/common/selectors'
@@ -9,7 +9,7 @@ import { addAddress } from '../../support/shopper-location/common'
 import { PRODUCTS_LINK_MAPPING } from '../../support/common/utils'
 
 describe('Location deliverable', () => {
-  testSetup2()
+  loginViaAPI()
 
   addAddress({ address: franceDetails })
 

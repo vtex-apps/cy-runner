@@ -1,14 +1,14 @@
 import {
   preserveCookie,
   updateRetry,
-  testSetup2,
+  loginViaAPI,
 } from '../../support/common/support'
 import selectors from '../../support/common/selectors'
 
 const prefix = 'Disable location'
 
 describe('Location validation', () => {
-  testSetup2()
+  loginViaAPI()
 
   // eslint-disable-next-line jest/expect-expect
   it(`${prefix} - Open product`, updateRetry(1), () => {

@@ -2,7 +2,7 @@ import { UsDetails1 } from '../../support/shopper-location/outputvalidation'
 import {
   updateRetry,
   preserveCookie,
-  testSetup2,
+  loginViaAPI,
 } from '../../support/common/support'
 import selectors from '../../support/common/selectors'
 import { PRODUCTS_LINK_MAPPING } from '../../support/common/utils'
@@ -10,7 +10,7 @@ import { PRODUCTS_LINK_MAPPING } from '../../support/common/utils'
 const { country1, postalCode1 } = UsDetails1
 
 describe('Verify-Location-availability', () => {
-  testSetup2()
+  loginViaAPI()
 
   // eslint-disable-next-line jest/no-disabled-tests
   it.skip(
