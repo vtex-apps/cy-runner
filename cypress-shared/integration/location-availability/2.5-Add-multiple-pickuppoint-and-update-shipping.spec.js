@@ -1,8 +1,7 @@
 import {
   updateRetry,
   preserveCookie,
-  loginAsAdmin,
-  loginAsUser,
+  testSetup2,
 } from '../../support/common/support'
 import { addPickUpPoint } from '../../support/location-availability/support'
 import {
@@ -12,13 +11,7 @@ import {
 import data from '../../support/location-availability/shipping-policy.json'
 
 describe('Adding Multiple pickup point & Update Shipping', () => {
-  // Load test setup
-  before(() => {
-    loginAsAdmin()
-    cy.getVtexItems().then((vtex) => {
-      loginAsUser(vtex.robotMail, vtex.robotPassword)
-    })
-  })
+  testSetup2()
 
   // eslint-disable-next-line jest/expect-expect
   it('Add Multiple PickUp Point', updateRetry(1), () => {

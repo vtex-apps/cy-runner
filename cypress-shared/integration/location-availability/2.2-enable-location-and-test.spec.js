@@ -1,8 +1,7 @@
 import {
   preserveCookie,
   updateRetry,
-  loginAsAdmin,
-  loginAsUser,
+  testSetup2,
 } from '../../support/common/support'
 import { canadaDetails } from '../../support/shopper-location/outputvalidation'
 import selectors from '../../support/common/selectors'
@@ -14,12 +13,7 @@ const postalCode = '90290'
 const product = 'coconuts'
 
 describe('Location validation', () => {
-  before(() => {
-    loginAsAdmin()
-    cy.getVtexItems().then((vtex) => {
-      loginAsUser(vtex.robotMail, vtex.robotPassword)
-    })
-  })
+  testSetup2()
 
   addAddress({ address: canadaDetails })
 

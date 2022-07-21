@@ -2,8 +2,7 @@ import { UsDetails1 } from '../../support/shopper-location/outputvalidation'
 import {
   updateRetry,
   preserveCookie,
-  loginAsAdmin,
-  loginAsUser,
+  testSetup2,
 } from '../../support/common/support'
 import selectors from '../../support/common/selectors'
 import { PRODUCTS_LINK_MAPPING } from '../../support/common/utils'
@@ -11,13 +10,7 @@ import { PRODUCTS_LINK_MAPPING } from '../../support/common/utils'
 const { country1, postalCode1 } = UsDetails1
 
 describe('Verify-Location-availability', () => {
-  // Load test setup
-  before(() => {
-    loginAsAdmin()
-    cy.getVtexItems().then((vtex) => {
-      loginAsUser(vtex.robotMail, vtex.robotPassword)
-    })
-  })
+  testSetup2()
 
   // eslint-disable-next-line jest/no-disabled-tests
   it.skip(

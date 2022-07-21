@@ -1,8 +1,7 @@
 import {
   preserveCookie,
-  loginAsAdmin,
-  loginAsUser,
   updateRetry,
+  testSetup2,
 } from '../../support/common/support'
 import { franceDetails } from '../../support/shopper-location/outputvalidation'
 import selectors from '../../support/common/selectors'
@@ -10,12 +9,7 @@ import { addAddress } from '../../support/shopper-location/common'
 import { PRODUCTS_LINK_MAPPING } from '../../support/common/utils'
 
 describe('Location deliverable', () => {
-  before(() => {
-    loginAsAdmin()
-    cy.getVtexItems().then((vtex) => {
-      loginAsUser(vtex.robotMail, vtex.robotPassword)
-    })
-  })
+  testSetup2()
 
   addAddress({ address: franceDetails })
 

@@ -1,9 +1,8 @@
 /* eslint-disable jest/expect-expect */
 import {
   preserveCookie,
-  loginAsAdmin,
-  loginAsUser,
   updateRetry,
+  testSetup2,
 } from '../../support/common/support'
 import { UsDetails2 } from '../../support/shopper-location/outputvalidation'
 import selectors from '../../support/common/selectors'
@@ -13,12 +12,7 @@ import { PRODUCTS_LINK_MAPPING } from '../../support/common/utils'
 const { country, postalCode } = UsDetails2
 
 describe('Location deliverable', () => {
-  before(() => {
-    loginAsAdmin()
-    cy.getVtexItems().then((vtex) => {
-      loginAsUser(vtex.robotMail, vtex.robotPassword)
-    })
-  })
+  testSetup2()
 
   // eslint-disable-next-line jest/expect-expect
   it('HomePage', updateRetry(1), () => {

@@ -1,20 +1,14 @@
 import {
   preserveCookie,
   updateRetry,
-  loginAsAdmin,
-  loginAsUser,
+  testSetup2,
 } from '../../support/common/support'
 import selectors from '../../support/common/selectors'
 
 const prefix = 'Disable location'
 
 describe('Location validation', () => {
-  before(() => {
-    loginAsAdmin()
-    cy.getVtexItems().then((vtex) => {
-      loginAsUser(vtex.robotMail, vtex.robotPassword)
-    })
-  })
+  testSetup2()
 
   // eslint-disable-next-line jest/expect-expect
   it(`${prefix} - Open product`, updateRetry(1), () => {
