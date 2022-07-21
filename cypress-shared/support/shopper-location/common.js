@@ -25,6 +25,12 @@ export function addLocation(data) {
     .clear()
     .should('be.visible')
     .type(data.postalCode)
+  cy.get(selectors.Address)
+    .contains('Address Line 1')
+    .parent()
+    .within(() => {
+      cy.get(selectors.InputText).clear().type('Buttonwillow')
+    })
   cy.getVtexItems().then((vtex) => {
     cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
       if (req.body.operationName === 'setRegionId') {
