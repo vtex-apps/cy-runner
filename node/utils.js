@@ -457,7 +457,6 @@ exports.traverse = (result, obj, previousKey) => {
 
 exports.sectionsToRun = async (config) => {
   this.msgSection('Sections to run')
-  let linkApp = false
   const getList = (item, property) => {
     const list = get(config, `${item}.${property}`)
 
@@ -469,20 +468,13 @@ exports.sectionsToRun = async (config) => {
     if (/enabled/.test(item.key) && /true/.test(item.type)) {
       const [itemEnabled] = item.key.split('.enabled')
 
-      linkApp = itemEnabled === 'workspace.linkApp'
-      if (linkApp && itemEnabled === 'workspace.linkApp.logOutput') {
-        this.msg(itemEnabled)
-        this.msg('This output may contain credentials', true, true)
-        this.msg('Never enable it on CI environments', true, true)
-      } else {
-        this.msg(itemEnabled)
-        getList(itemEnabled, 'specs').forEach((spec) => {
-          this.msg(`runs ${spec}`, true, true)
-        })
-        getList(itemEnabled, 'dependency').forEach((dep) => {
-          this.msg(`deps ${dep}`, true, true)
-        })
-      }
+      this.msg(itemEnabled)
+      getList(itemEnabled, 'specs').forEach((spec) => {
+        this.msg(`runs ${spec}`, true, true)
+      })
+      getList(itemEnabled, 'dependency').forEach((dep) => {
+        this.msg(`deps ${dep}`, true, true)
+      })
     }
   })
 
@@ -596,7 +588,6 @@ exports.runCypress = async (test, config, addOptions = {}) => {
   for (let i = 0; i < maxJobs; i++) {
     testToRun.push(
       cypress.run(options).then((result) => {
-        // TODO Check the result.failures better
         if (result.failures) this.msg(JSON.stringify(result), 'error')
 
         const output = {}
@@ -615,7 +606,6 @@ exports.runCypress = async (test, config, addOptions = {}) => {
   try {
     await Promise.all(testToRun)
   } catch (e) {
-    // TODO Move the crash to inside the Promise.all
     this.crash('Fail to run Cypress', e.message)
   }
 
