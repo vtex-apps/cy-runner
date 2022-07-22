@@ -15,7 +15,7 @@ const prefix = 'Enable location'
 const postalCode = '90290'
 const product = 'coconuts'
 
-describe('Location validation', () => {
+describe('Enable location validation', () => {
   loginViaAPI()
 
   addAddress({ address: UsDetails, lat: location.lat, long: location.long })

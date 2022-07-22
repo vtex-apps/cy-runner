@@ -7,7 +7,7 @@ import selectors from '../../support/common/selectors'
 
 const prefix = 'Disable location'
 
-describe('Location validation', () => {
+describe('Disable location validation', () => {
   loginViaAPI()
 
   // eslint-disable-next-line jest/expect-expect

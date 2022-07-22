@@ -8,7 +8,7 @@ import selectors from '../../support/common/selectors'
 import { addAddress } from '../../support/shopper-location/common'
 import { PRODUCTS_LINK_MAPPING } from '../../support/common/utils'
 
-describe('Location deliverable', () => {
+describe('Validate location availability', () => {
   loginViaAPI()
 
   addAddress({ address: franceDetails })

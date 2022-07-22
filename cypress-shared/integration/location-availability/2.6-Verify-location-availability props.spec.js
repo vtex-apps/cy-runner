@@ -9,7 +9,7 @@ import { PRODUCTS_LINK_MAPPING } from '../../support/common/utils'
 
 const { country1, postalCode1 } = UsDetails1
 
-describe('Verify-Location-availability', () => {
+describe('Verify location availability props', () => {
   loginViaAPI()
 
   // eslint-disable-next-line jest/no-disabled-tests

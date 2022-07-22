@@ -11,7 +11,7 @@ import { PRODUCTS_LINK_MAPPING } from '../../support/common/utils'
 
 const { country, postalCode } = UsDetails2
 
-describe('Location deliverable', () => {
+describe('Validate location non availability', () => {
   loginViaAPI()
 
   // eslint-disable-next-line jest/expect-expect
