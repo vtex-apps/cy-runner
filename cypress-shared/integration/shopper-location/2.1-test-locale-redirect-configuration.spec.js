@@ -40,7 +40,7 @@ describe('Testing local redirect configuration', () => {
 
   // eslint-disable-next-line jest/expect-expect
   it(`${prefix} - Get popup with switch button`, updateRetry(2), () => {
-    cy.get(selectors.ToastMsgInB2B).should('be.visible')
+    cy.get(selectors.ToastMsgInB2B).should('be.visible', { timeout: 8000 })
     cy.get(selectors.switchButton).click()
   })
   // eslint-disable-next-line jest/expect-expect
