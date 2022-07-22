@@ -18,7 +18,7 @@ describe(`${prefix}- via browser popup - Order the Product`, () => {
     })
   })
 
-  orderProductTestCase({ country, postalCode })
+  orderProductTestCase(prefix, { country, postalCode })
 
   preserveCookie()
 })

@@ -21,7 +21,7 @@ describe(`${prefix}- via browser popup - Order the Product`, () => {
     })
   })
 
-  orderProductTestCase({
+  orderProductTestCase(prefix, {
     lat: location.lat,
     long: location.long,
     country,
