@@ -14,7 +14,7 @@ export function verifyUpdatedAddress(postalCode) {
       return false
     })
   })
-  it('Verify updated address is shown in the screen', updateRetry(3), () => {
+  it('Verify updated address is shown in the screen', updateRetry(2), () => {
     cy.getVtexItems().then((vtex) => {
       cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
         if (req.body.operationName === 'updateOrderFormShipping') {

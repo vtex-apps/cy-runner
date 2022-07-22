@@ -25,7 +25,7 @@ describe('Location deliverable', () => {
       cy.get(selectors.shippingContent)
         .should('be.visible')
         .contains('FREE Shipping:')
-      cy.wait('@updateOrderFormShipping', { timeout: 20000 })
+      cy.wait('@updateOrderFormShipping', { timeout: 10000 })
     })
   })
 

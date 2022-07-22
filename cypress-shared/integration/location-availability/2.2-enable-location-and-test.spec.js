@@ -29,7 +29,7 @@ describe('Location validation', () => {
   verifyUpdatedAddress(postalCode)
 
   // eslint-disable-next-line jest/expect-expect
-  it('Ordering the product', updateRetry(3), () => {
+  it('Ordering the product', updateRetry(2), () => {
     cy.orderProduct()
   })
 

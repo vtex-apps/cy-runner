@@ -14,7 +14,7 @@ export function addLocation(data) {
   cy.intercept('**/rc.vtex.com.br/api/events').as('events')
   cy.visit('/', mockLocation(data.lat, data.long))
   cy.wait('@events')
-  cy.get(selectors.ProfileLabel, { timeout: 20000 })
+  cy.get(selectors.ProfileLabel, { timeout: 10000 })
     .should('be.visible')
     .should('have.contain', `Hello,`)
   scroll()
@@ -35,7 +35,7 @@ export function addLocation(data) {
       return false
     })
     cy.get(selectors.SaveButton).should('be.visible').click()
-    cy.wait('@setRegionId', { timeout: 20000 })
+    cy.wait('@setRegionId', { timeout: 10000 })
   })
 }
 
@@ -43,7 +43,7 @@ export function verifyLocation(lat, long) {
   cy.intercept('**/rc.vtex.com.br/api/events').as('events')
   cy.visit('/', mockLocation(lat, long))
   cy.wait('@events')
-  cy.get(selectors.ProfileLabel, { timeout: 20000 })
+  cy.get(selectors.ProfileLabel, { timeout: 10000 })
     .should('be.visible')
     .should('have.contain', `Hello,`)
   scroll()
@@ -58,7 +58,7 @@ export function addAddress({ address, lat, long }) {
     cy.intercept('**/rc.vtex.com.br/api/events').as('events')
     cy.visit('/', mockLocation(lat, long))
     cy.wait('@events')
-    cy.get(selectors.ProfileLabel, { timeout: 20000 })
+    cy.get(selectors.ProfileLabel, { timeout: 10000 })
       .should('be.visible')
       .should('have.contain', `Hello,`)
     scroll()
@@ -106,15 +106,15 @@ export function autocomplete(city, province) {
 }
 
 export function orderProductTestCase(data) {
-  it('Adding Location', updateRetry(3), () => {
+  it('Adding Location', updateRetry(2), () => {
     addLocation(data)
   })
 
-  it('Verifying Address in home page & checkout page', updateRetry(3), () => {
+  it('Verifying Address in home page & checkout page', updateRetry(2), () => {
     verifyShopperLocation()
   })
 
-  it('Ordering the product', updateRetry(3), () => {
+  it('Ordering the product', updateRetry(2), () => {
     cy.orderProduct()
   })
 }
