@@ -9,12 +9,14 @@ import { PRODUCTS_LINK_MAPPING } from '../../support/common/utils'
 
 const { country1, postalCode1 } = UsDetails1
 
+const prefix = 'Location availability props'
+
 describe('Verify location availability props', () => {
   loginViaAPI()
 
   // eslint-disable-next-line jest/no-disabled-tests
   it.skip(
-    'Adding Location & Verify location Availability',
+    `${prefix} - Adding Location & Verify location Availability`,
     updateRetry(1),
     () => {
       cy.addNewLocation(country1, postalCode1)
@@ -36,17 +38,21 @@ describe('Verify location availability props', () => {
   )
 
   // eslint-disable-next-line jest/no-disabled-tests
-  it.skip('Search results & product specification', updateRetry(3), () => {
-    cy.openProduct(PRODUCTS_LINK_MAPPING.orange.name, true)
-    // eslint-disable-next-line jest/valid-expect-in-promise
-    cy.get('body').then(($body) => {
-      expect(
-        $body.find(selectors.VerifyMaxItem).length
-        // eslint-disable-next-line jest/valid-expect
-      ).to.equal(3)
-    })
-    cy.get(selectors.OrderByFaster).should('be.visible')
-  })
+  it.skip(
+    `${prefix} - Search results & product specification`,
+    updateRetry(3),
+    () => {
+      cy.openProduct(PRODUCTS_LINK_MAPPING.orange.name, true)
+      // eslint-disable-next-line jest/valid-expect-in-promise
+      cy.get('body').then(($body) => {
+        expect(
+          $body.find(selectors.VerifyMaxItem).length
+          // eslint-disable-next-line jest/valid-expect
+        ).to.equal(3)
+      })
+      cy.get(selectors.OrderByFaster).should('be.visible')
+    }
+  )
 
   preserveCookie()
 })

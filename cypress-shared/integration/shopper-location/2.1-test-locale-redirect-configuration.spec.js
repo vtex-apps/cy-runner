@@ -16,6 +16,8 @@ import { addAddress } from '../../support/shopper-location/common'
 const { country, url } = canadaDetails
 const { lat, long } = location
 
+const prefix = 'Manual redirect configuration'
+
 describe('Testing local redirect configuration', () => {
   before(() => {
     loginAsAdmin()
@@ -26,21 +28,23 @@ describe('Testing local redirect configuration', () => {
 
   updateSettings(country, url)
 
-  addAddress({ address: canadaDetails, lat, long })
+  addAddress(prefix, { address: canadaDetails, lat, long })
+
   // eslint-disable-next-line jest/expect-expect
-  it('Verify address', updateRetry(2), () => {
+  it(`${prefix} - Verify address`, updateRetry(2), () => {
     scroll()
     cy.get(selectors.addressUpdation)
       .should('be.visible')
       .contains('Essex County, ON, N9V 1K8')
   })
+
   // eslint-disable-next-line jest/expect-expect
-  it('Get popup with switch button', updateRetry(2), () => {
+  it(`${prefix} - Get popup with switch button`, updateRetry(2), () => {
     cy.get(selectors.ToastMsgInB2B).should('be.visible')
     cy.get(selectors.switchButton).click()
   })
   // eslint-disable-next-line jest/expect-expect
-  it('Page will be redirected to google page', () => {
+  it(`${prefix} - Page will be redirected to google page`, () => {
     cy.url().should('eq', 'https://www.google.com/')
   })
   preserveCookie()

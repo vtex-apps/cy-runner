@@ -53,34 +53,38 @@ export function verifyLocation(lat, long) {
   cy.get(selectors.ChangeLocationButton).click()
 }
 
-export function addAddress({ address, lat, long }) {
-  it('Go to store front and add shipping address', updateRetry(1), () => {
-    cy.intercept('**/rc.vtex.com.br/api/events').as('events')
-    cy.visit('/', mockLocation(lat, long))
-    cy.wait('@events')
-    cy.get(selectors.ProfileLabel, { timeout: 10000 })
-      .should('be.visible')
-      .should('have.contain', `Hello,`)
-    scroll()
-    cy.get(selectors.addressContainer).should('be.visible').click()
-    cy.get(selectors.findMyLocation).click()
+export function addAddress(prefix, { address, lat, long }) {
+  it(
+    `${prefix} - Go to store front and add shipping address`,
+    updateRetry(1),
+    () => {
+      cy.intercept('**/rc.vtex.com.br/api/events').as('events')
+      cy.visit('/', mockLocation(lat, long))
+      cy.wait('@events')
+      cy.get(selectors.ProfileLabel, { timeout: 10000 })
+        .should('be.visible')
+        .should('have.contain', `Hello,`)
+      scroll()
+      cy.get(selectors.addressContainer).should('be.visible').click()
+      cy.get(selectors.findMyLocation).click()
 
-    cy.get(selectors.countryDropdown).select(address.country)
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.get(selectors.addressInputContainer)
-      .first()
-      .should('not.be.disabled')
-      .clear()
-      .type(address.postalCode)
-      .wait(500)
-    autocomplete(address.city, address.state)
-    cy.get(selectors.saveButton)
-      .find('button')
-      .click()
-      .should(() => {
-        expect(localStorage.getItem('orderform')).not.to.be.empty
-      })
-  })
+      cy.get(selectors.countryDropdown).select(address.country)
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.get(selectors.addressInputContainer)
+        .first()
+        .should('not.be.disabled')
+        .clear()
+        .type(address.postalCode)
+        .wait(500)
+      autocomplete(address.city, address.state)
+      cy.get(selectors.saveButton)
+        .find('button')
+        .click()
+        .should(() => {
+          expect(localStorage.getItem('orderform')).not.to.be.empty
+        })
+    }
+  )
 }
 
 export function autocomplete(city, province) {
@@ -105,16 +109,20 @@ export function autocomplete(city, province) {
   })
 }
 
-export function orderProductTestCase(data) {
-  it('Adding Location', updateRetry(2), () => {
+export function orderProductTestCase(prefix, data) {
+  it(`${prefix} - Adding Location`, updateRetry(2), () => {
     addLocation(data)
   })
 
-  it('Verifying Address in home page & checkout page', updateRetry(2), () => {
-    verifyShopperLocation()
-  })
+  it(
+    `${prefix} - Verifying Address in home page & checkout page`,
+    updateRetry(2),
+    () => {
+      verifyShopperLocation()
+    }
+  )
 
-  it('Ordering the product', updateRetry(2), () => {
+  it(`${prefix} - Ordering the product`, updateRetry(2), () => {
     cy.orderProduct()
   })
 }

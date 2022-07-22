@@ -8,13 +8,15 @@ import selectors from '../../support/common/selectors'
 import { addAddress } from '../../support/shopper-location/common'
 import { PRODUCTS_LINK_MAPPING } from '../../support/common/utils'
 
+const prefix = 'Pickup not available'
+
 describe('Validate location availability', () => {
   loginViaAPI()
 
-  addAddress({ address: franceDetails })
+  addAddress(prefix, { address: franceDetails })
 
   // eslint-disable-next-line jest/expect-expect
-  it('Verify shipping content', updateRetry(2), () => {
+  it(`${prefix} - Verify shipping content`, updateRetry(2), () => {
     cy.get(PRODUCTS_LINK_MAPPING.orange.link).should('be.visible')
     cy.get(selectors.shippingContent)
       .should('be.visible')
@@ -22,14 +24,18 @@ describe('Validate location availability', () => {
   })
 
   // eslint-disable-next-line jest/expect-expect
-  it('Open product specfication page and verify', updateRetry(2), () => {
-    cy.openProduct(PRODUCTS_LINK_MAPPING.orange.name, true)
-    cy.get(selectors.storeUnavailabilityInformation)
-      .should('be.visible')
-      .contains(
-        'The selected item is not available for pickup near your location.'
-      )
-  })
+  it(
+    `${prefix} - Open product specfication page and verify`,
+    updateRetry(2),
+    () => {
+      cy.openProduct(PRODUCTS_LINK_MAPPING.orange.name, true)
+      cy.get(selectors.storeUnavailabilityInformation)
+        .should('be.visible')
+        .contains(
+          'The selected item is not available for pickup near your location.'
+        )
+    }
+  )
 
   preserveCookie()
 })

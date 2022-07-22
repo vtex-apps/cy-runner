@@ -12,6 +12,7 @@ import { addAddress } from '../../support/shopper-location/common'
 
 const { country, url } = canadaDetails
 const { lat, long } = location
+const prefix = 'auto redirect configuration'
 
 describe('Test Locale with Auto redirect', () => {
   before(() => {
@@ -23,10 +24,10 @@ describe('Test Locale with Auto redirect', () => {
 
   updateSettings(country, url, { automaticRedirect: true })
 
-  addAddress({ address: canadaDetails, lat, long })
+  addAddress(prefix, { address: canadaDetails, lat, long })
 
   // eslint-disable-next-line jest/expect-expect
-  it('Now site should force redirect to google', () => {
+  it(`${prefix} - Now site should force redirect to google`, () => {
     cy.url().should('eq', 'https://www.google.com/')
   })
 
