@@ -16,17 +16,9 @@ describe('Location deliverable', () => {
   // eslint-disable-next-line jest/expect-expect
   it('Verify shipping content', updateRetry(2), () => {
     cy.get(PRODUCTS_LINK_MAPPING.orange.link).should('be.visible')
-    cy.getVtexItems().then((vtex) => {
-      cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
-        if (req.body.operationName === 'updateOrderFormShipping') {
-          req.continue()
-        }
-      }).as('updateOrderFormShipping')
-      cy.get(selectors.shippingContent)
-        .should('be.visible')
-        .contains('FREE Shipping:')
-      cy.wait('@updateOrderFormShipping', { timeout: 10000 })
-    })
+    cy.get(selectors.shippingContent)
+      .should('be.visible')
+      .contains('FREE Shipping:')
   })
 
   // eslint-disable-next-line jest/expect-expect
