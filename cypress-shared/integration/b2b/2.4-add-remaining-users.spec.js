@@ -17,8 +17,8 @@ describe('Add Sales Users via Graphql', () => {
     updateRetry(2),
     () => {
       cy.visit('admin/app/vtex-checkout-ui-custom/')
-      cy.contains('Publish', { timeout: 10000 }).should('be.visible').click()
-      cy.contains('History', { timeout: 10000 }).should('be.visible').click()
+      cy.contains('Publish', { timeout: 20000 }).should('be.visible').click()
+      cy.contains('History', { timeout: 20000 }).should('be.visible').click()
       cy.contains(name, { timeout: 5000 }).should('be.visible')
     }
   )
