@@ -18,7 +18,11 @@ const product = 'coconuts'
 describe('Enable location validation', () => {
   loginViaAPI()
 
-  addAddress({ address: UsDetails, lat: location.lat, long: location.long })
+  addAddress(prefix, {
+    address: UsDetails,
+    lat: location.lat,
+    long: location.long,
+  })
 
   // eslint-disable-next-line jest/expect-expect
   it(`${prefix} - Open product`, updateRetry(1), () => {
