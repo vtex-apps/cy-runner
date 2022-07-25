@@ -1,6 +1,6 @@
 import selectors from '../common/selectors.js'
 import {
-  generateEmailId,
+  generateEmailWithSuffix,
   generateName,
   ROLE_ID_EMAIL_MAPPING,
   validateToastMsg,
@@ -10,13 +10,13 @@ import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
 import { BUTTON_LABEL, TOAST_MSG } from '../validation_text.js'
 
 export function addUserFn(
-  { userName, emailId, costCenter, duplicateUser = false },
+  { userName, email, costCenter, duplicateUser = false },
   dropDownText
 ) {
   cy.gotoMyOrganization()
   cy.get(selectors.AddUser).should('be.visible')
   cy.get('body').then(($body) => {
-    if ($body.text().includes(emailId) && !duplicateUser) {
+    if ($body.text().includes(email) && !duplicateUser) {
       cy.log('User already added')
     } else {
       cy.get(selectors.AddUser).click()
@@ -26,8 +26,8 @@ export function addUserFn(
         .should('have.value', userName)
       cy.get(selectors.UserEmail)
         .clear()
-        .type(emailId)
-        .should('have.value', emailId)
+        .type(email)
+        .should('have.value', email)
       cy.get(selectors.UserCostCenter)
         .select(costCenter)
         .find('option:selected')
@@ -42,17 +42,21 @@ export function addUserFn(
   })
 }
 
-export function addUser({ organizationName, costCenter, role }) {
-  const { email, dropDownText } = role
+export function addUser({ organizationName, costCenter, role, gmailCreds }) {
+  const { suffixInEmail, dropDownText } = role
 
   it(
     `Adding ${dropDownText} in ${organizationName} with ${costCenter}`,
     { retries: 3 },
     () => {
-      const userName = generateName(email)
-      const emailId = generateEmailId(organizationName, email)
+      const userName = generateName(suffixInEmail)
+      const email = generateEmailWithSuffix(
+        gmailCreds.email,
+        organizationName,
+        suffixInEmail
+      )
 
-      addUserFn({ userName, emailId, costCenter }, dropDownText)
+      addUserFn({ userName, email, costCenter }, dropDownText)
     }
   )
 }
@@ -61,21 +65,26 @@ export function duplicateUserTestCase({
   organizationName,
   costCenter,
   role,
+  gmailCreds,
   sameOrganization = true,
   // If sameOrganization is false then user is from different organization
 }) {
-  const { email, dropDownText } = role
+  const { suffixInEmail, dropDownText } = role
   const subTitle = sameOrganization ? 'same' : 'different'
 
   it(
     `Add duplicate user from ${subTitle} organization and verify popup`,
     { retries: 3 },
     () => {
-      const userName = generateName(email)
-      const emailId = generateEmailId(organizationName, email)
+      const userName = generateName(suffixInEmail)
+      const email = generateEmailWithSuffix(
+        gmailCreds.email,
+        organizationName,
+        suffixInEmail
+      )
 
       addUserFn(
-        { userName, emailId, costCenter, duplicateUser: true },
+        { userName, email, costCenter, duplicateUser: true },
         dropDownText
       )
       validateToastMsg(
@@ -87,20 +96,27 @@ export function duplicateUserTestCase({
   )
 }
 
-export function addAndupdateUser(
+export function addAndupdateUser({
   organization,
-  { currentCostCenter, updateCostCenter },
-  { currentRole, updatedRole }
-) {
-  const { email, dropDownText } = updatedRole
-  const userName = generateName(email)
-  const emailId = generateEmailId(organization, email)
+  currentCostCenter,
+  updateCostCenter,
+  currentRole,
+  updatedRole,
+  gmailCreds,
+}) {
+  const { suffixInEmail, dropDownText } = updatedRole
+  const userName = generateName(suffixInEmail)
+  const email = generateEmailWithSuffix(
+    gmailCreds.email,
+    organization,
+    suffixInEmail
+  )
 
-  it(`Adding ${emailId} & update its role & Costcenter`, { retries: 3 }, () => {
+  it(`Adding ${email} & update its role & Costcenter`, { retries: 3 }, () => {
     const { dropDownText: previous } = currentRole
 
-    addUserFn({ userName, emailId, costCenter: currentCostCenter }, previous)
-    cy.contains(emailId).should('be.visible').click()
+    addUserFn({ userName, email, costCenter: currentCostCenter }, previous)
+    cy.contains(email).should('be.visible').click()
     cy.get(selectors.CostCenterDropDownInEdit, { timeout: 2000 }).select(
       updateCostCenter
     )
@@ -110,35 +126,47 @@ export function addAndupdateUser(
   })
 }
 
-export function addSameUserAgainInOrganization(
+export function addSameUserAgainInOrganization({
   organization,
   costCenter,
-  { currentRole, updatedRole }
-) {
-  const { email, dropDownText } = updatedRole
-  const userName = generateName(email)
-  const emailId = generateEmailId(organization, email)
+  currentRole,
+  updatedRole,
+  gmailCreds,
+}) {
+  const { suffixInEmail, dropDownText } = updatedRole
+  const userName = generateName(suffixInEmail)
+  const email = generateEmailWithSuffix(
+    gmailCreds.email,
+    organization,
+    suffixInEmail
+  )
+
   const { dropDownText: previous } = currentRole
 
   it.skip(
-    `Adding ${emailId} with role ${previous} & update the role to ${dropDownText}`,
+    `Adding ${email} with role ${previous} & update the role to ${dropDownText}`,
     { retries: 3 },
     () => {
-      addUserFn({ userName, emailId, costCenter }, previous)
-      addUserFn({ userName, emailId, costCenter }, dropDownText)
+      addUserFn({ userName, email, costCenter }, previous)
+      addUserFn({ userName, email, costCenter }, dropDownText)
     }
   )
 }
 
-export function addAnddeleteUser(organization, costCenter, role) {
-  const { email, dropDownText } = role
-  const userName = generateName(email)
-  const emailId = generateEmailId(organization, email)
+export function addAnddeleteUser({
+  organization,
+  costCenter,
+  role,
+  gmailCreds,
+}) {
+  const { suffixInEmail, dropDownText } = role
+  const userName = generateName(suffixInEmail)
+  const email = generateEmailWithSuffix(gmailCreds, organization, suffixInEmail)
 
-  it(`Add & Delete a user ${emailId}`, () => {
-    addUserFn({ userName, emailId, costCenter }, dropDownText)
-    cy.contains(emailId).click()
-    cy.get(`input[value='${emailId}']`).should('be.disabled')
+  it(`Add & Delete a user ${email}`, () => {
+    addUserFn({ userName, email, costCenter }, dropDownText)
+    cy.contains(email).click()
+    cy.get(`input[value='${email}']`).should('be.disabled')
     cy.get(selectors.Remove)
       .contains(BUTTON_LABEL.remove)
       .should('be.visible')
@@ -159,21 +187,25 @@ export function addAnddeleteUser(organization, costCenter, role) {
   })
 }
 
-export function updateRoleOfTheUser(
-  { organization, costCenter },
+export function updateRoleOfTheUser({
+  organization,
+  costCenter,
   currentRole,
-  updatedRole
-) {
+  updatedRole,
+  gmailCreds,
+}) {
   it(
     `Updating the user from this role ${currentRole.dropDownText} to this role ${updatedRole.dropDownText} in ${organization} with ${costCenter}`,
     { retries: 3 },
     () => {
-      const { email } = currentRole
+      const { suffixInEmail } = currentRole
       const { dropDownText } = updatedRole
 
       cy.gotoMyOrganization()
       cy.get(selectors.AddUser).should('be.visible')
-      cy.contains(generateEmailId(organization, email))
+      cy.contains(
+        generateEmailWithSuffix(gmailCreds.email, organization, suffixInEmail)
+      )
         .should('be.visible')
         .click()
       cy.get(selectors.CostCenterDropDownInEdit).select(costCenter)
@@ -184,20 +216,24 @@ export function updateRoleOfTheUser(
   )
 }
 
-export function updateCostCenterOftheUser(
-  { organization, role },
+export function updateCostCenterOftheUser({
+  organization,
+  role,
   currentCostCenter,
-  updatedCostCenter
-) {
+  updatedCostCenter,
+  gmailCreds,
+}) {
   it(
     `Updating the user from this costcenter ${currentCostCenter} to this costcenter ${updatedCostCenter} in ${organization}`,
     { retries: 3 },
     () => {
-      const { email } = role
+      const { suffixInEmail } = role
 
       cy.gotoMyOrganization()
       cy.get(selectors.AddUser).should('be.visible')
-      cy.contains(generateEmailId(organization, email))
+      cy.contains(
+        generateEmailWithSuffix(gmailCreds.email, organization, suffixInEmail)
+      )
         .should('be.visible')
         .click()
       cy.get(selectors.CostCenterDropDownInEdit).select(updatedCostCenter)
@@ -207,14 +243,14 @@ export function updateCostCenterOftheUser(
   )
 }
 
-export function addUserViaGraphql(roleKey) {
+export function addUserViaGraphql(gmailCreds, roleKey) {
   const { organizationName, costCenter1 } = b2b.OrganizationA
 
   it(
     `Adding ${roleKey} in ${organizationName} with ${costCenter1.name}`,
     { retries: 3 },
     () => {
-      const { email, role } = ROLE_ID_EMAIL_MAPPING[roleKey]
+      const { suffixInEmail, role } = ROLE_ID_EMAIL_MAPPING[roleKey]
       // Define constants
       const APP_NAME = 'vtex.storefront-permissions'
       const APP_VERSION = '1.x'
@@ -234,7 +270,11 @@ export function addUserViaGraphql(roleKey) {
             orgId: organizationItems[organizationName],
             costId: organizationItems[costCenter1.name],
             name: generateName(role),
-            email: generateEmailId(organizationName, email),
+            email: generateEmailWithSuffix(
+              gmailCreds.email,
+              organizationName,
+              suffixInEmail
+            ),
           }
 
           expect(variables.roleId).to.not.be.undefined

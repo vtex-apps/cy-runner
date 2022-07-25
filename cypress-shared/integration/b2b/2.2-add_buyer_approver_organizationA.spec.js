@@ -35,9 +35,14 @@ describe('OrganizationA - Create a Buyer and Approver, associate Cost Center and
     users,
     product,
     quotes,
+    gmailCreds,
   } = b2b.OrganizationA
 
-  loginToStoreFront(users.OrganizationAdmin1, ROLE_DROP_DOWN.OrganizationAdmin)
+  loginToStoreFront(
+    users.OrganizationAdmin1,
+    ROLE_DROP_DOWN.OrganizationAdmin,
+    gmailCreds
+  )
 
   setOrganizationIdInJSON(organizationName, costCenter1.name)
   addPaymentTermsCollectionPriceTablesTestCase(b2b.OrganizationA)
@@ -60,14 +65,25 @@ describe('OrganizationA - Create a Buyer and Approver, associate Cost Center and
   updateCostCenter(costCenter3.temporaryName, costCenter3.name)
   deleteCostCenter(costCenter3.name)
 
-  addUser({ organizationName, costCenter: costCenter1.name, role: role.Buyer1 })
+  addUser({
+    organizationName,
+    costCenter: costCenter1.name,
+    role: role.Buyer1,
+    gmailCreds,
+  })
   addUser({
     organizationName,
     costCenter: costCenter1.name,
     role: role.Approver1,
+    gmailCreds,
   })
 
-  addUser({ organizationName, costCenter: costCenter2.name, role: role.Buyer2 })
+  addUser({
+    organizationName,
+    costCenter: costCenter2.name,
+    role: role.Buyer2,
+    gmailCreds,
+  })
 
   // Add/Delete users in costcenter1 - Hold
   // Add/Update users for costcenter2 - Hold bug
@@ -76,11 +92,13 @@ describe('OrganizationA - Create a Buyer and Approver, associate Cost Center and
     organizationName,
     costCenter: costCenter2.name,
     role: role.OrganizationAdmin2,
+    gmailCreds,
   })
   addUser({
     organizationName,
     costCenter: costCenter2.name,
     role: role.Approver2,
+    gmailCreds,
   })
 
   createQuote({

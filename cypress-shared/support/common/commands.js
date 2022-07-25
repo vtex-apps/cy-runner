@@ -20,10 +20,6 @@ Cypress.Commands.add('getVtexItems', () => {
   return cy.wrap(Cypress.env().base.vtex, { log: false })
 })
 
-Cypress.Commands.add('getGmailItems', () => {
-  return cy.wrap(Cypress.env().base.gmail, { log: false })
-})
-
 Cypress.Commands.add('addDelayBetweenRetries', (delay) => {
   if (cy.state('runnable')._currentRetry > 0) cy.wait(delay)
 })

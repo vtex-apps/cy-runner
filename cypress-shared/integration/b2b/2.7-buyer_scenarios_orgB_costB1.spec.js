@@ -22,12 +22,13 @@ describe('Organization B - Cost Center B1 - Buyer Scenario', () => {
     product,
     quotes,
     costCenter1,
+    gmailCreds,
   } = b2b.OrganizationB
 
   const { organizationName: organizationA, quotes: organizationAQuotes } =
     b2b.OrganizationA
 
-  loginToStoreFront(users.Buyer1, ROLE_DROP_DOWN.Buyer)
+  loginToStoreFront(users.Buyer1, ROLE_DROP_DOWN.Buyer, gmailCreds)
   verifySession(b2b.OrganizationB, costCenter1.name, ROLE_DROP_DOWN.Buyer)
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
   quoteShouldbeVisibleTestCase(

@@ -15,30 +15,42 @@ import { createQuote } from '../../support/b2b/quotes.js'
 describe('OrganizationB - Create a Buyer and Approver associate Cost Center and assign payment terms', () => {
   testSetup(false)
 
-  const { organizationName, costCenter1, users, product, quotes } =
+  const { organizationName, costCenter1, users, product, quotes, gmailCreds } =
     b2b.OrganizationB
 
   const { organizationName: organizationA } = b2b.OrganizationA
 
-  loginToStoreFront(users.OrganizationAdmin1, ROLE_DROP_DOWN.OrganizationAdmin)
+  loginToStoreFront(
+    users.OrganizationAdmin1,
+    ROLE_DROP_DOWN.OrganizationAdmin,
+    gmailCreds
+  )
   setOrganizationIdInJSON(organizationName, costCenter1.name)
   addPaymentTermsCollectionPriceTablesTestCase(b2b.OrganizationB)
-  addUser({ organizationName, costCenter: costCenter1.name, role: role.Buyer1 })
+  addUser({
+    organizationName,
+    costCenter: costCenter1.name,
+    role: role.Buyer1,
+    gmailCreds,
+  })
   addUser({
     organizationName,
     costCenter: costCenter1.name,
     role: role.Approver1,
+    gmailCreds,
   })
   duplicateUserTestCase({
     organizationName,
     costCenter: costCenter1.name,
     role: role.Approver1,
+    gmailCreds,
   })
   duplicateUserTestCase({
     organizationName: organizationA,
     costCenter: costCenter1.name,
     role: role.OrganizationAdmin1,
     sameOrganization: false,
+    gmailCreds,
   })
   createQuote({
     product,
