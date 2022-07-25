@@ -71,17 +71,17 @@ export function duplicateUserTestCase({
 }) {
   const { suffixInEmail, dropDownText } = role
   const subTitle = sameOrganization ? 'same' : 'different'
+  const email = generateEmailWithSuffix(
+    gmailCreds.email,
+    organizationName,
+    suffixInEmail
+  )
 
   it(
-    `Add duplicate user from ${subTitle} organization and verify popup`,
+    `Add duplicate user ${email} from ${subTitle} organization and verify popup`,
     { retries: 3 },
     () => {
       const userName = generateName(suffixInEmail)
-      const email = generateEmailWithSuffix(
-        gmailCreds.email,
-        organizationName,
-        suffixInEmail
-      )
 
       addUserFn(
         { userName, email, costCenter, duplicateUser: true },

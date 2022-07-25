@@ -18,7 +18,10 @@ describe('OrganizationB - Create a Buyer and Approver associate Cost Center and 
   const { organizationName, costCenter1, users, product, quotes, gmailCreds } =
     b2b.OrganizationB
 
-  const { organizationName: organizationA } = b2b.OrganizationA
+  const {
+    organizationName: organizationA,
+    gmailCreds: OrganizationAGmailCreds,
+  } = b2b.OrganizationA
 
   loginToStoreFront(
     users.OrganizationAdmin1,
@@ -50,7 +53,7 @@ describe('OrganizationB - Create a Buyer and Approver associate Cost Center and 
     costCenter: costCenter1.name,
     role: role.OrganizationAdmin1,
     sameOrganization: false,
-    gmailCreds,
+    gmailCreds: OrganizationAGmailCreds,
   })
   createQuote({
     product,
