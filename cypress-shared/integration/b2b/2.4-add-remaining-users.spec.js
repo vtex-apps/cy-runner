@@ -2,7 +2,6 @@
 import { testSetup, updateRetry } from '../../support/common/support.js'
 import { ROLE_ID_EMAIL_MAPPING, OTHER_ROLES } from '../../support/b2b/utils.js'
 import { addUserViaGraphql } from '../../support/b2b/add_users.js'
-import { loginToStoreFront } from '../../support/b2b/login.js'
 import b2b from '../../support/b2b/constants.js'
 
 const config = Cypress.env()
@@ -12,7 +11,7 @@ const { name } = config.workspace
 
 describe('Add Sales Users via Graphql', () => {
   testSetup(false)
-  const { users, gmailCreds } = b2b.OrganizationA
+  const { gmailCreds } = b2b.OrganizationA
 
   // eslint-disable-next-line jest/expect-expect
   it(
@@ -58,10 +57,4 @@ describe('Add Sales Users via Graphql', () => {
   roles.forEach((r) => {
     addUserViaGraphql(gmailCreds, r)
   })
-
-  loginToStoreFront(
-    users.SalesRep,
-    ROLE_ID_EMAIL_MAPPING.SalesRepresentative.role,
-    gmailCreds
-  )
 })
