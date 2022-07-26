@@ -133,22 +133,31 @@ export function productShouldNotbeAvailableTestCase(product) {
 }
 
 export function userAndCostCenterShouldNotBeEditable({
-  organization,
+  organizationName,
   costCenter,
   role,
   gmailCreds,
 }) {
   it(
-    `Trying to update user and cost center in ${organization} with role ${role.dropDownText}`,
+    `Trying to update user and cost center in ${organizationName} with role ${role.dropDownText}`,
     updateRetry(1),
     () => {
       const { suffixInEmail } = role
 
       cy.gotoMyOrganization()
       cy.get(selectors.AddUser).should('be.visible')
-      cy.contains(
-        generateEmailWithSuffix(gmailCreds.gmailId, organization, suffixInEmail)
-      ).should('have.class', 'c-disabled')
+      cy.get(
+        '.vtex-table__container .ReactVirtualized__Grid__innerScrollContainer'
+      )
+        .last()
+        .contains(
+          generateEmailWithSuffix(
+            gmailCreds.email,
+            organizationName,
+            suffixInEmail
+          )
+        )
+        .should('have.class', 'c-disabled')
       cy.get(selectors.AddUser).should('be.visible').should('be.disabled')
       cy.get(selectors.AddCostCenter).should('be.visible').should('be.disabled')
       cy.get(
@@ -182,7 +191,7 @@ export function performImpersonation(user1, email) {
       .should('be.visible')
       .click()
 
-    cy.get('svg[class*=dots]').should('have.length', 1)
+    cy.get('svg[class*=dots]', { timeout: 15000 }).should('have.length', 1)
     cy.get('div[role=rowgroup] > div > span').contains(email)
 
     const SalesAdmin = !!user1.match(/Sales Admin/i)

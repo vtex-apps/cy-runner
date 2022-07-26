@@ -14,6 +14,7 @@ describe('Organization Negative TestCases', () => {
 
   const { users, gmailCreds } = b2b.OrganizationA
 
+  // Here, If login got successful then in 2.5 we can use the cookies and login
   loginToStoreFront(users.Buyer1, ROLE_DROP_DOWN.Buyer, gmailCreds)
 
   createOrganizationWithoutCostCenterNameAndAddress(
