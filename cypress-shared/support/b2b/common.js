@@ -1,5 +1,5 @@
 import selectors from '../common/selectors.js'
-import { generateEmailId, validateToastMsg } from './utils.js'
+import { generateEmailWithSuffix, validateToastMsg } from './utils.js'
 import { BUTTON_LABEL, TOAST_MSG } from '../validation_text.js'
 import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
 import { updateRetry } from '../common/support.js'
@@ -132,23 +132,32 @@ export function productShouldNotbeAvailableTestCase(product) {
   )
 }
 
-export function userAndCostCenterShouldNotBeEditable(
-  organization,
+export function userAndCostCenterShouldNotBeEditable({
+  organizationName,
   costCenter,
-  role
-) {
+  role,
+  gmailCreds,
+}) {
   it(
-    `Trying to update user and cost center in ${organization} with role ${role.dropDownText}`,
+    `Trying to update user and cost center in ${organizationName} with role ${role.dropDownText}`,
     updateRetry(1),
     () => {
-      const { email } = role
+      const { suffixInEmail } = role
 
       cy.gotoMyOrganization()
       cy.get(selectors.AddUser).should('be.visible')
-      cy.contains(generateEmailId(organization, email)).should(
-        'have.class',
-        'c-disabled'
+      cy.get(
+        '.vtex-table__container .ReactVirtualized__Grid__innerScrollContainer'
       )
+        .last()
+        .contains(
+          generateEmailWithSuffix(
+            gmailCreds.email,
+            organizationName,
+            suffixInEmail
+          )
+        )
+        .should('have.class', 'c-disabled')
       cy.get(selectors.AddUser).should('be.visible').should('be.disabled')
       cy.get(selectors.AddCostCenter).should('be.visible').should('be.disabled')
       cy.get(
@@ -182,7 +191,7 @@ export function performImpersonation(user1, email) {
       .should('be.visible')
       .click()
 
-    cy.get('svg[class*=dots]').should('have.length', 1)
+    cy.get('svg[class*=dots]', { timeout: 15000 }).should('have.length', 1)
     cy.get('div[role=rowgroup] > div > span').contains(email)
 
     const SalesAdmin = !!user1.match(/Sales Admin/i)

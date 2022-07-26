@@ -42,12 +42,17 @@ describe('Organization A - Cost Center A1 - Organization Admin2 Scenario', () =>
     costCenter2,
     users,
     quotes,
+    gmailCreds,
   } = b2b.OrganizationA
 
   const { organizationName: organizationB, quotes: organizationBQuote } =
     b2b.OrganizationB
 
-  loginToStoreFront(users.OrganizationAdmin2, ROLE_DROP_DOWN.OrganizationAdmin)
+  loginToStoreFront(
+    users.OrganizationAdmin2,
+    ROLE_DROP_DOWN.OrganizationAdmin,
+    gmailCreds
+  )
   verifySession(
     b2b.OrganizationA,
     costCenter2.name,

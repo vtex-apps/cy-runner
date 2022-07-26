@@ -47,15 +47,25 @@ function QuotesAccess(
 describe('Organization A - Cost Center A1 - Sales Rep Scenario', () => {
   testSetup(false)
 
-  const { nonAvailableProduct, users, product, costCenter1, quotes } =
-    b2b.OrganizationA
+  const {
+    nonAvailableProduct,
+    users,
+    product,
+    costCenter1,
+    quotes,
+    gmailCreds,
+  } = b2b.OrganizationA
 
   const { organizationName: organizationB, quotes: organizationBQuote } =
     b2b.OrganizationB
 
   const impersonatedRole = ROLE_DROP_DOWN.Buyer
 
-  loginToStoreFront(users.SalesRep, roleObject.SalesRepresentative.role)
+  loginToStoreFront(
+    users.SalesRep,
+    roleObject.SalesRepresentative.role,
+    gmailCreds
+  )
   verifySession(
     b2b.OrganizationA,
     costCenter1.name,

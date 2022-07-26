@@ -4,15 +4,15 @@ export function generateName(role) {
   return `${role}-Robot`
 }
 
-export function generateEmailId(organization, role) {
-  const [basename, domain] = Cypress.env().base.gmail.id.split('@')
-  const email = `${basename}+${
+export function generateEmailWithSuffix(email, organization, role) {
+  const [basename, domain] = email.split('@')
+  const emailWithPrefix = `${basename}+${
     Cypress.env().workspace.name
   }${organization.slice(0, 3)}${organization
     .split('-')[0]
     .slice(-1)}${role}a@${domain}`
 
-  return email.toLowerCase()
+  return emailWithPrefix.toLowerCase()
 }
 
 export const STATUSES = {
@@ -33,26 +33,26 @@ export const ROLE_DROP_DOWN = {
 export const ROLE_DROP_DOWN_EMAIL_MAPPING = {
   OrganizationAdmin1: {
     dropDownText: ROLE_DROP_DOWN.OrganizationAdmin,
-    email: 'oa1',
+    suffixInEmail: 'oa1',
   },
   OrganizationAdmin2: {
     dropDownText: ROLE_DROP_DOWN.OrganizationAdmin,
-    email: 'oa2',
+    suffixInEmail: 'oa2',
   },
   OrganizationAdmin3: {
     dropDownText: ROLE_DROP_DOWN.OrganizationAdmin,
-    email: 'oa3',
+    suffixInEmail: 'oa3',
   },
-  Buyer1: { dropDownText: ROLE_DROP_DOWN.Buyer, email: 'b1' },
-  Buyer2: { dropDownText: ROLE_DROP_DOWN.Buyer, email: 'b2' },
-  Buyer3: { dropDownText: ROLE_DROP_DOWN.Buyer, email: 'b3' },
+  Buyer1: { dropDownText: ROLE_DROP_DOWN.Buyer, suffixInEmail: 'b1' },
+  Buyer2: { dropDownText: ROLE_DROP_DOWN.Buyer, suffixInEmail: 'b2' },
+  Buyer3: { dropDownText: ROLE_DROP_DOWN.Buyer, suffixInEmail: 'b3' },
   Buyer4: {
     dropDownText: ROLE_DROP_DOWN.Buyer,
-    email: 'b3',
+    suffixInEmail: 'b3',
   },
-  Approver1: { dropDownText: ROLE_DROP_DOWN.Approver, email: 'a1' },
-  Approver2: { dropDownText: ROLE_DROP_DOWN.Approver, email: 'a2' },
-  Approver3: { dropDownText: ROLE_DROP_DOWN.Approver, email: 'a3' },
+  Approver1: { dropDownText: ROLE_DROP_DOWN.Approver, suffixInEmail: 'a1' },
+  Approver2: { dropDownText: ROLE_DROP_DOWN.Approver, suffixInEmail: 'a2' },
+  Approver3: { dropDownText: ROLE_DROP_DOWN.Approver, suffixInEmail: 'a3' },
 }
 
 export const OTHER_ROLES = [
@@ -62,9 +62,9 @@ export const OTHER_ROLES = [
 ]
 
 export const ROLE_ID_EMAIL_MAPPING = {
-  SalesAdmin: { role: OTHER_ROLES[0], email: 'sa' },
-  SalesRepresentative: { role: OTHER_ROLES[1], email: 'sr' },
-  SalesManager: { role: OTHER_ROLES[2], email: 'sm' },
+  SalesAdmin: { role: OTHER_ROLES[0], suffixInEmail: 'sa' },
+  SalesRepresentative: { role: OTHER_ROLES[1], suffixInEmail: 'sr' },
+  SalesManager: { role: OTHER_ROLES[2], suffixInEmail: 'sm' },
 }
 
 export const PAYMENT_TERMS = {
