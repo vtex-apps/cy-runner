@@ -111,7 +111,7 @@ export function quoteShouldNotBeVisibleTestCase(
     { retries: 2 },
     () => {
       viewQuote(quoteId, false)
-      cy.get(selectors.QuoteFromMyQuotesPage, { timeout: 10000 })
+      cy.get(selectors.QuoteFromMyQuotesPage, { timeout: 15000 })
         .invoke('text')
         .should('not.include', quoteId)
     }
@@ -128,7 +128,7 @@ export function quoteShouldbeVisibleTestCase(
     { retries: 2 },
     () => {
       viewQuote(quoteId, false)
-      cy.get(selectors.QuoteFromMyQuotesPage, { timeout: 10000 })
+      cy.get(selectors.QuoteFromMyQuotesPage, { timeout: 15000 })
         .invoke('text')
         .should('include', quoteId)
     }
@@ -418,7 +418,7 @@ export function searchQuote(quote, email = false) {
   it(title, updateRetry(3), () => {
     cy.gotoMyQuotes()
     cy.get(selectors.QuoteSearchQuery).clear().type(`${quote}{enter}`)
-    cy.contains(quote, { timeout: 8000 }).should('be.visible')
+    cy.contains(quote, { timeout: 15000 }).should('be.visible')
     cy.waitForGraphql(GRAPHL_OPERATIONS.GetQuotes, selectors.QuoteSearch)
     cy.get(selectors.QuoteFromMyQuotesPage).then(($els) => {
       let quotesList = Array.from($els, (el) => el.innerText)
