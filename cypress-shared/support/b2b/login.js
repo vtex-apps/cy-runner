@@ -40,8 +40,9 @@ export function storeUserCookie(email) {
 export function loginToStoreFront(email, role, gmailCreds) {
   it(
     `Logging in to storefront as ${role}`,
-    { defaultCommandTimeout: 70000 },
+    { defaultCommandTimeout: 60000, retries: 1 },
     () => {
+      cy.addDelayBetweenRetries(30000)
       cy.getOrganizationItems().then((organization) => {
         if (organization[email]) {
           cy.log('Logging with saved cookies')
