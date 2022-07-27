@@ -357,16 +357,16 @@ function generateBaseUrl(config) {
 
 exports.generateBaseUrl = generateBaseUrl
 
-exports.writeCypressJson = (config) => {
-  const CYPRESS_JSON_FILE = 'cypress.json'
+exports.writeCypressConfigJs = (config) => {
+  const CYPRESS_CONFIG_JS = 'cypress.config.js'
   const CYPRESS = config.base.cypress
   const baseUrl = generateBaseUrl(config)
 
+  
   try {
     fs.writeFileSync(
-      CYPRESS_JSON_FILE,
-      JSON.stringify({
-        baseUrl,
+      CYPRESS_CONFIG_JS,
+      defineConfig({
         chromeWebSecurity: CYPRESS.chromeWebSecurity,
         video: CYPRESS.video,
         videoCompression: CYPRESS.videoCompression,
@@ -384,11 +384,18 @@ exports.writeCypressJson = (config) => {
         retries: 0,
         screenshotsFolder: 'logs/screenshots',
         videosFolder: 'logs/videos',
+        e2e: {
+          setupNodeEvents(on, config) {
+            return require('./cypress/plugins/index.js')(on, config)
+          },
+          baseUrl,
+          specPattern: 'cypress/e2e/**/*.{js,jsx,ts,tsx}',
+        },
       })
     )
-    this.msg(`${CYPRESS_JSON_FILE} created successfully`)
+    this.msg(`${CYPRESS_CONFIG_JS} created successfully`)
   } catch (e) {
-    this.crash('Fail to create Cypress JSON file', e)
+    this.crash('Fail to create Cypress ConfigJs file', e)
   }
 }
 
@@ -495,14 +502,18 @@ exports.stopOnFail = async (config, step) => {
 exports.openCypress = async () => {
   let baseDir = 'cypress-shared'
 
-  if (this.storage(path.join('cypress', 'integration'))) baseDir = 'cypress'
+  if (this.storage(path.join('cypress', 'e2e'))) baseDir = 'cypress'
   const options = {
     config: {
-      integrationFolder: `${baseDir}/integration`,
-      supportFile: `${baseDir}/support`,
+      // e2e: `${baseDir}/e2e`,
+      // supportFile: `${baseDir}/support`,
+      e2e: {
+        specPattern: `${baseDir}/e2e`,
+        supportFile: `${baseDir}/support/e2e.js`,
+      },
     },
   }
-
+  3
   // Open Cypress
   try {
     await cypress.open(options)

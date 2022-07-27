@@ -2,7 +2,7 @@ const path = require('path')
 
 const qe = require('./utils')
 
-exports.getConfig = async (configFile) => {
+exports.getConfig =  (configFile) => {
   qe.msg('Checking configuration', 'warn')
   // Check config file, parse it and add dynamic values
   let config = qe.loadYmlConfig(configFile)
@@ -23,7 +23,7 @@ exports.getConfig = async (configFile) => {
   // Write cypress.env.json
   qe.writeEnvJson(config)
   // Write cypress.json
-  qe.writeCypressJson(config)
+  // qe.writeCypressConfigJs(config)
   // Create empty state files
   qe.createStateFiles(config)
   // Create empty logs dir
