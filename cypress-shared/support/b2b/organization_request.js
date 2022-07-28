@@ -102,13 +102,27 @@ function submitOrganization(org) {
   })
 }
 
+function generateSubTitle(approved, declined) {
+  let subTitle = 'organization is in pending state'
+
+  if (approved) {
+    subTitle = `we are able to Approve via graphql`
+  } else if (declined) {
+    subTitle = `we are able to Decline via graphql`
+  }
+
+  return subTitle
+}
+
 export function createOrganizationTestCase(
   organization,
   { costCenterName, costCenterAddress, approved = false, declined = false }
 ) {
+  const msg = generateSubTitle(approved, declined)
+
   it(
-    `Creating ${organization.name} via storefront & Approving ${organization.name} via graphql`,
-    { retries: 2 },
+    `Creating ${organization.name} via storefront & verify ${msg}`,
+    updateRetry(1),
     () => {
       cy.getVtexItems().then((vtex) => {
         const { name, b2bCustomerAdmin, defaultCostCenter } =
@@ -142,7 +156,7 @@ export function createOrganizationTestCase(
 }
 
 export function approveOrganization(organization) {
-  it(`Approving ${organization} request`, () => {
+  it(`Approving ${organization} request`, updateRetry(1), () => {
     cy.getVtexItems().then((vtex) => {
       updateOrganizationRequestStatus(
         { vtex, verify: false },
@@ -198,7 +212,7 @@ export function requestOrganizationAndVerifyPopup(
 
   it(
     `Creating ${organization.name} via storefront and verify we are getting this message ${msg} in popup`,
-    updateRetry(2),
+    updateRetry(1),
     () => {
       const { name, b2bCustomerAdmin, defaultCostCenter } =
         getOrganisationPayload(
@@ -232,7 +246,7 @@ export function createOrganizationRequestTestCase(
   { costCenterName, costCenterAddress },
   email
 ) {
-  it(`Creating ${organization.name} via storefront`, () => {
+  it(`Creating ${organization.name} via storefront`, updateRetry(1), () => {
     const { name, b2bCustomerAdmin, defaultCostCenter } =
       getOrganisationPayload(
         organization,
@@ -257,7 +271,7 @@ export function createOrganizationWithInvalidEmail(
   { costCenterName, costCenterAddress },
   email
 ) {
-  it(`Creating ${organization} with invalid email`, () => {
+  it(`Creating ${organization} with invalid email`, updateRetry(1), () => {
     const { name, b2bCustomerAdmin, defaultCostCenter } =
       getOrganisationPayload(
         organization,
@@ -286,22 +300,26 @@ export function createOrganizationWithoutCostCenterNameAndAddress(
   { costCenterName, costCenterAddress },
   email
 ) {
-  it(`Creating Organization without cost center name & address`, () => {
-    const { name, b2bCustomerAdmin } = getOrganisationPayload(
-      organization,
-      {
-        costCenterName,
-        costCenterAddress,
-      },
-      email
-    )
+  it(
+    `Creating Organization without cost center name & address`,
+    updateRetry(1),
+    () => {
+      const { name, b2bCustomerAdmin } = getOrganisationPayload(
+        organization,
+        {
+          costCenterName,
+          costCenterAddress,
+        },
+        email
+      )
 
-    verifyOrganizationData({ name, b2bCustomerAdmin }, null, null)
+      verifyOrganizationData({ name, b2bCustomerAdmin }, null, null)
 
-    cy.get(selectors.SubmitOrganization)
-      .should('be.visible')
-      .should('be.disabled')
-  })
+      cy.get(selectors.SubmitOrganization)
+        .should('be.visible')
+        .should('be.disabled')
+    }
+  )
 }
 
 export function createOrganizationWithoutName(
@@ -309,7 +327,7 @@ export function createOrganizationWithoutName(
   { costCenterName, costCenterAddress },
   email
 ) {
-  it(`Creating Organization without name`, () => {
+  it(`Creating Organization without name`, updateRetry(1), () => {
     const { b2bCustomerAdmin, defaultCostCenter } = getOrganisationPayload(
       organization,
       { costCenterName, costCenterAddress },
@@ -330,7 +348,7 @@ export function createOrganizationWithoutName(
 export function organizationAdminShouldNotAbleToEditSalesUsers() {
   it(
     `Organization should not be able to edit Sales Users`,
-    { retries: 1 },
+    updateRetry(1),
     () => {
       cy.gotoMyOrganization()
       cy.get(selectors.AddUser).should('be.visible')

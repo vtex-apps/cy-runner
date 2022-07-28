@@ -6,6 +6,14 @@ import {
   generateAddtoCartCardSelector,
 } from './utils.js'
 
+export function scroll() {
+  // So, scroll first then look for selectors
+  cy.scrollTo(0, 1000)
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
+  cy.wait(1000)
+  cy.scrollTo(0, -100)
+}
+
 function setAuthCookie(authResponse) {
   expect(authResponse.body).to.have.property('authCookie')
   // Set AUTH_COOKIE
@@ -150,33 +158,6 @@ export function fillAddress(postalCode) {
   })
 }
 
-function fillContactInfo() {
-  cy.wait('@v8')
-  cy.get(selectors.QuantityBadge).should('be.visible')
-  cy.get(selectors.SummaryCart).should('be.visible')
-  cy.get(selectors.FirstName).clear().type('Syed', {
-    delay: 50,
-  })
-  cy.get(selectors.LastName).clear().type('Mujeeb', {
-    delay: 50,
-  })
-  cy.get(selectors.Phone).clear().type('(304) 123 4556', {
-    delay: 50,
-  })
-  cy.get(selectors.ProceedtoShipping).should('be.visible').click()
-  cy.get(selectors.ProceedtoShipping, { timeout: 1000 }).should(
-    'not.be.visible'
-  )
-  cy.get('body').then(($shippingBlock) => {
-    if ($shippingBlock.find(selectors.ReceiverName).length) {
-      cy.get(selectors.ReceiverName, { timeout: 5000 }).type('Syed', {
-        delay: 50,
-      })
-      cy.get(selectors.GotoPaymentBtn).should('be.visible').click()
-    }
-  })
-}
-
 function fillAddressLine1(deliveryScreenAddress) {
   cy.get('body').then(($shippingBlock) => {
     if ($shippingBlock.find(selectors.ShipStreet).length) {
@@ -202,11 +183,42 @@ function startShipping() {
   })
 }
 
+export function fillContactInfo(shippingStrategySelector) {
+  cy.get(selectors.QuantityBadge).should('be.visible')
+  cy.get(selectors.SummaryCart).should('be.visible')
+  cy.get(selectors.FirstName).clear().type('Syed', {
+    delay: 50,
+  })
+  cy.get(selectors.LastName).clear().type('Mujeeb', {
+    delay: 50,
+  })
+  cy.get(selectors.Phone).clear().type('(304) 123 4556', {
+    delay: 50,
+  })
+  cy.get(selectors.ProceedtoShipping).should('be.visible').click()
+  cy.get(selectors.ProceedtoShipping, { timeout: 1000 }).should(
+    'not.be.visible'
+  )
+  cy.get('body').then(($shippingBlock) => {
+    if ($shippingBlock.find(selectors.ReceiverName).length) {
+      cy.get(selectors.ReceiverName, { timeout: 5000 }).type('Syed', {
+        delay: 50,
+      })
+      shippingStrategySelector &&
+        cy.get(shippingStrategySelector).should('be.visible').click()
+      cy.get(selectors.GotoPaymentBtn).should('be.visible').click()
+    } else {
+      cy.log('Shipping block is not shown! May be ReceiverName already filled')
+    }
+  })
+}
+
 export function updateShippingInformation({
   postalCode,
   pickup = false,
   invalid = false,
   timeout = 5000,
+  shippingStrategySelector = null,
 }) {
   const { deliveryScreenAddress } = addressList[postalCode]
 
@@ -239,7 +251,8 @@ export function updateShippingInformation({
 
     cy.get(selectors.FirstName).then(($el) => {
       if (Cypress.dom.isVisible($el)) {
-        fillContactInfo()
+        cy.wait('@v8')
+        fillContactInfo(shippingStrategySelector)
       }
     })
 
@@ -257,7 +270,6 @@ export function updateProductQuantity(
   } = {}
 ) {
   cy.get(selectors.CartTimeline).should('be.visible').click({ force: true })
-  cy.get(selectors.ShippingPreview).should('be.visible')
   if (multiProduct) {
     // Set First product quantity and don't verify subtotal because we passed false
     setProductQuantity(
@@ -337,25 +349,6 @@ export function loginAsUser(email, password) {
   })
 }
 
-export function logintoStore() {
-  // LoginAsAdmin
-  cy.loginAsAdmin()
-  // LoginAsUser and visit home page
-  cy.getVtexItems().then((vtex) => {
-    cy.loginAsUser(vtex.robotMail, vtex.robotPassword)
-    if (cy.state('runnable')._currentRetry > 0) {
-      cy.reload()
-    }
-
-    cy.visit(vtex.baseUrl)
-  })
-
-  // Home page should show Hello,
-  cy.get(selectors.ProfileLabel)
-    .should('be.visible')
-    .should('have.contain', `Hello,`)
-}
-
 export function net30Payment() {
   cy.promissoryPayment()
   cy.buyProduct()
@@ -401,7 +394,9 @@ export function searchProduct(searchKey) {
     .type(searchKey)
     .type('{enter}')
   // Page should load successfully now searchResult & Filter should be visible
-  cy.get(selectors.searchResult).should('have.text', searchKey.toLowerCase())
+  cy.get(selectors.searchResult)
+    .should('be.visible')
+    .should('have.text', searchKey.toLowerCase())
   cy.get(selectors.FilterHeading).should('be.visible')
 }
 
@@ -419,13 +414,13 @@ export function stopTestCaseOnFailure() {
   })
 }
 
-/* Test Setup
+/* Test Setup - Use Cookies to Login
    before()
      a) Inject Authentication cookie
   afterEach()
      a) Stop Execution if testcase gets failed in all retries
 */
-
+// TODO: Update this functionName to be called as loginViaCookies()
 export function testSetup(storeFrontCookie = true, stop = true) {
   before(() => {
     // Inject cookies
@@ -442,6 +437,25 @@ export function testSetup(storeFrontCookie = true, stop = true) {
           }
         )
       }
+    })
+  })
+  if (stop) stopTestCaseOnFailure()
+}
+
+/* loginViaAPI - Use API for login
+   before()
+     a) Inject Authentication cookie
+  afterEach()
+     a) Stop Execution if testcase gets failed in all retries
+*/
+
+export function loginViaAPI(stop = true) {
+  before(() => {
+    // LoginAsAdmin
+    loginAsAdmin()
+    // LoginAsUser and visit home page
+    cy.getVtexItems().then((vtex) => {
+      loginAsUser(vtex.robotMail, vtex.robotPassword)
     })
   })
   if (stop) stopTestCaseOnFailure()

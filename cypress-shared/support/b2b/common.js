@@ -1,5 +1,5 @@
 import selectors from '../common/selectors.js'
-import { generateEmailId, validateToastMsg } from './utils.js'
+import { generateEmailWithSuffix, validateToastMsg } from './utils.js'
 import { BUTTON_LABEL, TOAST_MSG } from '../validation_text.js'
 import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
 import { updateRetry } from '../common/support.js'
@@ -53,7 +53,7 @@ function addPaymentTermsCollectionPriceTables(organizationItems, organization) {
 export function addPaymentTermsCollectionPriceTablesTestCase(organization) {
   it(
     `Add Payment Terms/Collections/Price Tables for ${organization.organizationName}`,
-    { retries: 3 },
+    updateRetry(3),
     () => {
       cy.getVtexItems().then((vtex) => {
         cy.getOrganizationItems().then((organizationItems) => {
@@ -104,7 +104,7 @@ function verifyWidget(organization, costCenter, role) {
 export function verifySession(organization, costCenter, role) {
   it(
     'Verifying Session items must have expected priceTable and collections',
-    { retries: 1 },
+    updateRetry(2),
     () => {
       cy.request('/api/sessions?items=*').then((response) => {
         expect(response.body.namespaces.profile.priceTables.value).to.equal(
@@ -124,7 +124,7 @@ export function verifySession(organization, costCenter, role) {
 export function productShouldNotbeAvailableTestCase(product) {
   it(
     'Products from outside collection should not be visible to the user',
-    { retries: 2 },
+    updateRetry(2),
     () => {
       cy.searchProductinB2B(product)
       cy.get(selectors.PageNotFound).should('be.visible')
@@ -132,35 +132,48 @@ export function productShouldNotbeAvailableTestCase(product) {
   )
 }
 
-export function userAndCostCenterShouldNotBeEditable(
-  organization,
+export function userAndCostCenterShouldNotBeEditable({
+  organizationName,
   costCenter,
-  role
-) {
-  it(`Trying to update user and cost center in ${organization} with role ${role.dropDownText}`, () => {
-    const { email } = role
+  role,
+  gmailCreds,
+}) {
+  it(
+    `Trying to update user and cost center in ${organizationName} with role ${role.dropDownText}`,
+    updateRetry(1),
+    () => {
+      const { suffixInEmail } = role
 
-    cy.gotoMyOrganization()
-    cy.get(selectors.AddUser).should('be.visible')
-    cy.contains(generateEmailId(organization, email)).should(
-      'have.class',
-      'c-disabled'
-    )
-    cy.get(selectors.AddUser).should('be.visible').should('be.disabled')
-    cy.get(selectors.AddCostCenter).should('be.visible').should('be.disabled')
-    cy.get(
-      '.vtex-table__container .ReactVirtualized__Grid__innerScrollContainer'
-    )
-      .eq(1)
-      .contains(costCenter)
-      .click()
-    cy.get(selectors.CostCenterHeader)
-      .contains(BUTTON_LABEL.save)
-      .should('be.disabled')
-    cy.get(selectors.CostCenterHeader)
-      .contains(BUTTON_LABEL.delete)
-      .should('be.disabled')
-  })
+      cy.gotoMyOrganization()
+      cy.get(selectors.AddUser).should('be.visible')
+      cy.get(
+        '.vtex-table__container .ReactVirtualized__Grid__innerScrollContainer'
+      )
+        .last()
+        .contains(
+          generateEmailWithSuffix(
+            gmailCreds.email,
+            organizationName,
+            suffixInEmail
+          )
+        )
+        .should('have.class', 'c-disabled')
+      cy.get(selectors.AddUser).should('be.visible').should('be.disabled')
+      cy.get(selectors.AddCostCenter).should('be.visible').should('be.disabled')
+      cy.get(
+        '.vtex-table__container .ReactVirtualized__Grid__innerScrollContainer'
+      )
+        .eq(1)
+        .contains(costCenter)
+        .click()
+      cy.get(selectors.CostCenterHeader)
+        .contains(BUTTON_LABEL.save)
+        .should('be.disabled')
+      cy.get(selectors.CostCenterHeader)
+        .contains(BUTTON_LABEL.delete)
+        .should('be.disabled')
+    }
+  )
 }
 
 export function performImpersonation(user1, email) {
@@ -178,11 +191,8 @@ export function performImpersonation(user1, email) {
       .should('be.visible')
       .click()
 
-    cy.get(
-      `.vtex-table__container:nth-child(1) div[role=rowgroup] > div:nth-child(1)> span.c-disabled`
-    )
-      .last()
-      .should('have.text', email)
+    cy.get('svg[class*=dots]', { timeout: 15000 }).should('have.length', 1)
+    cy.get('div[role=rowgroup] > div > span').contains(email)
 
     const SalesAdmin = !!user1.match(/Sales Admin/i)
     const childIndex = SalesAdmin ? 5 : 4

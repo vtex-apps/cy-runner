@@ -65,7 +65,7 @@ export default {
 
   // *************Product Page Constants starts here************ //
   AddressForm: 'div[class*=addressForm]',
-  NormalShipping: "input[value='Normal']",
+  NormalShipping: 'label[id=Normal]',
   FilterHeading: 'h5[class*="filter"]',
 
   // *************Product Page Constants end here************ //
@@ -280,9 +280,9 @@ export default {
         clear: '.vtex__icon-clear',
       },
       categories: {
-        title: '.vtex-rich-text-0-x-heading--quickTitle',
+        title: 'h3[class*=Quickorder]',
         product: 'Sporting',
-        quantity: 'div[class*=category] input[type=text]',
+        quantity: 'div[class*=category] input[type=number]',
         addtoCart: 'div[class*=categoryProduct] button',
       },
     }
@@ -297,7 +297,7 @@ export default {
   RequestQuote: /Request Quote/i,
   SaveQuote: /Save Quote/i,
   SaveForLater: /Save for Later/i,
-  QuoteStatus: 'div[class*=vtex-tag]',
+  QuoteStatus: '[data-testid=totalizer-value] > .vtex-tag',
   CurrencyContainer: 'span[class*=currencyContainer]',
   QuoteStatusInMyQuotesPage:
     '.ReactVirtualized__Grid:nth-child(2) div[role="rowgroup"] > div[class*=items] div[class*=tag]',
@@ -307,6 +307,7 @@ export default {
   // *************B2B Constants My Quotes start here************ //
   MyQuotes: 'span[class*=orderQuote]',
   QuoteSearchQuery: 'input[type=search]',
+  QuoteLink: 'a[href*=quote]',
   QuoteSearch: '#toolbar svg[class*=search]',
   QuotesToolBar: '#toolbar',
   QuotesFilterByStatus: '.ma2:nth-child(1) button',
@@ -321,16 +322,20 @@ export default {
   // *************B2B Constants My Quotes section end here************ //
   // *************B2B Constants Quote Details section start here************ //
   PriceField: 'input[name=price]',
-  QuoteTotal: 'div[data-testid=totalizer-value]',
+  QuoteOrginalTotal:
+    'div[data-testid=totalizer-item-original-subtotal] div[data-testid=totalizer-value]',
+  QuoteTotal:
+    'div[data-testid=totalizer-item-quoted-subtotal] div[data-testid=totalizer-value]',
   Discount:
     'div[data-testid*=percentage-discount] div[data-testid=totalizer-value]',
-  NewProductPrice: '.new-product-price',
+  SubTotalLabel: '.totalizers-list > tr > td.info',
+  NewProductPrice: '.totalizers-list > tr > td.monetary',
   DiscountSliderContainer: '.vtex-slider__selector-container',
   SliderSelector: '.vtex-slider__selector',
   SliderToolTip: '.vtex-slider__selector-tooltip',
   SliderContainer: '.vtex-slider-container',
   QuantityField: 'input[name=quantity]',
-  Decline: '.nowrap > span:nth-child(1) button',
+  Decline: 'button[class*=danger]',
   SubmitToSalesRep: 'Submit',
   UseQuote: 'Use Quote',
   BackBtn: 'div[class*=pageHeader] span',
@@ -347,4 +352,70 @@ export default {
   QuantityInCart: 'div[class*=quantityInputContainer] input[id*=quantity]',
   ItemsPriceInCart: '#items-price',
   // *************B2B Constants end here************ //
+
+  // *************** Location availability & Shopper location ********
+
+  province: 'div[class*=dropdown__container] > select',
+  addressInputContainer: 'div[class*=addressInputContainer] input',
+  saveButton: '.vtex-shopper-location-1-x-changeLocationSubmitContainer',
+  countryDropdown: 'div[class*=address-form] > select',
+  ChangeLocationButton:
+    'section[class*=changeLocationGeoContainer] .vtex-button',
+  addressContainer: 'div[class*=userAddressContainer]',
+  switchButton: '.nt4 > .vtex-button > .vtex-button__label',
+  AddressModelLayout: 'div[class*=vtex-modal-layout]',
+  AddressErrorContainer: 'div[class*=changeLocationGeoErrorContainer]',
+  ChangeLocationError: 'div[class*=input__error]',
+  Address: 'div[class*=addressInputContainer] > label',
+  verifyLocationInHome: 'div[class*=addressInfoAddressContainer]',
+  AddToCart:
+    'button[type=button] > div[class*=vtex-button__label] >div[class*=buttonDataContainer] > span[class*=buttonText]',
+  ProceedToCheckOut: '#proceed-to-checkout > .vtex-button__label',
+  verifyLocationInCheckOut: '.srp-address-title',
+  orderButton: 'a[id=cart-to-orderform]',
+  SaveButton: 'section[class*=changeLocationSubmitContainer] button',
+  PaymentBtn: '#btn-go-to-payment',
+  PickUpBtn: '.srp-toggle__pickup',
+  SelectState: '.vtex-styleguide-9-x-container > .o-0',
+  AvailabilityHeader: 'span[class*=availabilityHeaderLink]',
+  NoAvailabilityHeader: 'div[class*=availabilityHeader]',
+  city: 'div[class*=addressInputContainer] > label',
+  shippingContent:
+    'div[class*=container] > p  > span[class*=freeShipping] span[class*=freeShippingLabel]',
+  shippingUnavailabilityInformation:
+    'div[class*=shippingListContainer] > div[class*=shippingListEmptyMessage]',
+  storeUnavailabilityInformation:
+    'div[class*=storeListContainer] > div[class*=storeListEmptyMessage]',
+  shippingUnavailable: 'div[class*=container] > p',
+  unavailableLocation:
+    'div[class*=shippingListContainer] > div[class*=shippingListEmptyMessage]',
+  AddPickUpButton: '.w-70-ns > :nth-child(2) > .vtex-button__label',
+  PickUpPointName: 'input[name=name]',
+  PickUpPointId: 'input[name=id]',
+  PickUpAddress: '.vtex-input .pac-target-input',
+  CheckBox: 'input[value="monday-active"]',
+  WorkStartTime: 'input[name="openingTime"]',
+  WorkEndTime: 'input[name="closingTime"]',
+  SaveChanges: '.flex.justify-end > .pb7 > .vtex-button > .vtex-button__label',
+  ChangesSaved: 'div[class*=vtex-toast] .pr5',
+  VtexButton: '.vtex-button',
+  UploadInput: 'input[type=file]',
+  CloseIcon: '.vtex-modal__close-icon',
+  VtexAlert: '.vtex-alert .ph5',
+  AddressCity:
+    'div[class*=addressDistanceContainer] > span[class*=addressCity]',
+  AddressZip:
+    'div[class*=addressDistanceContainer] > span[class*=addressCity] > span[class*=addressZip]',
+  Distance: 'div[class*=addressDistanceContainer] > span[class*=distance]',
+  VerifyMaxItem: 'div[class*=storeList] > div[class*=pickupItem]',
+  OrderByFaster:
+    'div[class*=storeList] > div[class*=pickupItem] > div[class*=pickupEstimate] > div[class*=estimateTranslated]',
+  findMyLocation:
+    'div[class*=changeLocationFormContainer] > section[class*=changeLocationGeoContainer] > button[class*=vtex-button]',
+  shippingErrorMessage:
+    'section[class*=changeLocationGeoContainer] > div[class*=changeLocationGeoErrorContainer]',
+  closeButton: 'div[class*=closeButtonContainer] > button[class*=closeButton]',
+  addressUpdation:
+    'div[class*=userAddressContainer] > section > div[class*=flex] > div[class*=flex-auto] > div[class*=items-center] > div[class*=addressInfoTextContainer] > div[class*=addressInfoAddressContainer]',
+  InputText: "input[type='text']",
 }

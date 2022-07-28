@@ -133,6 +133,15 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
     /* falls through */
 
     case 'uninstall':
+      // Check if we are on workspace master
+      stdout = this.exec(`${bin} whoami`, 'pipe').toString()
+      check = /master/.test(stdout)
+      if (check) {
+        this.crash(
+          'You should not install or uninstall apps on workspace master',
+          `${bin} ${cmd}\n${stdout}`
+        )
+      }
     /* falls through */
 
     case 'unlink':
@@ -357,46 +366,10 @@ function generateBaseUrl(config) {
 
 exports.generateBaseUrl = generateBaseUrl
 
-exports.writeCypressConfigJs = (config) => {
-  const CYPRESS_CONFIG_JS = 'cypress.config.js'
-  const CYPRESS = config.base.cypress
-  const baseUrl = generateBaseUrl(config)
+function getBaseDir(storage) {
+  if (storage(path.join('cypress', 'integration'))) return 'cypress'
 
-  
-  try {
-    fs.writeFileSync(
-      CYPRESS_CONFIG_JS,
-      defineConfig({
-        chromeWebSecurity: CYPRESS.chromeWebSecurity,
-        video: CYPRESS.video,
-        videoCompression: CYPRESS.videoCompression,
-        videoUploadOnPasses: CYPRESS.videoUploadOnPasses,
-        screenshotOnRunFailure: CYPRESS.screenshotOnRunFailure,
-        trashAssetsBeforeRuns: CYPRESS.trashAssetsBeforeRuns,
-        viewportWidth: CYPRESS.viewportWidth,
-        viewportHeight: CYPRESS.viewportHeight,
-        defaultCommandTimeout: CYPRESS.defaultCommandTimeout,
-        requestTimeout: CYPRESS.defaultCommandTimeout,
-        watchForFileChanges: CYPRESS.watchForFileChanges,
-        pageLoadTimeout: CYPRESS.pageLoadTimeout,
-        browser: CYPRESS.browser,
-        projectId: CYPRESS.projectId,
-        retries: 0,
-        screenshotsFolder: 'logs/screenshots',
-        videosFolder: 'logs/videos',
-        e2e: {
-          setupNodeEvents(on, config) {
-            return require('./cypress/plugins/index.js')(on, config)
-          },
-          baseUrl,
-          specPattern: 'cypress/e2e/**/*.{js,jsx,ts,tsx}',
-        },
-      })
-    )
-    this.msg(`${CYPRESS_CONFIG_JS} created successfully`)
-  } catch (e) {
-    this.crash('Fail to create Cypress ConfigJs file', e)
-  }
+  return 'cypress-shared'
 }
 
 exports.createStateFiles = (config) => {
@@ -500,20 +473,19 @@ exports.stopOnFail = async (config, step) => {
 }
 
 exports.openCypress = async () => {
-  let baseDir = 'cypress-shared'
+  let baseDir = getBaseDir(this.storage)
 
   if (this.storage(path.join('cypress', 'e2e'))) baseDir = 'cypress'
   const options = {
     config: {
-      // e2e: `${baseDir}/e2e`,
-      // supportFile: `${baseDir}/support`,
       e2e: {
         specPattern: `${baseDir}/e2e`,
         supportFile: `${baseDir}/support/e2e.js`,
+        fixturesFolder: `${baseDir}/fixtures`,
       },
     },
   }
-  3
+
   // Open Cypress
   try {
     await cypress.open(options)
@@ -525,6 +497,7 @@ exports.openCypress = async () => {
 exports.runCypress = async (test, config, addOptions = {}) => {
   // If mix base path for specs, stop it
   const specPath = path.parse(test.specs[0]).dir
+  const baseDir = getBaseDir(this.storage)
 
   test.specs.forEach((spec) => {
     const pathToCheck = path.parse(spec).dir
@@ -545,6 +518,7 @@ exports.runCypress = async (test, config, addOptions = {}) => {
     config: {
       integrationFolder: specPath,
       supportFile: `${specPath.split(path.sep)[0]}/support`,
+      fixturesFolder: `${baseDir}/fixtures`,
     },
     env: {
       DISPLAY: '',

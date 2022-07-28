@@ -1,10 +1,30 @@
 /* eslint-disable jest/valid-expect */
-import { testSetup } from '../../support/common/support.js'
+import { testSetup, updateRetry } from '../../support/common/support.js'
 import { ROLE_ID_EMAIL_MAPPING, OTHER_ROLES } from '../../support/b2b/utils.js'
 import { addUserViaGraphql } from '../../support/b2b/add_users.js'
+import b2b from '../../support/b2b/constants.js'
+
+const config = Cypress.env()
+
+// Constants
+const { name } = config.workspace
 
 describe('Add Sales Users via Graphql', () => {
   testSetup(false)
+  const { gmailCreds } = b2b.OrganizationA
+
+  // eslint-disable-next-line jest/expect-expect
+  it(
+    'Sync Checkout UI Custom & Add Sales Users via Graphql',
+    updateRetry(2),
+    () => {
+      cy.clearLocalStorage()
+      cy.visit('admin/app/vtex-checkout-ui-custom/')
+      cy.contains('Publish', { timeout: 25000 }).should('be.visible').click()
+      cy.contains('History', { timeout: 25000 }).should('be.visible').click()
+      cy.contains(name, { timeout: 15000 }).should('be.visible')
+    }
+  )
 
   it('Set roles in organization JSON', { retries: 3 }, () => {
     cy.getVtexItems().then((vtex) => {
@@ -35,6 +55,6 @@ describe('Add Sales Users via Graphql', () => {
   const roles = Object.keys(ROLE_ID_EMAIL_MAPPING)
 
   roles.forEach((r) => {
-    addUserViaGraphql(r)
+    addUserViaGraphql(gmailCreds, r)
   })
 })
