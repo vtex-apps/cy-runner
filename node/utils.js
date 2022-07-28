@@ -372,41 +372,6 @@ function getBaseDir(storage) {
   return 'cypress-shared'
 }
 
-exports.writeCypressJson = (config) => {
-  const CYPRESS_JSON_FILE = 'cypress.json'
-  const CYPRESS = config.base.cypress
-  const baseUrl = generateBaseUrl(config)
-
-  try {
-    fs.writeFileSync(
-      CYPRESS_JSON_FILE,
-      JSON.stringify({
-        baseUrl,
-        chromeWebSecurity: CYPRESS.chromeWebSecurity,
-        video: CYPRESS.video,
-        videoCompression: CYPRESS.videoCompression,
-        videoUploadOnPasses: CYPRESS.videoUploadOnPasses,
-        screenshotOnRunFailure: CYPRESS.screenshotOnRunFailure,
-        trashAssetsBeforeRuns: CYPRESS.trashAssetsBeforeRuns,
-        viewportWidth: CYPRESS.viewportWidth,
-        viewportHeight: CYPRESS.viewportHeight,
-        defaultCommandTimeout: CYPRESS.defaultCommandTimeout,
-        requestTimeout: CYPRESS.defaultCommandTimeout,
-        watchForFileChanges: CYPRESS.watchForFileChanges,
-        pageLoadTimeout: CYPRESS.pageLoadTimeout,
-        browser: CYPRESS.browser,
-        projectId: CYPRESS.projectId,
-        retries: 0,
-        screenshotsFolder: 'logs/screenshots',
-        videosFolder: 'logs/videos',
-      })
-    )
-    this.msg(`${CYPRESS_JSON_FILE} created successfully`)
-  } catch (e) {
-    this.crash('Fail to create Cypress JSON file', e)
-  }
-}
-
 exports.createStateFiles = (config) => {
   try {
     const { stateFiles } = config.base
@@ -508,13 +473,16 @@ exports.stopOnFail = async (config, step) => {
 }
 
 exports.openCypress = async () => {
-  const baseDir = getBaseDir(this.storage)
+  let baseDir = getBaseDir(this.storage)
 
+  if (this.storage(path.join('cypress', 'e2e'))) baseDir = 'cypress'
   const options = {
     config: {
-      integrationFolder: `${baseDir}/integration`,
-      supportFile: `${baseDir}/support`,
-      fixturesFolder: `${baseDir}/fixtures`,
+      e2e: {
+        specPattern: `${baseDir}/e2e`,
+        supportFile: `${baseDir}/support/e2e.js`,
+        fixturesFolder: `${baseDir}/fixtures`,
+      },
     },
   }
 

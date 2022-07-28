@@ -26,7 +26,7 @@ async function main() {
   qe.msgSection('Cypress Runner')
 
   // Read cy-runner.yml configuration
-  let config = await getConfig('cy-runner.yml')
+  let config = getConfig('cy-runner.yml')
 
   // Report configuration to help understand that'll run
   await qe.sectionsToRun(config)
