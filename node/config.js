@@ -47,8 +47,8 @@ exports.getConfig = (configFile) => {
     : 'vtex'
   // Write cypress.env.json
   qe.writeEnvJson(config)
-  // Write cypress.json
-  // qe.writeCypressConfigJs(config)
+  // CypressV10 doesn't support cypress.json file
+  // It supports cypress.config.js there we have updated logics
   // Create empty state files
   qe.createStateFiles(config)
   // Create empty logs dir

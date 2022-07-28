@@ -1,11 +1,9 @@
 const { defineConfig } = require('cypress')
-const { loadYmlConfig, generateBaseUrl } = require('./node/utils')
+const { generateBaseUrl } = require('./node/utils')
 const { getConfig } = require('./node/config')
 
-let configFile = getConfig('cy-runner.yml')
+const configFile = getConfig('cy-runner.yml')
 
-// let config = loadYmlConfig(configFile)
-console.log('=============>', configFile)
 const CYPRESS = configFile.base.cypress
 const baseUrl = generateBaseUrl(configFile)
 
