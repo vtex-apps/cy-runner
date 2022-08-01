@@ -421,7 +421,8 @@ export function stopTestCaseOnFailure() {
      a) Stop Execution if testcase gets failed in all retries
 */
 // TODO: Update this functionName to be called as loginViaCookies()
-export function testSetup(storeFrontCookie = true, stop = true) {
+
+function logic(storeFrontCookie, stop) {
   before(() => {
     // Inject cookies
     cy.getVtexItems().then((vtex) => {
@@ -440,6 +441,14 @@ export function testSetup(storeFrontCookie = true, stop = true) {
     })
   })
   if (stop) stopTestCaseOnFailure()
+}
+
+export function testSetup(storeFrontCookie = true, stop = true) {
+  logic(storeFrontCookie, stop)
+}
+
+export function loginViaCookies(storeFrontCookie = true, stop = true) {
+  logic(storeFrontCookie, stop)
 }
 
 /* loginViaAPI - Use API for login

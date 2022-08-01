@@ -1,7 +1,6 @@
 import { verifyLocation } from '../../support/shopper-location/common'
 import {
-  loginAsAdmin,
-  loginAsUser,
+  loginViaAPI,
   preserveCookie,
   updateRetry,
 } from '../../support/common/support'
@@ -12,12 +11,7 @@ import { location } from '../../support/shopper-location/outputvalidation'
 const prefix = 'Enable location'
 
 describe('Location validation', () => {
-  before(() => {
-    loginAsAdmin()
-    cy.getVtexItems().then((vtex) => {
-      loginAsUser(vtex.robotMail, vtex.robotPassword)
-    })
-  })
+  loginViaAPI()
 
   // eslint-disable-next-line jest/expect-expect
   it(`${prefix} - Test negative scenarios`, updateRetry(2), () => {

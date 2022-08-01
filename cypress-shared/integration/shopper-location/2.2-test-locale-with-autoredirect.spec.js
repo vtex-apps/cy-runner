@@ -1,8 +1,4 @@
-import {
-  loginAsAdmin,
-  loginAsUser,
-  preserveCookie,
-} from '../../support/common/support'
+import { loginViaAPI, preserveCookie } from '../../support/common/support'
 import { updateSettings } from '../../support/shopper-location/settings'
 import {
   canadaDetails,
@@ -15,12 +11,7 @@ const { lat, long } = location
 const prefix = 'auto redirect configuration'
 
 describe('Test Locale with Auto redirect', () => {
-  before(() => {
-    loginAsAdmin()
-    cy.getVtexItems().then((vtex) => {
-      loginAsUser(vtex.robotMail, vtex.robotPassword)
-    })
-  })
+  loginViaAPI()
 
   updateSettings(country, url, { automaticRedirect: true })
 

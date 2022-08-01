@@ -1,8 +1,4 @@
-import {
-  preserveCookie,
-  loginAsAdmin,
-  loginAsUser,
-} from '../../support/common/support'
+import { loginViaAPI, preserveCookie } from '../../support/common/support'
 import { orderProductTestCase } from '../../support/shopper-location/common'
 import {
   UsDetails,
@@ -14,12 +10,7 @@ const { country, postalCode } = UsDetails
 const prefix = 'Enable location'
 
 describe(`${prefix}- via browser popup - Order the Product`, () => {
-  before(() => {
-    loginAsAdmin()
-    cy.getVtexItems().then((vtex) => {
-      loginAsUser(vtex.robotMail, vtex.robotPassword)
-    })
-  })
+  loginViaAPI()
 
   orderProductTestCase(prefix, {
     lat: location.lat,
