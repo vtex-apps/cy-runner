@@ -12,6 +12,7 @@ import {
 } from '../../support/shopper-location/outputvalidation'
 import selectors from '../../support/common/selectors.js'
 import { addAddress } from '../../support/shopper-location/common'
+import { syncCheckoutUICustom } from '../../support/common/testcase.js'
 
 const { country, url } = canadaDetails
 const { lat, long } = location
@@ -25,6 +26,8 @@ describe('Testing local redirect configuration', () => {
       loginAsUser(vtex.robotMail, vtex.robotPassword)
     })
   })
+
+  syncCheckoutUICustom()
 
   updateSettings(country, url)
 
