@@ -1,4 +1,4 @@
-import { testSetup } from '../../support/common/support.js'
+import { loginViaCookies } from '../../support/common/support.js'
 import {
   createOrganizationWithInvalidEmail,
   createOrganizationWithoutName,
@@ -9,7 +9,7 @@ import { loginToStoreFront } from '../../support/b2b/login.js'
 import { ROLE_DROP_DOWN } from '../../support/b2b/utils.js'
 
 describe('Organization Negative TestCases', () => {
-  testSetup(false)
+  loginViaCookies({ storeFrontCookie: false })
   const email = b2b.OrganizationA.users.OrganizationAdmin1
 
   const { users, gmailCreds } = b2b.OrganizationA

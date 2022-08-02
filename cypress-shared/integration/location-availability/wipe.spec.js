@@ -4,11 +4,14 @@ import {
   updateShippingPolicy,
 } from '../../support/location-availability/shipping-policy.graphql'
 import data from '../../support/location-availability/shipping-policy.json'
-import { testSetup, preserveCookie } from '../../support/common/support.js'
+import {
+  loginViaCookies,
+  preserveCookie,
+} from '../../support/common/support.js'
 import { deleteAllPickupPoints } from '../../support/location-availability/support'
 
 describe('Wipe the pickup points', () => {
-  testSetup(false)
+  loginViaCookies({ storeFrontCookie: false })
 
   deleteAllPickupPoints()
 

@@ -1,4 +1,7 @@
-import { testSetup, preserveCookie } from '../../support/common/support.js'
+import {
+  loginViaCookies,
+  preserveCookie,
+} from '../../support/common/support.js'
 import b2b from '../../support/b2b/constants.js'
 import { ROLE_DROP_DOWN } from '../../support/b2b/utils.js'
 import { loginToStoreFront } from '../../support/b2b/login.js'
@@ -19,7 +22,7 @@ import {
 } from '../../support/b2b/quotes.js'
 
 describe('Organization B - Cost Center B1 - Approver Scenario', () => {
-  testSetup(false)
+  loginViaCookies({ storeFrontCookie: false })
 
   const {
     product,

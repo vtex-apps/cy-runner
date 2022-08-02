@@ -1,12 +1,12 @@
 /* eslint-disable jest/valid-expect */
-import { testSetup, updateRetry } from '../../support/common/support.js'
+import { loginViaCookies, updateRetry } from '../../support/common/support.js'
 import { ROLE_ID_EMAIL_MAPPING, OTHER_ROLES } from '../../support/b2b/utils.js'
 import { addUserViaGraphql } from '../../support/b2b/add_users.js'
 import { syncCheckoutUICustom } from '../../support/common/testcase.js'
 import b2b from '../../support/b2b/constants.js'
 
 describe('Sync Checkout UI Custom & Add Sales Users via Graphql', () => {
-  testSetup(false)
+  loginViaCookies({ storeFrontCookie: false })
   const { gmailCreds } = b2b.OrganizationA
 
   syncCheckoutUICustom()
