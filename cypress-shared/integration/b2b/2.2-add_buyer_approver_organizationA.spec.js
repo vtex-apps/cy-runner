@@ -1,4 +1,7 @@
-import { testSetup, preserveCookie } from '../../support/common/support.js'
+import {
+  loginViaCookies,
+  preserveCookie,
+} from '../../support/common/support.js'
 import b2b from '../../support/b2b/constants.js'
 import {
   addPaymentTermsCollectionPriceTablesTestCase,
@@ -25,7 +28,7 @@ import {
 } from '../../support/b2b/quotes.js'
 
 describe('OrganizationA - Create a Buyer and Approver, associate Cost Center and assign payment terms', () => {
-  testSetup(false)
+  loginViaCookies({ storeFrontCookie: false })
 
   const {
     organizationName,

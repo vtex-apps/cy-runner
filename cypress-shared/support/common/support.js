@@ -420,7 +420,8 @@ export function stopTestCaseOnFailure() {
   afterEach()
      a) Stop Execution if testcase gets failed in all retries
 */
-// TODO: Update this functionName to be called as loginViaCookies()
+// TODO: Once we replace testSetup() to loginViaCookies() in all projects
+// Then, Move logic() code to loginViaCookies() and delete testSetup(),logic()
 
 function logic(storeFrontCookie, stop) {
   before(() => {
@@ -447,7 +448,7 @@ export function testSetup(storeFrontCookie = true, stop = true) {
   logic(storeFrontCookie, stop)
 }
 
-export function loginViaCookies(storeFrontCookie = true, stop = true) {
+export function loginViaCookies({ storeFrontCookie = true, stop = true } = {}) {
   logic(storeFrontCookie, stop)
 }
 
@@ -458,14 +459,16 @@ export function loginViaCookies(storeFrontCookie = true, stop = true) {
      a) Stop Execution if testcase gets failed in all retries
 */
 
-export function loginViaAPI(stop = true) {
+export function loginViaAPI({ storeFrontCookie = true, stop = true } = {}) {
   before(() => {
     // LoginAsAdmin
     loginAsAdmin()
-    // LoginAsUser and visit home page
-    cy.getVtexItems().then((vtex) => {
-      loginAsUser(vtex.robotMail, vtex.robotPassword)
-    })
+    if (storeFrontCookie) {
+      // LoginAsUser and visit home page
+      cy.getVtexItems().then((vtex) => {
+        loginAsUser(vtex.robotMail, vtex.robotPassword)
+      })
+    }
   })
   if (stop) stopTestCaseOnFailure()
 }

@@ -7,7 +7,7 @@ import {
   VTEX_AUTH_HEADER,
 } from '../../support/common/constants.js'
 import {
-  testSetup,
+  loginViaCookies,
   updateRetry,
   preserveCookie,
 } from '../../support/common/support.js'
@@ -133,7 +133,7 @@ describe('Wipe datas', () => {
   const { organizationName: organizationB, costCenter1: costCenterB1 } =
     b2b.OrganizationB
 
-  testSetup(false)
+  loginViaCookies({ storeFrontCookie: false })
 
   deleteUsers()
   deleteCostCenter(organizationA, costCenter1)

@@ -1,4 +1,4 @@
-import { testSetup } from '../../support/common/support.js'
+import { loginViaCookies } from '../../support/common/support.js'
 import {
   createOrganizationTestCase,
   requestOrganizationAndVerifyPopup,
@@ -7,7 +7,7 @@ import {
 import b2b, { OrganizationRequestStatus } from '../../support/b2b/constants.js'
 
 describe('Create & Approve OrganizationB', () => {
-  testSetup(false)
+  loginViaCookies({ storeFrontCookie: false })
   const email = b2b.OrganizationB.users.OrganizationAdmin1
   const name = b2b.OrganizationB.organizationName
   const costCenterName = b2b.OrganizationB.costCenter1.name

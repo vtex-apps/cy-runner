@@ -1,4 +1,7 @@
-import { testSetup, preserveCookie } from '../../support/common/support.js'
+import {
+  loginViaCookies,
+  preserveCookie,
+} from '../../support/common/support.js'
 import b2b from '../../support/b2b/constants.js'
 import {
   ROLE_ID_EMAIL_MAPPING as roleObject,
@@ -44,7 +47,7 @@ function QuotesAccess(
 }
 
 describe('Organization A - Cost Center A1 - Sales Admin Scenario', () => {
-  testSetup(false)
+  loginViaCookies({ storeFrontCookie: false })
 
   const {
     product,
