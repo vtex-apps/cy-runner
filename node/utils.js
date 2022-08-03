@@ -161,7 +161,7 @@ exports.toolbelt = async (bin, cmd) => {
       while (!check && thisTry < MAX_TRIES) {
         thisTry++
         stdout = this.exec(cmd, 'pipe').toString()
-        check = /App linked successfully/.test(stdout)
+        check = stdout !== 'error'
         if (!check) await delay(thisTry * 3000)
       }
 
