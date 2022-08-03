@@ -193,3 +193,52 @@ Cypress.Commands.add('openStoreFront', (login = false) => {
 
   scroll()
 })
+
+Cypress.Commands.add('addNewLocation', (country, PostalCode) => {
+  cy.openStoreFront()
+  cy.get(selectors.addressContainer).should('be.visible').click()
+  cy.get(selectors.countryDropdown).select(country)
+  cy.get(selectors.addressInputContainer)
+    .first()
+    .clear()
+    .should('be.visible')
+    .type(PostalCode)
+  cy.get(selectors.Address)
+    .contains('Address Line 1')
+    .parent()
+    .within(() => {
+      cy.get(selectors.InputText)
+        .clear()
+        .type('1481 Maple View Dr,Promona,CA,USA')
+    })
+  cy.get(selectors.Address)
+    .contains('City')
+    .parent()
+    .within(() => {
+      cy.get(selectors.InputText).clear().type('Promona')
+    })
+  cy.get(selectors.SelectState).select('California')
+  cy.waitForGraphql('address', selectors.SaveButton)
+  cy.once('uncaught:exception', () => false)
+})
+
+Cypress.Commands.add('openProduct', (product, detailPage = false) => {
+  // Search product in search bar
+  cy.get(selectors.Search).should('be.not.disabled').should('be.visible')
+
+  cy.get(selectors.Search)
+    .should('be.visible')
+    .should('be.enabled')
+    .clear()
+    .type(product)
+    .type('{enter}')
+  // Page should load successfully now Filter should be visible
+  cy.get(selectors.searchResult).should('have.text', product.toLowerCase())
+  cy.get(selectors.FilterHeading, { timeout: 30000 }).should('be.visible')
+
+  if (detailPage) {
+    cy.gotoProductDetailPage()
+  } else {
+    cy.log('Visiting detail page is disabled')
+  }
+})

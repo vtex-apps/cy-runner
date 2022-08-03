@@ -1,8 +1,4 @@
-import {
-  loginAsAdmin,
-  loginAsUser,
-  preserveCookie,
-} from '../../support/common/support'
+import { loginViaAPI, preserveCookie } from '../../support/common/support'
 import { updateSettings } from '../../support/shopper-location/settings'
 import {
   canadaDetails,
@@ -10,23 +6,19 @@ import {
 } from '../../support/shopper-location/outputvalidation'
 import { addAddress } from '../../support/shopper-location/common'
 
-const { country, url, postalCode } = canadaDetails
+const { country, url } = canadaDetails
 const { lat, long } = location
+const prefix = 'auto redirect configuration'
 
 describe('Test Locale with Auto redirect', () => {
-  before(() => {
-    loginAsAdmin()
-    cy.getVtexItems().then((vtex) => {
-      loginAsUser(vtex.robotMail, vtex.robotPassword)
-    })
-  })
+  loginViaAPI()
 
   updateSettings(country, url, { automaticRedirect: true })
 
-  addAddress({ country, postalCode, lat, long })
+  addAddress(prefix, { address: canadaDetails, lat, long })
 
   // eslint-disable-next-line jest/expect-expect
-  it('Now site should force redirect to google', () => {
+  it(`${prefix} - Now site should force redirect to google`, () => {
     cy.url().should('eq', 'https://www.google.com/')
   })
 

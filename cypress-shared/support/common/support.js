@@ -349,25 +349,6 @@ export function loginAsUser(email, password) {
   })
 }
 
-export function logintoStore() {
-  // LoginAsAdmin
-  cy.loginAsAdmin()
-  // LoginAsUser and visit home page
-  cy.getVtexItems().then((vtex) => {
-    cy.loginAsUser(vtex.robotMail, vtex.robotPassword)
-    if (cy.state('runnable')._currentRetry > 0) {
-      cy.reload()
-    }
-
-    cy.visit(vtex.baseUrl)
-  })
-
-  // Home page should show Hello,
-  cy.get(selectors.ProfileLabel)
-    .should('be.visible')
-    .should('have.contain', `Hello,`)
-}
-
 export function net30Payment() {
   cy.promissoryPayment()
   cy.buyProduct()
@@ -433,14 +414,16 @@ export function stopTestCaseOnFailure() {
   })
 }
 
-/* Test Setup
+/* Test Setup - Use Cookies to Login
    before()
      a) Inject Authentication cookie
   afterEach()
      a) Stop Execution if testcase gets failed in all retries
 */
+// TODO: Once we replace testSetup() to loginViaCookies() in all projects
+// Then, Move logic() code to loginViaCookies() and delete testSetup(),logic()
 
-export function testSetup(storeFrontCookie = true, stop = true) {
+function logic(storeFrontCookie, stop) {
   before(() => {
     // Inject cookies
     cy.getVtexItems().then((vtex) => {
@@ -457,6 +440,35 @@ export function testSetup(storeFrontCookie = true, stop = true) {
         )
       }
     })
+  })
+  if (stop) stopTestCaseOnFailure()
+}
+
+export function testSetup(storeFrontCookie = true, stop = true) {
+  logic(storeFrontCookie, stop)
+}
+
+export function loginViaCookies({ storeFrontCookie = true, stop = true } = {}) {
+  logic(storeFrontCookie, stop)
+}
+
+/* loginViaAPI - Use API for login
+   before()
+     a) Inject Authentication cookie
+  afterEach()
+     a) Stop Execution if testcase gets failed in all retries
+*/
+
+export function loginViaAPI({ storeFrontCookie = true, stop = true } = {}) {
+  before(() => {
+    // LoginAsAdmin
+    loginAsAdmin()
+    if (storeFrontCookie) {
+      // LoginAsUser and visit home page
+      cy.getVtexItems().then((vtex) => {
+        loginAsUser(vtex.robotMail, vtex.robotPassword)
+      })
+    }
   })
   if (stop) stopTestCaseOnFailure()
 }

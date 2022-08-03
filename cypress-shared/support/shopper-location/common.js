@@ -1,31 +1,26 @@
 import selectors from '../common/selectors'
 import { scroll, updateRetry } from '../common/support'
-import shopperLocationSelectors from './selectors'
-import shopperLocationConstants from './constants'
 import { mockLocation } from './geolocation'
 
 export function verifyShopperLocation() {
-  cy.get(shopperLocationSelectors.verifyLocationInHome).should('be.visible')
+  cy.get(selectors.verifyLocationInHome).should('be.visible')
   // eslint-disable-next-line cypress/no-force
-  cy.get(shopperLocationSelectors.AddToCart)
-    .contains('Add to cart')
-    .click({ force: true })
-  cy.get(shopperLocationSelectors.ProceedToCheckOut).click()
-  cy.get(shopperLocationSelectors.orderButton).should('be.visible').click()
+  cy.get(selectors.AddToCart).contains('Add to cart').click({ force: true })
+  cy.get(selectors.ProceedToCheckOut).click()
+  cy.get(selectors.orderButton).should('be.visible').click()
 }
 
 export function addLocation(data) {
   cy.intercept('**/rc.vtex.com.br/api/events').as('events')
   cy.visit('/', mockLocation(data.lat, data.long))
   cy.wait('@events')
-  cy.get(selectors.ProfileLabel, { timeout: 20000 })
+  cy.get(selectors.ProfileLabel, { timeout: 10000 })
     .should('be.visible')
     .should('have.contain', `Hello,`)
   scroll()
-  cy.get(shopperLocationSelectors.addressContainer).click()
-  cy.get(shopperLocationSelectors.countryDropdown).select(data.country)
-  cy.get(shopperLocationSelectors.addressInputContainer)
-    .find('input')
+  cy.get(selectors.addressContainer).click()
+  cy.get(selectors.countryDropdown).select(data.country)
+  cy.get(selectors.addressInputContainer)
     .first()
     .clear()
     .should('be.visible')
@@ -39,8 +34,8 @@ export function addLocation(data) {
     cy.once('uncaught:exception', () => {
       return false
     })
-    cy.get(shopperLocationSelectors.SaveButton).should('be.visible').click()
-    cy.wait('@setRegionId', { timeout: 20000 })
+    cy.get(selectors.SaveButton).should('be.visible').click()
+    cy.wait('@setRegionId', { timeout: 10000 })
   })
 }
 
@@ -48,52 +43,41 @@ export function verifyLocation(lat, long) {
   cy.intercept('**/rc.vtex.com.br/api/events').as('events')
   cy.visit('/', mockLocation(lat, long))
   cy.wait('@events')
-  cy.get(selectors.ProfileLabel, { timeout: 20000 })
+  cy.get(selectors.ProfileLabel, { timeout: 10000 })
     .should('be.visible')
     .should('have.contain', `Hello,`)
   scroll()
-  cy.get(shopperLocationSelectors.addressContainer).should('be.visible')
-  cy.get(shopperLocationSelectors.addressContainer).click()
-  cy.get(shopperLocationSelectors.AddressModelLayout).should('be.visible')
-  cy.get(shopperLocationSelectors.ChangeLocationButton).click()
+  cy.get(selectors.addressContainer).should('be.visible')
+  cy.get(selectors.addressContainer).click()
+  cy.get(selectors.AddressModelLayout).should('be.visible')
+  cy.get(selectors.ChangeLocationButton).click()
 }
 
-export function addAddress({ country, postalCode, lat, long }) {
+export function addAddress(prefix, { address, lat, long }) {
   it(
-    'Go to store front and add canada shipping address',
+    `${prefix} - Go to store front and add shipping address`,
     updateRetry(1),
     () => {
       cy.intercept('**/rc.vtex.com.br/api/events').as('events')
       cy.visit('/', mockLocation(lat, long))
       cy.wait('@events')
-      cy.get(selectors.ProfileLabel, { timeout: 20000 })
+      cy.get(selectors.ProfileLabel, { timeout: 10000 })
         .should('be.visible')
         .should('have.contain', `Hello,`)
       scroll()
-      cy.get(shopperLocationSelectors.addressContainer)
-        .should('be.visible')
-        .click()
-      cy.get(shopperLocationSelectors.findMyLocation).click()
-      cy.get(shopperLocationSelectors.AddressErrorContainer).contains(
-        shopperLocationConstants.locationNotAvailable
-      )
-      cy.get(shopperLocationSelectors.closeButton).click()
-      scroll()
-      cy.get(shopperLocationSelectors.verifyLocationInHome).should('be.visible')
-      // .contains('Add Location')
-      cy.get(shopperLocationSelectors.addressContainer)
-        .should('be.visible')
-        .click()
-      cy.get(shopperLocationSelectors.countryDropdown).select(country)
+      cy.get(selectors.addressContainer).should('be.visible').click()
+      cy.get(selectors.findMyLocation).click()
+
+      cy.get(selectors.countryDropdown).select(address.country)
       // eslint-disable-next-line cypress/no-unnecessary-waiting
-      cy.get(shopperLocationSelectors.addressInputContainer)
-        .find('input')
+      cy.get(selectors.addressInputContainer)
         .first()
+        .should('not.be.disabled')
         .clear()
-        .type(postalCode)
+        .type(address.postalCode)
         .wait(500)
-      autocomplete('Essex County', 'Ontario')
-      cy.get(shopperLocationSelectors.saveButton)
+      autocomplete(address.city, address.state)
+      cy.get(selectors.saveButton)
         .find('button')
         .click()
         .should(() => {
@@ -107,27 +91,38 @@ export function autocomplete(city, province) {
   cy.getVtexItems().then((vtex) => {
     cy.intercept('POST', vtex.baseUrl).as('events')
     cy.wait('@events')
-    cy.get(shopperLocationSelectors.addressInputContainer)
-      .find('input')
-      .last()
+    cy.get(selectors.addressInputContainer)
+      .eq(2)
       .invoke('val')
       .should('equal', city)
-    cy.get(shopperLocationSelectors.province)
-      .find('option:selected')
-      .should('have.text', province)
+    if (province === 'IDF') {
+      cy.get(selectors.addressInputContainer)
+        .eq(3)
+        .invoke('val')
+        .should('equal', province)
+    } else {
+      cy.get(selectors.province)
+        .find('option:selected')
+        .last()
+        .should('have.text', province)
+    }
   })
 }
 
-export function orderProductTestCase(data) {
-  it('Adding Location', updateRetry(3), () => {
+export function orderProductTestCase(prefix, data) {
+  it(`${prefix} - Adding Location`, updateRetry(2), () => {
     addLocation(data)
   })
 
-  it('Verifying Address in home page & checkout page', updateRetry(3), () => {
-    verifyShopperLocation()
-  })
+  it(
+    `${prefix} - Verifying Address in home page & checkout page`,
+    updateRetry(2),
+    () => {
+      verifyShopperLocation()
+    }
+  )
 
-  it('Ordering the product', updateRetry(3), () => {
+  it(`${prefix} - Ordering the product`, updateRetry(2), () => {
     cy.orderProduct()
   })
 }

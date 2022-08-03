@@ -1,4 +1,7 @@
-import { testSetup, preserveCookie } from '../../support/common/support.js'
+import {
+  loginViaCookies,
+  preserveCookie,
+} from '../../support/common/support.js'
 import b2b from '../../support/b2b/constants.js'
 import {
   ROLE_DROP_DOWN,
@@ -30,15 +33,21 @@ import {
 } from '../../support/b2b/checkout.js'
 
 describe('Organization A - Cost Center A1 - Approver Scenario', () => {
-  testSetup(false)
+  loginViaCookies({ storeFrontCookie: false })
 
-  const { organizationName, nonAvailableProduct, users, costCenter1, quotes } =
-    b2b.OrganizationA
+  const {
+    organizationName,
+    nonAvailableProduct,
+    users,
+    costCenter1,
+    quotes,
+    gmailCreds,
+  } = b2b.OrganizationA
 
   const { organizationName: organizationB, quotes: organizationBquotes } =
     b2b.OrganizationB
 
-  loginToStoreFront(users.Approver1, ROLE_DROP_DOWN.Approver)
+  loginToStoreFront(users.Approver1, ROLE_DROP_DOWN.Approver, gmailCreds)
   verifySession(b2b.OrganizationA, costCenter1.name, ROLE_DROP_DOWN.Approver)
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
   quoteShouldbeVisibleTestCase(

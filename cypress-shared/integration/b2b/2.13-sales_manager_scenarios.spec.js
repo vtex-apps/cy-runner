@@ -1,4 +1,7 @@
-import { testSetup, preserveCookie } from '../../support/common/support.js'
+import {
+  loginViaCookies,
+  preserveCookie,
+} from '../../support/common/support.js'
 import b2b from '../../support/b2b/constants.js'
 import {
   ROLE_ID_EMAIL_MAPPING as roleObject,
@@ -44,15 +47,25 @@ function QuotesAccess(
 }
 
 describe('Organization A - Cost Center A1 - Sales Manager Scenario', () => {
-  testSetup(false)
+  loginViaCookies({ storeFrontCookie: false })
 
-  const { nonAvailableProduct, users, product, costCenter1, quotes } =
-    b2b.OrganizationA
+  const {
+    nonAvailableProduct,
+    users,
+    product,
+    costCenter1,
+    quotes,
+    gmailCreds,
+  } = b2b.OrganizationA
 
   const { organizationName: organizationB, quotes: organizationBQuote } =
     b2b.OrganizationB
 
-  loginToStoreFront(users.SalesManager, roleObject.SalesManager.role)
+  loginToStoreFront(
+    users.SalesManager,
+    roleObject.SalesManager.role,
+    gmailCreds
+  )
   verifySession(
     b2b.OrganizationA,
     costCenter1.name,

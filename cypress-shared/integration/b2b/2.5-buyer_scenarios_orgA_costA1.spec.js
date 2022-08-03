@@ -1,4 +1,7 @@
-import { testSetup, preserveCookie } from '../../support/common/support.js'
+import {
+  loginViaCookies,
+  preserveCookie,
+} from '../../support/common/support.js'
 import b2b from '../../support/b2b/constants.js'
 import {
   ROLE_DROP_DOWN_EMAIL_MAPPING as role,
@@ -26,7 +29,7 @@ import {
 } from '../../support/b2b/quick_order.js'
 
 describe('Organization A - Cost Center A1 - Buyer Scenarios', () => {
-  testSetup(false)
+  loginViaCookies({ storeFrontCookie: false })
 
   const {
     organizationName,
@@ -36,19 +39,21 @@ describe('Organization A - Cost Center A1 - Buyer Scenarios', () => {
     product,
     product2,
     quotes,
+    gmailCreds,
   } = b2b.OrganizationA
 
   const { organizationName: organizationB, quotes: organizationBQuote } =
     b2b.OrganizationB
 
-  loginToStoreFront(users.Buyer1, ROLE_DROP_DOWN.Buyer)
+  loginToStoreFront(users.Buyer1, ROLE_DROP_DOWN.Buyer, gmailCreds)
   verifySession(b2b.OrganizationA, costCenter1.name, ROLE_DROP_DOWN.Buyer)
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
-  userAndCostCenterShouldNotBeEditable(
+  userAndCostCenterShouldNotBeEditable({
     organizationName,
-    costCenter1.name,
-    role.Buyer1
-  )
+    costCenter: costCenter1.name,
+    gmailCreds,
+    role: role.Buyer1,
+  })
   userShouldNotImpersonateThisUser(
     ROLE_DROP_DOWN.Buyer,
     roleObject.SalesManager.role,
