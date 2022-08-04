@@ -177,7 +177,7 @@ export function syncCheckoutUICustom() {
   it('Sync Checkout UI Custom', updateRetry(2), () => {
     cy.visit('admin/app/vtex-checkout-ui-custom/')
     cy.contains('Publish', { timeout: 25000 }).should('be.visible').click()
-    cy.contains('History', { timeout: 25000 }).should('be.visible').click()
+    cy.contains('History', { timeout: 35000 }).should('be.visible').click()
     cy.contains(name, { timeout: 15000 }).should('be.visible')
   })
 }
