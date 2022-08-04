@@ -112,8 +112,8 @@ exports.exec = (cmd, output) => {
   return result
 }
 
-exports.toolbelt = async (bin, cmd, linkApp) => {
-  const MAX_TRIES = 5
+exports.toolbelt = async (bin, cmd) => {
+  const MAX_TRIES = 3
   let stdout
   let check = false
   let thisTry = 0
@@ -148,23 +148,21 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
       while (!check && thisTry < MAX_TRIES) {
         thisTry++
         stdout = this.exec(`echo y | ${bin} ${cmd}`, 'pipe').toString()
-        await delay(thisTry * 2000)
         check = /uccessfully|App not installed| unlinked|No linked apps/.test(
           stdout
         )
+        if (!check) await delay(thisTry * 3000)
       }
 
       break
 
     case 'link':
       cmd = `cd .. && echo y | ${bin} ${cmd}`
-      stdout = this.exec(cmd, 'pipe').toString()
-      linkApp = new RegExp(linkApp)
       while (!check && thisTry < MAX_TRIES) {
         thisTry++
-        stdout = this.exec(`${bin} ls`, 'pipe').toString()
-        await delay(thisTry * 1000)
-        check = linkApp.test(stdout)
+        stdout = this.exec(cmd, 'pipe').toString()
+        check = stdout !== 'error'
+        if (!check) await delay(thisTry * 3000)
       }
 
       break
@@ -177,10 +175,6 @@ exports.toolbelt = async (bin, cmd, linkApp) => {
     default:
       stdout = this.exec(`${bin} ${cmd}`, 'pipe').toString()
       check = true
-  }
-
-  if (!check) {
-    this.msg(`Toolbelt command failed: ${bin} ${cmd}\n${stdout}`, 'error')
   }
 
   return { success: check, stdout }
@@ -454,7 +448,6 @@ exports.traverse = (result, obj, previousKey) => {
 
 exports.sectionsToRun = async (config) => {
   this.msgSection('Sections to run')
-  let linkApp = false
   const getList = (item, property) => {
     const list = get(config, `${item}.${property}`)
 
@@ -466,20 +459,13 @@ exports.sectionsToRun = async (config) => {
     if (/enabled/.test(item.key) && /true/.test(item.type)) {
       const [itemEnabled] = item.key.split('.enabled')
 
-      linkApp = itemEnabled === 'workspace.linkApp'
-      if (linkApp && itemEnabled === 'workspace.linkApp.logOutput') {
-        this.msg(itemEnabled)
-        this.msg('This output may contain credentials', true, true)
-        this.msg('Never enable it on CI environments', true, true)
-      } else {
-        this.msg(itemEnabled)
-        getList(itemEnabled, 'specs').forEach((spec) => {
-          this.msg(`runs ${spec}`, true, true)
-        })
-        getList(itemEnabled, 'dependency').forEach((dep) => {
-          this.msg(`deps ${dep}`, true, true)
-        })
-      }
+      this.msg(itemEnabled)
+      getList(itemEnabled, 'specs').forEach((spec) => {
+        this.msg(`runs ${spec}`, true, true)
+      })
+      getList(itemEnabled, 'dependency').forEach((dep) => {
+        this.msg(`deps ${dep}`, true, true)
+      })
     }
   })
 
@@ -593,7 +579,6 @@ exports.runCypress = async (test, config, addOptions = {}) => {
   for (let i = 0; i < maxJobs; i++) {
     testToRun.push(
       cypress.run(options).then((result) => {
-        // TODO Check the result.failures better
         if (result.failures) this.msg(JSON.stringify(result), 'error')
 
         const output = {}
@@ -612,7 +597,6 @@ exports.runCypress = async (test, config, addOptions = {}) => {
   try {
     await Promise.all(testToRun)
   } catch (e) {
-    // TODO Move the crash to inside the Promise.all
     this.crash('Fail to run Cypress', e.message)
   }
 

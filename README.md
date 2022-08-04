@@ -439,8 +439,7 @@ workspace:
   # Link the PR app for integration tests
   linkApp:
     enabled: true
-    logOutput:
-      enabled: false
+
   # Apps to be installed
   installApps: []
   # Apps to be removed
