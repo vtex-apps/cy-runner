@@ -40,8 +40,10 @@ class GmailAPI {
       .then(async function (response) {
         accessToken = await response.data.access_token
       })
-      .catch(function (error) {
-        console.log('AccessToken', error)
+      .catch(function () {
+        throw new Error(
+          'Some of the keys (id, clientId, clientSecret, refreshToken) are invalid'
+        )
       })
 
     return accessToken

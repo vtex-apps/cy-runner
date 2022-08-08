@@ -18,6 +18,8 @@ export async function getAccessToken(email, gmailCreds, accessToken = null) {
   let currentAccessToken
   const totalRetry = 8
 
+  await gmail.getAcceToken(gmailCreds)
+
   /* eslint-disable no-await-in-loop */
   for (let currentRetry = 0; currentRetry <= totalRetry; currentRetry++) {
     currentAccessToken = extractAccessCode(
