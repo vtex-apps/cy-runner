@@ -18,7 +18,7 @@ const {
   robotMail,
 } = config.base.vtex
 
-const TAX_APP = config.workspace.prefix
+const { prefix } = config.workspace
 const WORKSPACE = config.workspace.name
 
 export const ORDER_FORM_CONFIG = `https://${account}.vtexcommercestable.com.br/api/checkout/pvt/configuration/orderForm`
@@ -108,7 +108,7 @@ export function configureTaxConfigurationInOrderForm(workspace = null) {
         callOrderFormConfiguration().then((response) => {
           response.body.taxConfiguration = workspace
             ? {
-                url: `https://${workspace}--${account}.myvtex.com/${TAX_APP}/checkout/order-tax`,
+                url: `https://${workspace}--${account}.myvtex.com/${prefix}/checkout/order-tax`,
                 authorizationHeader,
                 allowExecutionAfterErrors: false,
                 integratedAuthentication: false,
@@ -152,7 +152,8 @@ export function cancelTheOrder(orderEnv) {
 
 export function startE2E(app, workspace) {
   // This startE2E() is for tax App
-  it(`Start ${app}`, () => {
+  // eg: Avalara, Cybersource
+  it(`Start ${app} E2E tests with this ${workspace}`, () => {
     callOrderFormConfiguration().then((response) => {
       const { taxConfiguration } = response.body
 
@@ -201,7 +202,7 @@ function verifyEnvs(paymentEnvs = false) {
 export function startPaymentE2ETests() {
   // If you are using this function in your testcase
   // then ensure, you are having affiliationId, apiKey and apiToken in .VTEX_QE.json
-  it(`Start E2E with ${WORKSPACE}`, () => {
+  it(`Start ${prefix} E2E tests with this workspace ${WORKSPACE}`, () => {
     verifyEnvs(true)
     cy.request({
       url: affiliationAPI(affiliationId),
@@ -245,7 +246,7 @@ export function setWorkspaceAndGatewayAffiliations({
   const workspace = wipe ? '' : WORKSPACE
 
   it(
-    `Setting workspace value as "${workspace}" with payment capture ${autoSellementValue}`,
+    `In ${prefix} - Setting workspace value as "${workspace}" with payment capture ${autoSellementValue}`,
     updateRetry(3),
     () => {
       cy.request({
@@ -291,7 +292,7 @@ export function setWorkspaceAndGatewayAffiliations({
 
 export function syncCheckoutUICustom() {
   // eslint-disable-next-line jest/expect-expect
-  it('Sync Checkout UI Custom', updateRetry(2), () => {
+  it(`Sync Checkout UI Custom in ${prefix}`, updateRetry(2), () => {
     cy.visit('admin/app/vtex-checkout-ui-custom/')
     cy.contains('Publish', { timeout: 25000 }).should('be.visible').click()
     cy.contains('History', { timeout: 35000 }).should('be.visible').click()
