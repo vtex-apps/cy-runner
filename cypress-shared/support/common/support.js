@@ -183,7 +183,7 @@ function startShipping() {
   })
 }
 
-export function fillContactInfo(shippingStrategySelector) {
+export function fillContactInfo(shippingStrategySelector, phoneNumber) {
   cy.get(selectors.QuantityBadge).should('be.visible')
   cy.get(selectors.SummaryCart).should('be.visible')
   cy.get(selectors.FirstName).clear().type('Syed', {
@@ -192,7 +192,7 @@ export function fillContactInfo(shippingStrategySelector) {
   cy.get(selectors.LastName).clear().type('Mujeeb', {
     delay: 50,
   })
-  cy.get(selectors.Phone).clear().type('(304) 123 4556', {
+  cy.get(selectors.Phone).clear().type(phoneNumber, {
     delay: 50,
   })
   cy.get(selectors.ProceedtoShipping).should('be.visible').click()
@@ -219,6 +219,7 @@ export function updateShippingInformation({
   invalid = false,
   timeout = 5000,
   shippingStrategySelector = null,
+  phoneNumber = '(304) 123 4556',
 }) {
   const { deliveryScreenAddress } = addressList[postalCode]
 
@@ -252,7 +253,7 @@ export function updateShippingInformation({
     cy.get(selectors.FirstName).then(($el) => {
       if (Cypress.dom.isVisible($el)) {
         cy.wait('@v8')
-        fillContactInfo(shippingStrategySelector)
+        fillContactInfo(shippingStrategySelector, phoneNumber)
       }
     })
 
