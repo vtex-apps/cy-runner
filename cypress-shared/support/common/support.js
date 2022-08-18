@@ -183,7 +183,10 @@ function startShipping() {
   })
 }
 
+const PHONE_NUMBER = '(304) 123 4556'
+
 export function fillContactInfo(shippingStrategySelector, phoneNumber) {
+  phoneNumber = phoneNumber || PHONE_NUMBER
   cy.get(selectors.QuantityBadge).should('be.visible')
   cy.get(selectors.SummaryCart).should('be.visible')
   cy.get(selectors.FirstName).clear().type('Syed', {
@@ -219,7 +222,7 @@ export function updateShippingInformation({
   invalid = false,
   timeout = 5000,
   shippingStrategySelector = null,
-  phoneNumber = '(304) 123 4556',
+  phoneNumber = PHONE_NUMBER,
 }) {
   const { deliveryScreenAddress } = addressList[postalCode]
 
