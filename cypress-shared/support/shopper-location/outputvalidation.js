@@ -17,12 +17,6 @@ export default {
     long: '80.2707',
     city: 'Chennai',
   },
-  franceDetails: {
-    country: 'FRA',
-    postalCode: '93200',
-    city: 'Saint-Denis',
-    state: 'IDF',
-  },
   UsDetails1: {
     country1: 'United States',
     postalCode1: '91766',
