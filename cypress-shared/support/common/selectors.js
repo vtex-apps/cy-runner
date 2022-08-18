@@ -382,6 +382,7 @@ export default {
   city: 'div[class*=addressInputContainer] > label',
   shippingContent:
     'div[class*=container] > p  > span[class*=freeShipping] span[class*=freeShippingLabel]',
+  locationUnavailable: 'div[class*=container] > p ',
   shippingUnavailabilityInformation:
     'div[class*=shippingListContainer] > div[class*=shippingListEmptyMessage]',
   storeUnavailabilityInformation:
