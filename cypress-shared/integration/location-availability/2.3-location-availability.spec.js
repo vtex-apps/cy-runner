@@ -28,7 +28,7 @@ describe('Validate location availability', () => {
     `${prefix} - Open product specfication page and verify`,
     updateRetry(2),
     () => {
-      cy.openProduct(PRODUCTS_LINK_MAPPING.orange.name, true)
+      cy.openProduct(PRODUCTS_LINK_MAPPING.orange.name, true, true)
       cy.get(selectors.storeUnavailabilityInformation)
         .should('be.visible')
         .contains(
