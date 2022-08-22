@@ -418,4 +418,13 @@ export default {
   addressUpdation:
     'div[class*=userAddressContainer] > section > div[class*=flex] > div[class*=flex-auto] > div[class*=items-center] > div[class*=addressInfoTextContainer] > div[class*=addressInfoAddressContainer]',
   InputText: "input[type='text']",
+  // End here
+
+  // Affirm payment selectors
+  AffirmPaymentOption: 'a[data-name="Affirm"]',
+  AffirmPhoneNumberField: 'input[data-testid="phone-number-field"]',
+  AffirmSubmit: 'button[data-testid="submit-button"]',
+  AffirmPhonePin: 'input[data-testid="phone-pin-field"]',
+  AffirmInstallmentOption: 'span[data-test="installment-length"]',
+  AffirmIndicatorOption: 'div[data-testid="indicator"]', // Auto payment & Privacy policy option selector
 }

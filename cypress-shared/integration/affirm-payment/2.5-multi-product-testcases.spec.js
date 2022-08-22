@@ -1,11 +1,11 @@
 /* eslint-disable jest/expect-expect */
 import { loginViaCookies, updateRetry } from '../../support/common/support.js'
-import { discountProduct } from '../../support/affirm-payment/outputvalidation'
+import { multiProduct } from '../../support/common/outputvalidation'
 import selectors from '../../support/common/selectors.js'
 import { HEADERS } from '../../support/common/constants.js'
 import { deleteAddresses } from '../../support/common/testcase.js'
 
-const { prefix, productName, postalCode } = discountProduct
+const { prefix, product1Name, product2Name, pickUpPostalCode } = multiProduct
 
 describe(`${prefix} Scenarios`, () => {
   loginViaCookies()
@@ -13,16 +13,26 @@ describe(`${prefix} Scenarios`, () => {
   deleteAddresses()
 
   it(`In ${prefix} - Adding Product to Cart`, updateRetry(3), () => {
-    cy.clearLocalStorage()
     // Search the product
-    cy.searchProduct(productName)
+    cy.searchProduct(product1Name)
     // Add product to cart
-    cy.addProduct(productName, { proceedtoCheckout: true })
+    cy.addProduct(product1Name, { proceedtoCheckout: false, paypal: true })
+    // Search the product
+    cy.searchProduct(product2Name)
+    // Add product to cart
+    cy.addProduct(product2Name, {
+      proceedtoCheckout: true,
+      paypal: true,
+      productDetailPage: true,
+    })
   })
 
   it(`In ${prefix} - Updating Shipping Information`, updateRetry(3), () => {
     // Update Shipping Section
-    cy.updateShippingInformation({ postalCode, phoneNumber: '(312) 310 3249' })
+    cy.updateShippingInformation({
+      postalCode: pickUpPostalCode,
+      phoneNumber: '(312) 310 3249',
+    })
   })
 
   it('Store order id and payment redirect url', updateRetry(3), () => {
@@ -70,7 +80,11 @@ describe(`${prefix} Scenarios`, () => {
     cy.get(selectors.AffirmSubmit).click()
     cy.get(selectors.AffirmPhonePin).type('1234')
     cy.get('h1').should('have.text', "You're approved!")
-    cy.contains('Cancel').click()
+    cy.get(selectors.AffirmInstallmentOption).first().click()
+    cy.get(selectors.AffirmIndicatorOption).first().click()
+    cy.get(selectors.AffirmIndicatorOption).last().click()
+    cy.get(selectors.AffirmSubmit).click()
+    cy.contains('Thanks').should('be.visible')
   })
 
   it('Verify order placed successfully', updateRetry(2), () => {
