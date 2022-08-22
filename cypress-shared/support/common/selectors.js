@@ -43,7 +43,7 @@ export default {
   // *************Search Results Constants end here************ //
   BrandFilter: 'label[for*=brand]',
   ProductAnchorElement: 'section[class*=summary] >a',
-  generateAddtoCartSelector: (href) => {
+  generateAddtoCartSelector: href => {
     return `a[href='${href}'] > article > button`
   },
   searchResult: 'h1[class*=vtex-search]',
@@ -89,10 +89,10 @@ export default {
   ShippingPreview: '#shipping-preview-container',
   ShippingCalculateLink:
     '#shipping-preview-container > div #shipping-calculate-link',
-  ProductQuantityInCheckout: (position) => {
+  ProductQuantityInCheckout: position => {
     return `tr:nth-child(${position}) > div > td.quantity > input`
   },
-  ItemRemove: (position) => {
+  ItemRemove: position => {
     return `tr:nth-child(${position}) > div > td.item-remove`
   },
   giftCheckbox: '.available-gift-items > tr > td:nth-child(2) > i',
@@ -157,6 +157,12 @@ export default {
   CreditCardExpirationYear: '[name=cardExpirationYear]',
   CreditCardCode: '#creditCardpayment-card-0Code',
   PaymentUnAuthorized: 'div[class*=payment-unauthorized]',
+  AffirmPayment: '[data-name=Affirm]',
+  dataReviewCloseBtn: '.payment-unauthorized-modal > .modal-body > .btn',
+  popUpClose: '#affirm-error-modal',
+  invalidPopUpCloseBtn:
+    'div[class*=dialog] > div[class*=dialog-close-button-container] > button[class*=dialog-close-button]',
+
   // *************Payment Section Constants end here************ //
 
   // *************Order Form Page Constants end here************ //
@@ -287,7 +293,7 @@ export default {
       },
     }
   },
-  generateAddtoCartB2BSelector: (href) => {
+  generateAddtoCartB2BSelector: href => {
     return `a[href='${href}'] > article button`
   },
   QuoteName: 'input[data-test=string]',
