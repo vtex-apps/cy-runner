@@ -1,3 +1,5 @@
+/* eslint-disable jest/expect-expect */
+
 import { FAIL_ON_STATUS_CODE } from '../common/constants'
 
 const config = Cypress.env()
@@ -30,7 +32,7 @@ export function graphql(getQuery, validateResponseFn = null) {
   }).as('RESPONSE')
 
   if (validateResponseFn) {
-    cy.get('@RESPONSE').then(response => {
+    cy.get('@RESPONSE').then((response) => {
       commonGraphlValidation(response)
       validateResponseFn(response)
     })

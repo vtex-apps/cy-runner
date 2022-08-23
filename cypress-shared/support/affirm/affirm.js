@@ -16,13 +16,14 @@ export function paymentWithAffirm({
     })
     cy.get('body').then(($body) => {
       if ($body.find(selectors.GotoPaymentBtn).length) {
-        cy.get(selectors.GotoPaymentBtn).click({timeout:10000})
+        cy.get(selectors.GotoPaymentBtn).click({ timeout: 10000 })
       }
     })
 
     cy.intercept('**/paymentData').as('payment')
     cy.get(affirmSelectors.AffirmPayment).should('be.visible').click()
     cy.wait('@payment')
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000)
     cy.get(selectors.TotalLabel)
       .invoke('text')

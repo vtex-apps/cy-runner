@@ -43,7 +43,7 @@ export default {
   // *************Search Results Constants end here************ //
   BrandFilter: 'label[for*=brand]',
   ProductAnchorElement: 'section[class*=summary] >a',
-  generateAddtoCartSelector: href => {
+  generateAddtoCartSelector: (href) => {
     return `a[href='${href}'] > article > button`
   },
   searchResult: 'h1[class*=vtex-search]',
@@ -89,10 +89,10 @@ export default {
   ShippingPreview: '#shipping-preview-container',
   ShippingCalculateLink:
     '#shipping-preview-container > div #shipping-calculate-link',
-  ProductQuantityInCheckout: position => {
+  ProductQuantityInCheckout: (position) => {
     return `tr:nth-child(${position}) > div > td.quantity > input`
   },
-  ItemRemove: position => {
+  ItemRemove: (position) => {
     return `tr:nth-child(${position}) > div > td.item-remove`
   },
   giftCheckbox: '.available-gift-items > tr > td:nth-child(2) > i',
@@ -293,7 +293,7 @@ export default {
       },
     }
   },
-  generateAddtoCartB2BSelector: href => {
+  generateAddtoCartB2BSelector: (href) => {
     return `a[href='${href}'] > article button`
   },
   QuoteName: 'input[data-test=string]',
