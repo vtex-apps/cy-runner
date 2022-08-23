@@ -25,4 +25,8 @@ export default {
     country: 'United States',
     postalCode: '93206',
   },
+  UsDetails3: {
+    country: 'United States',
+    postalCode: '33180',
+  },
 }
