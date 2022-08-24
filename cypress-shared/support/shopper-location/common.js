@@ -90,7 +90,7 @@ export function autocomplete(city, province) {
   cy.getVtexItems().then((vtex) => {
     cy.intercept('POST', vtex.baseUrl).as('events')
     cy.wait('@events')
-    cy.get(`div[class*=addressInputContainer] input[value=${city}]`)
+    cy.get(`div[class*=addressInputContainer] input[value="${city}"]`)
       .invoke('val')
       .should('equal', city)
     if (province === 'IDF') {
