@@ -168,7 +168,6 @@ function fillAddressLine1(deliveryScreenAddress) {
 }
 
 function startShipping() {
-  cy.get(selectors.CartTimeline).should('be.visible').click()
   cy.get('body').then(($body) => {
     if ($body.find(selectors.ShippingCalculateLink).length) {
       // Contact information needs to be filled
@@ -205,14 +204,7 @@ export function fillContactInfo(shippingStrategySelector, phoneNumber) {
     'not.be.visible'
   )
 
-  // We expect address is already filled if it shows continue shipping
-  // then let's click it
   cy.get('body').then(($shippingBlock) => {
-    // if ($shippingBlock.find(selectors.ContinueShipping).length) {
-    //   cy.get(selectors.ContinueShipping, { timeout: 15000 })
-    //     .should('be.visible')
-    //     .click()
-    // }
     if ($shippingBlock.find(selectors.ReceiverName).length) {
       cy.get(selectors.ReceiverName, { timeout: 5000 }).type('Syed', {
         delay: 50,
