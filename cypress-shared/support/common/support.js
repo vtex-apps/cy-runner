@@ -168,6 +168,7 @@ function fillAddressLine1(deliveryScreenAddress) {
 }
 
 function startShipping() {
+  cy.get(selectors.CartTimeline).should('be.visible').click()
   cy.get('body').then(($body) => {
     if ($body.find(selectors.ShippingCalculateLink).length) {
       // Contact information needs to be filled
@@ -189,20 +190,29 @@ export function fillContactInfo(shippingStrategySelector, phoneNumber) {
   phoneNumber = phoneNumber || PHONE_NUMBER
   cy.get(selectors.QuantityBadge).should('be.visible')
   cy.get(selectors.SummaryCart).should('be.visible')
+  // Delay in ms
   cy.get(selectors.FirstName).clear().type('Syed', {
-    delay: 50,
+    delay: 250,
   })
   cy.get(selectors.LastName).clear().type('Mujeeb', {
-    delay: 50,
+    delay: 250,
   })
   cy.get(selectors.Phone).clear().type(phoneNumber, {
-    delay: 50,
+    delay: 250,
   })
   cy.get(selectors.ProceedtoShipping).should('be.visible').click()
   cy.get(selectors.ProceedtoShipping, { timeout: 1000 }).should(
     'not.be.visible'
   )
+
+  // We expect address is already filled if it shows continue shipping
+  // then let's click it
   cy.get('body').then(($shippingBlock) => {
+    // if ($shippingBlock.find(selectors.ContinueShipping).length) {
+    //   cy.get(selectors.ContinueShipping, { timeout: 15000 })
+    //     .should('be.visible')
+    //     .click()
+    // }
     if ($shippingBlock.find(selectors.ReceiverName).length) {
       cy.get(selectors.ReceiverName, { timeout: 5000 }).type('Syed', {
         delay: 50,
