@@ -6,6 +6,13 @@ export default {
     city: 'Essex County',
     state: 'Ontario',
   },
+  poland: {
+    country: 'POL',
+    url: 'https://www.google.com',
+    postalCode: '00-014',
+    city: 'Warszawa',
+    state: 'Masovian Voivodeship',
+  },
   UsDetails: {
     country: 'United States',
     postalCode: '21287',
