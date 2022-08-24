@@ -117,6 +117,7 @@ export default {
   DeliveryAddressText: '#deliver-at-text > a',
   ChangeShippingAddress: 'button[data-i18n="modal.editShipping"]',
   ConfirmPickup: 'button[id*=confirm-pickup]',
+  FillInvoiceAddress: 'p[class*=omnishipping] ~ button[class*=omnishipping]',
 
   // *************Shipping Section Constants end here************ //
 
