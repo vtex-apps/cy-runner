@@ -74,8 +74,7 @@ export function addAddress(prefix, { address, lat, long }) {
         .first()
         .should('not.be.disabled')
         .clear()
-        .type(address.postalCode)
-        .wait(500)
+        .type(address.postalCode, { delay: 100 })
       autocomplete(address.city, address.state)
       cy.get(selectors.saveButton)
         .find('button')
@@ -91,8 +90,7 @@ export function autocomplete(city, province) {
   cy.getVtexItems().then((vtex) => {
     cy.intercept('POST', vtex.baseUrl).as('events')
     cy.wait('@events')
-    cy.get(selectors.addressInputContainer)
-      .eq(2)
+    cy.get(`div[class*=addressInputContainer] input[value="${city}"]`)
       .invoke('val')
       .should('equal', city)
     if (province === 'IDF') {
@@ -100,6 +98,11 @@ export function autocomplete(city, province) {
         .eq(3)
         .invoke('val')
         .should('equal', province)
+    } else if (province === 'Masovian Voivodeship') {
+      cy.get(`div[class*=addressInputContainer] input[value="${province}"]`)
+        .last()
+        .clear()
+        .type(province)
     } else {
       cy.get(selectors.province)
         .find('option:selected')

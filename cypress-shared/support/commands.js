@@ -222,23 +222,31 @@ Cypress.Commands.add('addNewLocation', (country, PostalCode) => {
   cy.once('uncaught:exception', () => false)
 })
 
-Cypress.Commands.add('openProduct', (product, detailPage = false) => {
-  // Search product in search bar
-  cy.get(selectors.Search).should('be.not.disabled').should('be.visible')
+Cypress.Commands.add(
+  'openProduct',
+  (product, detailPage = false, searchPage = false) => {
+    // Search product in search bar
+    cy.get(selectors.Search).should('be.not.disabled').should('be.visible')
 
-  cy.get(selectors.Search)
-    .should('be.visible')
-    .should('be.enabled')
-    .clear()
-    .type(product)
-    .type('{enter}')
-  // Page should load successfully now Filter should be visible
-  cy.get(selectors.searchResult).should('have.text', product.toLowerCase())
-  cy.get(selectors.FilterHeading, { timeout: 30000 }).should('be.visible')
+    cy.get(selectors.Search)
+      .should('be.visible')
+      .should('be.enabled')
+      .clear()
+      .type(product)
+      .type('{enter}')
+    // Page should load successfully now Filter should be visible
+    cy.get(selectors.searchResult).should('have.text', product.toLowerCase())
+    cy.get(selectors.FilterHeading, { timeout: 30000 }).should('be.visible')
+    if (searchPage) {
+      cy.get(selectors.locationUnavailable)
+        .should('be.visible')
+        .contains('Shipping: Unavailable for')
+    }
 
-  if (detailPage) {
-    cy.gotoProductDetailPage()
-  } else {
-    cy.log('Visiting detail page is disabled')
+    if (detailPage) {
+      cy.gotoProductDetailPage()
+    } else {
+      cy.log('Visiting detail page is disabled')
+    }
   }
-})
+)
