@@ -195,13 +195,13 @@ export function fillContactInfo(
   cy.get(selectors.SummaryCart).should('be.visible')
   // Delay in ms
   cy.get(selectors.FirstName).clear().type('Syed', {
-    delay: 250,
+    delay: 50,
   })
   cy.get(selectors.LastName).clear().type('Mujeeb', {
-    delay: 250,
+    delay: 50,
   })
   cy.get(selectors.Phone).clear().type(phoneNumber, {
-    delay: 250,
+    delay: 50,
   })
 
   cy.get(selectors.ProceedtoShipping).should('be.visible').click()
