@@ -163,7 +163,7 @@ export default {
   popUpClose: '#affirm-error-modal',
   invalidPopUpCloseBtn:
     'div[class*=dialog] > div[class*=dialog-close-button-container] > button[class*=dialog-close-button]',
-
+  InstallmentContainer: '.installments  span',
   // *************Payment Section Constants end here************ //
 
   // *************Order Form Page Constants end here************ //

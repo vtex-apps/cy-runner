@@ -3,18 +3,15 @@ import {
   loginViaCookies,
   preserveCookie,
   updateRetry,
+  saveOrderId,
 } from '../../support/common/support.js'
 import { singleProduct } from '../../support/affirm-payment/outputvalidation'
 import selectors from '../../support/common/selectors.js'
-import { HEADERS } from '../../support/common/constants.js'
-import { deleteAddresses } from '../../support/affirm/affirm'
 
 const { prefix, productName, postalCode } = singleProduct
 
 describe(`${prefix} Scenarios`, () => {
   loginViaCookies()
-
-  deleteAddresses()
 
   it(`In ${prefix} - Adding Product to Cart`, updateRetry(3), () => {
     cy.clearLocalStorage()
@@ -33,10 +30,8 @@ describe(`${prefix} Scenarios`, () => {
     })
   })
 
-  it('Store order id and payment redirect url', updateRetry(3), () => {
-    cy.intercept('**/shippingData').as('shippingData')
-    cy.get(selectors.Profile).click()
-    cy.wait('@shippingData')
+  it(`In ${prefix} - Initiate payment`, updateRetry(3), () => {
+    cy.get(selectors.Profile).should('be.visible').click()
     cy.get(selectors.Phone)
       .invoke('val')
       .then((phone) => {
@@ -46,48 +41,61 @@ describe(`${prefix} Scenarios`, () => {
           })
         }
       })
-    cy.get(selectors.GoToPayment).first().click()
+
+    cy.get(selectors.ProceedtoShipping).should('be.visible').click()
     cy.get(selectors.AffirmPaymentOption).should('be.visible').click()
-    cy.get(selectors.BuyNowBtn).last().click()
-    cy.intercept('GET', `**operationName=OrderData**`).as('OrderData')
-    cy.intercept('POST', `https://sandbox.affirm.com/api/v2/checkout/`).as(
-      'affirmPayment'
-    )
-    cy.wait('@OrderData')
-      .its('response.body')
-      .then((response) => {
-        cy.setOrderItem('OrderId', response.data.orderData.orderId)
-      })
-    cy.wait('@affirmPayment')
-      .its('response')
-      .then((response) => {
-        cy.setOrderItem('affirmpaymentUrl', response.body.redirect_url)
-      })
+    cy.get(selectors.InstallmentContainer)
+      .should('be.visible')
+      .contains('Total')
+    cy.get(selectors.BuyNowBtn).last().should('be.visible').click()
   })
 
-  it('Complete payment', updateRetry(3), () => {
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(5000)
-    cy.getOrderItems().then((order) => {
-      cy.visit(order.affirmpaymentUrl, { ...HEADERS })
-    })
-    cy.get(selectors.AffirmPhoneNumberField).clear().type('3123103249')
-    cy.get(selectors.AffirmSubmit).click()
-    cy.get(selectors.AffirmPhonePin).type('1234')
-    cy.get('h1').should('have.text', "You're approved!")
-    cy.get(selectors.AffirmInstallmentOption).first().click()
-    cy.get(selectors.AffirmIndicatorOption).first().click()
-    cy.get(selectors.AffirmIndicatorOption).last().click()
-    cy.get(selectors.AffirmSubmit).click()
-    cy.contains('Thanks').should('be.visible')
+  it(`In ${prefix} - Complete payment`, () => {
+    cy.getIframeBody('#checkout-application')
+      .find(selectors.AffirmPhoneNumberField, { timeout: 45000 })
+      .should('be.visible')
+      .type('3123103249')
+
+    cy.getIframeBody('#checkout-application')
+      .find(selectors.AffirmSubmit)
+      .should('be.visible')
+      .click()
+
+    cy.getIframeBody('#checkout-application')
+      .find(selectors.AffirmPhonePin)
+      .type('1234')
+
+    cy.getIframeBody('#checkout-application')
+      .find('h1')
+      .should('have.text', "You're approved!")
+
+    cy.getIframeBody('#checkout-application')
+      .find(selectors.AffirmInstallmentOption)
+      .first()
+      .click()
+
+    cy.getIframeBody('#checkout-application')
+      .find(selectors.AffirmIndicatorOption)
+      .first()
+      .click()
+
+    cy.getIframeBody('#checkout-application')
+      .find(selectors.AffirmIndicatorOption)
+      .last()
+      .click()
+
+    cy.getIframeBody('#checkout-application')
+      .find(selectors.AffirmSubmit)
+      .click()
+
+    cy.getIframeBody('#checkout-application')
+      .contains('Thanks')
+      .should('be.visible')
+    saveOrderId(prefix)
   })
 
-  it('Verify order placed successfully', updateRetry(2), () => {
-    cy.getVtexItems().then((vtex) => {
-      cy.getOrderItems().then((order) => {
-        cy.visit(`${vtex.baseUrl}/checkout/orderPlaced/?og=${order.orderId}`)
-      })
-    })
-  })
   preserveCookie()
 })
+// A https://sandbox.affirm.com/checkout/84971L7SGAB1MVTX/new/GGJZFRF9QXF6I48L/?skip_to_pin=0&use_headers=0&locale=en_US&external_modal=0&country_code=USA&fs=1&
+// A https://sandbox.affirm.com/checkout/84971L7SGAB1MVTX/new/O3LYKMNL23FNYFSO/?skip_to_pin=0&use_headers=0&locale=en_US&external_modal=0&country_code=USA&fs=1&device_id=f4530555-8a0b-4304-bb8c-3a459ef178ed&origin=https%3A%2F%2Fsyedaffirm--productusqa.myvtex.com&frameId=checkout-application
+// BCypress https://sandbox.affirm.com/checkout/84971L7SGAB1MVTX/new/GGJZFRF9QXF6I48L/?skip_to_pin=0&use_headers=0&locale=en_US&external_modal=0&country_code=USA
