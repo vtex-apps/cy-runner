@@ -6,10 +6,13 @@ import {
 } from '../../support/common/support'
 import { UsDetails3 } from '../../support/shopper-location/outputvalidation'
 import selectors from '../../support/common/selectors'
-import { addLocation } from '../../support/shopper-location/common'
+import {
+  addLocation,
+  verifyHomePage,
+} from '../../support/shopper-location/common'
 import { PRODUCTS_LINK_MAPPING } from '../../support/common/utils'
 
-const { country, postalCode } = UsDetails3
+const { country, postalCode, city } = UsDetails3
 
 describe('Validate location availability without address line', () => {
   loginViaAPI()
@@ -17,19 +20,7 @@ describe('Validate location availability without address line', () => {
   // eslint-disable-next-line jest/expect-expect
   it('Go to home and add location', updateRetry(1), () => {
     addLocation({ country, postalCode })
-    cy.scrollTo(0, 500)
-    cy.getVtexItems().then((vtex) => {
-      cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
-        if (req.body.operationName === 'updateOrderFormShipping') {
-          req.continue()
-        }
-      }).as('updateOrderFormShipping')
-      cy.get(selectors.addressContainer).should('be.visible')
-      cy.get(selectors.AddressCity).contains('Aventura')
-      cy.get(selectors.AddressZip).contains('33180')
-      cy.get(selectors.Distance).contains('Distance:')
-      cy.wait('@updateOrderFormShipping', { timeout: 20000 })
-    })
+    verifyHomePage(city, postalCode)
   })
 
   it('Open product specfication page and verify', updateRetry(1), () => {

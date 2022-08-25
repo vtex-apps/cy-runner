@@ -27,6 +27,7 @@ export default {
   UsDetails1: {
     country1: 'United States',
     postalCode1: '91766',
+    city: 'Pomona',
   },
   UsDetails2: {
     country: 'United States',
@@ -35,5 +36,6 @@ export default {
   UsDetails3: {
     country: 'United States',
     postalCode: '33180',
+    city: 'Aventura',
   },
 }
