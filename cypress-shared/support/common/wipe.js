@@ -22,11 +22,11 @@ export function searchInMasterData(entities, searchQuery) {
   })
 }
 
-export function deleteDocumentInMasterData(entities, id) {
+export function deleteDocumentInMasterData(entities, documentId) {
   cy.getVtexItems().then((vtex) => {
     cy.request({
       method: 'DELETE',
-      url: generateDeleteURL(vtex.baseUrl, entities, id),
+      url: generateDeleteURL(vtex.baseUrl, entities, documentId),
       headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
       ...FAIL_ON_STATUS_CODE,
     })
