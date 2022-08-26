@@ -185,10 +185,15 @@ function startShipping() {
 
 const PHONE_NUMBER = '(304) 123 4556'
 
-export function fillContactInfo(shippingStrategySelector, phoneNumber) {
+export function fillContactInfo(
+  shippingStrategySelector,
+  phoneNumber,
+  checkoutcustom
+) {
   phoneNumber = phoneNumber || PHONE_NUMBER
   cy.get(selectors.QuantityBadge).should('be.visible')
   cy.get(selectors.SummaryCart).should('be.visible')
+  // Delay in ms
   cy.get(selectors.FirstName).clear().type('Syed', {
     delay: 50,
   })
@@ -198,15 +203,43 @@ export function fillContactInfo(shippingStrategySelector, phoneNumber) {
   cy.get(selectors.Phone).clear().type(phoneNumber, {
     delay: 50,
   })
+
   cy.get(selectors.ProceedtoShipping).should('be.visible').click()
   cy.get(selectors.ProceedtoShipping, { timeout: 1000 }).should(
     'not.be.visible'
   )
+
+  // This block is getting visible only for checkout ui custom E2E tests
+  // Screenshot: https://vtex-dev.atlassian.net/browse/ENGINEERS-549?focusedCommentId=69893
+  // So, for now this block will work only for checkout ui custom
+  if (checkoutcustom) {
+    cy.get('body').then(($shippingBlockForCheckoutCustom) => {
+      if (
+        $shippingBlockForCheckoutCustom.find(selectors.ContinueShipping).length
+      ) {
+        cy.get(selectors.StreetAddress).clear().type('19501 Biscayne Blvd')
+        cy.get(selectors.PostalCodeInput).clear().type('33301')
+        cy.get(selectors.ShipCity).clear().type('Aventura')
+        cy.get(selectors.ShipCountry, { timeout: 5000 })
+          .should('not.be.disabled')
+          .select('USA')
+        cy.get(selectors.ShipState, { timeout: 5000 })
+          .should('not.be.disabled')
+          .select('CA')
+        cy.get(selectors.ContinueShipping, { timeout: 15000 })
+          .should('be.visible')
+          .click()
+      }
+    })
+  }
+
   cy.get('body').then(($shippingBlock) => {
     if ($shippingBlock.find(selectors.ReceiverName).length) {
-      cy.get(selectors.ReceiverName, { timeout: 5000 }).type('Syed', {
-        delay: 50,
-      })
+      cy.get(selectors.ReceiverName, { timeout: 5000 })
+        .should('be.visible')
+        .type('Syed', {
+          delay: 50,
+        })
       shippingStrategySelector &&
         cy.get(shippingStrategySelector).should('be.visible').click()
       cy.get(selectors.GotoPaymentBtn).should('be.visible').click()
@@ -223,6 +256,7 @@ export function updateShippingInformation({
   timeout = 5000,
   shippingStrategySelector = null,
   phoneNumber = PHONE_NUMBER,
+  checkoutcustom = false,
 }) {
   const { deliveryScreenAddress } = addressList[postalCode]
 
@@ -256,7 +290,7 @@ export function updateShippingInformation({
     cy.get(selectors.FirstName).then(($el) => {
       if (Cypress.dom.isVisible($el)) {
         cy.wait('@v8')
-        fillContactInfo(shippingStrategySelector, phoneNumber)
+        fillContactInfo(shippingStrategySelector, phoneNumber, checkoutcustom)
       }
     })
 
