@@ -37,5 +37,6 @@ export default {
     country: 'United States',
     postalCode: '33180',
     city: 'Aventura',
+    address: '19501 19501 Biscayne Blvd Aventura 33180',
   },
 }

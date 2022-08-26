@@ -194,7 +194,7 @@ Cypress.Commands.add('openStoreFront', (login = false) => {
   scroll()
 })
 
-Cypress.Commands.add('addNewLocation', (country, PostalCode) => {
+Cypress.Commands.add('addNewLocation', (country, postalCode, street) => {
   cy.openStoreFront()
   cy.get(selectors.addressContainer).should('be.visible').click()
   cy.get(selectors.countryDropdown).select(country)
@@ -202,22 +202,19 @@ Cypress.Commands.add('addNewLocation', (country, PostalCode) => {
     .first()
     .clear()
     .should('be.visible')
-    .type(PostalCode)
+    .type(postalCode)
   cy.get(selectors.Address)
     .contains('Address Line 1')
     .parent()
     .within(() => {
-      cy.get(selectors.InputText)
-        .clear()
-        .type('1481 Maple View Dr,Promona,CA,USA')
+      cy.get(selectors.InputText).clear().type(street)
     })
   cy.get(selectors.Address)
     .contains('City')
     .parent()
     .within(() => {
-      cy.get(selectors.InputText).clear().type('Promona')
+      cy.get(selectors.InputText).clear().type('Aventura')
     })
-  cy.get(selectors.SelectState).select('California')
   cy.waitForGraphql('address', selectors.SaveButton)
   cy.once('uncaught:exception', () => false)
 })
