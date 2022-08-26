@@ -10,7 +10,7 @@ import { PRODUCTS_LINK_MAPPING } from '../../support/common/utils'
 
 const prefix = 'Pickup not available'
 
-describe('Validate location availability', () => {
+describe('Validate location non availability', () => {
   loginViaAPI()
 
   addAddress(prefix, { address: canadaDetails })

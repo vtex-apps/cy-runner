@@ -13,7 +13,7 @@ const { country, postalCode, address, city } = UsDetails3
 
 const prefix = 'Shipping not avaiable'
 
-describe('Validate location non availability', () => {
+describe('Validate location availability', () => {
   loginViaAPI()
 
   // eslint-disable-next-line jest/expect-expect
