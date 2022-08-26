@@ -514,3 +514,11 @@ export function verifyTotal(totalAmount) {
         })
     })
 }
+
+export function clickBtnOnVisibility(selector) {
+  cy.get(selector).then(($el) => {
+    if (Cypress.dom.isVisible($el)) {
+      cy.get(selector).should('be.visible').click()
+    }
+  })
+}
