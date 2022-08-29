@@ -102,12 +102,8 @@ export default {
   NewAddressBtn: '#new-address-button',
   UpdateSelectedAddressBtn: '#edit-address-button',
   ShippingSectionTitle: 'p[class*=shippingSectionTitle]',
-  ShipCountry: '#ship-country',
   ShipStreet: '#ship-street',
   ShipAddressQuery: '#ship-addressQuery',
-  ShipCity: '#ship-city',
-  ShipState: '#ship-state',
-  PostalCodeInput: '#ship-postalCode',
   CalculateBtn: '#cart-shipping-calculate',
   ContinueShipping: '#btn-go-to-shippping-method',
   CalculateShipping: 'button[class*=btnDelivery]',
@@ -118,6 +114,13 @@ export default {
   ChangeShippingAddress: 'button[data-i18n="modal.editShipping"]',
   ConfirmPickup: 'button[id*=confirm-pickup]',
   FillInvoiceAddress: 'p[class*=omnishipping] ~ button[class*=omnishipping]',
+
+  // Shipping Section Address Container
+  StreetAddress: '#v-custom-ship-street',
+  ShipCity: '#ship-city',
+  ShipState: '#ship-state',
+  ShipCountry: '#ship-country',
+  PostalCodeInput: '#ship-postalCode',
 
   // *************Shipping Section Constants end here************ //
 

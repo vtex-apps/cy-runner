@@ -46,6 +46,7 @@ export const FAIL_ON_STATUS_CODE = {
 export const ENTITIES = {
   CLIENTS: { id: 'CL', searchKey: 'email' },
   ADDRESSES: { id: 'AD', searchKey: 'userId' },
+  CHECKOUTCUSTOM: { id: 'checkoutcustom' },
 }
 
 export const HEADERS = {

@@ -1,34 +1,16 @@
-/* eslint-disable jest/expect-expect */
+import { sendInvoiceTestCase, invoiceAPITestCase } from '../common/testcase.js'
+import selectors from '../common/selectors.js'
 import {
-  loginViaCookies,
-  preserveCookie,
   updateRetry,
   saveOrderId,
-} from '../../support/common/support.js'
-import { singleProduct } from '../../support/affirm-payment/outputvalidation'
-import selectors from '../../support/common/selectors.js'
+  clickBtnOnVisibility,
+} from '../common/support.js'
 
-const { prefix, productName, postalCode } = singleProduct
-
-describe(`${prefix} Scenarios`, () => {
-  loginViaCookies()
-
-  it(`In ${prefix} - Adding Product to Cart`, updateRetry(3), () => {
-    cy.clearLocalStorage()
-    // Search the product
-    cy.searchProduct(productName)
-    // Add product to cart
-    cy.addProduct(productName, { proceedtoCheckout: true })
-  })
-
-  it(`In ${prefix} - Updating Shipping Information`, updateRetry(3), () => {
-    // Update Shipping Section
-    cy.updateShippingInformation({
-      postalCode,
-      phoneNumber: '(312) 310 3249',
-      timeout: 10000,
-    })
-  })
+export function completeThePayment(
+  product,
+  { orderIdEnv, transactionIdEnv, sendInvoice = true }
+) {
+  const { prefix } = product
 
   it(`In ${prefix} - Initiate payment`, updateRetry(3), () => {
     cy.get(selectors.Profile).should('be.visible').click()
@@ -42,7 +24,9 @@ describe(`${prefix} Scenarios`, () => {
         }
       })
 
-    cy.get(selectors.ProceedtoShipping).should('be.visible').click()
+    clickBtnOnVisibility(selectors.GoToPayment)
+    clickBtnOnVisibility(selectors.ProceedtoShipping)
+
     cy.get(selectors.AffirmPaymentOption).should('be.visible').click()
     cy.get(selectors.InstallmentContainer)
       .should('be.visible')
@@ -91,11 +75,18 @@ describe(`${prefix} Scenarios`, () => {
     cy.getIframeBody('#checkout-application')
       .contains('Thanks')
       .should('be.visible')
-    saveOrderId(prefix)
+
+    saveOrderId(orderIdEnv)
   })
 
-  preserveCookie()
-})
-// A https://sandbox.affirm.com/checkout/84971L7SGAB1MVTX/new/GGJZFRF9QXF6I48L/?skip_to_pin=0&use_headers=0&locale=en_US&external_modal=0&country_code=USA&fs=1&
-// A https://sandbox.affirm.com/checkout/84971L7SGAB1MVTX/new/O3LYKMNL23FNYFSO/?skip_to_pin=0&use_headers=0&locale=en_US&external_modal=0&country_code=USA&fs=1&device_id=f4530555-8a0b-4304-bb8c-3a459ef178ed&origin=https%3A%2F%2Fsyedaffirm--productusqa.myvtex.com&frameId=checkout-application
-// BCypress https://sandbox.affirm.com/checkout/84971L7SGAB1MVTX/new/GGJZFRF9QXF6I48L/?skip_to_pin=0&use_headers=0&locale=en_US&external_modal=0&country_code=USA
+  if (sendInvoice) {
+    sendInvoiceTestCase(product, orderIdEnv)
+
+    // Get transactionId from invoiceAPI and store in .orders.json
+    invoiceAPITestCase({
+      product,
+      env: orderIdEnv,
+      transactionIdEnv,
+    })
+  }
+}

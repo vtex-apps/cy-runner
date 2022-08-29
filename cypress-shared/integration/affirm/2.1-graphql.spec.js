@@ -4,18 +4,15 @@ import {
   version,
   affirmSettings,
   orderData,
-  orderUpdate,
   validateGetVersionResponse,
   validateAffirmSettingsResponse,
   validateOrderDataResponse,
-  validateOrderUpdateResponse,
-} from '../../support/affirm-payment/graphql_testcase'
-import { orderInfo } from '../../support/affirm-payment/outputvalidation'
+} from '../../support/affirm/graphql_testcase'
 
 const prefix = 'Graphql testcase'
 
 describe('Affirm GraphQL Validation', () => {
-  loginViaCookies({ storeFrontCookie: true })
+  loginViaCookies()
 
   it(`${prefix} - Get Version`, updateRetry(3), () => {
     graphql(version(), validateGetVersionResponse)
@@ -27,9 +24,5 @@ describe('Affirm GraphQL Validation', () => {
 
   it(`${prefix} - Get Order Data`, updateRetry(3), () => {
     graphql(orderData(), validateOrderDataResponse)
-  })
-
-  it(`${prefix} - Order Update`, updateRetry(3), () => {
-    graphql(orderUpdate(orderInfo), validateOrderUpdateResponse)
   })
 })
