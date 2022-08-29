@@ -4,13 +4,10 @@ import {
   version,
   affirmSettings,
   orderData,
-  orderUpdate,
   validateGetVersionResponse,
   validateAffirmSettingsResponse,
   validateOrderDataResponse,
-  validateOrderUpdateResponse,
 } from '../../support/affirm/graphql_testcase'
-import { orderInfo } from '../../support/affirm/outputvalidation'
 
 const prefix = 'Graphql testcase'
 
@@ -27,9 +24,5 @@ describe('Affirm GraphQL Validation', () => {
 
   it(`${prefix} - Get Order Data`, updateRetry(3), () => {
     graphql(orderData(), validateOrderDataResponse)
-  })
-
-  it(`${prefix} - Order Update`, updateRetry(3), () => {
-    graphql(orderUpdate(orderInfo), validateOrderUpdateResponse)
   })
 })

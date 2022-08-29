@@ -5,19 +5,12 @@ import {
   updateRetry,
 } from '../../support/common/support.js'
 import { singleProduct } from '../../support/affirm/outputvalidation'
-import {
-  sendInvoiceTestCase,
-  invoiceAPITestCase,
-  getTestVariables,
-} from '../../support/common/testcase.js'
-import {
-  completePayment,
-  InitiatePayment,
-} from '../../support/affirm/affirm.js'
+import { getTestVariables } from '../../support/common/testcase.js'
+import { completeThePayment } from '../../support/affirm/testcase.js'
 
-const { prefix, productName, postalCode } = singleProduct
+const { prefix, productName, postalCode, productQuantity } = singleProduct
 
-const { orderIdEnv, transactionIdEnv } = getTestVariables(prefix)
+const singleProductEnvs = getTestVariables(prefix)
 
 describe(`${prefix} Scenarios`, () => {
   loginViaCookies()
@@ -29,10 +22,10 @@ describe(`${prefix} Scenarios`, () => {
     cy.addProduct(productName, { proceedtoCheckout: true })
   })
 
-  it('Updating product quantity to 2', updateRetry(3), () => {
+  it(`In ${prefix} - Updating product quantity to 2`, updateRetry(3), () => {
     // Update Product quantity to 2
     cy.updateProductQuantity(productName, {
-      quantity: '2',
+      quantity: productQuantity,
       verifySubTotal: false,
     })
   })
@@ -46,22 +39,7 @@ describe(`${prefix} Scenarios`, () => {
     })
   })
 
-  it(`In ${prefix} - Initiate payment`, updateRetry(3), () => {
-    InitiatePayment()
-  })
-
-  it(`In ${prefix} - Complete payment`, () => {
-    completePayment(prefix)
-  })
-
-  sendInvoiceTestCase(singleProduct, orderIdEnv)
-
-  // Get transactionId from invoiceAPI and store in .orders.json
-  invoiceAPITestCase({
-    product: singleProduct,
-    env: orderIdEnv,
-    transactionIdEnv,
-  })
+  completeThePayment(singleProduct, singleProductEnvs)
 
   preserveCookie()
 })
