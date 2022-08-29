@@ -105,14 +105,15 @@ export function initiatePayment({
 
 export function completeThePayment(
   product,
-  { orderIdEnv, transactionIdEnv, sendInvoice = true, completePayment = true }
+  { orderIdEnv, transactionIdEnv, sendInvoice = true, completePayment = true },
+  externalSellerTestcase = false
 ) {
   const { prefix } = product
 
   initiatePayment({ prefix, completePayment, orderIdEnv })
 
   if (sendInvoice) {
-    sendInvoiceTestCase({ product, orderIdEnv })
+    sendInvoiceTestCase(product, orderIdEnv, externalSellerTestcase)
 
     // Get transactionId from invoiceAPI and store in .orders.json
     invoiceAPITestCase({

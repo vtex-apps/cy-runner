@@ -14,13 +14,15 @@ describe(`${prefix} Scenarios`, () => {
     // Search the product
     cy.searchProduct(product1Name)
     // Add product to cart
-    cy.addProduct(product1Name, { proceedtoCheckout: false, paypal: true })
+    cy.addProduct(product1Name, {
+      productDetailPage: true,
+      proceedtoCheckout: false,
+    })
     // Search the product
     cy.searchProduct(product2Name)
     // Add product to cart
     cy.addProduct(product2Name, {
       proceedtoCheckout: true,
-      paypal: true,
       productDetailPage: true,
     })
   })
@@ -33,10 +35,5 @@ describe(`${prefix} Scenarios`, () => {
     })
   })
 
-  it('Complete payment', updateRetry(3), () => {
-    completeThePayment(externalSeller, {
-      ...externalSellerEnvs,
-      sendInvoice: false,
-    })
-  })
+  completeThePayment(externalSeller, externalSellerEnvs, true)
 })

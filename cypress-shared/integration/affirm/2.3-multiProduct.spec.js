@@ -1,7 +1,14 @@
 /* eslint-disable jest/expect-expect */
-import { loginViaCookies, updateRetry } from '../../support/common/support.js'
+import {
+  loginViaCookies,
+  preserveCookie,
+  updateRetry,
+} from '../../support/common/support.js'
 import { multiProduct } from '../../support/affirm/outputvalidation.js'
-import { getTestVariables } from '../../support/common/testcase.js'
+import {
+  deleteAddresses,
+  getTestVariables,
+} from '../../support/common/testcase.js'
 import { completeThePayment } from '../../support/affirm/testcase.js'
 
 const { prefix, product1Name, product2Name, postalCode, productQuantity } =
@@ -10,9 +17,12 @@ const { prefix, product1Name, product2Name, postalCode, productQuantity } =
 describe(`${prefix} Scenarios`, () => {
   loginViaCookies()
 
+  deleteAddresses()
+
   const multiProductEnvs = getTestVariables(prefix)
 
   it(`In ${prefix} - Adding Product to Cart`, updateRetry(3), () => {
+    cy.clearLocalStorage()
     // Search the product
     cy.searchProduct(product1Name)
     // Add product to cart
@@ -38,8 +48,11 @@ describe(`${prefix} Scenarios`, () => {
     cy.updateShippingInformation({
       postalCode,
       phoneNumber: '(312) 310 3249',
+      timeout: 10000,
     })
   })
 
   completeThePayment(multiProduct, multiProductEnvs)
+
+  preserveCookie()
 })

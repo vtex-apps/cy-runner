@@ -343,10 +343,10 @@ export function sendInvoiceTestCase({
   it(`In ${product.prefix} - Send Invoice`, () => {
     cy.getOrderItems().then((item) => {
       if (externalSeller) {
-        if (externalSeller.directSaleEnv === orderIdEnv) {
-          total = externalSeller.directSaleAmount
+        if (product.directSaleEnv === orderIdEnv) {
+          total = product.directSaleAmount
         } else {
-          total = externalSeller.externalSellerAmount
+          total = product.externalSellerAmount
         }
       }
       // If this is not externalSellerTestCase then it is for refund test case
@@ -367,7 +367,7 @@ export function sendInvoiceTestCase({
           invoiceKey: null,
         },
         item[orderIdEnv],
-        orderIdEnv === externalSeller.externalSaleEnv
+        orderIdEnv === product.externalSaleEnv
       ).then((response) => {
         expect(response.status).to.equal(200)
       })
