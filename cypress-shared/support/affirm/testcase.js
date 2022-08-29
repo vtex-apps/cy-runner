@@ -6,7 +6,10 @@ import {
   clickBtnOnVisibility,
 } from '../common/support.js'
 
-export function completeThePayment(product, { orderIdEnv, transactionIdEnv }) {
+export function completeThePayment(
+  product,
+  { orderIdEnv, transactionIdEnv, sendInvoice = true }
+) {
   const { prefix } = product
 
   it(`In ${prefix} - Initiate payment`, updateRetry(3), () => {
@@ -76,12 +79,14 @@ export function completeThePayment(product, { orderIdEnv, transactionIdEnv }) {
     saveOrderId(orderIdEnv)
   })
 
-  sendInvoiceTestCase(product, orderIdEnv)
+  if (sendInvoice) {
+    sendInvoiceTestCase(product, orderIdEnv)
 
-  // Get transactionId from invoiceAPI and store in .orders.json
-  invoiceAPITestCase({
-    product,
-    env: orderIdEnv,
-    transactionIdEnv,
-  })
+    // Get transactionId from invoiceAPI and store in .orders.json
+    invoiceAPITestCase({
+      product,
+      env: orderIdEnv,
+      transactionIdEnv,
+    })
+  }
 }

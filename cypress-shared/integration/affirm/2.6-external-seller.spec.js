@@ -1,13 +1,14 @@
 /* eslint-disable jest/expect-expect */
 import { loginViaCookies, updateRetry } from '../../support/common/support.js'
 import { externalSeller } from '../../support/common/outputvalidation'
-import { deleteAddresses } from '../../support/common/testcase.js'
 import {
-  completePayment,
-  InitiatePayment,
-} from '../../support/affirm/affirm.js'
+  deleteAddresses,
+  getTestVariables,
+} from '../../support/common/testcase.js'
+import { completeThePayment } from '../../support/affirm/testcase.js'
 
 const { prefix, product1Name, product2Name, pickUpPostalCode } = externalSeller
+const externalSellerEnvs = getTestVariables(prefix)
 
 describe(`${prefix} Scenarios`, () => {
   loginViaCookies()
@@ -37,18 +38,10 @@ describe(`${prefix} Scenarios`, () => {
     })
   })
 
-  it('Store order id and payment redirect url', updateRetry(3), () => {
-    InitiatePayment()
-    cy.intercept('GET', `**operationName=OrderData**`).as('OrderData')
-
-    cy.wait('@OrderData')
-      .its('response.body')
-      .then((response) => {
-        cy.setOrderItem('OrderId', response.data.orderData.orderId)
-      })
-  })
-
   it('Complete payment', updateRetry(3), () => {
-    completePayment(prefix)
+    completeThePayment(externalSeller, {
+      ...externalSellerEnvs,
+      sendInvoice: false,
+    })
   })
 })
