@@ -74,8 +74,7 @@ export function addAddress(prefix, { address, lat, long }) {
         .first()
         .should('not.be.disabled')
         .clear()
-        .type(address.postalCode)
-        .wait(500)
+        .type(address.postalCode, { delay: 100 })
       autocomplete(address.city, address.state)
       cy.get(selectors.saveButton)
         .find('button')
@@ -91,8 +90,7 @@ export function autocomplete(city, province) {
   cy.getVtexItems().then((vtex) => {
     cy.intercept('POST', vtex.baseUrl).as('events')
     cy.wait('@events')
-    cy.get(selectors.addressInputContainer)
-      .eq(2)
+    cy.get(`div[class*=addressInputContainer] input[value="${city}"]`)
       .invoke('val')
       .should('equal', city)
     if (province === 'IDF') {
@@ -100,6 +98,11 @@ export function autocomplete(city, province) {
         .eq(3)
         .invoke('val')
         .should('equal', province)
+    } else if (province === 'Masovian Voivodeship') {
+      cy.get(`div[class*=addressInputContainer] input[value="${province}"]`)
+        .last()
+        .clear()
+        .type(province)
     } else {
       cy.get(selectors.province)
         .find('option:selected')
@@ -124,5 +127,22 @@ export function orderProductTestCase(prefix, data) {
 
   it(`${prefix} - Ordering the product`, updateRetry(2), () => {
     cy.orderProduct()
+  })
+}
+
+export function verifyHomePage(city, postalCode) {
+  // cy.get('div[class*=vtex-modal-layout]').should('not.be.visible')
+  cy.scrollTo(0, 500)
+  cy.getVtexItems().then((vtex) => {
+    cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
+      if (req.body.operationName === 'updateOrderFormShipping') {
+        req.continue()
+      }
+    }).as('updateOrderFormShipping')
+    cy.get(selectors.addressContainer).should('be.visible')
+    cy.get(selectors.AddressCity).contains(city)
+    cy.get(selectors.AddressZip).contains(postalCode)
+    cy.get(selectors.Distance).contains('Distance:')
+    cy.wait('@updateOrderFormShipping', { timeout: 20000 })
   })
 }
