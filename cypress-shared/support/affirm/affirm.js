@@ -1,6 +1,6 @@
 import selectors from '../common/selectors'
 import { ENTITIES } from '../common/constants'
-import { saveOrderId } from '../common/support'
+import { saveOrderId, clickBtnOnVisibility } from '../common/support'
 
 export function paymentWithAffirm({
   prefix,
@@ -110,7 +110,6 @@ export function completePayment(prefix) {
 }
 
 export function InitiatePayment() {
-  cy.intercept('**/shippingData').as('shippingData')
   cy.get(selectors.Profile).should('be.visible').click()
   cy.get(selectors.Phone)
     .invoke('val')
@@ -121,14 +120,10 @@ export function InitiatePayment() {
         })
       }
     })
-  cy.get('body').then(($body) => {
-    // if ($body.find(selectors.GoToPayment).length) {
-    //   cy.get(selectors.GoToPayment).should('be.visible').click()
-    // }
-    if ($body.find(selectors.ProceedtoShipping).length) {
-      cy.get(selectors.ProceedtoShipping).should('be.visible').click()
-    }
-  })
+
+  clickBtnOnVisibility(selectors.GoToPayment)
+  clickBtnOnVisibility(selectors.ProceedtoShipping)
+
   cy.get(selectors.AffirmPaymentOption).should('be.visible').click()
   cy.get(selectors.InstallmentContainer).should('be.visible').contains('Total')
   cy.get(selectors.BuyNowBtn).last().should('be.visible').click()

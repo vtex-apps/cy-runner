@@ -1,5 +1,4 @@
 /* eslint-disable jest/expect-expect */
-
 import {
   preserveCookie,
   updateRetry,
@@ -40,12 +39,13 @@ describe('Order the product using Affirm payment', () => {
     cy.intercept('POST', `https://sandbox.affirm.com/api/v2/checkout/`).as(
       'updateOrderFormShipping'
     )
+
+    /* eslint-disable jest/valid-expect-in-promise */
     cy.wait('@updateOrderFormShipping')
-      // .its('response')
+      .its('response')
       .then((response) => {
         expect(response.body.message).includes('Please enter a valid mobile')
       })
-      
   })
 
   it('close the pop up', updateRetry(3), () => {
@@ -77,7 +77,7 @@ describe('Order the product using Affirm payment', () => {
   )
 
   it('Complete payment', updateRetry(3), () => {
-    completePayment()
+    completePayment(prefix)
   })
 
   preserveCookie()

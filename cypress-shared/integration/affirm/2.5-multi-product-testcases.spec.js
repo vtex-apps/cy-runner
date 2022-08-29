@@ -51,6 +51,6 @@ describe(`${prefix} Scenarios`, () => {
   })
 
   it('Complete payment', updateRetry(3), () => {
-    completePayment()
+    completePayment(prefix)
   })
 })

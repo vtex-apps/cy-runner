@@ -49,7 +49,6 @@ describe(`${prefix} Scenarios`, () => {
   })
 
   it('Complete payment', updateRetry(3), () => {
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    completePayment()
+    completePayment(prefix)
   })
 })
