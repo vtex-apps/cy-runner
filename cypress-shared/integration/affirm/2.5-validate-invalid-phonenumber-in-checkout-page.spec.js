@@ -6,17 +6,17 @@ import {
 } from '../../support/common/support'
 import {
   deleteAddresses,
-  paymentWithAffirm,
   getTestVariables,
-  completePayment,
-  InitiatePayment,
-} from '../../support/affirm/affirm'
+} from '../../support/common/testcase'
+import {
+  completeThePayment,
+  initiatePayment,
+} from '../../support/affirm/testcase.js'
 import selectors from '../../support/common/selectors'
-import { singleProduct } from '../../support/common/outputvalidation'
+import { discountShipping } from '../../support/common/outputvalidation'
 
-const prefix = 'singleProduct'
-const singleProductEnvs = getTestVariables(prefix)
-const { productName, postalCode } = singleProduct
+const { productName, postalCode, prefix } = discountShipping
+const discountShippingProductEnvs = getTestVariables(prefix)
 
 describe('Order the product using Affirm payment', () => {
   loginViaCookies({ storeFrontCookie: true })
@@ -33,7 +33,12 @@ describe('Order the product using Affirm payment', () => {
     cy.updateShippingInformation({ postalCode })
   })
 
-  paymentWithAffirm({ prefix, ...singleProductEnvs })
+  initiatePayment({
+    prefix,
+    expectedPhoneNo: '(304) 123 4556',
+    completePayment: false,
+  })
+  // completeThePayment(prefix,{sendInvoice : false,completePayment:false})
 
   it('Validate with invalid phone number', updateRetry(3), () => {
     cy.intercept('POST', `https://sandbox.affirm.com/api/v2/checkout/`).as(
@@ -59,26 +64,7 @@ describe('Order the product using Affirm payment', () => {
     cy.get(selectors.dataReviewCloseBtn).click()
   })
 
-  it(
-    'Validate with valid phone number and payment redirect url',
-    updateRetry(3),
-    () => {
-      InitiatePayment()
-      cy.intercept('GET', `**operationName=OrderData**`).as('OrderData')
-      cy.wait('@OrderData')
-        .its('response.body')
-        .then((response) => {
-          cy.setOrderItem(
-            'discountProductOrderId',
-            response.data.orderData.orderId
-          )
-        })
-    }
-  )
-
-  it('Complete payment', updateRetry(3), () => {
-    completePayment(prefix)
-  })
+  completeThePayment(discountShipping, discountShippingProductEnvs)
 
   preserveCookie()
 })
