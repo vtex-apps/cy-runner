@@ -4,24 +4,19 @@ import {
   updateRetry,
   loginViaCookies,
 } from '../../support/common/support'
-import {
-  deleteAddresses,
-  getTestVariables,
-} from '../../support/common/testcase'
+import { getTestVariables } from '../../support/common/testcase'
 import {
   completeThePayment,
   initiatePayment,
 } from '../../support/affirm/testcase.js'
 import selectors from '../../support/common/selectors'
-import { discountShipping } from '../../support/common/outputvalidation'
+import { discountShipping } from '../../support/affirm/outputvalidation'
 
 const { productName, postalCode, prefix } = discountShipping
 const discountShippingProductEnvs = getTestVariables(prefix)
 
 describe('Order the product using Affirm payment', () => {
-  loginViaCookies({ storeFrontCookie: true })
-
-  deleteAddresses()
+  loginViaCookies()
 
   it(`In ${prefix} - Adding Product to Cart`, updateRetry(3), () => {
     // Search the product
@@ -29,7 +24,7 @@ describe('Order the product using Affirm payment', () => {
     // Add product to cart
     cy.addProduct(productName)
   })
-  it('Add the product with invalid phone number', updateRetry(3), () => {
+  it(`In ${prefix} - Update Shipping Information`, updateRetry(3), () => {
     cy.updateShippingInformation({ postalCode })
   })
 
@@ -37,23 +32,27 @@ describe('Order the product using Affirm payment', () => {
     prefix,
     expectedPhoneNo: '(304) 123 4556',
     completePayment: false,
-  })
-  // completeThePayment(prefix,{sendInvoice : false,completePayment:false})
-
-  it('Validate with invalid phone number', updateRetry(3), () => {
-    cy.intercept('POST', `https://sandbox.affirm.com/api/v2/checkout/`).as(
-      'updateOrderFormShipping'
-    )
-
-    /* eslint-disable jest/valid-expect-in-promise */
-    cy.wait('@updateOrderFormShipping')
-      .its('response')
-      .then((response) => {
-        expect(response.body.message).includes('Please enter a valid mobile')
-      })
+    retries: 2,
   })
 
-  it('close the pop up', updateRetry(3), () => {
+  it(
+    `In ${prefix} - Validate with invalid phone number`,
+    updateRetry(3),
+    () => {
+      cy.intercept('POST', `https://sandbox.affirm.com/api/v2/checkout/`).as(
+        'updateOrderFormShipping'
+      )
+
+      /* eslint-disable jest/valid-expect-in-promise */
+      cy.wait('@updateOrderFormShipping')
+        .its('response')
+        .then((response) => {
+          expect(response.body.message).includes('Please enter a valid mobile')
+        })
+    }
+  )
+
+  it(`In ${prefix} - close the pop up`, updateRetry(3), () => {
     cy.getIframeBody(selectors.popUpClose).should('be.visible')
     cy.getIframeBody(selectors.popUpClose)
       .find(selectors.invalidPopUpCloseBtn)

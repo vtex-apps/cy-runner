@@ -11,30 +11,34 @@ export function initiatePayment({
   orderIdEnv,
   expectedPhoneNo = '(312) 310 3249',
   completePayment = false,
+  retries = 0,
 }) {
   it(
     `In ${prefix} - Initiate payment ${
       completePayment ? ' and complete the payment' : ''
     }`,
-    updateRetry(3),
+    updateRetry(retries),
     () => {
-      cy.get(selectors.Profile).should('be.visible').click()
-      cy.intercept('https://rc.vtex.com/v8').as('v8')
+      clickBtnOnVisibility(selectors.Profile)
       cy.get(selectors.Phone)
         .invoke('val')
         .then((phone) => {
           if (phone !== expectedPhoneNo) {
-            cy.wait('@v8')
-            cy.get(selectors.Phone).clear().type(expectedPhoneNo, {
-              delay: 100,
-            })
+            cy.get(selectors.Phone)
+              .should('be.visible')
+              .clear()
+              .type(expectedPhoneNo, {
+                delay: 100,
+              })
           }
         })
 
       clickBtnOnVisibility(selectors.GoToPayment)
       clickBtnOnVisibility(selectors.ProceedtoShipping)
 
-      cy.get(selectors.AffirmPaymentOption).should('be.visible').click()
+      cy.get(selectors.AffirmPaymentOption, { timeout: 10000 })
+        .should('be.visible')
+        .click()
       cy.get(selectors.InstallmentContainer)
         .should('be.visible')
         .contains('Total')
@@ -108,14 +112,13 @@ export function completeThePayment(
   initiatePayment({ prefix, completePayment, orderIdEnv })
 
   if (sendInvoice) {
-    sendInvoiceTestCase({ prefix, product, orderIdEnv })
+    sendInvoiceTestCase({ product, orderIdEnv })
 
     // Get transactionId from invoiceAPI and store in .orders.json
     invoiceAPITestCase({
       product,
       env: orderIdEnv,
       transactionIdEnv,
-      prefix,
     })
   }
 }

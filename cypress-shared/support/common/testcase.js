@@ -327,23 +327,20 @@ Below fn operates with getTestVariables
 export function getTestVariables(testCasePrefix) {
   return {
     orderIdEnv: testCasePrefix,
-    affirmCheckoutNowUrl: `${testCasePrefix}-affirmCheckoutNowUrl`, // not used
-    sandboxOrderPage: `${testCasePrefix}-sandboxOrderPage`, // not used
     transactionIdEnv: `${testCasePrefix}-transactionIdEnv`,
-    paymentTidEnv: `${testCasePrefix}-transactionIdEnv`,
+    paymentTidEnv: `${testCasePrefix}-paymentTidEnv`,
     productTotalEnv: `${testCasePrefix}-productTotalEnv`,
-    productInDollarEnv: `${testCasePrefix}-productInDollarEnv`, // not used
   }
 }
 
-export function sendInvoiceTestCase(
+export function sendInvoiceTestCase({
   product,
   orderIdEnv,
-  externalSeller = false
-) {
+  externalSeller = false,
+}) {
   let total
 
-  it(`In ${prefix} - Send Invoice`, () => {
+  it(`In ${product.prefix} - Send Invoice`, () => {
     cy.getOrderItems().then((item) => {
       if (externalSeller) {
         if (externalSeller.directSaleEnv === orderIdEnv) {
@@ -354,7 +351,8 @@ export function sendInvoiceTestCase(
       }
       // If this is not externalSellerTestCase then it is for refund test case
       else {
-        total = product.totalWithoutTax || product.total
+        total =
+          product.totalWithoutTax || product.total || product.totalProductPrice
       }
 
       cy.sendInvoiceAPI(
@@ -390,7 +388,7 @@ export function invoiceAPITestCase({
   pickup = false,
 }) {
   it(
-    `In ${prefix} -Invoice API should have expected information`,
+    `In ${product.prefix} -Invoice API should have expected information`,
     updateRetry(2),
     () => {
       cy.getOrderItems().then((item) => {
@@ -424,24 +422,31 @@ function checkTransactionIdIsAvailable(transactionIdEnv) {
 }
 
 export function verifyTransactionPaymentsAPITestCase(
+  product,
   { transactionIdEnv, paymentTidEnv },
   fn = null
 ) {
-  it('Verify Transaction Payment', updateRetry(2), () => {
-    cy.addDelayBetweenRetries(2000)
-    cy.getVtexItems().then((vtex) => {
-      cy.getOrderItems().then((order) => {
-        checkTransactionIdIsAvailable(order[transactionIdEnv])
-        cy.getAPI(
-          `${transactionAPI(vtex.baseUrl)}/${order[transactionIdEnv]}/payments`,
-          VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken)
-        ).then((response) => {
-          expect(response.status).to.equal(200)
-          // Store payment tid in .orders.json
-          cy.setOrderItem(paymentTidEnv, response.body[0].tid)
-          fn && fn(response)
+  it(
+    `In ${product.prefix} - Verify Transaction Payment`,
+    updateRetry(2),
+    () => {
+      cy.addDelayBetweenRetries(2000)
+      cy.getVtexItems().then((vtex) => {
+        cy.getOrderItems().then((order) => {
+          checkTransactionIdIsAvailable(order[transactionIdEnv])
+          cy.getAPI(
+            `${transactionAPI(vtex.baseUrl)}/${
+              order[transactionIdEnv]
+            }/payments`,
+            VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken)
+          ).then((response) => {
+            expect(response.status).to.equal(200)
+            // Store payment tid in .orders.json
+            cy.setOrderItem(paymentTidEnv, response.body[0].tid)
+            fn && fn(response)
+          })
         })
       })
-    })
-  })
+    }
+  )
 }
