@@ -3,14 +3,11 @@ import { loginViaCookies, updateRetry } from '../../support/common/support.js'
 import { discountProduct } from '../../support/affirm-payment/outputvalidation'
 import selectors from '../../support/common/selectors.js'
 import { HEADERS } from '../../support/common/constants.js'
-import { deleteAddresses } from '../../support/common/testcase.js'
 
 const { prefix, productName, postalCode } = discountProduct
 
 describe(`${prefix} Scenarios`, () => {
   loginViaCookies()
-
-  deleteAddresses()
 
   it(`In ${prefix} - Adding Product to Cart`, updateRetry(3), () => {
     cy.clearLocalStorage()
