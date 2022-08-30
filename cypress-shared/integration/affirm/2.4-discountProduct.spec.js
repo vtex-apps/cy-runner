@@ -20,7 +20,7 @@ describe(`${prefix} Scenarios`, () => {
 
   deleteAddresses()
 
-  it(`In ${prefix} - Adding Product to Cart`, updateRetry(3), () => {
+  it(`In ${prefix} - Adding Product to Cart`, updateRetry(1), () => {
     cy.clearLocalStorage()
     // Search the product
     cy.searchProduct(productName)
@@ -28,7 +28,7 @@ describe(`${prefix} Scenarios`, () => {
     cy.addProduct(productName, { proceedtoCheckout: true })
   })
 
-  it(`In ${prefix} - Updating Shipping Information`, updateRetry(3), () => {
+  it(`In ${prefix} - Updating Shipping Information`, updateRetry(4), () => {
     // Update Shipping Section
     cy.updateShippingInformation({ postalCode, phoneNumber: '(312) 310 3249' })
   })

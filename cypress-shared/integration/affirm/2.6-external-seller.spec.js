@@ -16,12 +16,11 @@ externalSellerEnvs.sendInvoice = false
 describe(`${prefix} Scenarios`, () => {
   loginViaCookies()
 
-  it(`In ${prefix} - Adding Product to Cart`, updateRetry(3), () => {
+  it(`In ${prefix} - Adding Product to Cart`, updateRetry(1), () => {
     // Search the product
     cy.searchProduct(product1Name)
     // Add product to cart
     cy.addProduct(product1Name, {
-      productDetailPage: true,
       proceedtoCheckout: false,
     })
     // Search the product
@@ -29,11 +28,10 @@ describe(`${prefix} Scenarios`, () => {
     // Add product to cart
     cy.addProduct(product2Name, {
       proceedtoCheckout: true,
-      productDetailPage: true,
     })
   })
 
-  it(`In ${prefix} - Updating Shipping Information`, updateRetry(3), () => {
+  it(`In ${prefix} - Updating Shipping Information`, updateRetry(4), () => {
     // Update Shipping Section
     cy.updateShippingInformation({
       postalCode: pickUpPostalCode,
@@ -44,7 +42,7 @@ describe(`${prefix} Scenarios`, () => {
   completeThePayment(externalSeller, externalSellerEnvs, true)
 })
 
-describe('Testing Avalara API for Direct Sale', () => {
+describe('Testing Invoice API for Direct Sale', () => {
   it('Get Direct Sale orderId and update in Cypress env', () => {
     cy.getOrderItems().then((order) => {
       if (!order[externalSeller.directSaleEnv]) {
@@ -67,7 +65,7 @@ describe('Testing Avalara API for Direct Sale', () => {
   })
 })
 
-describe('Testing Avalara API for External Sale', () => {
+describe('Testing Invoice API for External Sale', () => {
   it('Get External Sale orderId and update in Cypress env', () => {
     cy.getOrderItems().then((order) => {
       if (!order[externalSeller.externalSaleEnv]) {

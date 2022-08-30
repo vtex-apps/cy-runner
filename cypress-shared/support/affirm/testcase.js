@@ -50,7 +50,7 @@ export function initiatePayment({
         cy.getIframeBody('#checkout-application')
           .find(selectors.AffirmPhoneNumberField, { timeout: 45000 })
           .should('be.visible')
-          .type('3123103249')
+          .type('3123103249', { force: true })
 
         cy.getIframeBody('#checkout-application')
           .find(selectors.AffirmSubmit)
@@ -60,9 +60,9 @@ export function initiatePayment({
         cy.getIframeBody('#checkout-application')
           .find(selectors.AffirmPhonePin)
           .should('be.visible')
-          .type('1234')
+          .type('1234', { force: true })
 
-        cy.getIframeBody('#checkout-application')
+        cy.getIframeBody('#checkout-application', { timeout: 40000 })
           .find('h1')
           .should('have.text', "You're approved!")
 

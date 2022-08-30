@@ -18,13 +18,13 @@ const discountShippingProductEnvs = getTestVariables(prefix)
 describe('Order the product using Affirm payment', () => {
   loginViaCookies()
 
-  it(`In ${prefix} - Adding Product to Cart`, updateRetry(3), () => {
+  it(`In ${prefix} - Adding Product to Cart`, updateRetry(1), () => {
     // Search the product
     cy.searchProduct(productName)
     // Add product to cart
     cy.addProduct(productName)
   })
-  it(`In ${prefix} - Update Shipping Information`, updateRetry(3), () => {
+  it(`In ${prefix} - Update Shipping Information`, updateRetry(4), () => {
     cy.updateShippingInformation({ postalCode })
   })
 

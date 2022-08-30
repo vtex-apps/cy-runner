@@ -21,7 +21,7 @@ describe(`${prefix} Scenarios`, () => {
 
   const multiProductEnvs = getTestVariables(prefix)
 
-  it(`In ${prefix} - Adding Product to Cart`, updateRetry(3), () => {
+  it(`In ${prefix} - Adding Product to Cart`, updateRetry(1), () => {
     cy.clearLocalStorage()
     // Search the product
     cy.searchProduct(product1Name)
@@ -35,7 +35,7 @@ describe(`${prefix} Scenarios`, () => {
     })
   })
 
-  it(`In ${prefix} - Updating product quantity to 2`, updateRetry(3), () => {
+  it(`In ${prefix} - Updating product quantity to 2`, updateRetry(4), () => {
     // Update Product quantity to 2
     cy.updateProductQuantity(product1Name, {
       quantity: productQuantity,
@@ -43,7 +43,7 @@ describe(`${prefix} Scenarios`, () => {
     })
   })
 
-  it(`In ${prefix} - Updating Shipping Information`, updateRetry(3), () => {
+  it(`In ${prefix} - Updating Shipping Information`, updateRetry(4), () => {
     // Update Shipping Section
     cy.updateShippingInformation({
       postalCode,
