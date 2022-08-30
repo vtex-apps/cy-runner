@@ -5,10 +5,7 @@ import {
   updateRetry,
 } from '../../support/common/support.js'
 import { multiProduct } from '../../support/affirm/outputvalidation.js'
-import {
-  deleteAddresses,
-  getTestVariables,
-} from '../../support/common/testcase.js'
+import { getTestVariables } from '../../support/common/testcase.js'
 import { completeThePayment } from '../../support/affirm/testcase.js'
 
 const { prefix, product1Name, product2Name, postalCode, productQuantity } =
@@ -17,12 +14,9 @@ const { prefix, product1Name, product2Name, postalCode, productQuantity } =
 describe(`${prefix} Scenarios`, () => {
   loginViaCookies()
 
-  deleteAddresses()
-
   const multiProductEnvs = getTestVariables(prefix)
 
   it(`In ${prefix} - Adding Product to Cart`, updateRetry(1), () => {
-    cy.clearLocalStorage()
     // Search the product
     cy.searchProduct(product1Name)
     // Add product to cart

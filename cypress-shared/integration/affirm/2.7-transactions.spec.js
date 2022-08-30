@@ -22,13 +22,13 @@ describe(`Transaction Scenarios`, () => {
 
   verifyTransactionPaymentsAPITestCase(singleProduct, singleProductEnvs)
   verifyTransactionPaymentsAPITestCase(multiProduct, multiProductEnvs)
-  verifyTransactionPaymentsAPITestCase(discountShipping, discountShippingEnvs)
   verifyTransactionPaymentsAPITestCase(discountProduct, discountProductEnvs)
+  verifyTransactionPaymentsAPITestCase(discountShipping, discountShippingEnvs)
 
   verifyTransactionInAffirm(singleProduct, singleProductEnvs)
   verifyTransactionInAffirm(multiProduct, multiProductEnvs)
-  verifyTransactionInAffirm(discountShipping, discountShippingEnvs)
   verifyTransactionInAffirm(discountProduct, discountProductEnvs)
+  verifyTransactionInAffirm(discountShipping, discountShippingEnvs)
 
   /* 
   TODO: ExternalSeller shows popup randomly inside and outside the window

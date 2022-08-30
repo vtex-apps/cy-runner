@@ -15,7 +15,7 @@ import { discountShipping } from '../../support/affirm/outputvalidation'
 const { productName, postalCode, prefix } = discountShipping
 const discountShippingProductEnvs = getTestVariables(prefix)
 
-describe('Order the product using Affirm payment', () => {
+describe(`${prefix} Scenarios`, () => {
   loginViaCookies()
 
   it(`In ${prefix} - Adding Product to Cart`, updateRetry(1), () => {
