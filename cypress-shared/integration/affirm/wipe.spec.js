@@ -5,7 +5,7 @@ import {
   deleteAddresses,
 } from '../../support/common/testcase.js'
 
-describe('Setting up affirm in dynamic environment', () => {
+describe('Wipe affirm in dynamic environment', () => {
   loginViaCookies()
 
   startPaymentE2ETests()
