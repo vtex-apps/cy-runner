@@ -336,13 +336,13 @@ export function getTestVariables(testCasePrefix) {
 export function sendInvoiceTestCase({
   product,
   orderIdEnv,
-  externalSeller = false,
+  externalSellerTestcase = false,
 }) {
   let total
 
   it(`In ${product.prefix} - Send Invoice`, () => {
     cy.getOrderItems().then((item) => {
-      if (externalSeller) {
+      if (externalSellerTestcase) {
         if (product.directSaleEnv === orderIdEnv) {
           total = product.directSaleAmount
         } else {

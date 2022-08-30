@@ -1,11 +1,17 @@
 /* eslint-disable jest/expect-expect */
 import { loginViaCookies, updateRetry } from '../../support/common/support.js'
 import { externalSeller } from '../../support/common/outputvalidation'
-import { getTestVariables } from '../../support/common/testcase.js'
+import {
+  getTestVariables,
+  invoiceAPITestCase,
+  sendInvoiceTestCase,
+} from '../../support/common/testcase.js'
 import { completeThePayment } from '../../support/affirm/testcase.js'
 
 const { prefix, product1Name, product2Name, pickUpPostalCode } = externalSeller
 const externalSellerEnvs = getTestVariables(prefix)
+
+externalSellerEnvs.sendInvoice = false
 
 describe(`${prefix} Scenarios`, () => {
   loginViaCookies()
@@ -36,4 +42,50 @@ describe(`${prefix} Scenarios`, () => {
   })
 
   completeThePayment(externalSeller, externalSellerEnvs, true)
+})
+
+describe('Testing Avalara API for Direct Sale', () => {
+  it('Get Direct Sale orderId and update in Cypress env', () => {
+    cy.getOrderItems().then((order) => {
+      if (!order[externalSeller.directSaleEnv]) {
+        throw new Error('Direct Sale Order id is missing')
+      }
+    })
+  })
+
+  sendInvoiceTestCase({
+    product: externalSeller,
+    orderIdEnv: externalSeller.directSaleEnv,
+    externalSellerTestcase: true,
+  })
+
+  // Get transactionId from invoiceAPI and store in .orders.json
+  invoiceAPITestCase({
+    product: externalSeller,
+    env: externalSeller.directSaleEnv,
+    transactionIdEnv: externalSellerEnvs.transactionIdEnv,
+  })
+})
+
+describe('Testing Avalara API for External Sale', () => {
+  it('Get External Sale orderId and update in Cypress env', () => {
+    cy.getOrderItems().then((order) => {
+      if (!order[externalSeller.externalSaleEnv]) {
+        throw new Error('External Sale Order id is missing')
+      }
+    })
+  })
+
+  sendInvoiceTestCase({
+    product: externalSeller,
+    orderIdEnv: externalSeller.externalSaleEnv,
+    externalSellerTestcase: true,
+  })
+
+  // Get transactionId from invoiceAPI and store in .orders.json
+  invoiceAPITestCase({
+    product: externalSeller,
+    env: externalSeller.externalSaleEnv,
+    transactionIdEnv: externalSellerEnvs.transactionIdEnv,
+  })
 })

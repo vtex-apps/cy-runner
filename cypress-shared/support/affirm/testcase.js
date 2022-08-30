@@ -11,6 +11,7 @@ export function initiatePayment({
   orderIdEnv,
   expectedPhoneNo = '(312) 310 3249',
   completePayment = false,
+  externalSeller = false,
   retries = 0,
 }) {
   it(
@@ -95,7 +96,7 @@ export function initiatePayment({
           cy.wait('@OrderUpdate', { timeout: 35000 })
         })
 
-        saveOrderId(orderIdEnv)
+        saveOrderId(orderIdEnv, externalSeller)
       } else {
         cy.log('Complete Payment is disabled')
       }
@@ -110,10 +111,15 @@ export function completeThePayment(
 ) {
   const { prefix } = product
 
-  initiatePayment({ prefix, completePayment, orderIdEnv })
+  initiatePayment({
+    prefix,
+    completePayment,
+    orderIdEnv,
+    externalSeller: externalSellerTestcase ? product : false,
+  })
 
   if (sendInvoice) {
-    sendInvoiceTestCase(product, orderIdEnv, externalSellerTestcase)
+    sendInvoiceTestCase({ product, orderIdEnv })
 
     // Get transactionId from invoiceAPI and store in .orders.json
     invoiceAPITestCase({
