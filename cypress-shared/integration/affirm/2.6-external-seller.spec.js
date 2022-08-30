@@ -1,6 +1,6 @@
 /* eslint-disable jest/expect-expect */
 import { loginViaCookies, updateRetry } from '../../support/common/support.js'
-import { externalSeller } from '../../support/common/outputvalidation'
+import { externalSeller } from '../../support/affirm/outputvalidation.js'
 import {
   getTestVariables,
   invoiceAPITestCase,
@@ -8,7 +8,7 @@ import {
 } from '../../support/common/testcase.js'
 import { completeThePayment } from '../../support/affirm/testcase.js'
 
-const { prefix, product1Name, product2Name, pickUpPostalCode } = externalSeller
+const { prefix, product1Name, product2Name, postalCode } = externalSeller
 const externalSellerEnvs = getTestVariables(prefix)
 
 externalSellerEnvs.sendInvoice = false
@@ -34,7 +34,7 @@ describe(`${prefix} Scenarios`, () => {
   it(`In ${prefix} - Updating Shipping Information`, updateRetry(4), () => {
     // Update Shipping Section
     cy.updateShippingInformation({
-      postalCode: pickUpPostalCode,
+      postalCode,
       phoneNumber: '(312) 310 3249',
     })
   })
