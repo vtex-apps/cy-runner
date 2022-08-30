@@ -129,3 +129,20 @@ export function orderProductTestCase(prefix, data) {
     cy.orderProduct()
   })
 }
+
+export function verifyHomePage(city, postalCode) {
+  // cy.get('div[class*=vtex-modal-layout]').should('not.be.visible')
+  cy.scrollTo(0, 500)
+  cy.getVtexItems().then((vtex) => {
+    cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
+      if (req.body.operationName === 'updateOrderFormShipping') {
+        req.continue()
+      }
+    }).as('updateOrderFormShipping')
+    cy.get(selectors.addressContainer).should('be.visible')
+    cy.get(selectors.AddressCity).contains(city)
+    cy.get(selectors.AddressZip).contains(postalCode)
+    cy.get(selectors.Distance).contains('Distance:')
+    cy.wait('@updateOrderFormShipping', { timeout: 20000 })
+  })
+}
