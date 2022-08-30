@@ -161,6 +161,12 @@ export default {
   CreditCardExpirationYear: '[name=cardExpirationYear]',
   CreditCardCode: '#creditCardpayment-card-0Code',
   PaymentUnAuthorized: 'div[class*=payment-unauthorized]',
+  AffirmPayment: '[data-name=Affirm]',
+  dataReviewCloseBtn: '.payment-unauthorized-modal > .modal-body > .btn',
+  popUpClose: '#affirm-error-modal',
+  invalidPopUpCloseBtn:
+    'div[class*=dialog] > div[class*=dialog-close-button-container] > button[class*=dialog-close-button]',
+  InstallmentContainer: '.installments  span',
   // *************Payment Section Constants end here************ //
 
   // *************Order Form Page Constants end here************ //
@@ -423,4 +429,13 @@ export default {
   addressUpdation:
     'div[class*=userAddressContainer] > section > div[class*=flex] > div[class*=flex-auto] > div[class*=items-center] > div[class*=addressInfoTextContainer] > div[class*=addressInfoAddressContainer]',
   InputText: "input[type='text']",
+  // End here
+
+  // Affirm payment selectors
+  AffirmPaymentOption: 'a[data-name="Affirm"]',
+  AffirmPhoneNumberField: 'input[data-testid="phone-number-field"]',
+  AffirmSubmit: 'button[data-testid="submit-button"]',
+  AffirmPhonePin: 'input[data-testid="phone-pin-field"]',
+  AffirmInstallmentOption: 'span[data-test="installment-length"]',
+  AffirmIndicatorOption: 'div[data-testid="indicator"]', // Auto payment & Privacy policy option selector
 }

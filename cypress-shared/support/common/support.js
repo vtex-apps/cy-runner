@@ -278,7 +278,7 @@ export function updateShippingInformation({
       cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
     } else {
       cy.get(selectors.CartTimeline).should('be.visible').click({ force: true })
-      cy.get(selectors.DeliveryAddressText, { timeout })
+      cy.get(selectors.DeliveryAddressText, { timeout: 15000 })
         .invoke('text')
         .should(
           'match',
@@ -547,4 +547,12 @@ export function verifyTotal(totalAmount) {
           expect(totalText).to.equal(totalAmount)
         })
     })
+}
+
+export function clickBtnOnVisibility(selector) {
+  cy.get(selector).then(($el) => {
+    if (Cypress.dom.isVisible($el)) {
+      cy.get(selector).should('be.visible').click()
+    }
+  })
 }

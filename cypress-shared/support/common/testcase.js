@@ -1,6 +1,11 @@
 import { FAIL_ON_STATUS_CODE, VTEX_AUTH_HEADER, ENTITIES } from './constants.js'
 import { updateRetry } from './support.js'
-import { cancelOrderAPI, affiliationAPI } from './apis.js'
+import {
+  cancelOrderAPI,
+  affiliationAPI,
+  invoiceAPI,
+  transactionAPI,
+} from './apis.js'
 
 const config = Cypress.env()
 const WIPE_ENV = 'wipe'
@@ -16,6 +21,7 @@ const {
   appToken,
   affiliationId,
   robotMail,
+  urlExternalSeller,
 } = config.base.vtex
 
 const { prefix } = config.workspace
@@ -312,4 +318,135 @@ export function deleteAddresses() {
       )
     })
   })
+}
+
+/* 
+Below fn operates with getTestVariables
+*/
+
+export function getTestVariables(testCasePrefix) {
+  return {
+    orderIdEnv: testCasePrefix,
+    transactionIdEnv: `${testCasePrefix}-transactionIdEnv`,
+    paymentTidEnv: `${testCasePrefix}-paymentTidEnv`,
+    productTotalEnv: `${testCasePrefix}-productTotalEnv`,
+  }
+}
+
+export function sendInvoiceTestCase({
+  product,
+  orderIdEnv,
+  externalSellerTestcase = false,
+}) {
+  let total
+
+  it(`In ${product.prefix} - Send Invoice`, () => {
+    cy.getOrderItems().then((item) => {
+      if (externalSellerTestcase) {
+        if (product.directSaleEnv === orderIdEnv) {
+          total = product.directSaleAmount
+        } else {
+          total = product.externalSellerAmount
+        }
+      }
+      // If this is not externalSellerTestCase then it is for refund test case
+      else {
+        total =
+          product.totalWithoutTax || product.total || product.totalProductPrice
+      }
+
+      cy.sendInvoiceAPI(
+        {
+          invoiceNumber: '54321',
+          invoiceValue: total
+            .replace('$ ', '')
+            .replace(/\./, '')
+            .replace(/,/, ''),
+          invoiceUrl: null,
+          issuanceDate: new Date(),
+          invoiceKey: null,
+        },
+        item[orderIdEnv],
+        orderIdEnv === product.externalSaleEnv
+      ).then((response) => {
+        expect(response.status).to.equal(200)
+      })
+    })
+  })
+}
+
+function generateInvoiceAPIURL(product, item, env) {
+  return env === product.externalSaleEnv
+    ? `${invoiceAPI(urlExternalSeller)}/QSS-${item[env]}`
+    : `${invoiceAPI(baseUrl)}/${item[env]}`
+}
+
+export function invoiceAPITestCase({
+  product,
+  env,
+  transactionIdEnv,
+  pickup = false,
+}) {
+  it(
+    `In ${product.prefix} -Invoice API should have expected information`,
+    updateRetry(2),
+    () => {
+      cy.getOrderItems().then((item) => {
+        cy.getAPI(
+          generateInvoiceAPIURL(product, item, env),
+          VTEX_AUTH_HEADER(apiKey, apiToken)
+        ).then((response) => {
+          expect(response.status).to.equal(200)
+          const postalCode = pickup
+            ? product.pickUpPostalCode
+            : product.postalCode
+
+          expect(response.body.shippingData.address.postalCode).to.equal(
+            postalCode
+          )
+          // Setting Transaction Id in .orders.json
+          cy.setOrderItem(
+            transactionIdEnv,
+            response.body.paymentData.transactions[0].transactionId
+          )
+        })
+      })
+    }
+  )
+}
+
+function checkTransactionIdIsAvailable(transactionIdEnv) {
+  if (!transactionIdEnv) {
+    throw new Error('Transaction Id is undefined')
+  }
+}
+
+export function verifyTransactionPaymentsAPITestCase(
+  product,
+  { transactionIdEnv, paymentTidEnv },
+  fn = null
+) {
+  it(
+    `In ${product.prefix} - Verify Transaction Payment`,
+    updateRetry(2),
+    () => {
+      cy.addDelayBetweenRetries(2000)
+      cy.getVtexItems().then((vtex) => {
+        cy.getOrderItems().then((order) => {
+          checkTransactionIdIsAvailable(order[transactionIdEnv])
+          cy.getAPI(
+            `${transactionAPI(vtex.baseUrl)}/${
+              order[transactionIdEnv]
+            }/payments`,
+            VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken)
+          ).then((response) => {
+            expect(response.status).to.equal(200)
+            // Store payment tid in .orders.json
+            cy.setOrderItem(paymentTidEnv, response.body[0].tid)
+            fn && fn(response)
+          })
+        })
+      })
+    }
+  )
 }
