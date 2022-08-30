@@ -59,6 +59,7 @@ export function initiatePayment({
 
         cy.getIframeBody('#checkout-application')
           .find(selectors.AffirmPhonePin)
+          .should('be.visible')
           .type('1234')
 
         cy.getIframeBody('#checkout-application')
@@ -93,7 +94,7 @@ export function initiatePayment({
           cy.getIframeBody('#checkout-application')
             .contains('Thanks')
             .should('be.visible')
-          cy.wait('@OrderUpdate', { timeout: 35000 })
+          cy.wait('@OrderUpdate', { timeout: 50000 })
         })
 
         saveOrderId(orderIdEnv, externalSeller)
