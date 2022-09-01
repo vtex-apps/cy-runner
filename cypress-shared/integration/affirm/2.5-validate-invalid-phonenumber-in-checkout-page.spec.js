@@ -12,7 +12,7 @@ import {
 import selectors from '../../support/common/selectors'
 import { discountShipping } from '../../support/affirm/outputvalidation'
 
-const { productName, postalCode, prefix } = discountShipping
+const { productName, postalCode, prefix, productQuantity } = discountShipping
 const discountShippingProductEnvs = getTestVariables(prefix)
 
 describe(`${prefix} Scenarios`, () => {
@@ -24,6 +24,15 @@ describe(`${prefix} Scenarios`, () => {
     // Add product to cart
     cy.addProduct(productName)
   })
+
+  it(`In ${prefix} - Updating product quantity to 1`, updateRetry(4), () => {
+    // Update Product quantity to 1
+    cy.updateProductQuantity(productName, {
+      quantity: productQuantity,
+      verifySubTotal: false,
+    })
+  })
+
   it(`In ${prefix} - Update Shipping Information`, updateRetry(4), () => {
     cy.updateShippingInformation({ postalCode })
   })

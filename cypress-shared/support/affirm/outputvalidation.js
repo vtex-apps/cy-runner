@@ -27,7 +27,7 @@ export default {
     prefix: 'discountProduct',
     postalCode: '33180',
     productName: PRODUCTS.cauliflower,
-    productQuantity: '2',
+    productQuantity: '1',
     totalProductPrice: '95.00',
   },
   discountShipping: {

@@ -8,7 +8,7 @@ import { discountProduct } from '../../support/affirm/outputvalidation'
 import { getTestVariables } from '../../support/common/testcase.js'
 import { completeThePayment } from '../../support/affirm/testcase.js'
 
-const { prefix, productName, postalCode } = discountProduct
+const { prefix, productName, postalCode, productQuantity } = discountProduct
 
 describe(`${prefix} Scenarios`, () => {
   loginViaCookies()
@@ -20,6 +20,14 @@ describe(`${prefix} Scenarios`, () => {
     cy.searchProduct(productName)
     // Add product to cart
     cy.addProduct(productName, { proceedtoCheckout: true })
+  })
+
+  it(`In ${prefix} - Updating product quantity to 1`, updateRetry(4), () => {
+    // Update Product quantity to 1
+    cy.updateProductQuantity(productName, {
+      quantity: productQuantity,
+      verifySubTotal: false,
+    })
   })
 
   it(`In ${prefix} - Updating Shipping Information`, updateRetry(4), () => {
