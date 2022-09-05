@@ -28,3 +28,8 @@ export const PRODUCTS_LINK_MAPPING = {
     link: 'a[href="/fresh-coconuts/p"]',
   },
 }
+
+export function isValidDate(d) {
+  // eslint-disable-next-line no-restricted-globals
+  return d instanceof Date && !isNaN(d)
+}
