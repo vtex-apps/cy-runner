@@ -171,11 +171,9 @@ export function startE2E(app, workspace) {
         const validDate = isValidDate(new Date(appId))
 
         if (validDate) {
-          const minutes = parseInt(
-            (Math.abs(new Date().getTime() - new Date(appId).getTime()) /
-              (1000 * 60)) %
-              60,
-            10
+          const minutes = Math.abs(
+            // 1 minute = 60000 milliseconds
+            parseInt((new Date() - new Date(appId)) / 60000, 10)
           )
 
           // if the workspace was blocked longer than 30 minutes then
