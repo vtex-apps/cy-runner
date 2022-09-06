@@ -6,6 +6,7 @@ import {
   invoiceAPI,
   transactionAPI,
 } from './apis.js'
+import { isValidDate } from './utils.js'
 
 const config = Cypress.env()
 const WIPE_ENV = 'wipe'
@@ -158,7 +159,7 @@ export function cancelTheOrder(orderEnv) {
 
 export function startE2E(app, workspace) {
   // This startE2E() is for tax App
-  // eg: Avalara, Cybersource
+  // eg: Avalara, Cybersource, Digital River
   it(`Start ${app} E2E tests with this ${workspace}`, () => {
     callOrderFormConfiguration().then((response) => {
       const { taxConfiguration } = response.body
@@ -167,24 +168,28 @@ export function startE2E(app, workspace) {
         expect(response.body.taxConfiguration).to.be.null
       } else {
         const { appId, url } = response.body.taxConfiguration
-        const minutes = parseInt(
-          (Math.abs(new Date().getTime() - new Date(appId).getTime()) /
-            (1000 * 60)) %
-            60,
-          10
-        )
+        const validDate = isValidDate(new Date(appId))
 
-        // if the workspace was blocked longer than 30 minutes then
-        // skip validation & force update taxConfiguration
-
-        if (minutes >= 30) {
-          const [WORKSPACE_IN_TAX_CONFIG] = url.split('//')[1].split('--')
-
-          cy.log(
-            `TaxConfiguration is used by this workspace ${WORKSPACE_IN_TAX_CONFIG} for more than or equal to 30 minutes`
+        if (validDate) {
+          const minutes = Math.abs(
+            // 1 minute = 60000 milliseconds
+            parseInt((new Date() - new Date(appId)) / 60000, 10)
           )
+
+          // if the workspace was blocked longer than 30 minutes then
+          // skip validation & force update taxConfiguration
+
+          if (minutes >= 30) {
+            const [WORKSPACE_IN_TAX_CONFIG] = url.split('//')[1].split('--')
+
+            cy.log(
+              `TaxConfiguration is used by this workspace ${WORKSPACE_IN_TAX_CONFIG} for more than or equal to 30 minutes i.e for ${minutes} minutes`
+            )
+          } else {
+            expect(url).to.include(workspace)
+          }
         } else {
-          expect(url).to.include(workspace)
+          cy.log('appId is having invalid Date!')
         }
       }
     })
