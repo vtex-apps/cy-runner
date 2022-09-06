@@ -113,7 +113,9 @@ async function pushResults(testsPassed, test, config) {
   if (!testsPassed) {
     qe.msg(`strategy.${test.name} failed`, 'error')
     specsFailed = specsFailed.concat(test.specs)
-    if (test.stopOnFail) await qe.stopOnFail(config, `strategy ${test.name}`)
+    if (test.stopOnFail) {
+      await qe.stopOnFail(config, `strategy ${test.name}`, runUrl)
+    }
   } else {
     qe.msg(`strategy.${test.name} succeeded`)
   }

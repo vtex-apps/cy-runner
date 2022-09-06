@@ -5,7 +5,11 @@ module.exports.teardown = async (config) => {
   const START = qe.tick()
   const { workspace } = config
 
-  if (workspace.wipe.enabled || workspace.teardown.enabled) {
+  if (
+    workspace.wipe.enabled ||
+    workspace.teardown.enabled ||
+    config.base.keepStateFiles
+  ) {
     qe.msgSection('Workspace teardown')
     await wipe(config)
 
@@ -17,6 +21,8 @@ module.exports.teardown = async (config) => {
       )
       qe.msg('done', 'complete', true)
     }
+
+    if (config.base.keepStateFiles) qe.keepStateFiles(config) // ENGINEERS-465
   }
 
   return qe.tock(START)

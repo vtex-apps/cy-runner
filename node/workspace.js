@@ -128,7 +128,16 @@ async function doLinkApp(config) {
     })
     qe.msg(`Linking ${app}`, true, true)
 
-    const tlb = await qe.toolbelt(config.base.vtex.bin, `link --no-watch`, app)
+    const outFile = path.join('cy-runner', 'logs', 'link.log')
+    const logOutput = config.workspace.linkApp.logOutput.enabled
+      ? `1> ${outFile} &`
+      : '--no-watch'
+
+    const tlb = await qe.toolbelt(
+      config.base.vtex.bin,
+      `link ${logOutput}`,
+      app
+    )
 
     if (tlb.success) {
       qe.msg('App linked successfully')

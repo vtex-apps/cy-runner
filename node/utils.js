@@ -419,6 +419,21 @@ exports.createStateFiles = (config) => {
   }
 }
 
+// ENGINEERS-465
+exports.keepStateFiles = (config) => {
+  try {
+    const { stateFiles } = config.base
+
+    this.msg(`Keeping state files`, 'warn')
+    stateFiles.forEach((stateFile) => {
+      this.msg(`${stateFile} -> logs/${stateFile}`, true, true)
+      fs.copyFileSync(stateFile, `logs/${stateFile}`)
+    })
+  } catch (e) {
+    this.crash('Fail to keep state files', e)
+  }
+}
+
 exports.tick = () => {
   return Date.now()
 }
@@ -487,9 +502,15 @@ exports.sectionsToRun = async (config) => {
   }
 }
 
-exports.stopOnFail = async (config, step) => {
+exports.stopOnFail = async (config, step, runUrl) => {
   this.msg(`stopOnFail enabled, stopping the test`, true, true)
   await teardown(config)
+  if (runUrl != null) {
+    // ENGINEERS-465
+    this.msgSection('Cypress Dashboard')
+    this.msg(runUrl, 'ok')
+  }
+
   this.crash(`Prematurely exit duo a stopOnFail for ${step}`)
 }
 

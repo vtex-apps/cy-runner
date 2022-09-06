@@ -38,13 +38,29 @@ exports.getConfig = async (configFile) => {
     config.base.cypress.sorry = false
   }
 
-  if (secrets) config = qe.mergeSecrets(config, secrets)
   // Get workspace to run tests
   config.workspace.name = qe.getWorkspaceName(config)
   // Set right vtex cli to be used in further calls
   config.base.vtex.bin = config.base.vtex.deployCli.enabled
     ? 'vtex-e2e'
     : 'vtex'
+
+  // Change the user if deployCli is disabled [ENGINEERS-465]
+  if (!config.base.vtex.deployCli.enabled) {
+    qe.msg('deployCli disabled, trying to update the robotMail', 'warn')
+    const tlb = await qe.toolbelt(config.base.vtex.bin, 'whoami')
+
+    if (tlb.success) {
+      // Feedback with actual user
+      // eslint-disable-next-line prefer-destructuring
+      secrets.vtex.robotMail = tlb.stdout.split(' ')[7]
+      qe.msg(`robotMail updated to ${secrets.vtex.robotMail}`, 'ok')
+    }
+  }
+
+  // Merge secrets on config
+  if (secrets) config = qe.mergeSecrets(config, secrets)
+
   // Write cypress.env.json
   qe.writeEnvJson(config)
   // Write cypress.json

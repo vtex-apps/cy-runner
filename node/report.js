@@ -39,7 +39,7 @@ module.exports.report = async (control, config) => {
       qe.msg(control.runUrl, true, true)
     }
 
-    control.specsFailed.length < 1 && control.specsPassed.length > 0
+    control.specsFailed.length < 1 && control.specsSkipped.length < 1
       ? qe.success('The test ran successfully, well done!')
       : qe.fail('The test failed!')
   }
