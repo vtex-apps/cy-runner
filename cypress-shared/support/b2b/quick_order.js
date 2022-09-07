@@ -27,13 +27,12 @@ function checkBackButtonIsVisible() {
 
 export function quickOrderBySkuAndQuantityTestCase2(role) {
   it(`Verify ${role} is able remove invalid skus in quick order - [Sku's Code],[Quantity]`, () => {
-    const { textArea, validate, addtoCart } = selectors.QuickOrderPage().skus
+    const { textArea, validate } = selectors.QuickOrderPage().skus
 
     cy.gotoQuickOrder()
     checkBackButtonIsVisible()
     fillSkuAndQuantity(textArea, validate, '880270a,2{enter}1,2{enter}')
     checkBackButtonIsVisible()
-    cy.get(addtoCart).should('be.visible')
   })
 }
 
