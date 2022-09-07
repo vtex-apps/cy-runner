@@ -13,13 +13,13 @@ function fillSkuAndQuantity(textArea, validate, skuQuantity) {
 }
 
 function checkBackButtonIsVisible() {
-  const [tableContainer, button] = [
-    '.vtex-table__container',
+  const [buttonsBlock, button] = [
+    'div[class*=buttonsBlock]',
     'div[class*=vtex-button]',
   ]
 
   cy.get('body').then(($body) => {
-    if ($body.find(tableContainer).length) {
+    if ($body.find(buttonsBlock).length) {
       cy.get(button).contains(BUTTON_LABEL.back).click()
     }
   })
