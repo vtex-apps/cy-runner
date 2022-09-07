@@ -19,7 +19,7 @@ function checkBackButtonIsVisible() {
   ]
 
   cy.get('body').then(($body) => {
-    if ($body.find(tableContainer).length > 1) {
+    if ($body.find(tableContainer).length) {
       cy.get(button).contains(BUTTON_LABEL.back).click()
     }
   })
