@@ -193,3 +193,57 @@ Cypress.Commands.add('openStoreFront', (login = false) => {
 
   scroll()
 })
+
+Cypress.Commands.add('addNewLocation', (country, postalCode, street) => {
+  cy.openStoreFront()
+  cy.get(selectors.addressContainer).should('be.visible').click()
+  cy.get(selectors.countryDropdown).select(country)
+  cy.get(selectors.addressInputContainer)
+    .first()
+    .clear()
+    .should('be.visible')
+    .type(postalCode)
+  cy.get(selectors.Address)
+    .contains('Address Line 1')
+    .parent()
+    .within(() => {
+      cy.get(selectors.InputText).clear().type(street)
+    })
+  cy.get(selectors.Address)
+    .contains('City')
+    .parent()
+    .within(() => {
+      cy.get(selectors.InputText).clear().type('Aventura')
+    })
+  cy.waitForGraphql('address', selectors.SaveButton)
+  cy.once('uncaught:exception', () => false)
+})
+
+Cypress.Commands.add(
+  'openProduct',
+  (product, detailPage = false, searchPage = false) => {
+    // Search product in search bar
+    cy.get(selectors.Search).should('be.not.disabled').should('be.visible')
+
+    cy.get(selectors.Search)
+      .should('be.visible')
+      .should('be.enabled')
+      .clear()
+      .type(product)
+      .type('{enter}')
+    // Page should load successfully now Filter should be visible
+    cy.get(selectors.searchResult).should('have.text', product.toLowerCase())
+    cy.get(selectors.FilterHeading, { timeout: 30000 }).should('be.visible')
+    if (searchPage) {
+      cy.get(selectors.locationUnavailable)
+        .should('be.visible')
+        .contains('Shipping: Unavailable for')
+    }
+
+    if (detailPage) {
+      cy.gotoProductDetailPage()
+    } else {
+      cy.log('Visiting detail page is disabled')
+    }
+  }
+)

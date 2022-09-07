@@ -33,10 +33,14 @@ module.exports.report = async (control, config) => {
         qe.newLine()
       }
     })
-    if (control.specsFailed.length < 1) {
-      qe.success('The test ran successfully, well done!')
-    } else {
-      qe.fail(`The test failed!`)
+
+    if (control.runUrl != null) {
+      qe.msg('Cypress Dashboard URL for this run')
+      qe.msg(control.runUrl, true, true)
     }
+
+    control.specsFailed.length < 1 && control.specsPassed.length > 0
+      ? qe.success('The test ran successfully, well done!')
+      : qe.fail('The test failed!')
   }
 }

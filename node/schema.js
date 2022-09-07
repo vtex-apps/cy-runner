@@ -139,9 +139,6 @@ exports.validateConfig = (config, file) => {
       prefix: 0,
       linkApp: {
         enabled: 2,
-        logOutput: {
-          enabled: 2,
-        },
       },
       installApps: 7,
       removeApps: 7,

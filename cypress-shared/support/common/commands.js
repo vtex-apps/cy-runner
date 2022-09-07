@@ -6,7 +6,9 @@ import {
   verifyTotal,
   updateProductQuantity,
   updateShippingInformation,
+  saveOrderId,
 } from './support.js'
+import { generateAddtoCartCardSelector } from './utils.js'
 
 Cypress.Commands.add('addProduct', addProduct)
 Cypress.Commands.add('fillAddress', fillAddress)
@@ -17,10 +19,6 @@ Cypress.Commands.add('verifyTotal', verifyTotal)
 
 Cypress.Commands.add('getVtexItems', () => {
   return cy.wrap(Cypress.env().base.vtex, { log: false })
-})
-
-Cypress.Commands.add('getGmailItems', () => {
-  return cy.wrap(Cypress.env().base.gmail, { log: false })
 })
 
 Cypress.Commands.add('addDelayBetweenRetries', (delay) => {
@@ -60,3 +58,51 @@ Cypress.Commands.add('getIframeBody', (selector) => {
       .then(cy.wrap)
   )
 })
+
+Cypress.Commands.add('gotoProductDetailPage', () => {
+  cy.get(selectors.ProductAnchorElement)
+    .should('have.attr', 'href')
+    .then((href) => {
+      cy.get(generateAddtoCartCardSelector(href)).first().click()
+    })
+})
+
+Cypress.Commands.add(
+  'orderProduct',
+  ({
+    paymentSelector = selectors.PromissoryPayment,
+    orderIdEnv = null,
+    externalSeller = null,
+  } = {}) => {
+    cy.get('body').then(($body) => {
+      if ($body.find(selectors.FillInvoiceAddress).length === 2) {
+        cy.get(selectors.FillInvoiceAddress).last().should('be.visible').click()
+      }
+
+      if ($body.find(selectors.ReceiverName).length) {
+        cy.get(selectors.ReceiverName, {
+          timeout: 5000,
+        }).type('Syed')
+      }
+    })
+
+    cy.get('body').then(($body) => {
+      if ($body.find(selectors.GotoPaymentBtn).length) {
+        cy.get(selectors.GotoPaymentBtn).click()
+      }
+    })
+
+    cy.get(paymentSelector, { timeout: 5000 }).should('be.visible').click()
+
+    cy.get(selectors.BuyNowBtn, {
+      timeout: 10000,
+    })
+      .should('be.visible')
+      .last()
+      .click()
+
+    // if orderIdEnv or externalSeller is must be passed then only we store orderId
+    // otherwise we just verify order is placed or not
+    saveOrderId(orderIdEnv, externalSeller)
+  }
+)

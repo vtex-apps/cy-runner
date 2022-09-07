@@ -65,7 +65,7 @@ export default {
 
   // *************Product Page Constants starts here************ //
   AddressForm: 'div[class*=addressForm]',
-  NormalShipping: "input[value='Normal']",
+  NormalShipping: 'label[id=Normal]',
   FilterHeading: 'h5[class*="filter"]',
 
   // *************Product Page Constants end here************ //
@@ -102,12 +102,8 @@ export default {
   NewAddressBtn: '#new-address-button',
   UpdateSelectedAddressBtn: '#edit-address-button',
   ShippingSectionTitle: 'p[class*=shippingSectionTitle]',
-  ShipCountry: '#ship-country',
   ShipStreet: '#ship-street',
   ShipAddressQuery: '#ship-addressQuery',
-  ShipCity: '#ship-city',
-  ShipState: '#ship-state',
-  PostalCodeInput: '#ship-postalCode',
   CalculateBtn: '#cart-shipping-calculate',
   ContinueShipping: '#btn-go-to-shippping-method',
   CalculateShipping: 'button[class*=btnDelivery]',
@@ -117,6 +113,14 @@ export default {
   DeliveryAddressText: '#deliver-at-text > a',
   ChangeShippingAddress: 'button[data-i18n="modal.editShipping"]',
   ConfirmPickup: 'button[id*=confirm-pickup]',
+  FillInvoiceAddress: 'p[class*=omnishipping] ~ button[class*=omnishipping]',
+
+  // Shipping Section Address Container
+  StreetAddress: '#v-custom-ship-street',
+  ShipCity: '#ship-city',
+  ShipState: '#ship-state',
+  ShipCountry: '#ship-country',
+  PostalCodeInput: '#ship-postalCode',
 
   // *************Shipping Section Constants end here************ //
 
@@ -157,6 +161,12 @@ export default {
   CreditCardExpirationYear: '[name=cardExpirationYear]',
   CreditCardCode: '#creditCardpayment-card-0Code',
   PaymentUnAuthorized: 'div[class*=payment-unauthorized]',
+  AffirmPayment: '[data-name=Affirm]',
+  dataReviewCloseBtn: '.payment-unauthorized-modal > .modal-body > .btn',
+  popUpClose: '#affirm-error-modal',
+  invalidPopUpCloseBtn:
+    'div[class*=dialog] > div[class*=dialog-close-button-container] > button[class*=dialog-close-button]',
+  InstallmentContainer: '.installments  span',
   // *************Payment Section Constants end here************ //
 
   // *************Order Form Page Constants end here************ //
@@ -350,4 +360,80 @@ export default {
   QuantityInCart: 'div[class*=quantityInputContainer] input[id*=quantity]',
   ItemsPriceInCart: '#items-price',
   // *************B2B Constants end here************ //
+
+  // *************** Location availability & Shopper location ********
+
+  province: 'div[class*=dropdown__container] > select',
+  addressInputContainer: 'div[class*=addressInputContainer] input',
+  saveButton: '.vtex-shopper-location-1-x-changeLocationSubmitContainer',
+  countryDropdown: 'div[class*=address-form] > select',
+  ChangeLocationButton:
+    'section[class*=changeLocationGeoContainer] .vtex-button',
+  addressContainer: 'div[class*=userAddressContainer]',
+  switchButton: '.nt4 > .vtex-button > .vtex-button__label',
+  AddressModelLayout: 'div[class*=vtex-modal-layout]',
+  AddressErrorContainer: 'div[class*=changeLocationGeoErrorContainer]',
+  ChangeLocationError: 'div[class*=input__error]',
+  Address: 'div[class*=addressInputContainer] > label',
+  verifyLocationInHome: 'div[class*=addressInfoAddressContainer]',
+  AddToCart:
+    'button[type=button] > div[class*=vtex-button__label] >div[class*=buttonDataContainer] > span[class*=buttonText]',
+  ProceedToCheckOut: '#proceed-to-checkout > .vtex-button__label',
+  verifyLocationInCheckOut: '.srp-address-title',
+  orderButton: 'a[id=cart-to-orderform]',
+  SaveButton: 'section[class*=changeLocationSubmitContainer] button',
+  PaymentBtn: '#btn-go-to-payment',
+  PickUpBtn: '.srp-toggle__pickup',
+  SelectState: '.vtex-styleguide-9-x-container > .o-0',
+  AvailabilityHeader: 'span[class*=availabilityHeaderLink]',
+  NoAvailabilityHeader: 'div[class*=availabilityHeader]',
+  city: 'div[class*=addressInputContainer] > label',
+  shippingContent:
+    'div[class*=container] > p  > span[class*=freeShipping] span[class*=freeShippingLabel]',
+  locationUnavailable: 'div[class*=container] > p ',
+  shippingUnavailabilityInformation:
+    'div[class*=shippingListContainer] > div[class*=shippingListEmptyMessage]',
+  storeUnavailabilityInformation:
+    'div[class*=storeListContainer] > div[class*=storeListEmptyMessage]',
+  shippingUnavailable: 'div[class*=container] > p',
+  unavailableLocation:
+    'div[class*=shippingListContainer] > div[class*=shippingListEmptyMessage]',
+  AddPickUpButton: '.w-70-ns > :nth-child(2) > .vtex-button__label',
+  PickUpPointName: 'input[name=name]',
+  PickUpPointId: 'input[name=id]',
+  PickUpAddress: '.vtex-input .pac-target-input',
+  CheckBox: 'input[value="monday-active"]',
+  WorkStartTime: 'input[name="openingTime"]',
+  WorkEndTime: 'input[name="closingTime"]',
+  SaveChanges: '.flex.justify-end > .pb7 > .vtex-button > .vtex-button__label',
+  ChangesSaved: 'div[class*=vtex-toast] .pr5',
+  VtexButton: '.vtex-button',
+  UploadInput: 'input[type=file]',
+  CloseIcon: '.vtex-modal__close-icon',
+  VtexAlert: '.vtex-alert .ph5',
+  AddressCity:
+    'div[class*=addressDistanceContainer] > span[class*=addressCity]',
+  AddressZip:
+    'div[class*=addressDistanceContainer] > span[class*=addressCity] > span[class*=addressZip]',
+  Distance: 'div[class*=addressDistanceContainer] > span[class*=distance]',
+  VerifyMaxItem: 'div[class*=storeList] > div[class*=pickupItem]',
+  OrderByFaster:
+    'div[class*=storeList] > div[class*=pickupItem] > div[class*=pickupEstimate] > div[class*=estimateTranslated]',
+  findMyLocation:
+    'div[class*=changeLocationFormContainer] > section[class*=changeLocationGeoContainer] > button[class*=vtex-button]',
+  shippingErrorMessage:
+    'section[class*=changeLocationGeoContainer] > div[class*=changeLocationGeoErrorContainer]',
+  closeButton: 'div[class*=closeButtonContainer] > button[class*=closeButton]',
+  addressUpdation:
+    'div[class*=userAddressContainer] > section > div[class*=flex] > div[class*=flex-auto] > div[class*=items-center] > div[class*=addressInfoTextContainer] > div[class*=addressInfoAddressContainer]',
+  InputText: "input[type='text']",
+  // End here
+
+  // Affirm payment selectors
+  AffirmPaymentOption: 'a[data-name="Affirm"]',
+  AffirmPhoneNumberField: 'input[data-testid="phone-number-field"]',
+  AffirmSubmit: 'button[data-testid="submit-button"]',
+  AffirmPhonePin: 'input[data-testid="phone-pin-field"]',
+  AffirmInstallmentOption: 'span[data-test="installment-length"]',
+  AffirmIndicatorOption: 'div[data-testid="indicator"]', // Auto payment & Privacy policy option selector
 }

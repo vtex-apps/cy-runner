@@ -127,25 +127,15 @@ async function doLinkApp(config) {
       qe.storage(ignoreFile, 'append', `${line}\n`)
     })
     qe.msg(`Linking ${app}`, true, true)
-    const logFolder = 'logs'
-    const outFile = path.join('cy-runner', logFolder, 'link.log')
-    const logOutput = config.workspace.linkApp.logOutput.enabled
-      ? `1> ${outFile} &`
-      : '--no-watch'
 
-    if (!qe.storage(logFolder, 'exists')) qe.storage(logFolder, 'mkdir')
-    const tlb = await qe.toolbelt(
-      config.base.vtex.bin,
-      `link ${logOutput}`,
-      app
-    )
+    const tlb = await qe.toolbelt(config.base.vtex.bin, `link --no-watch`, app)
 
     if (tlb.success) {
       qe.msg('App linked successfully')
     } else {
-      qe.msg(`Error linking ${app}`, 'error')
+      qe.msg('Error linking App', 'error')
       await teardown(config)
-      qe.crash('Prematurely exit duo a link failure')
+      qe.crash(`Link ${app} to test failed`)
     }
   }
 }

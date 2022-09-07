@@ -1,53 +1,50 @@
 import {
-  loginAsAdmin,
-  loginAsUser,
+  loginViaAPI,
   preserveCookie,
   scroll,
   updateRetry,
 } from '../../support/common/support'
 import { updateSettings } from '../../support/shopper-location/settings'
 import {
-  canadaDetails,
+  poland,
   location,
 } from '../../support/shopper-location/outputvalidation'
-import shopperLocationSelectors from '../../support/shopper-location/selectors'
 import selectors from '../../support/common/selectors.js'
 import { addAddress } from '../../support/shopper-location/common'
+import { syncCheckoutUICustom } from '../../support/common/testcase.js'
 
-const { country, url, postalCode } = canadaDetails
+const { country, url } = poland
 const { lat, long } = location
 
+const prefix = 'Manual redirect configuration'
+
 describe('Testing local redirect configuration', () => {
-  before(() => {
-    loginAsAdmin()
-    cy.getVtexItems().then((vtex) => {
-      loginAsUser(vtex.robotMail, vtex.robotPassword)
-    })
-  })
+  loginViaAPI()
+
+  syncCheckoutUICustom()
 
   updateSettings(country, url)
 
-  addAddress({ country, postalCode, lat, long })
+  addAddress(prefix, { address: poland, lat, long })
 
   // eslint-disable-next-line jest/expect-expect
-  it('Verify address', updateRetry(2), () => {
-    cy.get(shopperLocationSelectors.AddressModelLayout).should('not.be.visible')
-    cy.get(shopperLocationSelectors.addressContainer).should('be.visible')
+  it(`${prefix} - Verify address`, updateRetry(2), () => {
     scroll()
-    cy.get(shopperLocationSelectors.addressUpdation)
+    cy.get(selectors.addressUpdation)
       .should('be.visible')
-      .contains('Essex County, ON, N9V 1K8')
+      .contains('Warszawa, Masovian Voivodeship, 00-014')
   })
 
   // eslint-disable-next-line jest/expect-expect
-  it('Get popup with switch button', updateRetry(2), () => {
-    cy.get(selectors.ToastMsgInB2B).should('be.visible')
-    cy.get(shopperLocationSelectors.switchButton).click()
+  it(`${prefix} - Get popup with switch button`, updateRetry(2), () => {
+    cy.get(selectors.ToastMsgInB2B).should('be.visible', { timeout: 10000 })
+    cy.get(selectors.switchButton).should('be.visible').click()
   })
 
   // eslint-disable-next-line jest/expect-expect
-  it('Page will be redirected to google page', () => {
+  it(`${prefix} - Page will be redirected to google page`, () => {
     cy.url().should('eq', 'https://www.google.com/')
   })
+
   preserveCookie()
 })
