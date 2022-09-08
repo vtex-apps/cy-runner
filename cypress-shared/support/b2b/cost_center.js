@@ -42,6 +42,7 @@ export function addCostCenter(organization, costCenter, costCenterAddress) {
 
 export function updateCostCenter(oldcostCenterName, updatedcostcenterName) {
   it(`Update cost center ${oldcostCenterName}`, updateRetry(1), () => {
+    cy.addReloadBetweenRetries()
     cy.gotoCostCenter(oldcostCenterName)
     cy.get(`input[value='${oldcostCenterName}']`)
       .should('be.visible')
@@ -208,6 +209,7 @@ export function updatePaymentTermsinCostCenter(
     `Verify Organization Admin is able to disable ${costCenter} the payment terms ${paymentTerms} in ${organization}`,
     updateRetry(2),
     () => {
+      cy.addReloadBetweenRetries()
       cy.gotoCostCenter(costCenter)
       cy.get(selectors.PromissoryCheckbox)
         .invoke('prop', 'checked')
