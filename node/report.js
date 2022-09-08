@@ -14,8 +14,9 @@ module.exports.report = async (control, config) => {
     qe.success('Hope your tests went well. See you soon!')
   } else {
     const items = [
+      ['specsDisabled', 'Disabled', 'warn'],
       ['specsPassed', 'Successful', 'ok'],
-      ['specsSkipped', 'Skipped', 'warn'],
+      ['specsSkipped', 'Skipped', 'error'],
       ['specsFailed', 'Failed', 'error'],
     ]
 

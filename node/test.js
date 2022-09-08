@@ -5,6 +5,7 @@ const qe = require('./utils')
 
 let specsFailed = []
 let specsSkipped = []
+let specsDisabled = []
 let specsPassed = []
 let runUrl = null
 
@@ -48,7 +49,7 @@ module.exports.strategy = async (config) => {
         await runTest(test, config, group)
       }
     } else {
-      specsSkipped = specsSkipped.concat(test.specs)
+      specsDisabled = specsDisabled.concat(test.specs)
     }
   }
 
@@ -56,6 +57,7 @@ module.exports.strategy = async (config) => {
     time: qe.tock(START),
     specsFailed,
     specsSkipped,
+    specsDisabled,
     specsPassed,
     runUrl,
   }
