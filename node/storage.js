@@ -39,6 +39,14 @@ exports.link = (source, destination) => {
   }
 }
 
+exports.unLink = (source) => {
+  try {
+    return fs.unlinkSync(source)
+  } catch (e) {
+    system.crash(`Failed to unlink ${source}`, e)
+  }
+}
+
 exports.exists = (fileOrDirectory) => {
   try {
     return !!fs.existsSync(fileOrDirectory)
@@ -65,7 +73,7 @@ exports.write = (msg, file) => {
 
 exports.delete = (fileOrDirectory) => {
   try {
-    if (this.exists(fileOrDirectory)) return fs.rmSync(fileOrDirectory)
+    if (this.exists(fileOrDirectory)) return fs.rmSync(fileOrDirectory, )
   } catch (e) {
     system.crash(`Failed to delete ${fileOrDirectory}`, e)
   }
@@ -109,7 +117,7 @@ exports.loadConfig = (yamlFile) => {
 
 exports.writeJson = (config, jsonFile) => {
   try {
-    this.write(jsonFile, JSON.stringify(config))
+    this.write(JSON.stringify(config), jsonFile)
     logger.msgOk(`${jsonFile} saved`)
   } catch (e) {
     system.crash(`Failed to create ${jsonFile}`, e)
@@ -123,14 +131,14 @@ exports.createStateFiles = (config) => {
     const PLURAL = SIZE > 1 ? 'files' : 'file'
 
     if (SIZE) {
-      this.msg(`Creating state ${PLURAL}`, 'warn')
+      logger.msgWarn(`Creating state ${PLURAL}`)
       stateFiles.forEach((stateFile) => {
-        this.msg(stateFile, true, true)
-        fs.writeFileSync(stateFile, '{}')
+        logger.msgPad(stateFile)
+        this.write('{}', path.join('cy-runner', stateFile))
       })
     }
   } catch (e) {
-    this.crash('Fail to create a empty state file', e)
+    system.crash('Failed to create a state file', e)
   }
 }
 

@@ -3,19 +3,26 @@ const path = require('path')
 const system = require('./system')
 
 // const delay = (ms) => new Promise((res) => setTimeout(res, ms))
-const VTEX = path.resolve('node_modules', 'vtex', 'run')
+const VTEX = path.join('cy-runner', 'node_modules', 'vtex', 'bin', 'run')
 
 exports.whoami = async () => {
   const stdout = system.exec(`${VTEX} whoami`, 'pipe').toString()
   const check = /Logged/.test(stdout)
-  const user = check ? stdout.split(' ')[7] : null
+  const mailOrKey = check ? stdout.split(' ')[7] : null
 
-  return { isLogged: check, user, stdout }
+  return { isLogged: check, mailOrKey, stdout }
 }
 
 exports.getLocalToken = async () => {
-  if (this.whoami().isLogged) {
-    return system.exec(`${VTEX} local token`, 'pipe').toString().slice(0, -1)
+  const userOrRobot = await this.whoami()
+
+  if (userOrRobot.isLogged) {
+    userOrRobot.token = system
+      .exec(`${VTEX} local token`, 'pipe')
+      .toString()
+      .slice(0, -1)
+
+    return userOrRobot
   }
 
   system.crash('No user logged', 'Check if you are logged on VTEX Toolbelt')

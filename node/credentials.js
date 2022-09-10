@@ -1,3 +1,5 @@
+const path = require('path')
+
 const { merge } = require('lodash')
 const jsYaml = require('js-yaml')
 
@@ -40,8 +42,14 @@ exports.getCookies = async (config) => {
 
     // User cookie
     logger.msgWarn('Getting cookie for the user/robot')
-    config.base.vtex.userAuthCookieValue = await toolbelt.getLocalToken()
-    logger.msgOk('Got user/robot cookie')
+    const userOrRobot = await toolbelt.getLocalToken()
+
+    config.base.vtex.userAuthCookieValue = userOrRobot.token
+    if (userOrRobot.mailOrKey.split('@').length === 2) {
+      config.base.vtex.robotMail = userOrRobot.mailOrKey
+    }
+
+    logger.msgOk(`Got ${userOrRobot.mailOrKey} cookie`)
 
     return config
   }
@@ -55,7 +63,7 @@ exports.readSecrets = (config) => {
   }
 
   const SECRET_NAME = config.base.secrets.name
-  const SECRET_FILE = `.${SECRET_NAME}.json`
+  const SECRET_FILE = path.join('cy-runner', `.${SECRET_NAME}.json`)
   let secrets = process.env.SECRET_NAME ?? false
   let loadedFrom = null
 
@@ -79,7 +87,8 @@ exports.readSecrets = (config) => {
   }
 
   schema.validateSecrets(secrets, config)
-  logger.msgOk(`Secrets loaded from ${loadedFrom} successfully`)
+  logger.msgOk('Secrets loaded successfully')
+  logger.msgPad(`From ${loadedFrom}`)
 
   return secrets
 }

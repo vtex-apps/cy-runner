@@ -1,7 +1,5 @@
 const axios = require('axios')
 
-const qe = require('./utils')
-
 module.exports.issue = async (config, specsFailed, runUrl) => {
   qe.msgSection('Jira integration')
 

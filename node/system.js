@@ -10,21 +10,21 @@ exports.crash = (msg, err) => {
   logger.msgEnd('ERROR')
   logger.msgError(msg, 'Crash')
   if (typeof err !== 'undefined') logger.msgPad(err)
-  this.newLine()
+  logger.newLine()
   process.exit(99)
 }
 
 exports.success = (msg) => {
-  this.msgEnd('SUCCESS')
-  this.msg(msg)
-  this.newLine()
+  logger.msgEnd('SUCCESS')
+  logger.msgOk(msg)
+  logger.newLine()
   process.exit(0)
 }
 
 exports.fail = (msg) => {
-  this.msgEnd('FAIL')
-  this.msg(msg, 'error')
-  this.newLine()
+  logger.msgEnd('FAIL')
+  logger.msgError(msg)
+  logger.newLine()
   process.exit(17)
 }
 
@@ -49,14 +49,14 @@ exports.exec = (cmd, output) => {
     if (/ETIMEDOUT/.test(e)) this.crash(`Timeout running ${cmd}`, e)
   }
 
-  return result
+  return result.toString()
 }
 
 exports.tick = () => {
   return Date.now()
 }
 
-exports.tock = (start) => {
+exports.tack = (start) => {
   return `${(Date.now() - start) / 1000} seconds`
 }
 

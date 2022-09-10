@@ -1,5 +1,3 @@
-const qe = require('./utils')
-
 module.exports.report = async (control, config) => {
   qe.msgSection('Execution report')
 

@@ -1,4 +1,3 @@
-const qe = require('./utils')
 const { wipe } = require('./wipe')
 
 module.exports.teardown = async (config) => {

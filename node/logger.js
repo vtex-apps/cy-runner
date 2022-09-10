@@ -3,8 +3,8 @@ const path = require('path')
 const storage = require('./storage')
 
 const QE = '[QE] === '
-const LOG_PATH = path.resolve('cy-runner', 'logs')
-const LOG_FILE = path.resolve(LOG_PATH, 'cy-runner.log')
+const LOG_PATH = path.join('cy-runner', 'logs')
+const LOG_FILE = path.join(LOG_PATH, 'cy-runner.log')
 
 function ico(type) {
   switch (type) {

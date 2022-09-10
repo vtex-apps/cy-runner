@@ -28,7 +28,6 @@ async function main() {
 
   // Read cy-runner.yml configuration
   const config = await cfg.getConfig('cy-runner.yml')
-
   process.exit(0)
 
   // Report configuration to help understand that'll run

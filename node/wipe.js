@@ -1,5 +1,3 @@
-const qe = require('./utils')
-
 module.exports.wipe = async (config) => {
   const START = qe.tick()
   const { wipe } = config.workspace

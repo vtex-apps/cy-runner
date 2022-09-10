@@ -18,12 +18,12 @@ exports.getBaseDir = () => {
 }
 
 exports.saveCypressEnvJson = (config) => {
-  storage.writeJson(config, 'cypress.env.json')
+  storage.writeJson(config, path.join('cy-runner', 'cypress.env.json'))
 }
 
 exports.saveCypressJson = (config) => {
   storage.writeJson(
-    JSON.stringify({
+    {
       baseUrl: config.base.vtex.baseUrl,
       chromeWebSecurity: config.base.cypress.chromeWebSecurity,
       video: config.base.cypress.video,
@@ -42,8 +42,8 @@ exports.saveCypressJson = (config) => {
       retries: 0,
       screenshotsFolder: 'logs/screenshots',
       videosFolder: 'logs/videos',
-    }),
-    'cypress.json'
+    },
+    path.join('cy-runner', 'cypress.json')
   )
 }
 
@@ -113,7 +113,7 @@ exports.run = async (test, config, addOptions = {}) => {
   if (test.sendDashboard) {
     const RUN_ID = process.env.GITHUB_RUN_ID ?? CI_RANDOM
     const RUN_ATTEMPT = process.env.GITHUB_RUN_ATTEMPT ?? 1
-    const IS_CI = process.env.CI ?? false
+    const IS_CI = process.env.CI
 
     options.key = config.base.cypress.dashboardKey
     options.record = true

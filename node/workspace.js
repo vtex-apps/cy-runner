@@ -1,6 +1,5 @@
 const path = require('path')
 
-const qe = require('./utils')
 const { teardown } = require('./teardown')
 
 exports.workspace = async (config) => {

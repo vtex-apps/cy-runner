@@ -1,9 +1,9 @@
 const axios = require('axios')
 
-exports.request = async (config) => {
+exports.request = async (axiosConfig) => {
   let response
 
-  await axios(config)
+  await axios(axiosConfig)
     .then((result) => {
       response = result
     })

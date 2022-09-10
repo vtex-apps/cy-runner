@@ -9,7 +9,7 @@ const { tick } = require('./system')
 const cypress = require('./cypress')
 
 exports.getConfig = async (configFile) => {
-  logger.msgWarn('Checking configuration')
+  logger.msgWarn('Checking cy-runner configuration file')
   // Load and parse config file
   let config = storage.loadConfig(configFile)
 
@@ -45,11 +45,11 @@ exports.getConfig = async (configFile) => {
     config.base.cypress.sorry = false
   }
 
-  // Get cookies
-  config = credentials.getCookies(config)
-
   // Merge secrets on config
   if (secrets) config = credentials.mergeSecrets(config, secrets)
+
+  // Get cookies
+  config = await credentials.getCookies(config)
 
   // Write cypress.env.json
   cypress.saveCypressEnvJson(config)
@@ -70,13 +70,14 @@ exports.getConfig = async (configFile) => {
     // Create common links inside cypress
     const com = path.join(dst, 'common')
 
-    if (storage.exists(com)) storage.delete(com)
+    if (storage.exists(com)) storage.unLink(com)
     storage.link(src, com)
 
     // Create cypress link inside cy-runner
-    if (storage.exists(lnk)) storage.delete(lnk)
+    if (storage.exists(lnk)) storage.unLink(lnk)
     storage.link(cyp, lnk)
-    logger.msgOk('Local Cypress folder detected, common links created')
+    logger.msgOk('Local Cypress folder detected')
+    logger.msgPad('Common links created')
   }
 
   return config
