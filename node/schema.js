@@ -95,7 +95,7 @@ function schemaValidator(schema, config, strategy = '') {
   })
 }
 
-exports.validateConfig = (config, file) => {
+exports.validateConfig = (config) => {
   const BASE_SCHEMA = {
     base: {
       secrets: {
@@ -107,7 +107,6 @@ exports.validateConfig = (config, file) => {
         account: 0,
         id: 4,
         domain: 0,
-        deployCli: { enabled: 2, git: 0, branch: 0 },
       },
       cypress: {
         devMode: 2,
@@ -173,7 +172,7 @@ exports.validateConfig = (config, file) => {
   checkDependency(config)
 
   // All set, show the user a positive feedback
-  qe.msg(`${file} loaded and validated successfully`)
+  return true
 }
 
 exports.validateSecrets = (secrets, config) => {

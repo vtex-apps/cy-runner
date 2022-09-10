@@ -58,12 +58,6 @@ base:
     account: my_robot_account_with_VTEX_IO_Admin_privileges
     domain: my_qa_env_name.com.br
     vtexIdUrl: https://vtexid.vtex.com.br/api/vtexid/pub/authenticate/default
-    deployCli:
-      enabled: true
-      git: https://github.com/vtex/toolbelt.git
-      branch: qe/cypress
-  twilio:
-    enabled: true
   [...]
 ```
 
@@ -299,7 +293,6 @@ Also, you have the `cy-runner.log` file, that will show you how the tests were c
      ===============================================================================================
 
      [✓] Execution time
-      -  vtexCli....................... 0 seconds
       -  workspace..................... 59.264 seconds
       -  credentials................... 2.025 seconds
       -  strategy...................... 266.801 seconds
@@ -375,15 +368,6 @@ base:
     account: yourAccount
     domain: myvtex.com
     vtexIdUrl: https://vtexid.vtex.com.br/api/vtexid/pub/authenticate/default
-    deployCli:
-      # Deploy the toolbelt to provide login using the secrets
-      enabled: true
-      git: https://github.com/vtex/toolbelt.git
-      branch: qe/cypress
-  twilio:
-    # You must configure it inside your account
-    # It's mandatory if you enable deployCli
-    enabled: true
   jira:
     # If you want to report issues on Jira
     enabled: false

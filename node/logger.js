@@ -1,0 +1,74 @@
+const path = require('path')
+
+const storage = require('./storage')
+
+const QE = '[QE] === '
+const LOG_PATH = path.resolve('cy-runner', 'logs')
+const LOG_FILE = path.resolve(LOG_PATH, 'cy-runner.log')
+
+function ico(type) {
+  switch (type) {
+    case 'warn':
+      return '[!]'.padStart(8)
+
+    case 'error':
+      return '[✗]'.padStart(8)
+
+    case 'ok':
+      return '[✓]'.padStart(8)
+
+    default:
+      return '- '.padStart(8)
+  }
+}
+
+exports.init = () => {
+  storage.makeDir(LOG_PATH)
+}
+
+// Return log path
+exports.logPath = () => {
+  return LOG_PATH
+}
+
+// Return log file
+exports.logFile = () => {
+  return LOG_FILE
+}
+
+// Write messages to log file and console
+exports.write = (msg) => {
+  process.stdout.write(msg)
+  storage.append(msg, LOG_FILE)
+}
+
+exports.msgOk = (msg) => {
+  this.write(`${ico('ok')} ${msg}\n`)
+}
+
+exports.msgWarn = (msg) => {
+  this.write(`${ico('warn')} ${msg}\n`)
+}
+
+exports.msgError = (msg) => {
+  this.write(`${ico('error')} ${msg}\n`)
+}
+
+exports.msgPad = (msg, wait) => {
+  this.write(`${ico()} ${msg}${wait ? '... ' : '\n'}`)
+}
+
+exports.msgSection = (msg) => {
+  msg = `${QE}${msg} `.padEnd(100, '=')
+  this.write(`\n${msg}\n`)
+  this.write(`${''.padStart(5, ' ').padEnd(100, '=')}\n\n`)
+}
+
+exports.msgEnd = (msg) => {
+  msg = `${QE}${msg} `.padEnd(100, '=')
+  this.write(`\n${msg}\n\n`)
+}
+
+exports.newLine = () => {
+  this.write('\n')
+}

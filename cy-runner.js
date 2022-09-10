@@ -1,16 +1,17 @@
-const qe = require('./node/utils')
-const { getConfig } = require('./node/config')
-const { vtexCli } = require('./node/cli')
+const cfg = require('./node/config')
 const { workspace } = require('./node/workspace')
-const { credentials } = require('./node/credential')
+const { credentials } = require('./node/credentials')
 const { strategy } = require('./node/test')
 const { teardown } = require('./node/teardown')
 const { issue } = require('./node/jira')
 const { report } = require('./node/report')
+const system = require('./node/system')
+const logger = require('./node/logger')
+const cypress = require('./node/cypress')
 
 // Controls test state
 const control = {
-  start: qe.tick(),
+  start: system.tick(),
   timing: {},
   specsFailed: [],
   specsSkipped: [],
@@ -20,37 +21,33 @@ const control = {
 }
 
 async function main() {
-  // Create logs folder
-  if (!qe.storage('logs')) qe.storage('logs', 'mkdir')
+  // Init logger
+  logger.init()
 
   // Welcome message
-  qe.msgSection('Cypress Runner')
+  logger.msgSection('Cypress Runner')
 
   // Read cy-runner.yml configuration
-  let config = await getConfig('cy-runner.yml')
+  let config = await cfg.getConfig('cy-runner.yml')
+
+  process.exit(0)
 
   // Report configuration to help understand that'll run
-  await qe.sectionsToRun(config)
-
-  // Deploy, start in background, and add VTEX CLI to system PATH
-  let call = await vtexCli(config)
-
-  process.env.PATH = call.path
-  control.timing.vtexCli = call.time
+  await cfg.sectionsToRun(config)
 
   // Configure workspace (create, install, uninstall, link app)
   control.timing.workspace = await workspace(config)
 
   // Get credentials
-  call = await credentials(config)
+  let call = await credentials(config)
+
   config = call.config
-  control.timing.credentials = call.time
 
   // Tests
   if (config.base.cypress.devMode) {
-    qe.msgSection('Running in dev mode')
-    qe.msg('When you finish, please wait the process flow', 'warn')
-    await qe.openCypress()
+    logger.msgSection('Running in dev mode')
+    logger.msgWarn('When you finish, please wait the process flow')
+    await cypress.open()
   } else {
     call = await strategy(config)
     control.timing.strategy = call.time
@@ -68,8 +65,8 @@ async function main() {
   control.timing.teardown = await teardown(config)
 
   // Final Report
-  control.timing.total = qe.tock(control.start)
+  control.timing.total = system.tock(control.start)
   await report(control, config)
 }
 
-main()
+main().then((r) => r)

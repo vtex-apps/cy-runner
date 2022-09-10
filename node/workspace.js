@@ -131,7 +131,7 @@ async function doLinkApp(config) {
     const outFile = path.join('cy-runner', 'logs', 'link.log')
     const logOutput = config.workspace.linkApp.logOutput.enabled
       ? `1> ${outFile} &`
-      : '--no-watch'
+      : '--no-watch --verbose --trace'
 
     const tlb = await qe.toolbelt(
       config.base.vtex.bin,
