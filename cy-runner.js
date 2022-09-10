@@ -1,6 +1,5 @@
 const cfg = require('./node/config')
 const { workspace } = require('./node/workspace')
-const { credentials } = require('./node/credentials')
 const { strategy } = require('./node/test')
 const { teardown } = require('./node/teardown')
 const { issue } = require('./node/jira')
@@ -28,7 +27,7 @@ async function main() {
   logger.msgSection('Cypress Runner')
 
   // Read cy-runner.yml configuration
-  let config = await cfg.getConfig('cy-runner.yml')
+  const config = await cfg.getConfig('cy-runner.yml')
 
   process.exit(0)
 
@@ -38,18 +37,14 @@ async function main() {
   // Configure workspace (create, install, uninstall, link app)
   control.timing.workspace = await workspace(config)
 
-  // Get credentials
-  let call = await credentials(config)
-
-  config = call.config
-
   // Tests
   if (config.base.cypress.devMode) {
     logger.msgSection('Running in dev mode')
     logger.msgWarn('When you finish, please wait the process flow')
     await cypress.open()
   } else {
-    call = await strategy(config)
+    const call = await strategy(config)
+
     control.timing.strategy = call.time
     control.specsFailed = call.specsFailed
     control.specsSkipped = call.specsSkipped

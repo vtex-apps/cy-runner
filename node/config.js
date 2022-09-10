@@ -24,7 +24,7 @@ exports.getConfig = async (configFile) => {
   config.base.vtex.baseUrl = `https://${WORKSPACE}--${ACCOUNT}.${DOMAIN}`
 
   // Load and parse secrets
-  const secrets = credentials(config)
+  const secrets = credentials.readSecrets(config)
 
   // Do check to avoid waste of time on CI environments
   const IS_CI = process.env.CI ?? false
@@ -44,6 +44,9 @@ exports.getConfig = async (configFile) => {
     config.base.cypress.browser = 'chrome'
     config.base.cypress.sorry = false
   }
+
+  // Get cookies
+  config = credentials.getCookies(config)
 
   // Merge secrets on config
   if (secrets) config = credentials.mergeSecrets(config, secrets)

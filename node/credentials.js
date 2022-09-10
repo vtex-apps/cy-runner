@@ -6,16 +6,13 @@ const logger = require('./logger')
 const schema = require('./schema')
 const system = require('./system')
 const toolbelt = require('./toolbelt')
-const cypress = require('./cypress')
 const storage = require('./storage')
 
 exports.getCookies = async (config) => {
   // eslint-disable-next-line vtex/prefer-early-return
   if (config.base.secrets.enabled && config.base.cypress.getCookies) {
     // Admin cookie
-    logger.msgSection('Cookies')
-    logger.msgWarn('Getting cookies')
-    logger.msgPad('Requesting admin cookies')
+    logger.msgWarn('Getting cookie for admin')
     const axiosConfig = {
       url: config.base.vtex.vtexIdUrl,
       method: 'get',
@@ -39,17 +36,24 @@ exports.getCookies = async (config) => {
 
     config.base.vtex.authCookieName = cookieName
     config.base.vtex.adminAuthCookieValue = cookieValue
+    logger.msgOk('Got admin cookie')
 
     // User cookie
-    logger.msgPad('Requesting user cookie')
+    logger.msgWarn('Getting cookie for the user/robot')
     config.base.vtex.userAuthCookieValue = await toolbelt.getLocalToken()
+    logger.msgOk('Got user/robot cookie')
 
-    // Save Cypress env JSON
-    cypress.saveCypressEnvJson(config)
+    return config
   }
 }
 
 exports.readSecrets = (config) => {
+  if (!config.base.secrets.enabled) {
+    logger.msgWarn('Secrets disabled')
+
+    return
+  }
+
   const SECRET_NAME = config.base.secrets.name
   const SECRET_FILE = `.${SECRET_NAME}.json`
   let secrets = process.env.SECRET_NAME ?? false
@@ -75,7 +79,7 @@ exports.readSecrets = (config) => {
   }
 
   schema.validateSecrets(secrets, config)
-  this.msg(`Secrets loaded from ${loadedFrom} successfully`)
+  logger.msgOk(`Secrets loaded from ${loadedFrom} successfully`)
 
   return secrets
 }
