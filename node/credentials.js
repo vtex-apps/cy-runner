@@ -7,8 +7,9 @@ const schema = require('./schema')
 const system = require('./system')
 const toolbelt = require('./toolbelt')
 const cypress = require('./cypress')
+const storage = require('./storage')
 
-exports.credentials = async (config) => {
+exports.getCookies = async (config) => {
   // eslint-disable-next-line vtex/prefer-early-return
   if (config.base.secrets.enabled && config.base.cypress.getCookies) {
     // Admin cookie
@@ -48,33 +49,25 @@ exports.credentials = async (config) => {
   }
 }
 
-exports.mergeSecrets = (config, secrets) => {
-  merge(config.base, secrets)
-
-  return config
-}
-
 exports.readSecrets = (config) => {
   const SECRET_NAME = config.base.secrets.name
   const SECRET_FILE = `.${SECRET_NAME}.json`
-  let secrets = null
+  let secrets = process.env.SECRET_NAME ?? false
   let loadedFrom = null
 
-  if (this.storage(SECRET_FILE)) {
-    try {
-      secrets = jsYaml.load(this.storage(SECRET_FILE, 'read'), 'utf-8')
-    } catch (e) {
-      this.crash(`Check if your JSON secrets ${SECRET_FILE} is well formatted`)
-    }
-
+  if (storage.exists(SECRET_FILE)) {
+    secrets = storage.readYaml(SECRET_FILE)
     loadedFrom = `file ${SECRET_FILE}`
   } else {
-    if (typeof process.env[SECRET_NAME] === 'undefined') {
-      this.crash(`Neither ${SECRET_FILE} or ${SECRET_NAME} env found`)
+    if (!secrets) {
+      system.crash(
+        'Secret missing',
+        `You should disable secrets, create a ${SECRET_FILE} or set a ${SECRET_NAME} env`
+      )
     }
 
     try {
-      secrets = jsYaml.load(process.env[SECRET_NAME], 'utf-8')
+      secrets = jsYaml.load(process.env.SECRET_NAME, 'utf-8')
       loadedFrom = `env variable ${SECRET_NAME}`
     } catch (e) {
       this.crash(`Check if your env variable ${SECRET_NAME} is well formatted`)
@@ -85,4 +78,10 @@ exports.readSecrets = (config) => {
   this.msg(`Secrets loaded from ${loadedFrom} successfully`)
 
   return secrets
+}
+
+exports.mergeSecrets = (config, secrets) => {
+  merge(config.base, secrets)
+
+  return config
 }

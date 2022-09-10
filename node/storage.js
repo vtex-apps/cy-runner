@@ -63,14 +63,6 @@ exports.write = (msg, file) => {
   }
 }
 
-exports.exists = (fileOrDirectory) => {
-  try {
-    return !!fs.existsSync(fileOrDirectory)
-  } catch (e) {
-    system.crash(`Failed to check ${fileOrDirectory}`, e)
-  }
-}
-
 exports.delete = (fileOrDirectory) => {
   try {
     if (this.exists(fileOrDirectory)) return fs.rmSync(fileOrDirectory)
@@ -84,6 +76,14 @@ exports.makeDir = (directory) => {
     if (!this.exists(directory)) return fs.mkdirSync(directory)
   } catch (e) {
     system.crash(`Failed to create ${directory}`, e)
+  }
+}
+
+exports.readYaml = (jsonFile) => {
+  try {
+    return jsYaml.load(this.read(jsonFile, 'utf-8'))
+  } catch (e) {
+    system.crash(`Invalid JSON/YAML file: ${jsonFile}`, e)
   }
 }
 
