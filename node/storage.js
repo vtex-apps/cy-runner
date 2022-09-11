@@ -120,7 +120,7 @@ exports.loadConfig = (yamlFile) => {
 exports.writeJson = (config, jsonFile) => {
   try {
     this.write(JSON.stringify(config), jsonFile)
-    logger.msgOk(`${jsonFile} saved`)
+    logger.msgPad(`${jsonFile} saved`)
   } catch (e) {
     system.crash(`Failed to create ${jsonFile}`, e)
   }
@@ -138,6 +138,7 @@ exports.createStateFiles = (config) => {
         logger.msgPad(stateFile)
         this.write('{}', path.join(system.basePath(), stateFile))
       })
+      logger.msgOk(`State ${PLURAL} created successfully`)
     }
   } catch (e) {
     system.crash('Failed to create a state file', e)

@@ -51,13 +51,13 @@ exports.getConfig = async (configFile) => {
   // Get cookies
   config = await credentials.getCookies(config)
 
-  // Write cypress.env.json
+  // Write needed Cypress files
+  logger.msgWarn('Creating dynamic Cypress environment')
   cypress.saveCypressEnvJson(config)
-
-  // Write cypress.json
   cypress.saveCypressJson(config)
+  logger.msgOk('Cypress environment created successfully')
 
-  // Create empty state files
+  // Create state files
   storage.createStateFiles(config)
 
   // Make link if base has Cypress folder
@@ -67,17 +67,22 @@ exports.getConfig = async (configFile) => {
   const dst = path.join(__dirname, '..', '..', 'cypress', 'support')
 
   if (storage.exists(dst)) {
+    logger.msgWarn('Local Cypress detected, linking')
+
     // Create common links inside cypress
     const com = path.join(dst, 'common')
+    const clean = path.join(__dirname, '..', '..', '..')
 
+    logger.msgPad(`${src.replace(clean, '..')} -> ${com.replace(clean, '..')}`)
     if (storage.exists(com)) storage.unLink(com)
     storage.link(src, com)
 
     // Create cypress link inside cy-runner
+    logger.msgPad(`${cyp.replace(clean, '..')} -> ${lnk.replace(clean, '..')}`)
     if (storage.exists(lnk)) storage.unLink(lnk)
     storage.link(cyp, lnk)
-    logger.msgOk('Local Cypress folder detected')
-    logger.msgPad('Common links created')
+
+    logger.msgOk('Cypress linked successfully')
   }
 
   return config
