@@ -18,7 +18,7 @@ exports.getBaseDir = () => {
 }
 
 exports.saveCypressEnvJson = (config) => {
-  storage.writeJson(config, path.join('cy-runner', 'cypress.env.json'))
+  storage.writeJson(config, path.join(system.basePath(), 'cypress.env.json'))
 }
 
 exports.saveCypressJson = (config) => {
@@ -43,7 +43,7 @@ exports.saveCypressJson = (config) => {
       screenshotsFolder: 'logs/screenshots',
       videosFolder: 'logs/videos',
     },
-    path.join('cy-runner', 'cypress.json')
+    path.join(system.basePath(), 'cypress.json')
   )
 }
 

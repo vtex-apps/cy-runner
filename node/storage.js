@@ -49,7 +49,7 @@ exports.unLink = (source) => {
 
 exports.exists = (fileOrDirectory) => {
   try {
-    return !!fs.existsSync(fileOrDirectory)
+    return fs.existsSync(fileOrDirectory)
   } catch (e) {
     system.crash(`Failed to check ${fileOrDirectory}`, e)
   }
@@ -73,7 +73,7 @@ exports.write = (msg, file) => {
 
 exports.delete = (fileOrDirectory) => {
   try {
-    if (this.exists(fileOrDirectory)) return fs.rmSync(fileOrDirectory, )
+    if (this.exists(fileOrDirectory)) return fs.rmSync(fileOrDirectory)
   } catch (e) {
     system.crash(`Failed to delete ${fileOrDirectory}`, e)
   }
@@ -83,6 +83,8 @@ exports.makeDir = (directory) => {
   try {
     if (!this.exists(directory)) return fs.mkdirSync(directory)
   } catch (e) {
+    // TODO: Fix the error when got error creating logs folder
+    // If the dir to be create = logs, the error will be in loop
     system.crash(`Failed to create ${directory}`, e)
   }
 }
@@ -134,7 +136,7 @@ exports.createStateFiles = (config) => {
       logger.msgWarn(`Creating state ${PLURAL}`)
       stateFiles.forEach((stateFile) => {
         logger.msgPad(stateFile)
-        this.write('{}', path.join('cy-runner', stateFile))
+        this.write('{}', path.join(system.basePath(), stateFile))
       })
     }
   } catch (e) {
@@ -147,12 +149,15 @@ exports.keepStateFiles = (config) => {
   try {
     const { stateFiles } = config.base
 
-    this.msg(`Keeping state files`, 'warn')
+    logger.msgWarn('Keeping state files')
     stateFiles.forEach((stateFile) => {
-      this.msg(`${stateFile} -> logs/${stateFile}`, true, true)
-      fs.copyFileSync(stateFile, `logs/${stateFile}`)
+      logger.msgWarn(`${stateFile} -> logs/${stateFile}`)
+      const SRC = path.join(system.basePath(), stateFile)
+      const DST = path.join(logger.logPath(), stateFile)
+
+      this.copy(SRC, DST)
     })
   } catch (e) {
-    this.crash('Fail to keep state files', e)
+    system.crash('Failed to keep state files', e)
   }
 }

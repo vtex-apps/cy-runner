@@ -12,7 +12,7 @@ const storage = require('./storage')
 
 exports.getCookies = async (config) => {
   // eslint-disable-next-line vtex/prefer-early-return
-  if (config.base.secrets.enabled && config.base.cypress.getCookies) {
+  if (config.base.cypress.getCookies) {
     // Admin cookie
     logger.msgWarn('Getting cookie for admin')
     const axiosConfig = {
@@ -29,7 +29,7 @@ exports.getCookies = async (config) => {
     if (response?.data?.authStatus !== 'Success') {
       system.crash(
         'Failed to get admin credentials',
-        'Check apiToken and apiKey on your secrets'
+        'Check your apiToken and apiKey on your secrets and enable it'
       )
     }
 
@@ -62,9 +62,10 @@ exports.readSecrets = (config) => {
     return
   }
 
+  logger.msgWarn('Checking secrets')
   const SECRET_NAME = config.base.secrets.name
-  const SECRET_FILE = path.join('cy-runner', `.${SECRET_NAME}.json`)
-  let secrets = process.env.SECRET_NAME ?? false
+  const SECRET_FILE = path.join(system.basePath(), `.${SECRET_NAME}.json`)
+  let secrets = process.env.SECRET_NAME
   let loadedFrom = null
 
   if (storage.exists(SECRET_FILE)) {
@@ -74,7 +75,7 @@ exports.readSecrets = (config) => {
     if (!secrets) {
       system.crash(
         'Secret missing',
-        `You should disable secrets, create a ${SECRET_FILE} or set a ${SECRET_NAME} env`
+        `You should disable secrets, create a '.${SECRET_NAME}.json' or set a '${SECRET_NAME}' env`
       )
     }
 

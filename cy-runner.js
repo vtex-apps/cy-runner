@@ -1,12 +1,12 @@
 const cfg = require('./node/config')
-const { workspace } = require('./node/workspace')
-const { strategy } = require('./node/test')
-const { teardown } = require('./node/teardown')
-const { issue } = require('./node/jira')
-const { report } = require('./node/report')
+// const { workspace } = require('./node/workspace')
+// const { strategy } = require('./node/test')
+// const { teardown } = require('./node/teardown')
+// const { issue } = require('./node/jira')
+// const { report } = require('./node/report')
 const system = require('./node/system')
 const logger = require('./node/logger')
-const cypress = require('./node/cypress')
+// const cypress = require('./node/cypress')
 
 // Controls test state
 const control = {
@@ -28,39 +28,38 @@ async function main() {
 
   // Read cy-runner.yml configuration
   const config = await cfg.getConfig('cy-runner.yml')
-  process.exit(0)
 
-  // Report configuration to help understand that'll run
-  await cfg.sectionsToRun(config)
-
-  // Configure workspace (create, install, uninstall, link app)
-  control.timing.workspace = await workspace(config)
-
-  // Tests
-  if (config.base.cypress.devMode) {
-    logger.msgSection('Running in dev mode')
-    logger.msgWarn('When you finish, please wait the process flow')
-    await cypress.open()
-  } else {
-    const call = await strategy(config)
-
-    control.timing.strategy = call.time
-    control.specsFailed = call.specsFailed
-    control.specsSkipped = call.specsSkipped
-    control.specsDisabled = call.specsDisabled
-    control.specsPassed = call.specsPassed
-    control.runUrl = call.runUrl
-    if (config.base.jira.enabled && control.specsFailed.length) {
-      await issue(config, control.specsFailed, control.runUrl)
-    }
-  }
-
-  // Teardown
-  control.timing.teardown = await teardown(config)
-
-  // Final Report
-  control.timing.total = system.tock(control.start)
-  await report(control, config)
+  // // Report configuration to help understand that'll run
+  // await cfg.sectionsToRun(config)
+  //
+  // // Configure workspace (create, install, uninstall, link app)
+  // control.timing.workspace = await workspace(config)
+  //
+  // // Tests
+  // if (config.base.cypress.devMode) {
+  //   logger.msgSection('Running in dev mode')
+  //   logger.msgWarn('When you finish, please wait the process flow')
+  //   await cypress.open()
+  // } else {
+  //   const call = await strategy(config)
+  //
+  //   control.timing.strategy = call.time
+  //   control.specsFailed = call.specsFailed
+  //   control.specsSkipped = call.specsSkipped
+  //   control.specsDisabled = call.specsDisabled
+  //   control.specsPassed = call.specsPassed
+  //   control.runUrl = call.runUrl
+  //   if (config.base.jira.enabled && control.specsFailed.length) {
+  //     await issue(config, control.specsFailed, control.runUrl)
+  //   }
+  // }
+  //
+  // // Teardown
+  // control.timing.teardown = await teardown(config)
+  //
+  // // Final Report
+  // control.timing.total = system.tock(control.start)
+  // await report(control, config)
 }
 
 main().then((r) => r)

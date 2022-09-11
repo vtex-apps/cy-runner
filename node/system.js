@@ -3,9 +3,14 @@ const path = require('path')
 
 const logger = require('./logger')
 
-const logPath = path.join('.', 'logs')
-const logFile = path.join(logPath, 'cy-runner.log')
+const BASE_PATH = path.join(__dirname, '..')
 
+// Return base path
+exports.basePath = () => {
+  return BASE_PATH
+}
+
+// Crash and exit
 exports.crash = (msg, err) => {
   logger.msgEnd('ERROR')
   logger.msgError(msg, 'Crash')
@@ -14,6 +19,7 @@ exports.crash = (msg, err) => {
   process.exit(99)
 }
 
+// Success and exit
 exports.success = (msg) => {
   logger.msgEnd('SUCCESS')
   logger.msgOk(msg)
@@ -21,6 +27,7 @@ exports.success = (msg) => {
   process.exit(0)
 }
 
+// Fail and exit
 exports.fail = (msg) => {
   logger.msgEnd('FAIL')
   logger.msgError(msg)
@@ -28,21 +35,17 @@ exports.fail = (msg) => {
   process.exit(17)
 }
 
+// Run sync process
 exports.exec = (cmd, output) => {
   if (typeof output === 'undefined') output = 'ignore'
-  const maxTimeout = 4 * 60 * 1000
+  const maxTimeout = 5 * 60 * 1000 // 5 minutes
   let result
 
   try {
     result = execSync(cmd, { stdio: output, timeout: maxTimeout })
   } catch (e) {
-    const msg1 = '\n >>  Failed to run'
-    const msg2 = `\n >>  Command: ${cmd}`
-    const msg3 = `\n >>  Returns: ${e}`
-
-    this.storage(logFile, 'append', msg1)
-    this.storage(logFile, 'append', msg2)
-    this.storage(logFile, 'append', msg3)
+    logger.msgError(`Failed to run ${cmd}`)
+    logger.msgPad(e)
     result = 'error'
 
     // If timeout, exit
@@ -52,14 +55,17 @@ exports.exec = (cmd, output) => {
   return result.toString()
 }
 
+// Start timer
 exports.tick = () => {
   return Date.now()
 }
 
+// Finish timer
 exports.tack = (start) => {
   return `${(Date.now() - start) / 1000} seconds`
 }
 
+// Traverse YAML or JSON
 exports.traverse = (result, obj, previousKey) => {
   if (typeof obj === 'object') {
     for (const key in obj) {

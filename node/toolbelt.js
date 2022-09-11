@@ -3,7 +3,7 @@ const path = require('path')
 const system = require('./system')
 
 // const delay = (ms) => new Promise((res) => setTimeout(res, ms))
-const VTEX = path.join('cy-runner', 'node_modules', 'vtex', 'bin', 'run')
+const VTEX = path.join(system.basePath(), 'node_modules', 'vtex', 'bin', 'run')
 
 exports.whoami = async () => {
   const stdout = system.exec(`${VTEX} whoami`, 'pipe').toString()
