@@ -3,9 +3,10 @@ const cfg = require('./node/config')
 // const { strategy } = require('./node/test')
 // const { teardown } = require('./node/teardown')
 // const { issue } = require('./node/jira')
-// const { report } = require('./node/report')
 const system = require('./node/system')
 const logger = require('./node/logger')
+const { deprecated } = require('./node/depreated')
+const { report } = require('./node/report')
 // const cypress = require('./node/cypress')
 
 // Controls test state
@@ -29,6 +30,8 @@ async function main() {
   // Read cy-runner.yml configuration
   const config = await cfg.getConfig('cy-runner.yml')
 
+  // Report deprecated flags
+  await deprecated(config)
   // // Report configuration to help understand that'll run
   // await cfg.sectionsToRun(config)
   //
@@ -57,9 +60,9 @@ async function main() {
   // // Teardown
   // control.timing.teardown = await teardown(config)
   //
-  // // Final Report
-  // control.timing.total = system.tock(control.start)
-  // await report(control, config)
+  // Final Report
+  control.timing.total = system.tack(control.start)
+  await report(control, config)
 }
 
 main().then((r) => r)

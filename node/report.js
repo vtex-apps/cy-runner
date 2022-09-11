@@ -1,15 +1,19 @@
-module.exports.report = async (control, config) => {
-  qe.msgSection('Execution report')
+const logger = require('./logger')
+const system = require('./system')
 
-  qe.msg('Execution time')
+module.exports.report = async (control, config) => {
+  logger.msgSection('Execution report')
+
+  logger.msgOk('Execution time')
+
   for (const section in control.timing) {
-    qe.msg(`${section.padEnd(30, '.')} ${control.timing[section]}`, true, true)
+    logger.msgPad(`${section.padEnd(30, '.')} ${control.timing[section]}`)
   }
 
-  qe.newLine()
+  logger.newLine()
 
   if (config.base.cypress.devMode) {
-    qe.success('Hope your tests went well. See you soon!')
+    system.success('Hope your tests went well. See you soon!')
   } else {
     const items = [
       ['specsDisabled', 'Disabled', 'warn'],
@@ -25,21 +29,23 @@ module.exports.report = async (control, config) => {
       if (tests.length > 0) {
         const str = tests.length > 1 ? 'specs' : 'spec'
 
-        qe.msg(`${item[1]} ${str}`, item[2])
+        logger.msgOk(`${item[1]} ${str}`, item[2])
+
         tests.forEach((test) => {
-          qe.msg(test, true, true)
+          logger.msgPad(test)
         })
-        qe.newLine()
+
+        logger.newLine()
       }
     })
 
     if (control.runUrl != null) {
-      qe.msg('Cypress Dashboard URL for this run')
-      qe.msg(control.runUrl, true, true)
+      logger.msgOk('Cypress Dashboard URL for this run')
+      logger.msgPad(control.runUrl)
     }
 
     control.specsFailed.length < 1 && control.specsSkipped.length < 1
-      ? qe.success('The test ran successfully, well done!')
-      : qe.fail('The test failed!')
+      ? system.success('The test ran successfully, well done!')
+      : system.fail('The test failed!')
   }
 }
