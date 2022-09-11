@@ -4,13 +4,12 @@ const logger = require('./logger')
 
 module.exports.deprecated = async (config) => {
   // Let's try to warn deprecated features
+  const FOUND = []
   const DEPRECATED = [
     'base.vtex.deployCli',
     'base.twilio',
     'base.cypress.sorry',
   ]
-
-  const FOUND = []
 
   DEPRECATED.forEach((flag) => {
     if (get(config, flag)) FOUND.push(flag)

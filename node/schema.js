@@ -103,7 +103,6 @@ exports.validateConfig = (config) => {
         enabled: 2,
         name: 0,
       },
-      twilio: { enabled: 2 },
       vtex: {
         account: 0,
         id: 4,

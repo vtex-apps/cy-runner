@@ -9,8 +9,9 @@ exports.whoami = async () => {
   const stdout = system.exec(`${VTEX} whoami`, 'pipe').toString()
   const check = /Logged/.test(stdout)
   const mailOrKey = check ? stdout.split(' ')[7] : null
+  const workspace = check ? stdout.split(' ')[-1] : null
 
-  return { isLogged: check, mailOrKey, stdout }
+  return { isLogged: check, mailOrKey, workspace, stdout }
 }
 
 exports.getLocalToken = async () => {
@@ -32,6 +33,13 @@ exports.deleteWorkspace = async (workspace) => {
   const result = system.exec(`${VTEX} workspace delete ${workspace}`, 'pipe')
 
   return /successfully/.test(result)
+}
+
+exports.changeWorkspace = async (workspace) => {
+  system.exec(`${VTEX} workspace use ${workspace}`, 'pipe')
+  const check = this.whoami()
+
+  return RegExp(check.workspace).test(workspace)
 }
 
 // const MAX_TRIES = 3

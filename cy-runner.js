@@ -1,13 +1,13 @@
 const cfg = require('./node/config')
-// const { workspace } = require('./node/workspace')
 // const { strategy } = require('./node/test')
 // const { issue } = require('./node/jira')
 const system = require('./node/system')
 const logger = require('./node/logger')
+const { workspace } = require('./node/workspace')
 const { deprecated } = require('./node/depreated')
 const { report } = require('./node/report')
 const { teardown } = require('./node/teardown')
-// const cypress = require('./node/cypress')
+const cypress = require('./cypress')
 
 // Controls test state
 const control = {
@@ -30,31 +30,34 @@ async function main() {
   // Read cy-runner.yml configuration
   const config = await cfg.getConfig('cy-runner.yml')
 
-  // // Report configuration to help understand that'll run
-  // await cfg.sectionsToRun(config)
-  //
-  // // Configure workspace (create, install, uninstall, link app)
-  // control.timing.workspace = await workspace(config)
-  //
-  // // Tests
-  // if (config.base.cypress.devMode) {
-  //   logger.msgSection('Running in dev mode')
-  //   logger.msgWarn('When you finish, please wait the process flow')
-  //   await cypress.open()
-  // } else {
-  //   const call = await strategy(config)
-  //
-  //   control.timing.strategy = call.time
-  //   control.specsFailed = call.specsFailed
-  //   control.specsSkipped = call.specsSkipped
-  //   control.specsDisabled = call.specsDisabled
-  //   control.specsPassed = call.specsPassed
-  //   control.runUrl = call.runUrl
-  //   if (config.base.jira.enabled && control.specsFailed.length) {
-  //     await issue(config, control.specsFailed, control.runUrl)
-  //   }
-  // }
-  //
+  // Report configuration to help understand that'll run
+  await cfg.sectionsToRun(config)
+
+  // Configure workspace (create, install, uninstall, link app)
+  const wrk = await workspace(config)
+
+  control.timing.workspace = wrk.time
+
+  // Tests
+  if (config.base.cypress.devMode) {
+    logger.msgSection('Running in dev mode')
+    logger.msgWarn('Verity if the workspace has the packages you need')
+    logger.msgWarn('When you finish, please wait the process flow')
+    await cypress.open()
+  } else if (wrk.success) {
+    // const call = await strategy(config)
+    //
+    // control.timing.strategy = call.time
+    // control.specsFailed = call.specsFailed
+    // control.specsSkipped = call.specsSkipped
+    // control.specsDisabled = call.specsDisabled
+    // control.specsPassed = call.specsPassed
+    // control.runUrl = call.runUrl
+    // if (config.base.jira.enabled && control.specsFailed.length) {
+    //   await issue(config, control.specsFailed, control.runUrl)
+    // }
+  }
+
   // Teardown
   control.timing.teardown = await teardown(config)
 

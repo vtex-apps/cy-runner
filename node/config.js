@@ -5,8 +5,9 @@ const { get } = require('lodash')
 const logger = require('./logger')
 const storage = require('./storage')
 const credentials = require('./credentials')
-const { tick } = require('./system')
+const system = require('./system')
 const cypress = require('./cypress')
+const { tick } = require('./system')
 
 exports.getConfig = async (configFile) => {
   logger.msgWarn('Checking cy-runner configuration file')
@@ -114,7 +115,7 @@ exports.sectionsToRun = async (config) => {
     return list !== undefined ? list : []
   }
 
-  this.traverse([], config).forEach((item) => {
+  system.traverse([], config).forEach((item) => {
     // eslint-disable-next-line vtex/prefer-early-return
     if (/enabled/.test(item.key) && /true/.test(item.type)) {
       const [itemEnabled] = item.key.split('.enabled')

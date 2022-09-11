@@ -1,70 +1,57 @@
-const path = require('path')
-
-const { teardown } = require('./teardown')
+const system = require('./system')
+const logger = require('./logger')
+const toolbelt = require('./toolbelt')
 
 exports.workspace = async (config) => {
-  const START = qe.tick()
+  const START = system.tick()
   const wrk = config.workspace
   const { linkApp } = wrk
   const { installApps } = wrk
   const { removeApps } = wrk
-  const manageWorkspace =
-    wrk.random ||
-    linkApp.enabled ||
-    installApps.length > 0 ||
-    removeApps.length > 0
+  const FOUND = []
+  const WORKSPACE_SET = [
+    wrk.random,
+    linkApp.enabled,
+    installApps.length,
+    removeApps.length
+  ]
 
-  const vtexBin = config.base.vtex.bin
+  WORKSPACE_SET.forEach((set) => {
+    if (set) FOUND.push(set)
+  })
 
-  if (manageWorkspace) {
-    qe.msgSection('Workspace preparation')
-    // Check if vtex cli is logged
-    const tlb = await qe.toolbelt(vtexBin, 'whoami')
+  // Prepare workspace
+  let check = true
 
-    if (tlb.success) {
-      // Feedback with actual user
-      // eslint-disable-next-line prefer-destructuring
-      const user = tlb.stdout.split(' ')[7]
-
-      qe.msg(`Toolbelt logged as ${user}`)
-      // Change workspace
-      qe.msg(`Changing workspace to ${wrk.name}`)
-      await qe.toolbelt(vtexBin, `workspace use ${wrk.name}`)
-      // Install apps
-      if (installApps.length > 0) {
-        qe.msg('Installing apps', 'warn', false)
-        await doInstallApps(installApps, vtexBin)
-        qe.msg('Apps installed successfully')
-      }
-
-      // Uninstall apps
-      if (removeApps.length > 0) {
-        qe.msg('Uninstalling apps', 'warn', false)
-        await doRemoveApps(removeApps, vtexBin)
-        qe.msg('Apps uninstalled successfully')
-      }
-
-      // Link app
-      await doLinkApp(config)
-
-      // Logging all apps
-      await listApps(vtexBin)
-    } else {
-      if (!config.base.vtex.deployCli.enabled) {
-        qe.crash(
-          'You must be logged on toolbelt to manage workspace',
-          `Do a 'vtex login ${config.base.vtex.account}' or enable base.vtex.deployCli`
-        )
-      }
-
-      qe.crash(
-        'You have deployCli enabled, but login fails',
-        'Check your network!'
-      )
-    }
+  if (FOUND.length) {
+    logger.msgSection('Workspace set up')
+    logger.msgWarn(`Changing workspace to ${wrk.name}`)
+    check = await toolbelt.changeWorkspace(wrk.name)
+    if (check) logger.msgOk(`Changed to ${wrk.name} successfully`)
+    else logger.msgError(`Failed to change the workspace to ${wrk.name}`)
+    // return check
+    // // Install apps
+    // if (installApps.length > 0) {
+    //   qe.msg('Installing apps', 'warn', false)
+    //   await doInstallApps(installApps, vtexBin)
+    //   qe.msg('Apps installed successfully')
+    // }
+    //
+    // // Uninstall apps
+    // if (removeApps.length > 0) {
+    //   qe.msg('Uninstalling apps', 'warn', false)
+    //   await doRemoveApps(removeApps, vtexBin)
+    //   qe.msg('Apps uninstalled successfully')
+    // }
+    //
+    // // Link app
+    // await doLinkApp(config)
+    //
+    // // Logging all apps
+    // await listApps(vtexBin)
   }
 
-  return qe.tock(START)
+  return { success: check, time: system.tack(START) }
 }
 
 async function listApps(vtexBin) {
