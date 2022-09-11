@@ -12,9 +12,14 @@ function fillSkuAndQuantity(textArea, validate, skuQuantity) {
   cy.get(validate).should('be.visible').click()
 }
 
-function checkBackButtonIsVisible(tableContainer, button) {
+function checkBackButtonIsVisible() {
+  const [buttonsBlock, button] = [
+    'div[class*=buttonsBlock]',
+    'div[class*=vtex-button]',
+  ]
+
   cy.get('body').then(($body) => {
-    if ($body.find(tableContainer).length > 1) {
+    if ($body.find(buttonsBlock).length) {
       cy.get(button).contains(BUTTON_LABEL.back).click()
     }
   })
@@ -22,14 +27,12 @@ function checkBackButtonIsVisible(tableContainer, button) {
 
 export function quickOrderBySkuAndQuantityTestCase2(role) {
   it(`Verify ${role} is able remove invalid skus in quick order - [Sku's Code],[Quantity]`, () => {
-    const { textArea, validate, addtoCart, tableContainer, button } =
-      selectors.QuickOrderPage().skus
+    const { textArea, validate } = selectors.QuickOrderPage().skus
 
     cy.gotoQuickOrder()
-    checkBackButtonIsVisible(tableContainer, button)
+    checkBackButtonIsVisible()
     fillSkuAndQuantity(textArea, validate, '880270a,2{enter}1,2{enter}')
-    cy.get(`${tableContainer} ${button}`).last().click()
-    cy.get(addtoCart).should('be.visible')
+    checkBackButtonIsVisible()
   })
 }
 
@@ -38,10 +41,11 @@ export function quickOrderBySkuAndQuantityTestCase1(role, quoteEnv) {
     `Verify ${role} is able to create quote by quick order - [Sku's Code],[Quantity]`,
     updateRetry(1),
     () => {
-      cy.gotoQuickOrder()
       const { textArea, validate, invalid, content, addtoCart } =
         selectors.QuickOrderPage().skus
 
+      cy.gotoQuickOrder()
+      checkBackButtonIsVisible()
       fillSkuAndQuantity(textArea, validate, '1,2{enter}')
       cy.get(invalid).should('be.visible')
       cy.get(content).clear().type('880270a,2{enter}').focus()
@@ -59,11 +63,11 @@ export function quickOrderBySkuAnd51QuantityTestCase(role) {
     `Verify ${role} is able to add 50 products to cart with 51 quantity by quick order - [Sku's Code],[Quantity]`,
     updateRetry(1),
     () => {
-      const { textArea, validate, addtoCart, remove, button } =
+      const { textArea, validate, addtoCart, remove } =
         selectors.QuickOrderPage().skus
 
       cy.gotoQuickOrder()
-      cy.get(button).contains(BUTTON_LABEL.back).click()
+      checkBackButtonIsVisible()
       fillSkuAndQuantity(textArea, validate, '880270a,51{enter}')
       cy.waitForGraphql(GRAPHL_OPERATIONS.addToCart, addtoCart)
       validateToastMsg(POPUP_MSG)
@@ -172,11 +176,18 @@ function validateForm(quoteEnv, vtex, productCount) {
 }
 
 function uploadXLS(filePath) {
-  const { menu, title, link } = selectors.QuickOrderPage().uploadXLS
+  const { deleteFile } = selectors.QuickOrderPage().uploadXLS
 
-  cy.get(menu).click()
-  cy.get(title).contains(BUTTON_LABEL.QuickOrder)
-  cy.get(link).click()
+  cy.gotoQuickOrder()
+
+  // If deleteFile selector exist then, it means we are retrying this testcase
+  // close and upload CSV
+  cy.get('body').then(($body) => {
+    if ($body.find(deleteFile).length) {
+      cy.get(deleteFile).should('be.visible').click()
+    }
+  })
+  checkBackButtonIsVisible()
   cy.get(selectors.QuickOrderPage().uploadXLS.file, {
     timeout: 10000,
   }).attachFile(filePath)
