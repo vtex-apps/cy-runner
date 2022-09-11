@@ -1,30 +1,35 @@
+const system = require('./system')
+const logger = require('./logger')
+const cypress = require('./cypress')
+const storage = require('./storage')
+
 module.exports.wipe = async (config) => {
-  const START = qe.tick()
   const { wipe } = config.workspace
 
+  // eslint-disable-next-line vtex/prefer-early-return
   if (wipe.enabled) {
-    const sensitiveFiles = ['cypress.env.json', 'cypress.json']
-
-    qe.msg(`Wiping data`, 'warn')
+    const SENSITIVE_FILES = ['cypress.env.json', 'cypress.json']
     const { stopOnFail } = wipe
-    const result = await qe.runCypress(wipe, config, {}, true)
+
+    logger.msgWarn('Wiping data')
+
+    const result = await cypress.run(wipe, config)
 
     if (result[0].totalFailed) {
-      qe.msg('Failed to clean data', 'error')
+      logger.msgError('Failed to clean data')
+      logger.msgPad('Look into the logs folder to get more information')
       if (stopOnFail) {
-        qe.crash('Stop due to stopOnFail', 'Wipe failed')
+        system.crash('Crash dua a stopOnFail trigger', 'Wipe failed')
       }
     } else {
-      qe.msg('Success to clean data')
+      logger.msgOk('Data cleaned successfully')
     }
 
-    qe.msg('Removing sensitive files', 'warn')
-    sensitiveFiles.forEach((file) => {
-      qe.msg(file, true, true)
-      qe.storage(file, 'rm')
+    logger.msgWarn('Removing sensitive files')
+    SENSITIVE_FILES.forEach((file) => {
+      logger.msgPad(file)
+      storage.delete(file)
     })
-    qe.msg('Sensitive files removed')
+    logger.msgOk('Sensitive files removed successfully')
   }
-
-  return qe.tock(START)
 }

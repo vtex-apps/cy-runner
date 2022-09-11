@@ -28,15 +28,17 @@ exports.getLocalToken = async () => {
   system.crash('No user logged', 'Check if you are logged on VTEX Toolbelt')
 }
 
+exports.deleteWorkspace = async (workspace) => {
+  const result = system.exec(`${VTEX} workspace delete ${workspace}`, 'pipe')
+
+  return /deleted/.test(result)
+}
+
 // const MAX_TRIES = 3
 // let stdout
 // let check = false
 // let thisTry = 0
 
-//     case 'workspace':
-//       stdout = this.exec(`echo y | ${bin} ${cmd}`, 'pipe').toString()
-//       check = /Workspace change|deleted/.test(stdout)
-//       break
 //
 //     case 'install':
 //     /* falls through */

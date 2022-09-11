@@ -1,12 +1,12 @@
 const cfg = require('./node/config')
 // const { workspace } = require('./node/workspace')
 // const { strategy } = require('./node/test')
-// const { teardown } = require('./node/teardown')
 // const { issue } = require('./node/jira')
 const system = require('./node/system')
 const logger = require('./node/logger')
 const { deprecated } = require('./node/depreated')
 const { report } = require('./node/report')
+const { teardown } = require('./node/teardown')
 // const cypress = require('./node/cypress')
 
 // Controls test state
@@ -57,9 +57,9 @@ async function main() {
   //   }
   // }
   //
-  // // Teardown
-  // control.timing.teardown = await teardown(config)
-  //
+  // Teardown
+  control.timing.teardown = await teardown(config)
+
   // Final Report
   control.timing.total = system.tack(control.start)
   await report(control, config)
