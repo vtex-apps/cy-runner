@@ -7,13 +7,12 @@ const { wipe } = require('./wipe')
 module.exports.teardown = async (config) => {
   const START = system.tick()
   const { workspace } = config
+  const FOUND = []
   const TEARDOWN_SET = [
     workspace.wipe.enabled,
     workspace.teardown.enabled,
     config.base.keepStateFiles,
   ]
-
-  const FOUND = []
 
   TEARDOWN_SET.forEach((set) => {
     if (set) FOUND.push(set)

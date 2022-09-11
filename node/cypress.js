@@ -9,18 +9,19 @@ const system = require('./system')
 const logger = require('./logger')
 const { teardown } = require('./teardown')
 
-const CI_RANDOM = Date.now().toString().substring(6, 13)
-
-exports.getBaseDir = () => {
-  return storage.exists(path.join('cypress', 'integration'))
+// Get Cypress Folder [cypress or cypress-shared]
+exports.getCypressFolder = () => {
+  return storage.exists(path.join(system.basePath(), 'cypress', 'integration'))
     ? 'cypress'
     : 'cypress-shared'
 }
 
+// Save Env for Cypress
 exports.saveCypressEnvJson = (config) => {
   storage.writeJson(config, path.join(system.basePath(), 'cypress.env.json'))
 }
 
+// Save config for Cypress
 exports.saveCypressJson = (config) => {
   storage.writeJson(
     {
@@ -47,29 +48,30 @@ exports.saveCypressJson = (config) => {
   )
 }
 
+// Deal with stop on fail
 exports.stopOnFail = async (config, step, runUrl) => {
-  this.msg(`stopOnFail enabled, stopping the test`, true, true)
   await teardown(config)
-  if (runUrl != null) {
-    this.msgSection('Cypress Dashboard')
-    this.msg(runUrl, 'ok')
-  }
-
-  this.crash(`Prematurely exit duo a stopOnFail for ${step}`)
+  if (runUrl != null) this.showDashboard(runUrl)
+  system.crash('Triggered stopOnFail', step)
 }
 
-exports.open = async () => {
-  const baseDir = this.getBaseDir()
+// Show URL for Cypress Dashboard or Sorry Cypress
+exports.showDashboard = async (url) => {
+  logger.msgSection('Cypress Dashboard')
+  logger.msgOk(url)
+}
 
+// Open Cypress
+exports.open = async () => {
+  const CY_FOLDER = this.getCypressFolder()
   const options = {
     config: {
-      integrationFolder: `${baseDir}/integration`,
-      supportFile: `${baseDir}/support`,
-      fixturesFolder: `${baseDir}/fixtures`,
+      integrationFolder: `${CY_FOLDER}/integration`,
+      supportFile: `${CY_FOLDER}/support`,
+      fixturesFolder: `${CY_FOLDER}/fixtures`,
     },
   }
 
-  // Open Cypress
   try {
     await cypress.open(options)
   } catch (e) {
@@ -77,18 +79,17 @@ exports.open = async () => {
   }
 }
 
+// Run Cypress
 exports.run = async (test, config, addOptions = {}) => {
-  // If mix base path for specs, stop it
-  const specPath = path.parse(test.specs[0]).dir
-  const baseDir = this.getBaseDir()
+  // Mix Cypress base folder isn't allowed
+  const SPEC_PATH = path.parse(test.specs[0]).dir
+  const CY_FOLDER = this.getCypressFolder()
 
   test.specs.forEach((spec) => {
-    const pathToCheck = path.parse(spec).dir
-
-    if (pathToCheck !== specPath) {
+    if (path.parse(spec).dir !== SPEC_PATH) {
       system.crash(
         "'cypress' and 'shared-cypress' can't be mixed on the same strategy",
-        `Error on strategy ${test.name}`
+        `Fix strategy ${test.name}`
       )
     }
   })
@@ -96,9 +97,9 @@ exports.run = async (test, config, addOptions = {}) => {
   // Build options
   const options = {
     config: {
-      integrationFolder: specPath,
-      supportFile: `${specPath.split(path.sep)[0]}/support`,
-      fixturesFolder: `${baseDir}/fixtures`,
+      integrationFolder: SPEC_PATH,
+      supportFile: `${SPEC_PATH.split(path.sep)[0]}/support`,
+      fixturesFolder: `${CY_FOLDER}/fixtures`,
     },
     env: {
       DISPLAY: '',
@@ -110,17 +111,18 @@ exports.run = async (test, config, addOptions = {}) => {
   }
 
   // Tune options
+  const RUN_ID_FAIL_BACK = Date.now().toString().substring(6, 13)
+
   if (test.sendDashboard) {
-    const RUN_ID = process.env.GITHUB_RUN_ID ?? CI_RANDOM
+    const RUN_ID = process.env.GITHUB_RUN_ID ?? RUN_ID_FAIL_BACK
     const RUN_ATTEMPT = process.env.GITHUB_RUN_ATTEMPT ?? 1
-    const IS_CI = process.env.CI
 
     options.key = config.base.cypress.dashboardKey
     options.record = true
     options.ciBuildId = `${RUN_ID}-${RUN_ATTEMPT}`
 
     // Configure Cypress to use Sorry Cypress if not in CI
-    if (!IS_CI) process.env.CYPRESS_INTERNAL_ENV = 'development'
+    if (!system.isCI()) process.env.CYPRESS_INTERNAL_ENV = 'development'
 
     // Merge tune with options
     merge(options, addOptions)
@@ -151,8 +153,9 @@ exports.run = async (test, config, addOptions = {}) => {
         const logName = result.runs[0].spec.name.replace('.js', '.yml')
         const logSpec = path.join(logger.logPath(), logName)
 
+        // Remove sensitive information
         delete cleanResult.config
-        output[`epoc-${this.tick()}`] = cleanResult
+        output[`epoc-${system.tick()}`] = cleanResult
         storage.append(jsYaml.dump(output), logSpec)
         testResult.push(cleanResult)
       })

@@ -8,19 +8,16 @@ module.exports.wipe = async (config) => {
 
   // eslint-disable-next-line vtex/prefer-early-return
   if (wipe.enabled) {
-    const SENSITIVE_FILES = ['cypress.env.json', 'cypress.json']
-    const { stopOnFail } = wipe
-
     logger.msgWarn('Wiping data')
 
+    const SENSITIVE_FILES = ['cypress.env.json', 'cypress.json']
+    const { stopOnFail } = wipe
     const result = await cypress.run(wipe, config)
 
     if (result[0].totalFailed) {
       logger.msgError('Failed to clean data')
       logger.msgPad('Look into the logs folder to get more information')
-      if (stopOnFail) {
-        system.crash('Crash dua a stopOnFail trigger', 'Wipe failed')
-      }
+      if (stopOnFail) system.crash('Triggered stopOnFail', 'Wipe failed')
     } else {
       logger.msgOk('Data cleaned successfully')
     }

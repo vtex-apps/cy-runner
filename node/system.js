@@ -10,6 +10,11 @@ exports.basePath = () => {
   return BASE_PATH
 }
 
+// Detect CI
+exports.isCI = () => {
+  return process.env.CI ?? false
+}
+
 // Crash and exit
 exports.crash = (msg, err) => {
   logger.msgEnd('ERROR')
