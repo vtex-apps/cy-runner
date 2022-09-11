@@ -30,8 +30,6 @@ async function main() {
   // Read cy-runner.yml configuration
   const config = await cfg.getConfig('cy-runner.yml')
 
-  // Report deprecated flags
-  await deprecated(config)
   // // Report configuration to help understand that'll run
   // await cfg.sectionsToRun(config)
   //
@@ -59,6 +57,9 @@ async function main() {
   //
   // Teardown
   control.timing.teardown = await teardown(config)
+
+  // Report deprecated flags
+  await deprecated(config)
 
   // Final Report
   control.timing.total = system.tack(control.start)

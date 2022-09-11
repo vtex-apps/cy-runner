@@ -31,7 +31,7 @@ exports.getLocalToken = async () => {
 exports.deleteWorkspace = async (workspace) => {
   const result = system.exec(`${VTEX} workspace delete ${workspace}`, 'pipe')
 
-  return /deleted/.test(result)
+  return /successfully/.test(result)
 }
 
 // const MAX_TRIES = 3

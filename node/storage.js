@@ -150,14 +150,15 @@ exports.keepStateFiles = (config) => {
   try {
     const { stateFiles } = config.base
 
-    logger.msgWarn('Keeping state files')
+    logger.msgWarn('Moving state files')
     stateFiles.forEach((stateFile) => {
-      logger.msgWarn(`${stateFile} -> logs/${stateFile}`)
+      logger.msgPad(`${stateFile} -> logs/${stateFile}`)
       const SRC = path.join(system.basePath(), stateFile)
       const DST = path.join(logger.logPath(), stateFile)
 
       this.copy(SRC, DST)
     })
+    logger.msgOk('State files moved successfully')
   } catch (e) {
     system.crash('Failed to keep state files', e)
   }

@@ -23,6 +23,6 @@ module.exports.deprecated = async (config) => {
     FOUND.forEach((flag) => {
       logger.msgPad(flag)
     })
-    logger.msgWarn('You should remove it on your next commit')
+    logger.msgWarn('You should remove it as soon as possible')
   }
 }

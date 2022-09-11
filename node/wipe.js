@@ -10,7 +10,7 @@ module.exports.wipe = async (config) => {
   if (wipe.enabled) {
     logger.msgWarn('Wiping data')
 
-    const SENSITIVE_FILES = ['cypress.env.json', 'cypress.json']
+    // Remove data
     const { stopOnFail } = wipe
     const result = await cypress.run(wipe, config)
 
@@ -21,6 +21,9 @@ module.exports.wipe = async (config) => {
     } else {
       logger.msgOk('Data cleaned successfully')
     }
+
+    // Remove sensitive files
+    const SENSITIVE_FILES = ['cypress.env.json', 'cypress.json']
 
     logger.msgWarn('Removing sensitive files')
     SENSITIVE_FILES.forEach((file) => {

@@ -71,7 +71,7 @@ exports.getConfig = async (configFile) => {
 
     // Create common links inside cypress
     const com = path.join(dst, 'common')
-    const clean = path.join(__dirname, '..', '..', '..')
+    const clean = path.join(__dirname, '..', '..')
 
     logger.msgPad(`${src.replace(clean, '..')} -> ${com.replace(clean, '..')}`)
     if (storage.exists(com)) storage.unLink(com)

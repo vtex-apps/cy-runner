@@ -146,7 +146,10 @@ exports.run = async (test, config, addOptions = {}) => {
     testToRun.push(
       // eslint-disable-next-line no-loop-func
       cypress.run(options).then((result) => {
-        if (result.failures) logger.msgError(JSON.stringify(result))
+        if (result.failures) {
+          logger.msgError('Got error from Cypress')
+          logger.msgPad(JSON.stringify(result))
+        }
 
         const output = {}
         const cleanResult = result
@@ -165,7 +168,7 @@ exports.run = async (test, config, addOptions = {}) => {
   try {
     await Promise.all(testToRun)
   } catch (e) {
-    system.crash('Failed to run Cypress', e.message)
+    system.crash('Failed to run Cypress')
   }
 
   return testResult
