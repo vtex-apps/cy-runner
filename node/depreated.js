@@ -9,6 +9,7 @@ module.exports.deprecated = async (config) => {
     'base.vtex.deployCli',
     'base.twilio',
     'base.cypress.sorry',
+    'workspace.linkApp.logOutput',
   ]
 
   DEPRECATED.forEach((flag) => {
@@ -22,6 +23,6 @@ module.exports.deprecated = async (config) => {
     FOUND.forEach((flag) => {
       logger.msgPad(flag)
     })
-    logger.msgWarn('You should remove it as soon as possible')
+    logger.msgOk('You should remove it as soon as possible')
   }
 }

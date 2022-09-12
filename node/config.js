@@ -28,11 +28,10 @@ exports.getConfig = async (configFile) => {
   const secrets = credentials.readSecrets(config)
 
   // Do check to avoid waste of time on CI environments
-  const IS_CI = process.env.CI ?? false
   const SKIP_AUTO_CONFIG = config.base.skipAutoConfigOnCI ?? false
 
   // Checks to avoid silly configuration errors on CI
-  if (IS_CI && !SKIP_AUTO_CONFIG) {
+  if (system.isCI() && !SKIP_AUTO_CONFIG) {
     logger.msgWarn('On CI, auto configuring Cypress flags')
     logger.msgPad('Set base.skipAutoConfigOnCI to true to avoid auto config')
     config.base.cypress.devMode = false
@@ -43,16 +42,17 @@ exports.getConfig = async (configFile) => {
     config.base.cypress.trashAssetsBeforeRuns = false
     config.base.cypress.watchForFileChanges = false
     config.base.cypress.browser = 'chrome'
-    config.base.cypress.sorry = false
   }
 
   // Merge secrets on config
   if (secrets) config = credentials.mergeSecrets(config, secrets)
 
-  // Get cookies
-  config = await credentials.getCookies(config)
+  // Report configuration to help understand that'll run
+  await this.sectionsToRun(config)
 
-  // Write needed Cypress files
+  // Set up Cypress environment
+  logger.msgSection('Dynamic set up')
+  config = await credentials.getCookies(config)
   logger.msgWarn('Creating dynamic Cypress environment')
   cypress.saveCypressEnvJson(config)
   cypress.saveCypressJson(config)

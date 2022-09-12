@@ -3,11 +3,11 @@ const cfg = require('./node/config')
 // const { issue } = require('./node/jira')
 const system = require('./node/system')
 const logger = require('./node/logger')
-const { workspace } = require('./node/workspace')
+const cypress = require('./node/cypress')
+const workspace = require('./node/workspace')
 const { deprecated } = require('./node/depreated')
 const { report } = require('./node/report')
 const { teardown } = require('./node/teardown')
-const cypress = require('./cypress')
 
 // Controls test state
 const control = {
@@ -30,21 +30,30 @@ async function main() {
   // Read cy-runner.yml configuration
   const config = await cfg.getConfig('cy-runner.yml')
 
-  // Report configuration to help understand that'll run
-  await cfg.sectionsToRun(config)
-
-  // Configure workspace (create, install, uninstall, link app)
-  const wrk = await workspace(config)
-
-  control.timing.workspace = wrk.time
-
   // Tests
   if (config.base.cypress.devMode) {
-    logger.msgSection('Running in dev mode')
-    logger.msgWarn('Verity if the workspace has the packages you need')
-    logger.msgWarn('When you finish, please wait the process flow')
     await cypress.open()
-  } else if (wrk.success) {
+  } else {
+    // Init workspace set up
+    let call = await workspace.init(config)
+
+    control.timing.initWorkspace = call.time
+
+    // Install apps
+    if (call.success) call = await workspace.installApps(config)
+    else logger.msgError('Failed to install apps')
+    control.timing.installApps = call.time
+
+    // Uninstall apps
+    if (call.success) call = await workspace.uninstallApps(config)
+    else logger.msgError('Failed to uninstall apps')
+    control.timing.uninstallApps = call.time
+
+    // Link app
+    if (call.success) call = await workspace.linkApp(config)
+    else logger.msgError('Failed to link app')
+    control.timing.linkApp = call.time
+
     // const call = await strategy(config)
     //
     // control.timing.strategy = call.time

@@ -3,11 +3,16 @@ const path = require('path')
 
 const logger = require('./logger')
 
-const BASE_PATH = path.join(__dirname, '..')
+const BASE_PATH = path.join(__dirname, '..', '..')
 
 // Return base path
 exports.basePath = () => {
   return BASE_PATH
+}
+
+// Return cy-runner path
+exports.cyRunnerPath = () => {
+  return path.join(BASE_PATH, 'cy-runner')
 }
 
 // Detect CI

@@ -18,7 +18,10 @@ exports.getCypressFolder = () => {
 
 // Save Env for Cypress
 exports.saveCypressEnvJson = (config) => {
-  storage.writeJson(config, path.join(system.basePath(), 'cypress.env.json'))
+  storage.writeJson(
+    config,
+    path.join(system.cyRunnerPath(), 'cypress.env.json')
+  )
 }
 
 // Save config for Cypress
@@ -44,7 +47,7 @@ exports.saveCypressJson = (config) => {
       screenshotsFolder: 'logs/screenshots',
       videosFolder: 'logs/videos',
     },
-    path.join(system.basePath(), 'cypress.json')
+    path.join(system.cyRunnerPath(), 'cypress.json')
   )
 }
 
@@ -63,6 +66,8 @@ exports.showDashboard = async (url) => {
 
 // Open Cypress
 exports.open = async () => {
+  logger.msgSection('Running in dev mode')
+
   const CY_FOLDER = this.getCypressFolder()
   const options = {
     config: {
@@ -71,6 +76,9 @@ exports.open = async () => {
       fixturesFolder: `${CY_FOLDER}/fixtures`,
     },
   }
+
+  logger.msgWarn('Verity if the workspace has the Apps you need already')
+  logger.msgWarn('When you finish, close Cypress window and wait the flow')
 
   try {
     await cypress.open(options)

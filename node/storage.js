@@ -136,7 +136,7 @@ exports.createStateFiles = (config) => {
       logger.msgWarn(`Creating state ${PLURAL}`)
       stateFiles.forEach((stateFile) => {
         logger.msgPad(stateFile)
-        this.write('{}', path.join(system.basePath(), stateFile))
+        this.write('{}', path.join(system.cyRunnerPath(), stateFile))
       })
       logger.msgOk(`State ${PLURAL} created successfully`)
     }
@@ -153,7 +153,7 @@ exports.keepStateFiles = (config) => {
     logger.msgWarn('Moving state files')
     stateFiles.forEach((stateFile) => {
       logger.msgPad(`${stateFile} -> logs/${stateFile}`)
-      const SRC = path.join(system.basePath(), stateFile)
+      const SRC = path.join(system.cyRunnerPath(), stateFile)
       const DST = path.join(logger.logPath(), stateFile)
 
       this.copy(SRC, DST)

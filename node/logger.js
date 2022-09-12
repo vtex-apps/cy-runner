@@ -4,7 +4,7 @@ const storage = require('./storage')
 const system = require('./system')
 
 const QE = '[QE] === '
-const LOG_PATH = path.join(system.basePath(), 'logs')
+const LOG_PATH = path.join(system.cyRunnerPath(), 'logs')
 const LOG_FILE = path.join(LOG_PATH, 'cy-runner.log')
 
 function ico(type) {

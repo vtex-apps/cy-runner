@@ -64,7 +64,7 @@ exports.readSecrets = (config) => {
 
   logger.msgWarn('Checking secrets')
   const SECRET_NAME = config.base.secrets.name
-  const SECRET_FILE = path.join(system.basePath(), `.${SECRET_NAME}.json`)
+  const SECRET_FILE = path.join(system.cyRunnerPath(), `.${SECRET_NAME}.json`)
   let secrets = process.env.SECRET_NAME
   let loadedFrom = null
 

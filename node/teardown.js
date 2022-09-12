@@ -27,6 +27,7 @@ module.exports.teardown = async (config) => {
     // Remove dynamic workspace
     if (workspace.teardown.enabled) {
       logger.msgWarn(`Removing workspace ${workspace.name}`)
+      toolbelt.wo
       if (await toolbelt.deleteWorkspace(workspace.name)) {
         logger.msgOk(`Workspace ${workspace.name} deleted successfully`)
       } else {
