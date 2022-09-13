@@ -12,10 +12,11 @@ exports.init = async (config) => {
 
   logger.msgSection('Workspace set up')
   logger.msgOk('Change workspace')
+  logger.msgPad(NAME)
 
   const check = await toolbelt.changeWorkspace(NAME)
 
-  check ? logger.msgPad(NAME) : system.crash('Failed to change workspace', NAME)
+  if (check) system.crash('Failed to change workspace')
 
   return system.tack(START)
 }

@@ -2,7 +2,6 @@ const { execSync, spawn } = require('child_process')
 const path = require('path')
 
 const logger = require('./logger')
-const teardown = require('./teardown')
 
 const BASE_PATH = path.join(__dirname, '..', '..')
 
@@ -35,13 +34,11 @@ exports.debugFile = () => {
 exports.delay = (ms) => new Promise((res) => setTimeout(res, ms))
 
 // Crash and exit
-exports.crash = async (msg, err) => {
+exports.crash = (msg, err) => {
   logger.msgEnd('ERROR')
   logger.msgError(msg, 'Crash')
   if (typeof err !== 'undefined') logger.msgPad(err)
-  await teardown.dumpDebug()
-  await teardown.dumpAppsVersion()
-  await teardown.cleanSensitiveData()
+
   logger.newLine()
   process.exit(99)
 }
