@@ -16,7 +16,7 @@ exports.init = async (config) => {
 
   const check = await toolbelt.changeWorkspace(NAME)
 
-  if (check) system.crash('Failed to change workspace')
+  if (!check) system.crash('Failed to change workspace')
 
   return system.tack(START)
 }
@@ -86,17 +86,30 @@ exports.linkApp = async (config) => {
     logger.msgOk(`Link ${APP}`)
     const link = await toolbelt.link(APP)
 
-    link.stderr.on('data', (data) => {
-      logger.msgPad(data)
-    })
+    let check = false
+    const LOG = path.join(logger.logPath(), `_link_${APP}.log`)
 
-    link.stdout.on('data', (data) => {
-      if (/App running/.test(data)) {
-        logger.msgOk('App linked successfully')
+    logger.msgPad('waiting app to be ready')
+    storage.write(`App: ${APP}\n\n`, LOG)
 
-        return { success: true, time: system.tack(START) }
-      }
-    })
+    while (!check) {
+      // eslint-disable-next-line no-await-in-loop
+      await system.delay(5000)
+
+      link.stderr.on('data', (data) => {
+        logger.msgPad(data)
+      })
+
+      // eslint-disable-next-line no-loop-func
+      link.stdout.on('data', (data) => {
+        check = /App running/.test(data)
+        storage.append(data.toString(), LOG)
+      })
+    }
+
+    logger.msgOk('App linked successfully')
+
+    return { success: check, time: system.tack(START) }
   }
 
   //
@@ -164,9 +177,9 @@ exports.cleanSensitiveData = async () => {
 
 // Save debug file
 exports.dumpDebug = async () => {
-  logger.msgOk('Dump VTEX toolbelt debug file')
+  logger.msgOk('Dump toolbelt debug')
   const SRC = system.debugFile()
-  const DST = path.join(logger.logPath(), 'debug.json')
+  const DST = path.join(logger.logPath(), '_debug.json')
 
   logger.msgPad(`${SRC} -> ${DST.replace(system.basePath(), '.')}`)
   storage.copy(SRC, DST)

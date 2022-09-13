@@ -45,8 +45,7 @@ async function main() {
     // Link app
     control.timing.linkApp = await workspace.linkApp(config)
 
-    process.exit()
-    // Start the tests
+    // Run tests
     const call = await runTests(config)
 
     control.timing.strategy = call.time
@@ -56,7 +55,7 @@ async function main() {
     control.specsPassed = call.specsPassed
     control.runUrl = call.runUrl
 
-    // Open Jira ticket
+    // Jira automation
     if (config.base.jira.enabled && control.specsFailed?.length) {
       await issue(config, control.specsFailed, control.runUrl)
     }

@@ -1,5 +1,7 @@
 const axios = require('axios')
 
+const system = require('./system')
+
 exports.request = async (axiosConfig) => {
   let response
 
@@ -8,8 +10,22 @@ exports.request = async (axiosConfig) => {
       response = result
     })
     .catch((e) => {
-      this.crash('Request failed', e)
+      system.crash('Request failed', e)
     })
 
   return response
+}
+
+exports.runningSorryCypress = async () => {
+  let response
+  const axiosConfig = {
+    url: 'http://localhost:1234',
+    method: 'get',
+  }
+
+  await axios(axiosConfig).then((result) => {
+    response = result
+  })
+
+  return response.status === 200
 }

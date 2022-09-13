@@ -72,6 +72,8 @@ async function runTest(test, config, group) {
   let testsPassed = false
   let thisTry = 1
   const hardTries = test.hardTries + 1
+
+  test.parallel = config.base.cypress.maxJobs ? test.parallel : false
   const addOptions = {
     parallel: test.parallel,
   }
@@ -80,38 +82,39 @@ async function runTest(test, config, group) {
   test.specs = [...new Set(test.specs)]
 
   while (thisTry <= hardTries && !testsPassed && test.specs.length) {
-    logger.msgWarn(`Hard try ${thisTry}/${hardTries} for strategy ${test.name}`)
-    addOptions.group = `${group}/${thisTry}`
+    logger.msgOk(`Try ${thisTry} of ${hardTries} for strategy ${test.name}`)
+    if (test.parallel) addOptions.group = `${group}/${thisTry}`
 
     // eslint-disable-next-line no-await-in-loop
     const testsResult = await cypress.run(test, config, addOptions)
 
-    testsPassed = true
-    // eslint-disable-next-line no-loop-func
-    testsResult.forEach((testResult) => {
-      if (!runUrl) runUrl = testResult.runUrl
-      testResult.runs.forEach((run) => {
-        if (run.stats.failures) {
-          testsPassed = false
-        } else {
-          for (const spec in test.specs) {
-            const [search] = test.specs[spec].split('*')
-            const found = run.spec.relative.includes(search)
-
-            if (found) {
-              specsPassed.push(test.specs[spec])
-              test.specs.splice(Number(spec), 1)
-
-              break
-            }
-          }
-        }
-      })
-    })
+    testsPassed = checkTests(test, testsResult)
     thisTry++
   }
 
   await pushResults(testsPassed, test, config)
+}
+
+async function checkTests(test, testsResult) {
+  testsResult.forEach((testResult) => {
+    if (!runUrl) runUrl = testResult.runUrl
+    testResult.runs.forEach((run) => {
+      if (run.stats.failures) return false
+      for (const spec in test.specs) {
+        const [search] = test.specs[spec].split('*')
+        const found = run.spec.relative.includes(search)
+
+        if (found) {
+          specsPassed.push(test.specs[spec])
+          test.specs.splice(Number(spec), 1)
+
+          break
+        }
+      }
+    })
+  })
+
+  return true
 }
 
 async function pushResults(testsPassed, test, config) {

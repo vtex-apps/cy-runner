@@ -7,6 +7,7 @@ const storage = require('./storage')
 const credentials = require('./credentials')
 const system = require('./system')
 const cypress = require('./cypress')
+const http = require('./http')
 
 exports.getConfig = async (configFile) => {
   // Load and parse cy-runner.yml file
@@ -43,11 +44,20 @@ exports.getConfig = async (configFile) => {
     config.base.cypress.browser = 'chrome'
   }
 
-  // Clean debug.log
+  // Clean debug and disable Sorry if not listening on 1233
   if (!system.isCI()) {
     logger.msgOk('Clean debug file')
     storage.delete(system.debugFile())
     logger.msgPad(system.debugFile())
+
+    const sorryRunning = await http.runningSorryCypress()
+
+    if (!sorryRunning) {
+      logger.msgError('Sorry Cypress not found, parallelization disabled')
+      logger.msgPad('waiting 7 seconds, so you can cancel if it is wrong')
+      await system.delay(7000)
+      config.base.cypress.maxJobs = 0
+    }
   }
 
   // Merge secrets on config

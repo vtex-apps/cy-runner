@@ -117,13 +117,14 @@ exports.run = async (test, config, addOptions = {}) => {
     quiet: config.base.cypress.quiet,
   }
 
-  // Tune options
+  // Tune options if maxJobs is true (grater than zero)
   const RUN_ID_FAIL_BACK = Date.now().toString().substring(6, 13)
 
-  if (test.sendDashboard) {
+  if (test.sendDashboard && config.base.cypress.maxJobs) {
     const RUN_ID = process.env.GITHUB_RUN_ID ?? RUN_ID_FAIL_BACK
     const RUN_ATTEMPT = process.env.GITHUB_RUN_ATTEMPT ?? 1
 
+    // Only if maxJobs wasn't disabled (0 = disabled)
     options.key = config.base.cypress.dashboardKey
     options.record = true
     options.ciBuildId = `${RUN_ID}-${RUN_ATTEMPT}`
@@ -141,7 +142,7 @@ exports.run = async (test, config, addOptions = {}) => {
   let maxJobs = 1
 
   // Set the number of runners
-  if (test.parallel) {
+  if (test.parallel && config.base.cypress.maxJobs) {
     maxJobs =
       test.specs.length < config.base.cypress.maxJobs
         ? test.specs.length
