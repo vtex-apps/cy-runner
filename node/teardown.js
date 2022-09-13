@@ -32,6 +32,16 @@ module.exports.teardown = async (config) => {
   storage.copy(SRC, DST)
   logger.msgOk('Debug file saved successfully')
 
+  // Remove sensitive files
+  const SENSITIVE_FILES = ['cypress.env.json', 'cypress.json']
+
+  logger.msgWarn('Removing sensitive files')
+  SENSITIVE_FILES.forEach((file) => {
+    logger.msgPad(file)
+    storage.delete(file)
+  })
+  logger.msgOk('Sensitive files removed successfully')
+
   // Keep state files
   if (config.base.keepStateFiles) storage.keepStateFiles(config)
 

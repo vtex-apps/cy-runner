@@ -1,7 +1,6 @@
 const system = require('./system')
 const logger = require('./logger')
 const cypress = require('./cypress')
-const storage = require('./storage')
 
 module.exports.wipe = async (config) => {
   const { wipe } = config.workspace
@@ -21,15 +20,5 @@ module.exports.wipe = async (config) => {
     } else {
       logger.msgOk('Data cleaned successfully')
     }
-
-    // Remove sensitive files
-    const SENSITIVE_FILES = ['cypress.env.json', 'cypress.json']
-
-    logger.msgWarn('Removing sensitive files')
-    SENSITIVE_FILES.forEach((file) => {
-      logger.msgPad(file)
-      storage.delete(file)
-    })
-    logger.msgOk('Sensitive files removed successfully')
   }
 }
