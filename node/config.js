@@ -107,15 +107,15 @@ exports.getWorkspaceName = (config) => {
 
   workspace.random = false
   if (workspace.name === 'random') {
-    const seed = system.tick()
     const { prefix } = workspace
 
     workspace.random = true
-    workspace.name = `${prefix}${seed.toString().substring(6, 13)}`
+    workspace.name = `${prefix}${system.getId()}`
+  } else {
+    workspace.name = workspace.name.toLowerCase()
   }
 
-  logger.msgOk('Define workspace')
-  logger.msgPad(workspace.name)
+  logger.msgOk(`Define workspace: ${workspace.name}`)
 
   return workspace.name
 }
@@ -135,10 +135,10 @@ exports.sectionsToRun = async (config) => {
 
       logger.msgOk(itemEnabled)
       getList(itemEnabled, 'specs').forEach((spec) => {
-        logger.msgPad(`runs ${spec}`)
+        logger.msgPad(cypress.specNameClean(spec))
       })
       getList(itemEnabled, 'dependency').forEach((dep) => {
-        logger.msgPad(`deps ${dep}`)
+        logger.msgPipe(cypress.specNameClean(dep))
       })
     }
   })

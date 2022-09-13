@@ -1,7 +1,9 @@
 const { execSync, spawn } = require('child_process')
+const fs = require('fs')
 const path = require('path')
 
 const logger = require('./logger')
+const storage = require('./storage')
 
 const BASE_PATH = path.join(__dirname, '..', '..')
 
@@ -79,11 +81,23 @@ exports.exec = (cmd, output = 'ignore', cwd = process.cwd()) => {
 }
 
 // Start a background process
-exports.spawn = (bin, cmd, cwd = process.cwd()) => {
+exports.spawn = (bin, cmd, logFile, cwd = process.cwd()) => {
+  const out = fs.openSync(logFile, 'a')
+  const err = fs.openSync(logFile, 'a')
+
   try {
-    return spawn(bin, cmd, { cwd })
+    // return spawn(bin, cmd, { cwd })
+    const subprocess = spawn(bin, cmd, {
+      cwd,
+      detached: true,
+      stdio: ['ignore', out, err],
+    })
+
+    subprocess.unref()
+
+    return subprocess
   } catch (e) {
-    logger.msgError(`Failed to fork ${cmd}`)
+    logger.msgError(`Failed to spawn ${cmd}`)
     logger.msgPad(e)
   }
 }
@@ -96,6 +110,26 @@ exports.tick = () => {
 // Finish timer
 exports.tack = (start) => {
   return `${(Date.now() - start) / 1000} seconds`
+}
+
+// Init ID
+exports.initId = () => {
+  const ID = this.tick().toString().substring(6, 13)
+  const FILE_ID = path.join(logger.logPath(), '_id')
+
+  storage.delete(FILE_ID)
+  storage.write(ID, FILE_ID)
+}
+
+// Get ID
+exports.getId = () => {
+  const FILE_ID = path.join(logger.logPath(), '_id')
+
+  if (storage.exists(FILE_ID)) return storage.read(FILE_ID)
+
+  this.initId()
+
+  return storage.read(FILE_ID)
 }
 
 // Traverse YAML or JSON

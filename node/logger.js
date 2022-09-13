@@ -18,12 +18,16 @@ function ico(type) {
     case 'ok':
       return '[✓]'.padStart(8)
 
+    case 'pipe':
+      return '  |'.padStart(10)
+
     default:
       return '- '.padStart(8)
   }
 }
 
 exports.init = () => {
+  storage.delete(LOG_PATH)
   storage.makeDir(LOG_PATH)
 }
 
@@ -53,6 +57,10 @@ exports.msgWarn = (msg) => {
 
 exports.msgError = (msg) => {
   this.write(`${ico('error')} ${msg}\n`)
+}
+
+exports.msgPipe = (msg) => {
+  this.write(`${ico('pipe')} ${msg}\n`)
 }
 
 exports.msgPad = (msg, wait) => {

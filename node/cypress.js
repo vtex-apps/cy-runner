@@ -59,9 +59,16 @@ exports.stopOnFail = async (config, step, runUrl) => {
 }
 
 // Show URL for Cypress Dashboard or Sorry Cypress
-exports.showDashboard = async (url) => {
+exports.showDashboard = (url) => {
   logger.msgSection('Cypress Dashboard')
   logger.msgOk(url)
+}
+
+// Beauty spec name to show on logs
+exports.specNameClean = (spec) => {
+  const clean = spec.replace('cypress/integration/', '')
+
+  return clean.replace('cypress-shared/integration/', '')
 }
 
 // Open Cypress
@@ -118,23 +125,21 @@ exports.run = async (test, config, addOptions = {}) => {
   }
 
   // Tune options if maxJobs is true (grater than zero)
-  const RUN_ID_FAIL_BACK = Date.now().toString().substring(6, 13)
+  const RUN_ID = process.env.GITHUB_RUN_ID ?? system.getId()
+  const RUN_ATTEMPT = process.env.GITHUB_RUN_ATTEMPT ?? 1
 
+  // Only if maxJobs wasn't disabled (0 = disabled)
   if (test.sendDashboard && config.base.cypress.maxJobs) {
-    const RUN_ID = process.env.GITHUB_RUN_ID ?? RUN_ID_FAIL_BACK
-    const RUN_ATTEMPT = process.env.GITHUB_RUN_ATTEMPT ?? 1
-
-    // Only if maxJobs wasn't disabled (0 = disabled)
     options.key = config.base.cypress.dashboardKey
     options.record = true
     options.ciBuildId = `${RUN_ID}-${RUN_ATTEMPT}`
-
-    // Configure Cypress to use Sorry Cypress if not in CI
-    if (!system.isCI()) process.env.CYPRESS_INTERNAL_ENV = 'development'
-
-    // Merge tune with options
-    merge(options, addOptions)
   }
+
+  // Configure Cypress to use Sorry Cypress if not in CI
+  if (!system.isCI()) process.env.CYPRESS_INTERNAL_ENV = 'development'
+
+  // Merge tune with options
+  merge(options, addOptions)
 
   // Run Cypress
   const testToRun = []

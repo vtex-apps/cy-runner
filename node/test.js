@@ -35,18 +35,20 @@ module.exports.runTests = async (config) => {
           logger.msgOk('As those specs succeeded')
           // eslint-disable-next-line no-loop-func
           check.forEach((item) => {
-            logger.msgPad(item)
+            logger.msgPad(cypress.specNameClean(item))
           })
           logger.msgWarn(`Let's run strategy ${strategy}`)
           // eslint-disable-next-line no-await-in-loop
           await runTest(test, config, group)
         } else {
-          logger.msgError('As one of the follow specs failed')
+          logger.msgError('As bellow spec failed')
           // eslint-disable-next-line no-loop-func
           dependency.forEach((item) => {
-            logger.msgPad(item)
+            if (specsFailed.find(item)) {
+              logger.msgPad(cypress.specNameClean(item))
+            }
           })
-          logger.msgError(`Let's skip strategy ${strategy}`)
+          logger.msgError(`The strategy ${strategy} will be skipped`)
           specsSkipped = specsSkipped.concat(test.specs)
         }
       } else {
@@ -83,7 +85,7 @@ async function runTest(test, config, group) {
 
   while (thisTry <= hardTries && !testsPassed && test.specs.length) {
     logger.msgOk(`Try ${thisTry} of ${hardTries} for strategy ${test.name}`)
-    if (test.parallel) addOptions.group = `${group}/${thisTry}`
+    addOptions.group = `${group}/${thisTry}`
 
     // eslint-disable-next-line no-await-in-loop
     const testsResult = await cypress.run(test, config, addOptions)
@@ -96,10 +98,12 @@ async function runTest(test, config, group) {
 }
 
 async function checkTests(test, testsResult) {
+  let passed = true
+
   testsResult.forEach((testResult) => {
     if (!runUrl) runUrl = testResult.runUrl
     testResult.runs.forEach((run) => {
-      if (run.stats.failures) return false
+      if (run.stats.failures) passed = false
       for (const spec in test.specs) {
         const [search] = test.specs[spec].split('*')
         const found = run.spec.relative.includes(search)
@@ -114,7 +118,7 @@ async function checkTests(test, testsResult) {
     })
   })
 
-  return true
+  return passed
 }
 
 async function pushResults(testsPassed, test, config) {

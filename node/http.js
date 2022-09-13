@@ -23,9 +23,13 @@ exports.runningSorryCypress = async () => {
     method: 'get',
   }
 
-  await axios(axiosConfig).then((result) => {
-    response = result
-  })
+  await axios(axiosConfig)
+    .then((result) => {
+      response = result
+    })
+    .catch((_e) => {
+      return false
+    })
 
-  return response.status === 200
+  return response?.status === 200
 }

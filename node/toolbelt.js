@@ -101,6 +101,6 @@ exports.uninstall = async (app) => {
   return count === app.length
 }
 
-exports.link = () => {
-  return system.spawn(VTEX, ['link', '--verbose'], system.basePath())
+exports.link = (logFile) => {
+  return system.spawn(VTEX, ['link', '--verbose'], logFile, system.basePath())
 }

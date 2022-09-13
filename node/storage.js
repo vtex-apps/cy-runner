@@ -71,11 +71,11 @@ exports.write = (msg, file) => {
   }
 }
 
-exports.delete = (fileOrDirectory) => {
+exports.delete = (file) => {
   try {
-    if (this.exists(fileOrDirectory)) return fs.rmSync(fileOrDirectory)
+    if (this.exists(file)) return fs.rmSync(file, { recursive: true })
   } catch (e) {
-    system.crash(`Failed to delete ${fileOrDirectory}`, e)
+    system.crash(`Failed to delete ${file}`, e)
   }
 }
 

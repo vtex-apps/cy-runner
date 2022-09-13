@@ -43,7 +43,9 @@ async function main() {
     control.timing.uninstallApps = await workspace.uninstallApps(config)
 
     // Link app
-    control.timing.linkApp = await workspace.linkApp(config)
+    const link = await workspace.linkApp(config)
+
+    control.timing.linkApp = link.time
 
     // Run tests
     const call = await runTests(config)
@@ -54,6 +56,9 @@ async function main() {
     control.specsDisabled = call.specsDisabled
     control.specsPassed = call.specsPassed
     control.runUrl = call.runUrl
+
+    // Kill link subprocess
+    if (link.subprocess) link.subprocess.kill('SIGHUP')
 
     // Jira automation
     if (config.base.jira.enabled && control.specsFailed?.length) {

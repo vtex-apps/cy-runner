@@ -84,57 +84,34 @@ exports.linkApp = async (config) => {
 
     // Link app
     logger.msgOk(`Link ${APP}`)
-    const link = await toolbelt.link(APP)
-
+    const APP_LOG = path.join(logger.logPath(), `_link_${APP}.log`)
+    const STOP = 10
+    const link = await toolbelt.link(APP_LOG)
     let check = false
-    const LOG = path.join(logger.logPath(), `_link_${APP}.log`)
-
-    logger.msgPad('waiting app to be ready')
-    storage.write(`App: ${APP}\n\n`, LOG)
+    let loop = 0
 
     while (!check) {
+      // To not wait forever
+      loop++
+      if (loop === STOP) break
+
+      logger.msgPad('waiting 10 seconds until the link get ready')
       // eslint-disable-next-line no-await-in-loop
-      await system.delay(5000)
+      await system.delay(10000)
 
-      link.stderr.on('data', (data) => {
-        logger.msgPad(data)
-      })
+      const log = storage.read(APP_LOG)
 
-      // eslint-disable-next-line no-loop-func
-      link.stdout.on('data', (data) => {
-        check = /App running/.test(data)
-        storage.append(data.toString(), LOG)
-      })
+      check = /App running/.test(log.toString())
     }
 
-    logger.msgOk('App linked successfully')
+    check
+      ? logger.msgOk('App linked successfully')
+      : logger.msgError('Failed to link app')
 
-    return { success: check, time: system.tack(START) }
+    return { success: check, time: system.tack(START), subprocess: link }
   }
 
-  //
-  //   const MAX_TRIES = 8
-  //   let THIS_TRY = 0
-  //
-  //   while (!check) {
-  //     THIS_TRY++
-  //     if (THIS_TRY === MAX_TRIES) {
-  //       logger.msgError('Failed to link the app')
-  //
-  //       return { success: false, time: system.tack(START) }
-  //     }
-  //
-  //     // eslint-disable-next-line no-await-in-loop
-  //     await system.delay(10000)
-  //     // eslint-disable-next-line no-await-in-loop
-  //     check = RegExp(APP).test(await toolbelt.dependency())
-  //     logger.msgPad('Waiting 10 more seconds to link gets ready')
-  //   }
-  //
-  //   logger.msgOk('App linked successfully')
-  // }
-
-  return { success: false, time: system.tack(START) }
+  return { success: true, time: system.tack(START), subprocess: null }
 }
 
 exports.teardown = async (config) => {
