@@ -99,7 +99,7 @@ exports.linkApp = async (config) => {
     let THIS_TRY = 0
 
     while (!check) {
-      THIS_TRY += 1
+      THIS_TRY++
       if (THIS_TRY === MAX_TRIES) {
         logger.msgError('Failed to link the app')
 

@@ -1,6 +1,4 @@
 const cfg = require('./node/config')
-// const { strategy } = require('./node/test')
-// const { issue } = require('./node/jira')
 const system = require('./node/system')
 const logger = require('./node/logger')
 const cypress = require('./node/cypress')
@@ -8,6 +6,8 @@ const workspace = require('./node/workspace')
 const { deprecated } = require('./node/depreated')
 const { report } = require('./node/report')
 const { teardown } = require('./node/teardown')
+const { runTests } = require('./node/test')
+const { issue } = require('./node/jira')
 
 // Controls test state
 const control = {
@@ -40,35 +40,39 @@ async function main() {
     control.timing.initWorkspace = call.time
 
     // Install apps
-    if (call.success) call = await workspace.installApps(config)
-    else logger.msgError('Failed to install apps')
+    call.success
+      ? (call = await workspace.installApps(config))
+      : logger.msgError('Failed to init the workspace')
     control.timing.installApps = call.time
 
     // Uninstall apps
-    if (call.success) call = await workspace.uninstallApps(config)
-    else logger.msgError('Failed to uninstall apps')
+    call.success
+      ? (call = await workspace.uninstallApps(config))
+      : logger.msgError('Failed to install apps')
     control.timing.uninstallApps = call.time
 
     // Link app
-    if (call.success) call = await workspace.linkApp(config)
-    else logger.msgError('Failed to link app')
+    call.success
+      ? (call = await workspace.linkApp(config))
+      : logger.msgError('Failed to uninstall apps')
     control.timing.linkApp = call.time
 
     // Start the tests
-    if (call.success) call = await workspace.linkApp(config)
-    else logger.msgError('Failed to link app')
+    call.success
+      ? (call = await runTests(config))
+      : logger.msgError('Failed to link the app')
 
-    // const call = await strategy(config)
-    //
-    // control.timing.strategy = call.time
-    // control.specsFailed = call.specsFailed
-    // control.specsSkipped = call.specsSkipped
-    // control.specsDisabled = call.specsDisabled
-    // control.specsPassed = call.specsPassed
-    // control.runUrl = call.runUrl
-    // if (config.base.jira.enabled && control.specsFailed.length) {
-    //   await issue(config, control.specsFailed, control.runUrl)
-    // }
+    control.timing.strategy = call.time
+    control.specsFailed = call.specsFailed
+    control.specsSkipped = call.specsSkipped
+    control.specsDisabled = call.specsDisabled
+    control.specsPassed = call.specsPassed
+    control.runUrl = call.runUrl
+
+    // Open Jira ticket
+    if (config.base.jira.enabled && control.specsFailed.length) {
+      await issue(config, control.specsFailed, control.runUrl)
+    }
   }
 
   // Teardown

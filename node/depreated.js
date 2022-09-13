@@ -8,6 +8,7 @@ module.exports.deprecated = async (config) => {
   const DEPRECATED = [
     'base.vtex.deployCli',
     'base.twilio',
+    'base.jira.testing',
     'base.cypress.sorry',
     'workspace.linkApp.logOutput',
   ]

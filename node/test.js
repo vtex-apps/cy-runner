@@ -1,5 +1,8 @@
-/* eslint-disable no-await-in-loop */
 const { intersection } = require('lodash')
+
+const system = require('./system')
+const logger = require('./logger')
+const cypress = require('./cypress')
 
 let specsFailed = []
 let specsSkipped = []
@@ -7,43 +10,47 @@ let specsDisabled = []
 let specsPassed = []
 let runUrl = null
 
-module.exports.strategy = async (config) => {
-  const START = qe.tick()
-  const wrk = config.workspace
-  const strategies = config.strategy
+module.exports.runTests = async (config) => {
+  const START = system.tick()
+  const WORKSPACE = config.workspace
+  const STRATEGIES = config.strategy
 
-  for (const strategy in strategies) {
-    const test = strategies[strategy]
+  for (const strategy in STRATEGIES) {
+    const test = STRATEGIES[strategy]
+    const group = `${WORKSPACE.name}/${strategy}`
 
     test.name = strategy
-    const group = `${wrk.name}/${strategy}`
 
     if (test.enabled) {
       let { dependency } = test
 
-      qe.msgSection(`Strategy ${strategy}`)
+      logger.msgSection(`Running strategy ${strategy}`)
       if (typeof dependency !== 'undefined') {
-        // Take out possible duplications
+        // Drop eventual duplications
         dependency = [...new Set(dependency)]
         specsPassed = [...new Set(specsPassed)]
         const check = intersection(dependency, specsPassed)
 
         if (check.length === dependency.length) {
-          qe.msg('As the follow specs succeeded')
+          logger.msgOk('As those specs succeeded')
+          // eslint-disable-next-line no-loop-func
           check.forEach((item) => {
-            qe.msg(item, true, true)
+            logger.msgPad(item)
           })
-          qe.msg(`Let's run strategy.${strategy}`)
+          logger.msgWarn(`Let's run strategy ${strategy}`)
+          // eslint-disable-next-line no-await-in-loop
           await runTest(test, config, group)
         } else {
-          qe.msg('As one of the follow specs not succeeded', 'error')
+          logger.msgError('As one of the follow specs failed')
+          // eslint-disable-next-line no-loop-func
           dependency.forEach((item) => {
-            qe.msg(item, true, true)
+            logger.msgPad(item)
           })
-          qe.msg(`Let's skip strategy.${strategy}`, 'warn')
+          logger.msgError(`Let's skip strategy ${strategy}`)
           specsSkipped = specsSkipped.concat(test.specs)
         }
       } else {
+        // eslint-disable-next-line no-await-in-loop
         await runTest(test, config, group)
       }
     } else {
@@ -52,7 +59,7 @@ module.exports.strategy = async (config) => {
   }
 
   return {
-    time: qe.tock(START),
+    time: system.tack(START),
     specsFailed,
     specsSkipped,
     specsDisabled,
@@ -69,17 +76,15 @@ async function runTest(test, config, group) {
     parallel: test.parallel,
   }
 
-  // If needed, remove duplicates
+  // Drop duplicates, just in case
   test.specs = [...new Set(test.specs)]
 
   while (thisTry <= hardTries && !testsPassed && test.specs.length) {
-    qe.msg(
-      `Hard try ${thisTry} of ${hardTries} for strategy.${test.name}`,
-      'warn'
-    )
+    logger.msgWarn(`Hard try ${thisTry}/${hardTries} for strategy ${test.name}`)
     addOptions.group = `${group}/${thisTry}`
 
-    const testsResult = await qe.runCypress(test, config, addOptions)
+    // eslint-disable-next-line no-await-in-loop
+    const testsResult = await cypress.run(test, config, addOptions)
 
     testsPassed = true
     // eslint-disable-next-line no-loop-func
@@ -111,12 +116,12 @@ async function runTest(test, config, group) {
 
 async function pushResults(testsPassed, test, config) {
   if (!testsPassed) {
-    qe.msg(`strategy.${test.name} failed`, 'error')
+    logger.msgError(`Strategy ${test.name} failed`)
     specsFailed = specsFailed.concat(test.specs)
     if (test.stopOnFail) {
-      await qe.stopOnFail(config, `strategy ${test.name}`, runUrl)
+      await cypress.stopOnFail(config, `Strategy ${test.name}`, runUrl)
     }
   } else {
-    qe.msg(`strategy.${test.name} succeeded`)
+    logger.msgOk(`Strategy ${test.name} ran successfully`)
   }
 }
