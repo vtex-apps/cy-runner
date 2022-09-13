@@ -44,8 +44,11 @@ exports.getConfig = async (configFile) => {
     config.base.cypress.browser = 'chrome'
   }
 
-  // Force verbosity if it is running local
-  if (!system.isCI()) config.base.cypress.quiet = false
+  // Force verbosity if it is running local and clean debug.log
+  if (!system.isCI()) {
+    config.base.cypress.quiet = false
+    storage.delete(system.debugFile())
+  }
 
   // Merge secrets on config
   if (secrets) config = credentials.mergeSecrets(config, secrets)

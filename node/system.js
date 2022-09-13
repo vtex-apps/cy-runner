@@ -25,6 +25,11 @@ exports.isCI = () => {
   return process.env.CI ?? false
 }
 
+// Debug file
+exports.debugFile = () => {
+  return path.join(process.env.HOME, '.vtex', 'logs', 'debug.json')
+}
+
 // Delay
 exports.delay = (ms) => new Promise((res) => setTimeout(res, ms))
 

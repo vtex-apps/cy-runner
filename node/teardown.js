@@ -23,6 +23,14 @@ module.exports.teardown = async (config) => {
   storage.write((await toolbelt.dependency()).toString(), APPS_DEPENDENCY)
   logger.msgOk('Apps versions saved successfully')
 
+  // Save debug file
+  const SRC = system.debugFile()
+  const DST = path.join(logger.logPath(), 'debug.json')
+
+  logger.msgWarn('Saving debug.json')
+  storage.copy(SRC, DST)
+  logger.msgPad(`${SRC} -> ${DST.replace(system.basePath(), '.')}`)
+
   // Keep state files
   if (config.base.keepStateFiles) storage.keepStateFiles(config)
 
