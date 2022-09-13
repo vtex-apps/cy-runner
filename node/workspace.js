@@ -10,56 +10,48 @@ exports.init = async (config) => {
   const NAME = config.workspace.name
 
   logger.msgSection('Workspace set up')
-  logger.msgWarn(`Changing workspace to ${NAME}`)
+  logger.msgOk('Change workspace')
 
   const check = await toolbelt.changeWorkspace(NAME)
 
-  check
-    ? logger.msgOk('Changed workspace successfully')
-    : logger.msgError('Failed to change the workspace')
+  check ? logger.msgPad(NAME) : system.crash('Failed to change workspace', NAME)
 
-  return { success: check, time: system.tack(START) }
+  return system.tack(START)
 }
 
 exports.installApps = async (config) => {
   const START = system.tick()
   const APPS = config.workspace.installApps
-  let check = true
 
-  // eslint-disable-next-line vtex/prefer-early-return
   if (APPS?.length) {
-    logger.msgWarn('Installing Apps')
-    check = await toolbelt.install(APPS)
-    check
-      ? logger.msgOk('Apps installed successfully')
-      : logger.msgError('Failed to install apps')
+    logger.msgOk('Install apps')
+    const check = await toolbelt.install(APPS)
+
+    if (!check) system.crash('Failed to install apps', 'Check the logs')
   }
 
-  return { success: check, time: system.tack(START) }
+  return system.tack(START)
 }
 
 exports.uninstallApps = async (config) => {
   const START = system.tick()
   const APPS = config.workspace.removeApps
-  let check = true
 
-  // eslint-disable-next-line vtex/prefer-early-return
   if (APPS?.length) {
-    logger.msgWarn('Uninstalling Apps')
-    check = await toolbelt.uninstall(APPS)
-    check
-      ? logger.msgOk('Apps uninstalled successfully')
-      : logger.msgError('Failed to uninstall apps')
+    logger.msgOk('Uninstall apps')
+    const check = await toolbelt.uninstall(APPS)
+
+    if (!check) system.crash('Failed to uninstall apps', 'Check the logs')
   }
 
-  return { success: check, time: system.tack(START) }
+  return system.tack(START)
 }
 
 exports.updateVtexIgnore = async () => {
   const IGNORE_FILE = path.join(system.basePath(), '.vtexignore')
   const SHORT_NAME = IGNORE_FILE.replace(system.rootPath(), '.')
 
-  logger.msgWarn(`Updating ${SHORT_NAME} to ignore cy-runner files`)
+  logger.msgOk(`Update ${SHORT_NAME}`)
   if (!storage.exists(IGNORE_FILE)) storage.write('# cy-runner', IGNORE_FILE)
   const IGNORE_DATA = storage.read(IGNORE_FILE).toString()
   const EXCLUSIONS = ['cypress', 'cy-runner', 'cypress-shared']
@@ -67,32 +59,29 @@ exports.updateVtexIgnore = async () => {
   EXCLUSIONS.forEach((exclusion) => {
     const check = RegExp(exclusion).test(IGNORE_DATA)
 
+    logger.msgPad(exclusion)
     if (!check) storage.append(`${exclusion}\n`, IGNORE_FILE)
   })
-  logger.msgOk('Ignore file updated successfully')
 }
 
 exports.linkApp = async (config) => {
   const START = system.tick()
-  let check = false
 
   // eslint-disable-next-line vtex/prefer-early-return
   if (config.workspace.linkApp.enabled) {
     const MANIFEST_FILE = path.join(system.basePath(), 'manifest.json')
     const SHORT_NAME = MANIFEST_FILE.replace(system.rootPath(), '.')
 
-    // Read name of app to be linked
-    logger.msgWarn(`Reading ${SHORT_NAME}`)
-    const MANIFEST = storage.readYaml(MANIFEST_FILE)
-    const APP = `${MANIFEST.vendor}.${MANIFEST.name}@${MANIFEST.version}`
-
-    logger.msgOk('Manifest read successfully')
-
     // Update vtex ignore
     await this.updateVtexIgnore()
 
+    // Read name of app to be linked
+    logger.msgOk(`Read ${SHORT_NAME}`)
+    const MANIFEST = storage.readYaml(MANIFEST_FILE)
+    const APP = `${MANIFEST.vendor}.${MANIFEST.name}@${MANIFEST.version}`
+
     // Link app
-    logger.msgWarn(`Linking ${APP}`)
+    logger.msgOk(`Link ${APP}`)
     const link = await toolbelt.link(APP)
 
     link.stderr.on('data', (data) => {
@@ -102,6 +91,7 @@ exports.linkApp = async (config) => {
     link.stdout.on('data', (data) => {
       if (/App running/.test(data)) {
         logger.msgOk('App linked successfully')
+
         return { success: true, time: system.tack(START) }
       }
     })

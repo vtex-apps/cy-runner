@@ -98,7 +98,9 @@ exports.readYaml = (jsonFile) => {
 }
 
 exports.loadConfig = (yamlFile) => {
-  const parentYamlFile = path.join('..', yamlFile)
+  // Fill full path for yaml config
+  yamlFile = path.join(system.basePath(), yamlFile)
+  const parentYamlFile = path.join(system.rootPath(), yamlFile)
 
   if (this.exists(parentYamlFile)) yamlFile = parentYamlFile
   if (!this.exists(yamlFile)) system.crash(`${yamlFile} not found`)
@@ -108,12 +110,12 @@ exports.loadConfig = (yamlFile) => {
     const config = jsYaml.load(data)
 
     schema.validateConfig(config)
-      ? logger.msgOk(`${yamlFile} validated successfully`)
+      ? logger.msgPad(yamlFile.replace(system.rootPath(), '.'))
       : system.crash(`Unknown error loading ${yamlFile}`)
 
     return config
   } catch (e) {
-    system.crash(`Invalid ${yamlFile}`, e)
+    system.crash(`Invalid ${yamlFile.replace(system.rootPath(), '.')}`, e)
   }
 }
 
@@ -133,12 +135,11 @@ exports.createStateFiles = (config) => {
     const PLURAL = SIZE > 1 ? 'files' : 'file'
 
     if (SIZE) {
-      logger.msgWarn(`Creating state ${PLURAL}`)
+      logger.msgOk(`Create state ${PLURAL}`)
       stateFiles.forEach((stateFile) => {
         logger.msgPad(stateFile)
         this.write('{}', path.join(system.cyRunnerPath(), stateFile))
       })
-      logger.msgOk(`State ${PLURAL} created successfully`)
     }
   } catch (e) {
     system.crash('Failed to create a state file', e)

@@ -7,11 +7,10 @@ const storage = require('./storage')
 const credentials = require('./credentials')
 const system = require('./system')
 const cypress = require('./cypress')
-const { tick } = require('./system')
 
 exports.getConfig = async (configFile) => {
-  logger.msgWarn('Checking cy-runner configuration file')
-  // Load and parse config file
+  // Load and parse cy-runner.yml file
+  logger.msgOk('Load cy-runner configuration')
   let config = storage.loadConfig(configFile)
 
   // Fill URLs
@@ -46,9 +45,9 @@ exports.getConfig = async (configFile) => {
 
   // Clean debug.log
   if (!system.isCI()) {
-    logger.msgWarn(`Cleaning ${system.debugFile()}`)
+    logger.msgOk('Clean debug file')
     storage.delete(system.debugFile())
-    logger.msgOk('Debug file cleaned successfully')
+    logger.msgPad(system.debugFile())
   }
 
   // Merge secrets on config
@@ -60,10 +59,9 @@ exports.getConfig = async (configFile) => {
   // Set up Cypress environment
   logger.msgSection('Cypress set up')
   config = await credentials.getCookies(config)
-  logger.msgWarn('Creating dynamic Cypress environment')
+  logger.msgOk('Create Cypress environment')
   cypress.saveCypressEnvJson(config)
   cypress.saveCypressJson(config)
-  logger.msgOk('Cypress environment created successfully')
 
   // Create state files
   storage.createStateFiles(config)
@@ -75,7 +73,7 @@ exports.getConfig = async (configFile) => {
   const dst = path.join(__dirname, '..', '..', 'cypress', 'support')
 
   if (storage.exists(dst)) {
-    logger.msgWarn('Local Cypress detected, linking')
+    logger.msgOk('Link local Cypress code on Cy-Runner')
 
     // Create common links inside cypress
     const com = path.join(dst, 'common')
@@ -89,8 +87,6 @@ exports.getConfig = async (configFile) => {
     logger.msgPad(`${cyp.replace(clean, '.')} -> ${lnk.replace(clean, '.')}`)
     if (storage.exists(lnk)) storage.unLink(lnk)
     storage.link(cyp, lnk)
-
-    logger.msgOk('Cypress linked successfully')
   }
 
   return config
@@ -101,14 +97,14 @@ exports.getWorkspaceName = (config) => {
 
   workspace.random = false
   if (workspace.name === 'random') {
-    const seed = tick()
+    const seed = system.tick()
     const { prefix } = workspace
 
     workspace.random = true
     workspace.name = `${prefix}${seed.toString().substring(6, 13)}`
   }
 
-  logger.msgOk('Workspace to be used or created')
+  logger.msgOk('Define workspace')
   logger.msgPad(workspace.name)
 
   return workspace.name

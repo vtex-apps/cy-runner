@@ -14,7 +14,7 @@ exports.getCookies = async (config) => {
   // eslint-disable-next-line vtex/prefer-early-return
   if (config.base.cypress.getCookies) {
     // Admin cookie
-    logger.msgWarn('Getting cookie for admin')
+    logger.msgOk('Get cookie for Admin')
     const axiosConfig = {
       url: config.base.vtex.vtexIdUrl,
       method: 'get',
@@ -38,10 +38,9 @@ exports.getCookies = async (config) => {
 
     config.base.vtex.authCookieName = cookieName
     config.base.vtex.adminAuthCookieValue = cookieValue
-    logger.msgOk('Got admin cookie')
 
     // User cookie
-    logger.msgWarn('Getting cookie for the user/robot')
+    logger.msgOk('Get cookie for local user')
     const userOrRobot = await toolbelt.getLocalToken()
 
     config.base.vtex.userAuthCookieValue = userOrRobot.token
@@ -49,7 +48,7 @@ exports.getCookies = async (config) => {
       config.base.vtex.robotMail = userOrRobot.mailOrKey
     }
 
-    logger.msgOk(`Got ${userOrRobot.mailOrKey} cookie`)
+    logger.msgPad(userOrRobot.mailOrKey)
 
     return config
   }
@@ -62,7 +61,7 @@ exports.readSecrets = (config) => {
     return
   }
 
-  logger.msgWarn('Checking secrets')
+  logger.msgOk('Load secrets')
   const SECRET_NAME = config.base.secrets.name
   const SECRET_FILE = path.join(system.cyRunnerPath(), `.${SECRET_NAME}.json`)
   let secrets = process.env.SECRET_NAME
@@ -74,7 +73,7 @@ exports.readSecrets = (config) => {
   } else {
     if (!secrets) {
       system.crash(
-        'Secret missing',
+        'Secrets missing',
         `You should disable secrets, create a '.${SECRET_NAME}.json' or set a '${SECRET_NAME}' env`
       )
     }
@@ -88,8 +87,7 @@ exports.readSecrets = (config) => {
   }
 
   schema.validateSecrets(secrets, config)
-  logger.msgOk('Secrets loaded successfully')
-  logger.msgPad(`From ${loadedFrom.replace(system.basePath(), '.')}`)
+  logger.msgPad(`from ${loadedFrom.replace(system.basePath(), '.')}`)
 
   return secrets
 }

@@ -35,32 +35,20 @@ async function main() {
     await cypress.open()
   } else {
     // Init workspace set up
-    let call = await workspace.init(config)
-
-    control.timing.initWorkspace = call.time
+    control.timing.initWorkspace = await workspace.init(config)
 
     // Install apps
-    call.success
-      ? (call = await workspace.installApps(config))
-      : logger.msgError('Failed to init the workspace')
-    control.timing.installApps = call.time
+    control.timing.installApps = await workspace.installApps(config)
 
     // Uninstall apps
-    call.success
-      ? (call = await workspace.uninstallApps(config))
-      : logger.msgError('Failed to install apps')
-    control.timing.uninstallApps = call.time
+    control.timing.uninstallApps = await workspace.uninstallApps(config)
 
     // Link app
-    call.success
-      ? (call = await workspace.linkApp(config))
-      : logger.msgError('Failed to uninstall apps')
-    control.timing.linkApp = call.time
+    control.timing.linkApp = await workspace.linkApp(config)
 
+    process.exit()
     // Start the tests
-    call.success
-      ? (call = await runTests(config))
-      : logger.msgError('Failed to link the app')
+    const call = await runTests(config)
 
     control.timing.strategy = call.time
     control.specsFailed = call.specsFailed

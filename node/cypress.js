@@ -78,7 +78,6 @@ exports.open = async () => {
   }
 
   logger.msgWarn('Verity if the workspace has the Apps you need already')
-  logger.msgWarn('When you finish, close Cypress window and wait the flow')
 
   try {
     await cypress.open(options)
