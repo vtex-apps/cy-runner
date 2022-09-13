@@ -50,8 +50,11 @@ exports.deleteWorkspace = async (workspace) => {
   await this.crashIfMaster('delete')
 
   const result = system.exec(`${VTEX} workspace delete -f ${workspace}`, 'pipe')
+  const check = /successfully/.test(result)
 
-  if (!/successfully/.test(result)) logger.msgPad('Failed to delete workspace')
+  check
+    ? logger.msgOk(`Workspace ${workspace} deleted`)
+    : logger.msgPad(`Failed to delete workspace ${workspace}`)
 }
 
 exports.changeWorkspace = async (workspace) => {

@@ -85,6 +85,7 @@ exports.linkApp = async (config) => {
     // Link app
     logger.msgOk(`Link ${APP}`)
     const APP_LOG = path.join(logger.logPath(), `_link_${APP}.log`)
+    const APP_PID = path.join(logger.logPath(), `_pid`)
     const STOP = 10
     const link = await toolbelt.link(APP_LOG)
     let check = false
@@ -95,7 +96,7 @@ exports.linkApp = async (config) => {
       loop++
       if (loop === STOP) break
 
-      logger.msgPad('waiting 10 seconds until the link get ready')
+      logger.msgPad('waiting 10 seconds until the link gets ready')
       // eslint-disable-next-line no-await-in-loop
       await system.delay(10000)
 
@@ -107,6 +108,8 @@ exports.linkApp = async (config) => {
     check
       ? logger.msgOk('App linked successfully')
       : logger.msgError('Failed to link app')
+
+    storage.write(link.pid.toString(), APP_PID)
 
     return { success: check, time: system.tack(START), subprocess: link }
   }

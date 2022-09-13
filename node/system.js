@@ -41,7 +41,18 @@ exports.crash = (msg, err) => {
   logger.msgError(msg, 'Crash')
   if (typeof err !== 'undefined') logger.msgPad(err)
 
+  // kill any subprocesses created by cy-runner
+  const PID_FILE = path.join(logger.logPath(), '_pid')
+
+  if (storage.exists(PID_FILE)) {
+    const PID = storage.read(PID_FILE)
+
+    logger.msgPad(`Killing pid ${PID} [vtex link]`)
+    process.kill(Number(PID.toString()), 9)
+  }
+
   logger.newLine()
+
   process.exit(99)
 }
 
