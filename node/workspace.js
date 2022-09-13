@@ -69,7 +69,7 @@ exports.updateVtexIgnore = async () => {
 
     if (!check) storage.append(`${exclusion}\n`, IGNORE_FILE)
   })
-  logger.msgOk('.vtexignore updated successfully')
+  logger.msgOk('Ignore file updated successfully')
 }
 
 exports.linkApp = async (config) => {

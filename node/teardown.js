@@ -24,12 +24,13 @@ module.exports.teardown = async (config) => {
   logger.msgOk('Apps versions saved successfully')
 
   // Save debug file
+  logger.msgWarn('Saving debug.json')
   const SRC = system.debugFile()
   const DST = path.join(logger.logPath(), 'debug.json')
 
-  logger.msgWarn('Saving debug.json')
-  storage.copy(SRC, DST)
   logger.msgPad(`${SRC} -> ${DST.replace(system.basePath(), '.')}`)
+  storage.copy(SRC, DST)
+  logger.msgOk('Debug file saved successfully')
 
   // Keep state files
   if (config.base.keepStateFiles) storage.keepStateFiles(config)

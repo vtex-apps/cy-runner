@@ -47,7 +47,9 @@ exports.getConfig = async (configFile) => {
   // Force verbosity if it is running local and clean debug.log
   if (!system.isCI()) {
     config.base.cypress.quiet = false
+    logger.msgWarn(`Cleaning ${system.debugFile()}`)
     storage.delete(system.debugFile())
+    logger.msgOk('Debug file cleaned successfully')
   }
 
   // Merge secrets on config
