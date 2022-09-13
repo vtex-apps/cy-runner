@@ -65,6 +65,10 @@ exports.ls = async () => {
   return system.exec(`${VTEX} ls`, 'pipe').toString()
 }
 
+exports.dependency = async () => {
+  return system.exec(`${VTEX} deps ls`, 'pipe').toString()
+}
+
 exports.install = async (app) => {
   // Show list of apps to be installed
   app.forEach((a) => {
