@@ -7,7 +7,7 @@ const jsYaml = require('js-yaml')
 const storage = require(`./storage`)
 const system = require('./system')
 const logger = require('./logger')
-const { teardown } = require('./teardown')
+const workspace = require('./workspace')
 
 // Get Cypress Folder [cypress or cypress-shared]
 exports.getCypressFolder = () => {
@@ -53,7 +53,7 @@ exports.saveCypressJson = (config) => {
 
 // Deal with stop on fail
 exports.stopOnFail = async (config, step, runUrl) => {
-  await teardown(config)
+  await workspace.teardown(config)
   if (runUrl != null) this.showDashboard(runUrl)
   system.crash('Triggered stopOnFail', step)
 }

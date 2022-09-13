@@ -5,7 +5,6 @@ const cypress = require('./node/cypress')
 const workspace = require('./node/workspace')
 const { deprecated } = require('./node/depreated')
 const { report } = require('./node/report')
-const { teardown } = require('./node/teardown')
 const { runTests } = require('./node/test')
 const { issue } = require('./node/jira')
 
@@ -64,7 +63,7 @@ async function main() {
   }
 
   // Teardown
-  control.timing.teardown = await teardown(config)
+  control.timing.teardown = await workspace.teardown(config)
 
   // Report deprecated flags
   await deprecated(config)
