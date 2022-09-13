@@ -26,7 +26,7 @@ module.exports.report = async (control, config) => {
       const tests = control[item[0]]
 
       // eslint-disable-next-line vtex/prefer-early-return
-      if (tests.length > 0) {
+      if (tests?.length > 0) {
         const str = tests.length > 1 ? 'specs' : 'spec'
 
         logger.msgOk(`${item[1]} ${str}`, item[2])
@@ -44,7 +44,7 @@ module.exports.report = async (control, config) => {
       logger.msgPad(control.runUrl)
     }
 
-    control.specsFailed.length < 1 && control.specsSkipped.length < 1
+    control.specsFailed?.length < 1 && control.specsSkipped?.length < 1
       ? system.success('The test ran successfully, well done!')
       : system.fail('The test failed!')
   }

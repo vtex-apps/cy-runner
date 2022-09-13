@@ -80,7 +80,7 @@ exports.exec = (cmd, output = 'ignore', cwd = process.cwd()) => {
 // Start a background process
 exports.spawn = (bin, cmd, cwd = process.cwd()) => {
   try {
-    return spawn(bin, [cmd], { cwd })
+    return spawn(bin, cmd, { cwd })
   } catch (e) {
     logger.msgError(`Failed to fork ${cmd}`)
     logger.msgPad(e)
@@ -115,13 +115,4 @@ exports.traverse = (result, obj, previousKey) => {
   }
 
   return result
-}
-
-// Drop minor
-exports.dropMinor = (app) => {
-  app = app.split('.')
-  app.pop()
-  app = app.join('.')
-
-  return app.split('@')
 }

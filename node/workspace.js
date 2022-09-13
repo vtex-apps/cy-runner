@@ -85,7 +85,6 @@ exports.linkApp = async (config) => {
     logger.msgWarn(`Reading ${SHORT_NAME}`)
     const MANIFEST = storage.readYaml(MANIFEST_FILE)
     const APP = `${MANIFEST.vendor}.${MANIFEST.name}@${MANIFEST.version}`
-    const ARR = system.dropMinor(APP)
 
     logger.msgOk('Manifest read successfully')
 
@@ -94,27 +93,41 @@ exports.linkApp = async (config) => {
 
     // Link app
     logger.msgWarn(`Linking ${APP}`)
-    toolbelt.link(APP)
-    const MAX_TRIES = 8
-    let THIS_TRY = 0
+    const link = await toolbelt.link(APP)
 
-    while (!check) {
-      THIS_TRY++
-      if (THIS_TRY === MAX_TRIES) {
-        logger.msgError('Failed to link the app')
+    link.stderr.on('data', (data) => {
+      logger.msgPad(data)
+    })
 
-        return { success: false, time: system.tack(START) }
+    link.stdout.on('data', (data) => {
+      if (/App running/.test(data)) {
+        logger.msgOk('App linked successfully')
+        return { success: true, time: system.tack(START) }
       }
-
-      // eslint-disable-next-line no-await-in-loop
-      await system.delay(10000)
-      // eslint-disable-next-line no-await-in-loop
-      check = RegExp(`${ARR[0]}.*${ARR[1]}`).test(await toolbelt.ls())
-      logger.msgPad('Waiting 10 more seconds to link gets ready')
-    }
-
-    logger.msgOk('App linked successfully')
+    })
   }
 
-  return { success: check, time: system.tack(START) }
+  //
+  //   const MAX_TRIES = 8
+  //   let THIS_TRY = 0
+  //
+  //   while (!check) {
+  //     THIS_TRY++
+  //     if (THIS_TRY === MAX_TRIES) {
+  //       logger.msgError('Failed to link the app')
+  //
+  //       return { success: false, time: system.tack(START) }
+  //     }
+  //
+  //     // eslint-disable-next-line no-await-in-loop
+  //     await system.delay(10000)
+  //     // eslint-disable-next-line no-await-in-loop
+  //     check = RegExp(APP).test(await toolbelt.dependency())
+  //     logger.msgPad('Waiting 10 more seconds to link gets ready')
+  //   }
+  //
+  //   logger.msgOk('App linked successfully')
+  // }
+
+  return { success: false, time: system.tack(START) }
 }

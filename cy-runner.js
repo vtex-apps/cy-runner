@@ -70,7 +70,7 @@ async function main() {
     control.runUrl = call.runUrl
 
     // Open Jira ticket
-    if (config.base.jira.enabled && control.specsFailed.length) {
+    if (config.base.jira.enabled && control.specsFailed?.length) {
       await issue(config, control.specsFailed, control.runUrl)
     }
   }

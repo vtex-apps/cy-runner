@@ -102,15 +102,5 @@ exports.uninstall = async (app) => {
 }
 
 exports.link = () => {
-  const link = system.spawn(VTEX, 'link', system.basePath())
-
-  // link.stdout.on('data', (data) => {
-  //   console.log(`stdout: ${data}`)
-  // })
-  link.stderr.on('data', (data) => {
-    logger.msgPad(data)
-  })
-  // link.on('close', (code) => {
-  //   console.log(`child process exited with code ${code}`)
-  // })
+  return system.spawn(VTEX, ['link', '--verbose'], system.basePath())
 }
