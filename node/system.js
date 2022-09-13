@@ -1,4 +1,4 @@
-const { execSync } = require('child_process')
+const { execSync, spawn } = require('child_process')
 const path = require('path')
 
 const logger = require('./logger')
@@ -10,6 +10,11 @@ exports.basePath = () => {
   return BASE_PATH
 }
 
+// Return root path
+exports.rootPath = () => {
+  return path.join(BASE_PATH, '..')
+}
+
 // Return cy-runner path
 exports.cyRunnerPath = () => {
   return path.join(BASE_PATH, 'cy-runner')
@@ -19,6 +24,9 @@ exports.cyRunnerPath = () => {
 exports.isCI = () => {
   return process.env.CI ?? false
 }
+
+// Delay
+exports.delay = (ms) => new Promise((res) => setTimeout(res, ms))
 
 // Crash and exit
 exports.crash = (msg, err) => {
@@ -46,13 +54,12 @@ exports.fail = (msg) => {
 }
 
 // Run sync process
-exports.exec = (cmd, output) => {
-  if (typeof output === 'undefined') output = 'ignore'
-  const maxTimeout = 5 * 60 * 1000 // 5 minutes
+exports.exec = (cmd, output = 'ignore', cwd = process.cwd()) => {
+  const timeout = 5 * 60 * 1000 // 5 minutes
   let result
 
   try {
-    result = execSync(cmd, { stdio: output, timeout: maxTimeout })
+    result = execSync(cmd, { stdio: output, timeout, cwd })
   } catch (e) {
     logger.msgError(`Failed to run ${cmd}`)
     logger.msgPad(e)
@@ -63,6 +70,16 @@ exports.exec = (cmd, output) => {
   }
 
   return result.toString()
+}
+
+// Start a background process
+exports.spawn = (bin, cmd, cwd = process.cwd()) => {
+  try {
+    return spawn(bin, [cmd], { cwd })
+  } catch (e) {
+    logger.msgError(`Failed to fork ${cmd}`)
+    logger.msgPad(e)
+  }
 }
 
 // Start timer
@@ -93,4 +110,13 @@ exports.traverse = (result, obj, previousKey) => {
   }
 
   return result
+}
+
+// Drop minor
+exports.dropMinor = (app) => {
+  app = app.split('.')
+  app.pop()
+  app = app.join('.')
+
+  return app.split('@')
 }

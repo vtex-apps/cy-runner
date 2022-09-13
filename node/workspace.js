@@ -55,107 +55,56 @@ exports.uninstallApps = async (config) => {
   return { success: check, time: system.tack(START) }
 }
 
+exports.updateVtexIgnore = async () => {
+  const IGNORE_FILE = path.join(system.basePath(), '.vtexignore')
+  const SHORT_NAME = IGNORE_FILE.replace(system.rootPath(), '.')
+
+  logger.msgWarn(`Updating ${SHORT_NAME} to ignore cy-runner files`)
+  if (!storage.exists(IGNORE_FILE)) storage.write('# cy-runner', IGNORE_FILE)
+  const IGNORE_DATA = storage.read(IGNORE_FILE).toString()
+  const EXCLUSIONS = ['cypress', 'cy-runner', 'cypress-shared']
+
+  EXCLUSIONS.forEach((exclusion) => {
+    const check = RegExp(exclusion).test(IGNORE_DATA)
+
+    if (!check) storage.append(`${exclusion}\n`, IGNORE_FILE)
+  })
+  logger.msgOk('.vtexignore updated successfully')
+}
+
 exports.linkApp = async (config) => {
   const START = system.tick()
-  const check = true
+  let check = false
 
   // eslint-disable-next-line vtex/prefer-early-return
   if (config.workspace.linkApp.enabled) {
     const MANIFEST_FILE = path.join(system.basePath(), 'manifest.json')
+    const SHORT_NAME = MANIFEST_FILE.replace(system.rootPath(), '.')
 
-    logger.msgWarn(`Reading ${MANIFEST_FILE}`)
+    // Read name of app to be linked
+    logger.msgWarn(`Reading ${SHORT_NAME}`)
     const MANIFEST = storage.readYaml(MANIFEST_FILE)
-    const APP = `${MANIFEST.vendor}.${MANIFEST.name}`
+    const APP = `${MANIFEST.vendor}.${MANIFEST.name}@${MANIFEST.version}`
+    const ARR = system.dropMinor(APP)
 
-    logger.msgOk(`${MANIFEST_FILE} read successfully`)
+    logger.msgOk('Manifest read successfully')
+
+    // Update vtex ignore
+    await this.updateVtexIgnore()
+
+    // Link app
     logger.msgWarn(`Linking ${APP}`)
+    toolbelt.link(APP)
+    while (!check) {
+      // eslint-disable-next-line no-await-in-loop
+      await system.delay(10000)
+      // eslint-disable-next-line no-await-in-loop
+      check = RegExp(`${ARR[0]}.*${ARR[1]}`).test(await toolbelt.ls())
+      logger.msgPad('Waiting 10 more seconds to see if link gets ready')
+    }
+
     logger.msgOk(`${APP} linked successfully`)
   }
-  //
-  //     qe.msg(`Reading ${manifestFile}`, true, true)
-  //     let testApp = qe.storage(manifestFile, 'read')
-  //
-  //     testApp = JSON.parse(testApp)
-  //     const app = `${testApp.vendor}.${testApp.name}`
-  //
-  //
-  //     check = await toolbelt.uninstall(APPS)
-  //     check
-  //       ? logger.msgOk('Apps uninstalled successfully')
-  //       : logger.msgError('Failed to uninstall apps')
-  //   }
 
   return { success: check, time: system.tack(START) }
 }
-
-//     //
-//     // // Link app
-//     // await doLinkApp(config)
-//     //
-//     // // Logging all apps
-//     // await listApps(vtexBin)
-//   }
-//
-//   return { success: check, time: system.tack(START) }
-// }
-//
-// async function listApps(vtexBin) {
-//   const appsLogFile = path.join('.', 'logs', 'appsVersions.log')
-//   const depsLogFile = path.join('.', 'logs', 'depsVersions.log')
-//   const apps = await qe.toolbelt(vtexBin, 'ls')
-//   const deps = await qe.toolbelt(vtexBin, 'deps ls')
-//
-//   qe.msg(`Listing apps to ${appsLogFile}`)
-//   qe.storage(appsLogFile, 'append', apps.stdout)
-//   qe.msg(`Listing deps to ${depsLogFile}`)
-//   qe.storage(depsLogFile, 'append', deps.stdout)
-// }
-//
-//
-//
-// async function doLinkApp(config) {
-//   // eslint-disable-next-line vtex/prefer-early-return
-//   if (config.workspace.linkApp.enabled) {
-//     qe.msg('Linking app', 'warn', false)
-//     const manifestFile = path.join('..', 'manifest.json')
-//
-//     qe.msg(`Reading ${manifestFile}`, true, true)
-//     let testApp = qe.storage(manifestFile, 'read')
-//
-//     testApp = JSON.parse(testApp)
-//     const app = `${testApp.vendor}.${testApp.name}`
-//
-//     const ignoreFile = path.join('..', '.vtexignore')
-//     const exclusions = [
-//       'cypress',
-//       'cy-runner',
-//       'cypress-shared',
-//       'docs/**/*.{gif,png,jpg}',
-//     ]
-//
-//     qe.msg(`Adding cy-runner exclusions to ${ignoreFile}`, true, true)
-//     exclusions.forEach((line) => {
-//       qe.storage(ignoreFile, 'append', `${line}\n`)
-//     })
-//     qe.msg(`Linking ${app}`, true, true)
-//
-//     const outFile = path.join('cy-runner', 'logs', 'link.log')
-//     const logOutput = config.workspace.linkApp.logOutput.enabled
-//       ? `1> ${outFile} &`
-//       : '--no-watch --verbose --trace'
-//
-//     const tlb = await qe.toolbelt(
-//       config.base.vtex.bin,
-//       `link ${logOutput}`,
-//       app
-//     )
-//
-//     if (tlb.success) {
-//       qe.msg('App linked successfully')
-//     } else {
-//       qe.msg('Error linking App', 'error')
-//       await teardown(config)
-//       qe.crash(`Link ${app} to test failed`)
-//     }
-//   }
-// }

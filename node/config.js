@@ -51,7 +51,7 @@ exports.getConfig = async (configFile) => {
   await this.sectionsToRun(config)
 
   // Set up Cypress environment
-  logger.msgSection('Dynamic set up')
+  logger.msgSection('Cypress set up')
   config = await credentials.getCookies(config)
   logger.msgWarn('Creating dynamic Cypress environment')
   cypress.saveCypressEnvJson(config)

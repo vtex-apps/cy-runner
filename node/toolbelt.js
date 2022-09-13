@@ -3,7 +3,6 @@ const path = require('path')
 const system = require('./system')
 const logger = require('./logger')
 
-// const delay = (ms) => new Promise((res) => setTimeout(res, ms))
 const VTEX = path.join(
   system.cyRunnerPath(),
   'node_modules',
@@ -62,16 +61,9 @@ exports.changeWorkspace = async (workspace) => {
   return RegExp(check.workspace).test(workspace)
 }
 
-// exports.checkApps = async (appsToCheck) => {
-//   const result = system.exec(`${VTEX} ls`, 'pipe')
-//   let check = true
-//
-//   appsToCheck.forEach((app) => {
-//     check = RegExp(app).test(result)
-//   })
-//
-//   return check
-// }
+exports.ls = async () => {
+  return system.exec(`${VTEX} ls`, 'pipe').toString()
+}
 
 exports.install = async (app) => {
   // Show list of apps to be installed
@@ -105,55 +97,16 @@ exports.uninstall = async (app) => {
   return count === app.length
 }
 
-// const MAX_TRIES = 3
-// let stdout
-// let check = false
-// let thisTry = 0
+exports.link = () => {
+  const link = system.spawn(VTEX, 'link', system.basePath())
 
-//     case 'uninstall':
-//       // Check if we are on workspace master
-//       stdout = this.exec(`${bin} whoami`, 'pipe').toString()
-//       check = /master/.test(stdout)
-//       if (check) {
-//         this.crash(
-//           'You should not install or uninstall apps on workspace master',
-//           `${bin} ${cmd}\n${stdout}`
-//         )
-//       }
-//     /* falls through */
-//
-//     case 'unlink':
-//       while (!check && thisTry < MAX_TRIES) {
-//         thisTry++
-//         stdout = this.exec(`echo y | ${bin} ${cmd}`, 'pipe').toString()
-//         check = /uccessfully|App not installed| unlinked|No linked apps/.test(
-//           stdout
-//         )
-//         if (!check) await delay(thisTry * 3000)
-//       }
-//
-//       break
-//
-//     case 'link':
-//       cmd = `cd .. && echo y | ${bin} ${cmd}`
-//       while (!check && thisTry < MAX_TRIES) {
-//         thisTry++
-//         stdout = this.exec(cmd, 'pipe').toString()
-//         check = stdout !== 'error'
-//         if (!check) await delay(thisTry * 3000)
-//       }
-//
-//       break
-//
-//     case 'local':
-//       stdout = this.exec(`echo y | ${bin} ${cmd}`, 'pipe').toString()
-//       check = !/error/.test(stdout)
-//       break
-//
-//     default:
-//       stdout = this.exec(`${bin} ${cmd}`, 'pipe').toString()
-//       check = true
-//   }
-//
-//   return { success: check, stdout }
-// }
+  // link.stdout.on('data', (data) => {
+  //   console.log(`stdout: ${data}`)
+  // })
+  link.stderr.on('data', (data) => {
+    logger.msgPad(data)
+  })
+  // link.on('close', (code) => {
+  //   console.log(`child process exited with code ${code}`)
+  // })
+}
