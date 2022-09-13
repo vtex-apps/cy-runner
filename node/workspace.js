@@ -95,15 +95,25 @@ exports.linkApp = async (config) => {
     // Link app
     logger.msgWarn(`Linking ${APP}`)
     toolbelt.link(APP)
+    const MAX_TRIES = 8
+    let THIS_TRY = 0
+
     while (!check) {
+      THIS_TRY += 1
+      if (THIS_TRY === MAX_TRIES) {
+        logger.msgError('Failed to link the app')
+
+        return { success: false, time: system.tack(START) }
+      }
+
       // eslint-disable-next-line no-await-in-loop
       await system.delay(10000)
       // eslint-disable-next-line no-await-in-loop
       check = RegExp(`${ARR[0]}.*${ARR[1]}`).test(await toolbelt.ls())
-      logger.msgPad('Waiting 10 more seconds to see if link gets ready')
+      logger.msgPad('Waiting 10 more seconds to link gets ready')
     }
 
-    logger.msgOk(`${APP} linked successfully`)
+    logger.msgOk('App linked successfully')
   }
 
   return { success: check, time: system.tack(START) }

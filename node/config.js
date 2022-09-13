@@ -74,12 +74,12 @@ exports.getConfig = async (configFile) => {
     const com = path.join(dst, 'common')
     const clean = path.join(__dirname, '..', '..')
 
-    logger.msgPad(`${src.replace(clean, '..')} -> ${com.replace(clean, '..')}`)
+    logger.msgPad(`${src.replace(clean, '.')} -> ${com.replace(clean, '.')}`)
     if (storage.exists(com)) storage.unLink(com)
     storage.link(src, com)
 
     // Create cypress link inside cy-runner
-    logger.msgPad(`${cyp.replace(clean, '..')} -> ${lnk.replace(clean, '..')}`)
+    logger.msgPad(`${cyp.replace(clean, '.')} -> ${lnk.replace(clean, '.')}`)
     if (storage.exists(lnk)) storage.unLink(lnk)
     storage.link(cyp, lnk)
 

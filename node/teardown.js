@@ -18,10 +18,13 @@ module.exports.teardown = async (config) => {
 
   logger.msgWarn('Saving apps versions used on this test')
   logger.msgPad(APPS_INSTALLED.replace(system.basePath(), '.'))
-  storage.write(toolbelt.ls(), APPS_INSTALLED)
+  storage.write((await toolbelt.ls()).toString(), APPS_INSTALLED)
   logger.msgPad(APPS_DEPENDENCY.replace(system.basePath(), '.'))
-  storage.write(toolbelt.dependency(), APPS_DEPENDENCY)
+  storage.write((await toolbelt.dependency()).toString(), APPS_DEPENDENCY)
   logger.msgOk('Apps versions saved successfully')
+
+  // Keep state files
+  if (config.base.keepStateFiles) storage.keepStateFiles(config)
 
   // Do wipe
   await wipe(config)
@@ -35,9 +38,6 @@ module.exports.teardown = async (config) => {
       logger.msgError(`Workspace delete failed`)
     }
   }
-
-  // Keep state files
-  if (config.base.keepStateFiles) storage.keepStateFiles(config)
 
   return system.tack(START)
 }

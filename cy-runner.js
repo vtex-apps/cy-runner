@@ -54,6 +54,10 @@ async function main() {
     else logger.msgError('Failed to link app')
     control.timing.linkApp = call.time
 
+    // Start the tests
+    if (call.success) call = await workspace.linkApp(config)
+    else logger.msgError('Failed to link app')
+
     // const call = await strategy(config)
     //
     // control.timing.strategy = call.time

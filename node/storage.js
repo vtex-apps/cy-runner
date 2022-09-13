@@ -120,7 +120,7 @@ exports.loadConfig = (yamlFile) => {
 exports.writeJson = (config, jsonFile) => {
   try {
     this.write(JSON.stringify(config), jsonFile)
-    logger.msgPad(`${jsonFile} saved`)
+    logger.msgPad(jsonFile.replace(system.basePath(), '.'))
   } catch (e) {
     system.crash(`Failed to create ${jsonFile}`, e)
   }
@@ -152,9 +152,10 @@ exports.keepStateFiles = (config) => {
 
     logger.msgWarn('Moving state files')
     stateFiles.forEach((stateFile) => {
-      logger.msgPad(`${stateFile} -> logs/${stateFile}`)
       const SRC = path.join(system.cyRunnerPath(), stateFile)
       const DST = path.join(logger.logPath(), stateFile)
+
+      logger.msgPad(`${stateFile} -> ${DST.replace(system.basePath(), '.')}`)
 
       this.copy(SRC, DST)
     })

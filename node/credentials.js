@@ -89,7 +89,7 @@ exports.readSecrets = (config) => {
 
   schema.validateSecrets(secrets, config)
   logger.msgOk('Secrets loaded successfully')
-  logger.msgPad(`From ${loadedFrom}`)
+  logger.msgPad(`From ${loadedFrom.replace(system.basePath(), '.')}`)
 
   return secrets
 }
