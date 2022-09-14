@@ -87,7 +87,7 @@ exports.linkApp = async (config) => {
     const APP_LOG = path.join(logger.logPath(), `_link_${APP}.log`)
     const APP_PID = path.join(logger.logPath(), `_pid`)
     const STOP = 10
-    const link = await toolbelt.link(APP_LOG)
+    const link = toolbelt.link(APP_LOG)
     let check = false
     let loop = 0
 
@@ -124,7 +124,7 @@ exports.teardown = async (config) => {
   logger.msgSection('Workspace teardown')
   await this.dumpEnvironment()
   await this.cleanSensitiveData()
-  if (config.base.keepStateFiles) await storage.keepStateFiles(config)
+  if (config.base.keepStateFiles) storage.keepStateFiles(config)
   await wipe(config)
   if (workspace.teardown.enabled) await toolbelt.deleteWorkspace(workspace.name)
 

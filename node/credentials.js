@@ -33,8 +33,8 @@ exports.getCookies = async (config) => {
       )
     }
 
-    config.base.vtex.authCookieName = response.data.authCookie.Name
-    config.base.vtex.adminAuthCookieValue = response.data.authCookie.Value
+    config.base.vtex.authCookieName = response?.data?.authCookie?.Name
+    config.base.vtex.adminAuthCookieValue = response?.data?.authCookie?.Value
 
     // User cookie
     logger.msgOk('Getting user cookie')

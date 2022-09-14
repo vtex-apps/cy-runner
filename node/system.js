@@ -24,7 +24,7 @@ exports.cyRunnerPath = () => {
 
 // Detect CI
 exports.isCI = () => {
-  return process.env.CI ?? false
+  return !!process.env.CI
 }
 
 // Debug file
@@ -97,7 +97,6 @@ exports.spawn = (bin, cmd, logFile, cwd = process.cwd()) => {
   const err = fs.openSync(logFile, 'a')
 
   try {
-    // return spawn(bin, cmd, { cwd })
     const subprocess = spawn(bin, cmd, {
       cwd,
       detached: true,
