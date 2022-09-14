@@ -201,7 +201,6 @@ strategy:
 
 All artifacts from the test are saved on the `cy-runner/logs` folder. If you are using GitHub Actions, you can download the logs as artifacts.
 
-The log have:
 1. Detailed report of each run for each test as yaml
 2. The app versions used on the test in txt
 3. The app dependency versions used on the test in json
