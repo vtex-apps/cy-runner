@@ -61,7 +61,7 @@ exports.readSecrets = (config) => {
   logger.msgOk('Loading secrets')
   const SECRET_NAME = config.base.secrets.name
   const SECRET_FILE = path.join(system.cyRunnerPath(), `.${SECRET_NAME}.json`)
-  let secrets = process.env.SECRET_NAME
+  let secrets = process.env[SECRET_NAME]
   let loadedFrom = null
 
   if (storage.exists(SECRET_FILE)) {
@@ -76,7 +76,7 @@ exports.readSecrets = (config) => {
     }
 
     try {
-      secrets = jsYaml.load(process.env.SECRET_NAME, 'utf-8')
+      secrets = jsYaml.load(secrets, 'utf-8')
       loadedFrom = `env variable ${SECRET_NAME}`
     } catch (e) {
       this.crash(`Check if your env variable ${SECRET_NAME} is well formatted`)
