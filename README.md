@@ -223,7 +223,7 @@ Also, you have the `cy-runner.log` file, that will show you how the tests were c
      [✓] Loading secrets
       -  from file ./cy-runner/.VTEX_QE.json
      [✓] Cleaning debug file
-      -  /home/charles/.vtex/logs/debug.json
+      -  /home/user/.vtex/logs/debug.json
      [✗] Sorry Cypress not running
       -  disabling dashboard
       -  disabling parallelization
@@ -265,7 +265,7 @@ Also, you have the `cy-runner.log` file, that will show you how the tests were c
 
      [✓] Getting admin cookie
      [✓] Getting user cookie
-      -  charles.santos@vtex.com.br
+      -  user.surname@vtex.com.br
      [✓] Creating Cypress environment
       -  ./cy-runner/cypress.env.json
       -  ./cy-runner/cypress.json
@@ -316,7 +316,7 @@ Also, you have the `cy-runner.log` file, that will show you how the tests were c
      [✓] Dumping environment
       -  ./cy-runner/logs/_apps_installed.txt
       -  ./cy-runner/logs/_apps_dependency.json
-      -  /home/charles/.vtex/logs/debug.json -> ./cy-runner/logs/_debug.json
+      -  /home/user/.vtex/logs/debug.json -> ./cy-runner/logs/_debug.json
      [!] Moving state files
       -  .wordpress.json -> ./cy-runner/logs/.wordpress.json
      [✓] State files moved successfully
