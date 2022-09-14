@@ -48,21 +48,23 @@ async function main() {
     control.timing.linkApp = link.time
 
     // Run tests
-    const call = await runTests(config)
+    if (link.success) {
+      const call = await runTests(config)
 
-    control.timing.strategy = call.time
-    control.specsFailed = call.specsFailed
-    control.specsSkipped = call.specsSkipped
-    control.specsDisabled = call.specsDisabled
-    control.specsPassed = call.specsPassed
-    control.runUrl = call.runUrl
+      control.timing.strategy = call.time
+      control.specsFailed = call.specsFailed
+      control.specsSkipped = call.specsSkipped
+      control.specsDisabled = call.specsDisabled
+      control.specsPassed = call.specsPassed
+      control.runUrl = call.runUrl
 
-    // Kill link subprocess
-    if (link.subprocess) link.subprocess.kill('SIGHUP')
+      // Kill link subprocess
+      if (link.subprocess) link.subprocess.kill('SIGHUP')
 
-    // Jira automation
-    if (config.base.jira.enabled && control.specsFailed?.length) {
-      await issue(config, control.specsFailed, control.runUrl)
+      // Jira automation
+      if (config.base.jira.enabled && control.specsFailed?.length) {
+        await issue(config, control.specsFailed, control.runUrl)
+      }
     }
   }
 

@@ -54,15 +54,11 @@ exports.updateVtexIgnore = async () => {
   const SHORT_NAME = IGNORE_FILE.replace(system.rootPath(), '.')
 
   logger.msgOk(`Updating ${SHORT_NAME}`)
-  if (!storage.exists(IGNORE_FILE)) storage.write('# cy-runner', IGNORE_FILE)
-  const IGNORE_DATA = storage.read(IGNORE_FILE).toString()
+  if (!storage.exists(IGNORE_FILE)) storage.write('# cy-r\n', IGNORE_FILE)
   const EXCLUSIONS = ['cypress', 'cy-runner', 'cypress-shared']
 
   EXCLUSIONS.forEach((exclusion) => {
-    const check = RegExp(exclusion).test(IGNORE_DATA)
-
-    logger.msgPad(exclusion)
-    if (!check) storage.append(`${exclusion}\n`, IGNORE_FILE)
+    storage.append(`${exclusion}\n`, IGNORE_FILE)
   })
 }
 
@@ -123,9 +119,9 @@ exports.teardown = async (config) => {
 
   logger.msgSection('Workspace teardown')
   await this.dumpEnvironment()
-  await this.cleanSensitiveData()
   if (config.base.keepStateFiles) storage.keepStateFiles(config)
   await wipe(config)
+  await this.cleanSensitiveData()
   if (workspace.teardown.enabled) await toolbelt.deleteWorkspace(workspace.name)
 
   return system.tack(START)

@@ -7,18 +7,20 @@ module.exports.wipe = async (config) => {
 
   // eslint-disable-next-line vtex/prefer-early-return
   if (wipe.enabled) {
-    logger.msgWarn('Wiping data')
+    logger.msgOk('Wiping data')
+
+    // Force disable parallelism for wipe
+    config.base.cypress.maxJobs = 0
 
     // Remove data
     const { stopOnFail } = wipe
     const result = await cypress.run(wipe, config)
 
     if (result[0].totalFailed) {
-      logger.msgError('Failed to clean data')
-      logger.msgPad('Look into the logs folder to get more information')
+      logger.msgError('Failed to wipe data')
       if (stopOnFail) system.crash('Triggered stopOnFail', 'Wipe failed')
     } else {
-      logger.msgOk('Data cleaned successfully')
+      logger.msgOk('Data wiped successfully')
     }
   }
 }

@@ -48,7 +48,11 @@ exports.crash = (msg, err) => {
     const PID = storage.read(PID_FILE)
 
     logger.msgPad(`Killing pid ${PID} [vtex link]`)
-    process.kill(Number(PID.toString()), 9)
+    try {
+      process.kill(Number(PID.toString()), 9)
+    } catch (e) {
+      logger.msgPad(`Failed to kill ${PID}`)
+    }
   }
 
   logger.newLine()

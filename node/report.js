@@ -19,7 +19,11 @@ module.exports.report = async (control, config) => {
     this.printSpecs(control)
 
     if (control.runUrl != null) cypress.showDashboard(control.runUrl)
-    control.specsFailed?.length < 1 && control.specsSkipped?.length < 1
+
+    // Final result
+    control.specsFailed?.length < 1 &&
+    control.specsSkipped?.length < 1 &&
+    control.specsPassed?.length > 0
       ? system.success('The test ran successfully, well done!')
       : system.fail('The test failed!')
   }
