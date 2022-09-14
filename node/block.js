@@ -22,6 +22,10 @@ module.exports.block = async (config) => {
     if (result[0].totalFailed) {
       logger.msgError('Failed to lock')
       await workspace.teardown(config)
+      // eslint-disable-next-line no-console
+      console.log(
+        '::error title=Failed to lock orderForm::Another test is running, try again later'
+      )
       system.crash(
         'Failed to lock, try again later',
         'another test using orderForm is running'
