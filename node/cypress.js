@@ -135,31 +135,33 @@ exports.run = async (test, config, addOptions = {}) => {
     quiet: config.base.cypress.quiet,
   }
 
-  // Tune options if maxJobs is true (grater than zero)
-  const RUN_ID = process.env.GITHUB_RUN_ID ?? system.getId()
-  const RUN_ATTEMPT = process.env.GITHUB_RUN_ATTEMPT ?? 1
-
-  options.key = config.base.cypress.dashboardKey
-  options.record = true
-  options.ciBuildId = `${RUN_ID}-${RUN_ATTEMPT}`
-
-  // Configure Cypress to use Sorry Cypress if not in CI
-  if (!system.isCI()) process.env.CYPRESS_INTERNAL_ENV = 'development'
-
-  // Merge tune with options
-  merge(options, addOptions)
-
-  // Run Cypress
   const testToRun = []
   const testResult = []
   let maxJobs = 1
 
-  // Set the number of runners
-  if (test.parallel && config.base.cypress.maxJobs) {
-    maxJobs =
-      test.specs.length < config.base.cypress.maxJobs
-        ? test.specs.length
-        : config.base.cypress.maxJobs
+  // maxJobs = 0 --> running local without Sorry Cypress
+  if (config.base.cypress.maxJobs) {
+    // Tune options if maxJobs is true (grater than zero)
+    const RUN_ID = process.env.GITHUB_RUN_ID ?? system.getId()
+    const RUN_ATTEMPT = process.env.GITHUB_RUN_ATTEMPT ?? 1
+
+    options.key = config.base.cypress.dashboardKey
+    options.record = true
+    options.ciBuildId = `${RUN_ID}-${RUN_ATTEMPT}`
+
+    // Configure Cypress to use Sorry Cypress if not in CI
+    if (!system.isCI()) process.env.CYPRESS_INTERNAL_ENV = 'development'
+
+    // Merge tune with options
+    merge(options, addOptions)
+
+    // Set the number of runners
+    if (test.parallel) {
+      maxJobs =
+        test.specs.length < config.base.cypress.maxJobs
+          ? test.specs.length
+          : config.base.cypress.maxJobs
+    }
   }
 
   // Mount parallel jobs
