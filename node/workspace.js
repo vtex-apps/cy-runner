@@ -83,7 +83,7 @@ exports.linkApp = async (config) => {
     const APP_LOG = path.join(logger.logPath(), `_link_${APP}.log`)
     const APP_PID = path.join(logger.logPath(), `_pid`)
     const STOP = 10
-    const link = toolbelt.link(APP_LOG)
+    const link = await toolbelt.link(APP_LOG)
     let check = false
     let loop = 0
 
@@ -105,7 +105,7 @@ exports.linkApp = async (config) => {
       ? logger.msgOk('App linked successfully')
       : logger.msgError('Failed to link app')
 
-    storage.write(link.pid.toString(), APP_PID)
+    if (link.pid) storage.write(link.pid.toString(), APP_PID)
 
     return { success: check, time: system.tack(START), subprocess: link }
   }

@@ -3,6 +3,7 @@ const system = require('./node/system')
 const logger = require('./node/logger')
 const cypress = require('./node/cypress')
 const workspace = require('./node/workspace')
+const { block } = require('./node/block')
 const { deprecated } = require('./node/depreated')
 const { report } = require('./node/report')
 const { runTests } = require('./node/test')
@@ -35,6 +36,9 @@ async function main() {
   } else {
     // Init workspace set up
     control.timing.initWorkspace = await workspace.init(config)
+
+    // Block test to avoid others change orderForm
+    if (config.workspace.singleRun) await block(config)
 
     // Install apps
     control.timing.installApps = await workspace.installApps(config)

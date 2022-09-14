@@ -1,10 +1,9 @@
 const system = require('./system')
 const logger = require('./logger')
 
-const VTEX = system.vtexBin()
-
 // Get user, email and workspace name
 exports.whoami = async () => {
+  const VTEX = await system.vtexBin()
   const stdout = system.exec(`${VTEX} whoami`, 'pipe').toString()
   const check = /Logged/.test(stdout)
   const mailOrKey = check ? stdout.split(' ')[7] : null
@@ -15,6 +14,7 @@ exports.whoami = async () => {
 
 // Get local user token
 exports.getLocalToken = async () => {
+  const VTEX = await system.vtexBin()
   const userOrRobot = await this.whoami()
 
   if (userOrRobot.isLogged) {
@@ -40,6 +40,7 @@ exports.crashIfMaster = async (msg) => {
 
 exports.deleteWorkspace = async (workspace) => {
   await this.crashIfMaster('delete')
+  const VTEX = await system.vtexBin()
 
   const result = system.exec(`${VTEX} workspace delete -f ${workspace}`, 'pipe')
   const check = /successfully/.test(result)
@@ -50,6 +51,8 @@ exports.deleteWorkspace = async (workspace) => {
 }
 
 exports.changeWorkspace = async (workspace) => {
+  const VTEX = await system.vtexBin()
+
   system.exec(`${VTEX} workspace use ${workspace}`, 'pipe')
   const check = this.whoami()
 
@@ -57,10 +60,14 @@ exports.changeWorkspace = async (workspace) => {
 }
 
 exports.ls = async () => {
+  const VTEX = await system.vtexBin()
+
   return system.exec(`${VTEX} ls`, 'pipe').toString()
 }
 
 exports.dependency = async () => {
+  const VTEX = await system.vtexBin()
+
   return system.exec(`${VTEX} deps ls`, 'pipe').toString()
 }
 
@@ -71,6 +78,7 @@ exports.install = async (app) => {
   })
   // Crash if on master
   await this.crashIfMaster('install apps')
+  const VTEX = await system.vtexBin()
 
   // Install apps and count successfully ones
   const result = system.exec(`${VTEX} install ${app.join(' ')}`, 'pipe')
@@ -87,6 +95,7 @@ exports.uninstall = async (app) => {
   })
   // Crash if on master
   await this.crashIfMaster('uninstall apps')
+  const VTEX = await system.vtexBin()
 
   // Install apps and count successfully ones
   const result = system.exec(`${VTEX} uninstall ${app.join(' ')}`, 'pipe')
@@ -96,6 +105,8 @@ exports.uninstall = async (app) => {
   return count === app.length
 }
 
-exports.link = (logFile) => {
+exports.link = async (logFile) => {
+  const VTEX = await system.vtexBin()
+
   return system.spawn(VTEX, ['link', '--verbose'], logFile, system.basePath())
 }
