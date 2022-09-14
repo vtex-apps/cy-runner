@@ -6,7 +6,6 @@ export const TOAST_MSG = {
   initializing: /initializing/i,
   impersonatePermissionError: /do not have permission to impersonate/i,
   userAlreadyRegisteredInThisOrganization: /this organization/,
-  userAlreadyRegisteredInAnotherOrganization: /another organization/i,
 }
 
 export const BUTTON_LABEL = {

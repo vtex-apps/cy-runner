@@ -66,11 +66,8 @@ export function duplicateUserTestCase({
   costCenter,
   role,
   gmailCreds,
-  sameOrganization = true,
-  // If sameOrganization is false then user is from different organization
 }) {
   const { suffixInEmail, dropDownText } = role
-  const subTitle = sameOrganization ? 'same' : 'different'
   const email = generateEmailWithSuffix(
     gmailCreds.email,
     organizationName,
@@ -78,7 +75,7 @@ export function duplicateUserTestCase({
   )
 
   it(
-    `Add duplicate user ${email} from ${subTitle} organization and verify popup`,
+    `Add duplicate user ${email} from same organization and verify popup`,
     { retries: 3 },
     () => {
       const userName = generateName(suffixInEmail)
@@ -87,11 +84,7 @@ export function duplicateUserTestCase({
         { userName, email, costCenter, duplicateUser: true },
         dropDownText
       )
-      validateToastMsg(
-        sameOrganization
-          ? TOAST_MSG.userAlreadyRegisteredInThisOrganization
-          : TOAST_MSG.userAlreadyRegisteredInAnotherOrganization
-      )
+      validateToastMsg(TOAST_MSG.userAlreadyRegisteredInThisOrganization)
     }
   )
 }
