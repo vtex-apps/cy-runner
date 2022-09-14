@@ -22,6 +22,33 @@ exports.cyRunnerPath = () => {
   return path.join(BASE_PATH, 'cy-runner')
 }
 
+// Return toolbelt to be used
+exports.vtexBin = async (crash = false) => {
+  const VTEX_BIN = path.join(
+    this.cyRunnerPath(),
+    'node_modules',
+    'vtex',
+    'bin',
+    'run'
+  )
+
+  // Return the installed as cy-runner package, for sure it is on the right version
+  if (storage.exists(VTEX_BIN)) return VTEX_BIN
+
+  // Let's avoid check version every time
+  if (crash) {
+    const VTEX_VERSION = this.exec('vtex version', 'pipe')
+    const check = /beta-ci/.test(VTEX_VERSION)
+
+    return check
+      ? 'vtex'
+      : this.crash("Run 'yarn install' inside cy-runner folder", VTEX_VERSION)
+  }
+
+  // It passed on crash test already, just return
+  return 'vtex'
+}
+
 // Detect CI
 exports.isCI = () => {
   return !!process.env.CI

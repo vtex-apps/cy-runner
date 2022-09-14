@@ -1,15 +1,7 @@
-const path = require('path')
-
 const system = require('./system')
 const logger = require('./logger')
 
-const VTEX = path.join(
-  system.cyRunnerPath(),
-  'node_modules',
-  'vtex',
-  'bin',
-  'run'
-)
+const VTEX = system.vtexBin()
 
 // Get user, email and workspace name
 exports.whoami = async () => {

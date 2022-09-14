@@ -14,6 +14,10 @@ exports.getConfig = async (configFile) => {
   logger.msgOk('Loading cy-runner configuration')
   let config = storage.loadConfig(configFile)
 
+  // Check toolbelt version
+  logger.msgOk('Checking toolbelt version')
+  await system.vtexBin(true)
+
   // Fill URLs
   const VTEX_AUTH_PATH = '.myvtex.com/api/vtexid/pub/authentication'
   const VTEX_ACCOUNT = config.base.vtex.account
