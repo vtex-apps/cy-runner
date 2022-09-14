@@ -53,9 +53,23 @@ exports.saveCypressJson = (config) => {
 
 // Deal with stop on fail
 exports.stopOnFail = async (config, step, runUrl) => {
+  logger.msgSection(`Stop on fail triggered by strategy ${step.strategy}`)
+
+  step.specsPassed.sort()
+  step.specsPassed.forEach((spec) => {
+    logger.msgOk(this.specNameClean(spec))
+  })
+
+  logger.newLine()
+
+  step.specsFailed.sort()
+  step.specsFailed.forEach((spec) => {
+    logger.msgError(this.specNameClean(spec))
+  })
+
   await workspace.teardown(config)
   if (runUrl != null) this.showDashboard(runUrl)
-  system.crash('Triggered stopOnFail', step)
+  system.crash('Triggered stop on fail', step.strategy)
 }
 
 // Show URL for Cypress Dashboard or Sorry Cypress
@@ -101,10 +115,7 @@ exports.run = async (test, config, addOptions = {}) => {
 
   test.specs.forEach((spec) => {
     if (path.parse(spec).dir !== SPEC_PATH) {
-      system.crash(
-        "'cypress' and 'shared-cypress' can't be mixed on the same strategy",
-        `Fix strategy ${test.name}`
-      )
+      system.crash('Paths mixed on the same strategy', spec)
     }
   })
 

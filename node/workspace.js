@@ -96,7 +96,7 @@ exports.linkApp = async (config) => {
       loop++
       if (loop === STOP) break
 
-      logger.msgPad('waiting 10 seconds until the link gets ready')
+      logger.msgPad('waiting 10 seconds until link gets ready')
       // eslint-disable-next-line no-await-in-loop
       await system.delay(10000)
 
