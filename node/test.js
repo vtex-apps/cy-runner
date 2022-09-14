@@ -1,4 +1,4 @@
-const { intersection } = require('lodash')
+const { intersection, startCase } = require('lodash')
 
 const system = require('./system')
 const logger = require('./logger')
@@ -10,22 +10,21 @@ let specsDisabled = []
 let specsPassed = []
 let runUrl = null
 
-module.exports.runTests = async (config) => {
+exports.runTests = async (config) => {
   const START = system.tick()
-  const WORKSPACE = config.workspace
   const STRATEGIES = config.strategy
 
   for (const strategy in STRATEGIES) {
     const test = STRATEGIES[strategy]
-    const group = `${WORKSPACE.name}/${strategy}`
+    const group = `${system.getId()}/${strategy}`
 
-    test.name = strategy
+    test.name = startCase(strategy)
 
     if (test.enabled) {
       let { dependency } = test
 
-      logger.msgSection(`Running strategy ${strategy}`)
-      if (typeof dependency !== 'undefined') {
+      logger.msgSection(`Running strategy ${startCase(strategy)}`)
+      if (dependency?.length) {
         // Drop eventual duplications
         dependency = [...new Set(dependency)]
         specsPassed = [...new Set(specsPassed)]
@@ -84,7 +83,7 @@ async function runTest(test, config, group) {
   test.specs = [...new Set(test.specs)]
 
   while (thisTry <= hardTries && !testsPassed && test.specs.length) {
-    logger.msgOk(`Try ${thisTry} of ${hardTries} for strategy ${test.name}`)
+    logger.msgOk(`${test.name}: try ${thisTry} of ${hardTries}`)
     addOptions.group = `${group}/${thisTry}`
 
     // eslint-disable-next-line no-await-in-loop

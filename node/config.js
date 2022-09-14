@@ -11,7 +11,7 @@ const http = require('./http')
 
 exports.getConfig = async (configFile) => {
   // Load and parse cy-runner.yml file
-  logger.msgOk('Load cy-runner configuration')
+  logger.msgOk('Loading cy-runner configuration')
   let config = storage.loadConfig(configFile)
 
   // Fill URLs
@@ -32,7 +32,7 @@ exports.getConfig = async (configFile) => {
 
   // Checks to avoid silly configuration errors on CI
   if (system.isCI() && !SKIP_AUTO_CONFIG) {
-    logger.msgWarn('On CI, auto configuring Cypress flags')
+    logger.msgWarn('Auto configuring Cypress flags')
     logger.msgPad('Set base.skipAutoConfigOnCI to true to avoid auto config')
     config.base.cypress.devMode = false
     config.base.cypress.runHeaded = false
@@ -46,15 +46,17 @@ exports.getConfig = async (configFile) => {
 
   // Clean debug and disable Sorry if not listening on 1233
   if (!system.isCI()) {
-    logger.msgOk('Clean debug file')
+    logger.msgOk('Cleaning debug file')
     storage.delete(system.debugFile())
     logger.msgPad(system.debugFile())
 
     const sorryRunning = await http.runningSorryCypress()
 
     if (!sorryRunning) {
-      logger.msgError('Sorry Cypress not found, parallelization disabled')
-      logger.msgPad('waiting 7 seconds, so you can cancel if it is wrong')
+      logger.msgError('Sorry Cypress not running')
+      logger.msgPad('disabling dashboard')
+      logger.msgPad('disabling parallelization')
+      logger.msgPad('waiting 7 seconds to you cancel and try again')
       await system.delay(7000)
       config.base.cypress.maxJobs = 0
     }
@@ -69,7 +71,7 @@ exports.getConfig = async (configFile) => {
   // Set up Cypress environment
   logger.msgSection('Cypress set up')
   config = await credentials.getCookies(config)
-  logger.msgOk('Create Cypress environment')
+  logger.msgOk('Creating Cypress environment')
   cypress.saveCypressEnvJson(config)
   cypress.saveCypressJson(config)
 
@@ -83,7 +85,7 @@ exports.getConfig = async (configFile) => {
   const dst = path.join(__dirname, '..', '..', 'cypress', 'support')
 
   if (storage.exists(dst)) {
-    logger.msgOk('Link local Cypress code on Cy-Runner')
+    logger.msgOk('Linking local Cypress code on Cy-Runner')
 
     // Create common links inside cypress
     const com = path.join(dst, 'common')
@@ -115,7 +117,8 @@ exports.getWorkspaceName = (config) => {
     workspace.name = workspace.name.toLowerCase()
   }
 
-  logger.msgOk(`Define workspace: ${workspace.name}`)
+  logger.msgOk('Defining workspace')
+  logger.msgPad(workspace.name)
 
   return workspace.name
 }

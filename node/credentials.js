@@ -14,7 +14,7 @@ exports.getCookies = async (config) => {
   // eslint-disable-next-line vtex/prefer-early-return
   if (config.base.cypress.getCookies) {
     // Admin cookie
-    logger.msgOk('Get cookie for Admin')
+    logger.msgOk('Getting admin cookie')
     const axiosConfig = {
       url: config.base.vtex.vtexIdUrl,
       method: 'get',
@@ -33,14 +33,11 @@ exports.getCookies = async (config) => {
       )
     }
 
-    const cookieName = response.data.authCookie.Name
-    const cookieValue = response.data.authCookie.Value
-
-    config.base.vtex.authCookieName = cookieName
-    config.base.vtex.adminAuthCookieValue = cookieValue
+    config.base.vtex.authCookieName = response.data.authCookie.Name
+    config.base.vtex.adminAuthCookieValue = response.data.authCookie.Value
 
     // User cookie
-    logger.msgOk('Get cookie for local user')
+    logger.msgOk('Getting user cookie')
     const userOrRobot = await toolbelt.getLocalToken()
 
     config.base.vtex.userAuthCookieValue = userOrRobot.token
@@ -61,7 +58,7 @@ exports.readSecrets = (config) => {
     return
   }
 
-  logger.msgOk('Load secrets')
+  logger.msgOk('Loading secrets')
   const SECRET_NAME = config.base.secrets.name
   const SECRET_FILE = path.join(system.cyRunnerPath(), `.${SECRET_NAME}.json`)
   let secrets = process.env.SECRET_NAME

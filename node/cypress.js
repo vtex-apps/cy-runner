@@ -128,12 +128,9 @@ exports.run = async (test, config, addOptions = {}) => {
   const RUN_ID = process.env.GITHUB_RUN_ID ?? system.getId()
   const RUN_ATTEMPT = process.env.GITHUB_RUN_ATTEMPT ?? 1
 
-  // Only if maxJobs wasn't disabled (0 = disabled)
-  if (test.sendDashboard && config.base.cypress.maxJobs) {
-    options.key = config.base.cypress.dashboardKey
-    options.record = true
-    options.ciBuildId = `${RUN_ID}-${RUN_ATTEMPT}`
-  }
+  options.key = config.base.cypress.dashboardKey
+  options.record = true
+  options.ciBuildId = `${RUN_ID}-${RUN_ATTEMPT}`
 
   // Configure Cypress to use Sorry Cypress if not in CI
   if (!system.isCI()) process.env.CYPRESS_INTERNAL_ENV = 'development'
@@ -166,7 +163,7 @@ exports.run = async (test, config, addOptions = {}) => {
 
         const output = {}
         const cleanResult = result
-        const logName = result.runs[0].spec.name.replace('.js', '.yml')
+        const logName = result.runs[0].spec.name.replace('.js', '-result.yaml')
         const logSpec = path.join(logger.logPath(), logName)
 
         // Remove sensitive information

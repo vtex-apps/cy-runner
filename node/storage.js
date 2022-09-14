@@ -135,7 +135,7 @@ exports.createStateFiles = (config) => {
     const PLURAL = SIZE > 1 ? 'files' : 'file'
 
     if (SIZE) {
-      logger.msgOk(`Create state ${PLURAL}`)
+      logger.msgOk(`Creating state ${PLURAL}`)
       stateFiles.forEach((stateFile) => {
         logger.msgPad(stateFile)
         this.write('{}', path.join(system.cyRunnerPath(), stateFile))
