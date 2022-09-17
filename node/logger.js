@@ -75,13 +75,13 @@ exports.msgPad = (msg, pr = false) => {
 }
 
 exports.msgSection = (msg, pr = false) => {
-  msg = `${QE}${msg} `.padEnd(100, '=')
+  msg = pr ? `${QE}${msg}` : `${QE}${msg} `.padEnd(100, '=')
   this.write(`\n${msg}\n`, pr)
-  this.write(`${''.padStart(5, ' ').padEnd(100, '=')}\n\n`, pr)
+  this.write(`${''.padStart(5, ' ').padEnd(100, '=')}\n\n`)
 }
 
 exports.msgEnd = (msg, pr = false) => {
-  msg = `${QE}${msg} `.padEnd(100, '=')
+  msg = pr ? `${QE}${msg}` : `${QE}${msg} `.padEnd(100, '=')
   this.write(`\n${msg}\n\n`, pr)
 }
 
