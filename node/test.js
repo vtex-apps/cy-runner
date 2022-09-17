@@ -14,6 +14,11 @@ exports.runTests = async (config) => {
   const START = system.tick()
   const STRATEGIES = config.strategy
 
+  // Export envs for make easier debug on GitHub Actions
+  for (const env in config.exportEnvs) {
+    process.env[env] = config.exportEnvs[env]
+  }
+
   for (const strategy in STRATEGIES) {
     const test = STRATEGIES[strategy]
     const group = `${system.getId()}/${strategy}`
