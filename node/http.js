@@ -10,7 +10,7 @@ exports.request = async (axiosConfig) => {
       response = result
     })
     .catch((e) => {
-      system.crash('Request failed', e)
+      system.crash('Request failed', JSON.stringify(e.response.data))
     })
 
   return response
