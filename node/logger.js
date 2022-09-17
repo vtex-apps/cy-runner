@@ -19,6 +19,9 @@ function ico(type) {
     case 'ok':
       return '[✓]'.padStart(8)
 
+    case 'github':
+      return ':::'.padStart(8)
+
     case 'pipe':
       return '  |'.padStart(10)
 
@@ -51,7 +54,7 @@ exports.write = (msg, pr = false) => {
   process.stdout.write(msg)
   storage.append(msg, LOG_FILE)
   // Send pr messages to GitHub PR Decorator
-  if (pr) storage.append(`    ${msg}`, GB_DECOR)
+  if (pr) storage.append(msg, GB_DECOR)
 }
 
 exports.msgOk = (msg, pr = false) => {
@@ -66,6 +69,10 @@ exports.msgError = (msg, pr = false) => {
   this.write(`${ico('error')} ${msg}\n`, pr)
 }
 
+exports.sectionGitHub = (msg, pr) => {
+  this.write(`${ico('github')} ${msg}\n`, pr)
+}
+
 exports.msgPipe = (msg) => {
   this.write(`${ico('pipe')} ${msg}\n`)
 }
@@ -75,14 +82,22 @@ exports.msgPad = (msg, pr = false) => {
 }
 
 exports.msgSection = (msg, pr = false) => {
-  msg = `${QE}${msg} `.padEnd(100, '=')
-  this.write(`\n${msg}\n`, pr)
-  this.write(`${''.padStart(5, ' ').padEnd(100, '=')}\n\n`, pr)
+  if (pr) {
+    this.sectionGitHub(msg, pr)
+  } else {
+    msg = `${QE}${msg} `.padEnd(100, '=')
+    this.write(`\n${msg}\n`, pr)
+    this.write(`${''.padStart(5, ' ').padEnd(100, '=')}\n\n`, pr)
+  }
 }
 
 exports.msgEnd = (msg, pr = false) => {
-  msg = `${QE}${msg} `.padEnd(100, '=')
-  this.write(`\n${msg}\n\n`, pr)
+  if (pr) {
+    this.sectionGitHub(msg, pr)
+  } else {
+    msg = `${QE}${msg} `.padEnd(100, '=')
+    this.write(`\n${msg}\n\n`, pr)
+  }
 }
 
 exports.newLine = (pr = false) => {
