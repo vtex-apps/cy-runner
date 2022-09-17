@@ -51,8 +51,7 @@ exports.write = (msg, pr = false) => {
   process.stdout.write(msg)
   storage.append(msg, LOG_FILE)
   // Send pr messages to GitHub PR Decorator
-  // eslint-disable-next-line prettier/prettier
-  if (pr) storage.append(`${msg}`, GB_DECOR)
+  if (pr) storage.append(`    ${msg}`, GB_DECOR)
 }
 
 exports.msgOk = (msg, pr = false) => {
