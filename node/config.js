@@ -108,15 +108,14 @@ exports.getConfig = async (configFile) => {
   return config
 }
 
-exports.getWorkspaceName = (config) => {
+exports.getWorkspaceName = async (config) => {
   const { workspace } = config
 
-  workspace.random = false
   if (workspace.name === 'random') {
+    const id = await system.getId()
     const { prefix } = workspace
 
-    workspace.random = true
-    workspace.name = `${prefix}${system.getId()}`
+    workspace.name = `${prefix}${id}`
   } else {
     workspace.name = workspace.name.toLowerCase()
   }
