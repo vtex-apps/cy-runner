@@ -28,6 +28,7 @@ function ico(type) {
 }
 
 exports.init = () => {
+  storage.delete(GB_DECOR)
   storage.delete(LOG_PATH)
   storage.makeDir(LOG_PATH)
 }
