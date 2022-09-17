@@ -93,7 +93,7 @@ exports.crash = (msg, err, decorateGitHub = false) => {
 exports.success = (msg) => {
   logger.msgEnd('SUCCESS', true)
   logger.msgOk(msg, true)
-  logger.newLine(true)
+  logger.newLine()
   process.exit(0)
 }
 
@@ -101,7 +101,7 @@ exports.success = (msg) => {
 exports.fail = (msg) => {
   logger.msgEnd('FAIL', true)
   logger.msgError(msg, true)
-  logger.newLine(true)
+  logger.newLine()
   process.exit(17)
 }
 
