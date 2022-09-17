@@ -51,7 +51,8 @@ exports.write = (msg, pr = false) => {
   process.stdout.write(msg)
   storage.append(msg, LOG_FILE)
   // Send pr messages to GitHub PR Decorator
-  if (pr) storage.append(msg, GB_DECOR)
+  // eslint-disable-next-line prettier/prettier
+  if (pr) storage.append(`${msg}`, GB_DECOR)
 }
 
 exports.msgOk = (msg, pr = false) => {
@@ -75,13 +76,13 @@ exports.msgPad = (msg, pr = false) => {
 }
 
 exports.msgSection = (msg, pr = false) => {
-  msg = pr ? `${QE}${msg}` : `${QE}${msg} `.padEnd(100, '=')
+  msg = `${QE}${msg} `.padEnd(100, '=')
   this.write(`\n${msg}\n`, pr)
-  this.write(`${''.padStart(5, ' ').padEnd(100, '=')}\n\n`)
+  this.write(`${''.padStart(5, ' ').padEnd(100, '=')}\n\n`, pr)
 }
 
 exports.msgEnd = (msg, pr = false) => {
-  msg = pr ? `${QE}${msg}` : `${QE}${msg} `.padEnd(100, '=')
+  msg = `${QE}${msg} `.padEnd(100, '=')
   this.write(`\n${msg}\n\n`, pr)
 }
 
