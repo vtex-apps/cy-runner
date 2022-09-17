@@ -192,7 +192,7 @@ exports.run = async (test, config, addOptions = {}) => {
     await Promise.all(testToRun)
   } catch (e) {
     await workspace.teardown(config)
-    system.crash('Failed to run Cypress')
+    system.crash('Failed to run Cypress', e)
   }
 
   return testResult

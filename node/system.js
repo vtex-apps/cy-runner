@@ -63,7 +63,7 @@ exports.debugFile = () => {
 exports.delay = (ms) => new Promise((res) => setTimeout(res, ms))
 
 // Crash and exit
-exports.crash = (msg, err, decorateGitHub = false) => {
+exports.crash = (msg, err, decorateGitHub = true) => {
   logger.msgEnd('ERROR', decorateGitHub)
   logger.msgError(msg, 'Crash', decorateGitHub)
   if (typeof err !== 'undefined') logger.msgPad(err, decorateGitHub)
