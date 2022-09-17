@@ -21,7 +21,7 @@ exports.getConfig = async (configFile) => {
   // Fill URLs
   const VTEX_AUTH_PATH = '.myvtex.com/api/vtexid/pub/authentication'
   const VTEX_ACCOUNT = config.base.vtex.account
-  const WORKSPACE = this.getWorkspaceName(config)
+  const WORKSPACE = await this.getWorkspaceName(config)
   const ACCOUNT = config.base.vtex.account
   const DOMAIN = config.base.vtex.domain
 
