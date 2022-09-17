@@ -3,7 +3,7 @@ const system = require('./system')
 const cypress = require('./cypress')
 
 module.exports.report = async (control, config) => {
-  logger.msgSection('Execution report', true)
+  logger.msgSection('E2E Execution report', true)
 
   logger.msgOk('Execution time', true)
 
@@ -25,7 +25,7 @@ module.exports.report = async (control, config) => {
     control.specsSkipped?.length < 1 &&
     control.specsPassed?.length > 0
       ? system.success('The test ran successfully, well done!')
-      : system.fail('The test failed!')
+      : system.fail('The test failed! Please, check the artifacts.')
   }
 }
 

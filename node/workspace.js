@@ -101,9 +101,15 @@ exports.linkApp = async (config) => {
       check = /App running/.test(log.toString())
     }
 
-    check
-      ? logger.msgOk('App linked successfully')
-      : logger.msgError('Failed to link app')
+    if (check) {
+      logger.msgOk('App linked successfully')
+    } else {
+      logger.msgError('Failed to link app, you should', true)
+      logger.msgPad(`1. Read the log ${APP_LOG}`, true)
+      logger.msgPad('2. Fix your code if get some error on log', true)
+      logger.msgPad('3. Try the E2E test again', true)
+      logger.msgWarn('The link fail due an error or timeout (90 s)', true)
+    }
 
     if (link.pid) storage.write(link.pid.toString(), APP_PID)
 
