@@ -63,10 +63,10 @@ exports.debugFile = () => {
 exports.delay = (ms) => new Promise((res) => setTimeout(res, ms))
 
 // Crash and exit
-exports.crash = (msg, err) => {
-  logger.msgEnd('ERROR')
-  logger.msgError(msg, 'Crash')
-  if (typeof err !== 'undefined') logger.msgPad(err)
+exports.crash = (msg, err, decorateGitHub = false) => {
+  logger.msgEnd('ERROR', decorateGitHub)
+  logger.msgError(msg, 'Crash', decorateGitHub)
+  if (typeof err !== 'undefined') logger.msgPad(err, decorateGitHub)
 
   // kill any subprocesses created by cy-runner
   const PID_FILE = path.join(logger.logPath(), '_pid')
@@ -84,22 +84,24 @@ exports.crash = (msg, err) => {
 
   logger.newLine()
 
+  // eslint-disable-next-line no-console
+  if (decorateGitHub) console.log(`::error title=${msg}::${err}`)
   process.exit(99)
 }
 
 // Success and exit
 exports.success = (msg) => {
-  logger.msgEnd('SUCCESS')
-  logger.msgOk(msg)
-  logger.newLine()
+  logger.msgEnd('SUCCESS', true)
+  logger.msgOk(msg, true)
+  logger.newLine(true)
   process.exit(0)
 }
 
 // Fail and exit
 exports.fail = (msg) => {
-  logger.msgEnd('FAIL')
-  logger.msgError(msg)
-  logger.newLine()
+  logger.msgEnd('FAIL', true)
+  logger.msgError(msg, true)
+  logger.newLine(true)
   process.exit(17)
 }
 

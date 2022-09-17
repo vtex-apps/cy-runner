@@ -74,8 +74,8 @@ exports.stopOnFail = async (config, step, runUrl) => {
 
 // Show URL for Cypress Dashboard or Sorry Cypress
 exports.showDashboard = (url) => {
-  logger.msgSection('Cypress Dashboard')
-  logger.msgOk(url)
+  logger.msgSection('Cypress Dashboard', true)
+  logger.msgOk(url, true)
 }
 
 // Beauty spec name to show on logs
