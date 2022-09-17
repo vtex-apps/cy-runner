@@ -80,9 +80,9 @@ exports.linkApp = async (config) => {
 
     // Link app
     logger.msgOk(`Linking ${APP}`)
-    const APP_LOG = path.join(logger.logPath(), `_link_${APP}.log`)
+    let APP_LOG = path.join(logger.logPath(), `_link_${APP}.log`)
     const APP_PID = path.join(logger.logPath(), `_pid`)
-    const STOP = 10
+    const STOP = 13
     const link = await toolbelt.link(APP_LOG)
     let check = false
     let loop = 0
@@ -104,11 +104,12 @@ exports.linkApp = async (config) => {
     if (check) {
       logger.msgOk('App linked successfully')
     } else {
+      APP_LOG = APP_LOG.replace(system.cyRunnerPath(), '.')
       logger.msgError('Failed to link app, you should', true)
       logger.msgPad(`1. Read the log ${APP_LOG}`, true)
       logger.msgPad('2. Fix your code if get some error on log', true)
       logger.msgPad('3. Try the E2E test again', true)
-      logger.msgWarn('The link fail due an error or timeout (90 s)', true)
+      logger.msgWarn('The link fail due an error or timeout (120 s)', true)
     }
 
     if (link.pid) storage.write(link.pid.toString(), APP_PID)

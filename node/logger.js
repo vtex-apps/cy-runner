@@ -79,7 +79,7 @@ exports.msgPad = (msg, pr = false) => {
 
 exports.msgSection = (msg, pr = false) => {
   if (pr) {
-    this.write(`${ico('github')} ${msg}\n\n`, pr)
+    this.write(`\n${ico('github')} ${msg}\n\n`, pr)
   } else {
     msg = `${QE}${msg} `.padEnd(100, '=')
     this.write(`\n${msg}\n`)
