@@ -69,10 +69,6 @@ exports.msgError = (msg, pr = false) => {
   this.write(`${ico('error')} ${msg}\n`, pr)
 }
 
-exports.sectionGitHub = (msg, pr) => {
-  this.write(`${ico('github')} ${msg}\n`, pr)
-}
-
 exports.msgPipe = (msg) => {
   this.write(`${ico('pipe')} ${msg}\n`)
 }
@@ -83,20 +79,20 @@ exports.msgPad = (msg, pr = false) => {
 
 exports.msgSection = (msg, pr = false) => {
   if (pr) {
-    this.sectionGitHub(msg, pr)
+    this.write(`${ico('github')} ${msg}\n\n`, pr)
   } else {
     msg = `${QE}${msg} `.padEnd(100, '=')
-    this.write(`\n${msg}\n`, pr)
-    this.write(`${''.padStart(5, ' ').padEnd(100, '=')}\n\n`, pr)
+    this.write(`\n${msg}\n`)
+    this.write(`${''.padStart(5, ' ').padEnd(100, '=')}\n\n`)
   }
 }
 
 exports.msgEnd = (msg, pr = false) => {
   if (pr) {
-    this.sectionGitHub(msg, pr)
+    this.write(`\n${ico('github')} ${msg}\n\n`, pr)
   } else {
     msg = `${QE}${msg} `.padEnd(100, '=')
-    this.write(`\n${msg}\n\n`, pr)
+    this.write(`\n${msg}\n\n`)
   }
 }
 
