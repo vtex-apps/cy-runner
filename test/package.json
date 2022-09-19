@@ -4,10 +4,11 @@
   "description": "Just a Cypress fire test",
   "main": "index.js",
   "scripts": {
-    "cy:info": "yarn cypress info",
-    "cy:brup": "yarn browserslist --update-db",
-    "cy:warmup": "cypress run --browser chrome",
-    "test": "yarn cy:brup && yarn cy:warmup && yarn cy:info"
+    "cy:v": "yarn cypress verify",
+    "cy:b": "yarn browserslist --update-db",
+    "cy:i": "yarn cypress info",
+    "cy:w": "cypress run --browser chrome --quiet",
+    "test": "yarn cy:v && yarn cy:b && yarn cy:i && yarn cy:w || exit 0"
   },
   "repository": {
     "type": "git",
