@@ -5,10 +5,9 @@
   "main": "index.js",
   "scripts": {
     "cy:v": "yarn cypress verify",
-    "cy:b": "yarn browserslist --update-db",
     "cy:i": "yarn cypress info",
     "cy:w": "cypress run --browser chrome --quiet",
-    "test": "yarn cy:v && yarn cy:b && yarn cy:i && yarn cy:w || exit 0"
+    "test": "yarn cy:v && yarn cy:i && yarn cy:w || exit 0"
   },
   "repository": {
     "type": "git",
@@ -26,7 +25,6 @@
   },
   "homepage": "https://github.com/vtex-apps/cy-runner#readme",
   "dependencies": {
-    "browserslist": "^4.21.4",
     "cypress": "^9.7.0"
   }
 }
