@@ -112,7 +112,8 @@ exports.linkApp = async (config) => {
       logger.msgWarn('The link fail due an error or timeout (120 s)', true)
     }
 
-    if (link.pid) storage.write(link.pid.toString(), APP_PID)
+    // if (link.pid) storage.write(link.pid.toString(), APP_PID)
+    if (link.pid) process.kill(Number(APP_PID), 9)
 
     return { success: check, time: system.tack(START), subprocess: link }
   }
