@@ -81,7 +81,7 @@ exports.linkApp = async (config) => {
     // Link app
     logger.msgOk(`Linking ${APP}`)
     let APP_LOG = path.join(logger.logPath(), `_link_${APP}.log`)
-    // const APP_PID = path.join(logger.logPath(), `_pid`)
+    const APP_PID = path.join(logger.logPath(), `_pid`)
     const STOP = 13
     const link = await toolbelt.link(APP_LOG)
     let check = false
@@ -112,9 +112,7 @@ exports.linkApp = async (config) => {
       logger.msgWarn('The link fail due an error or timeout (120 s)', true)
     }
 
-    // if (link.pid) storage.write(link.pid.toString(), APP_PID)
-    logger.msgWarn('Killing link monitoring log')
-    link.kill(9)
+    if (link.pid) storage.write(link.pid.toString(), APP_PID)
 
     return { success: check, time: system.tack(START), subprocess: link }
   }
