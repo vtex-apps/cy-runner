@@ -10,7 +10,7 @@ const LOG_FILE_PR = path.join(system.basePath(), '_gb-decorator.txt')
 function ico(type) {
   switch (type) {
     case 'section':
-      return '###  :::'
+      return '####'
 
     case 'ok':
       return '[✓]'.padStart(8)
@@ -52,7 +52,12 @@ exports.write = (msg, pr = false) => {
   process.stdout.write(msg)
   storage.append(msg, LOG_FILE)
   // Send pr messages to be printed in GitHub PR
-  if (pr) storage.append(msg, LOG_FILE_PR)
+  if (pr) {
+    storage.append(
+      storage.exists(LOG_FILE_PR) ? msg : `### Cypress Runner\n\n${msg}`,
+      LOG_FILE_PR
+    )
+  }
 }
 
 exports.msgOk = (msg, pr = false) => {
@@ -76,11 +81,11 @@ exports.msgPad = (msg, pr = false) => {
 }
 
 exports.msgSection = (msg, pr = false) => {
-  this.write(`\n\n${ico('section')} ${msg.toUpperCase()}\n`, pr)
+  this.write(`\n\n${ico('section')} ${msg}\n`, pr)
 }
 
 exports.msgEnd = (msg, pr = false) => {
-  this.write(`\n\n${ico('section')} ${msg.toUpperCase()}\n`, pr)
+  this.write(`\n\n${ico('section')} ${msg}\n`, pr)
 }
 
 exports.newLine = (n = 1, pr = false) => {
