@@ -1,0 +1,31 @@
+{
+  "name": "test-cypress",
+  "version": "1.0.0",
+  "description": "Just a Cypress fire test",
+  "main": "index.js",
+  "scripts": {
+    "cy:info": "yarn cypress info",
+    "cy:brup": "yarn browserslist --update-db",
+    "cy:warmup": "cypress run --browser chrome",
+    "test": "yarn cy:brup && yarn cy:warmup && yarn cy:info"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vtex-apps/cy-runner.git"
+  },
+  "keywords": [
+    "cypress",
+    "e2e",
+    "automated testing"
+  ],
+  "author": "charles.santos@vtex.com.br",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vtex-apps/cy-runner/issues"
+  },
+  "homepage": "https://github.com/vtex-apps/cy-runner#readme",
+  "dependencies": {
+    "browserslist": "^4.21.4",
+    "cypress": "^9.7.0"
+  }
+}
