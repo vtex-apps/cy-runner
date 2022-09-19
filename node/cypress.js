@@ -172,18 +172,18 @@ exports.run = async (test, config, addOptions = {}) => {
         if (result.failures) {
           logger.msgError('Got error from Cypress')
           logger.msgPad(JSON.stringify(result))
+        } else {
+          const output = {}
+          const cleanResult = result
+          const logName = result.runs[0].spec.name.replace('.js', '.yml')
+          const logSpec = path.join(logger.logPath(), logName)
+
+          // Remove sensitive information
+          delete cleanResult.config
+          output[`epoc-${system.tick()}`] = cleanResult
+          storage.append(jsYaml.dump(output), logSpec)
+          testResult.push(cleanResult)
         }
-
-        const output = {}
-        const cleanResult = result
-        const logName = result.runs[0].spec.name.replace('.js', '-result.yaml')
-        const logSpec = path.join(logger.logPath(), logName)
-
-        // Remove sensitive information
-        delete cleanResult.config
-        output[`epoc-${system.tick()}`] = cleanResult
-        storage.append(jsYaml.dump(output), logSpec)
-        testResult.push(cleanResult)
       })
     )
   }
