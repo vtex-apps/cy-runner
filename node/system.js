@@ -64,7 +64,7 @@ exports.delay = (ms) => new Promise((res) => setTimeout(res, ms))
 
 // Crash and exit
 exports.crash = (msg, err, pr = true) => {
-  logger.msgEnd('ERROR', pr)
+  logger.msgEnd('Error', pr)
   logger.msgError(msg, 'Crash', pr)
   if (typeof err !== 'undefined') logger.msgPad(err, pr)
 
@@ -92,7 +92,7 @@ exports.crash = (msg, err, pr = true) => {
 
 // Success and exit
 exports.success = (msg) => {
-  logger.msgEnd('SUCCESS', true)
+  logger.msgEnd('Success', true)
   logger.msgOk(msg, true)
   logger.newLine()
   process.exit(0)
@@ -100,7 +100,7 @@ exports.success = (msg) => {
 
 // Fail and exit
 exports.fail = (msg) => {
-  logger.msgEnd('FAIL', true)
+  logger.msgEnd('Fail', true)
   logger.msgError(msg, true)
   logger.newLine()
   process.exit(17)
