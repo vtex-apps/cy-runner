@@ -74,7 +74,7 @@ exports.stopOnFail = async (config, step, runUrl) => {
 
 // Show URL for Cypress Dashboard or Sorry Cypress
 exports.showDashboard = (url) => {
-  logger.msgSection('Cypress Dashboard', true)
+  logger.msgSection(`[Cypress Dashboard](${url})`, true)
   logger.msgOk(url, true)
 }
 

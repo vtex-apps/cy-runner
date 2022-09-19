@@ -3,39 +3,37 @@ const path = require('path')
 const storage = require('./storage')
 const system = require('./system')
 
-const QE = '[QE] === '
-const GB_DECOR = path.join(system.basePath(), '_gb-decorator.txt')
 const LOG_PATH = path.join(system.cyRunnerPath(), 'logs')
 const LOG_FILE = path.join(LOG_PATH, '_cy-runner.log')
+const LOG_FILE_PR = path.join(system.basePath(), '_gb-decorator.txt')
 
 function ico(type) {
   switch (type) {
+    case 'section':
+      return '###  :::'
+
+    case 'ok':
+      return '[✓]'.padStart(8)
+
     case 'warn':
       return '[!]'.padStart(8)
 
     case 'error':
       return '[✗]'.padStart(8)
 
-    case 'ok':
-      return '[✓]'.padStart(8)
-
-    case 'github':
-      return ':::'.padStart(8)
-
     case 'pipe':
-      return '  |'.padStart(10)
+      return '  ☍'.padStart(10)
 
     default:
       return '- '.padStart(8)
   }
 }
 
+// Init logs, clean before each run if local
 exports.init = () => {
-  if (!system.isCI()) {
-    storage.delete(GB_DECOR)
-    storage.delete(LOG_PATH)
-  }
-
+  if (system.isCI()) return storage.makeDir(LOG_PATH)
+  storage.delete(LOG_FILE_PR)
+  storage.delete(LOG_PATH)
   storage.makeDir(LOG_PATH)
 }
 
@@ -53,49 +51,40 @@ exports.logFile = () => {
 exports.write = (msg, pr = false) => {
   process.stdout.write(msg)
   storage.append(msg, LOG_FILE)
-  // Send pr messages to GitHub PR Decorator
-  if (pr) storage.append(msg, GB_DECOR)
+  // Send pr messages to be printed in GitHub PR
+  if (pr) storage.append(msg, LOG_FILE_PR)
 }
 
 exports.msgOk = (msg, pr = false) => {
-  this.write(`${ico('ok')} ${msg}\n`, pr)
+  this.write(`\n${ico('ok')} ${msg}`, pr)
 }
 
 exports.msgWarn = (msg, pr = false) => {
-  this.write(`${ico('warn')} ${msg}\n`, pr)
+  this.write(`\n${ico('warn')} ${msg}`, pr)
 }
 
 exports.msgError = (msg, pr = false) => {
-  this.write(`${ico('error')} ${msg}\n`, pr)
+  this.write(`\n${ico('error')} ${msg}`, pr)
 }
 
 exports.msgPipe = (msg) => {
-  this.write(`${ico('pipe')} ${msg}\n`)
+  this.write(`\n${ico('pipe')} ${msg}`)
 }
 
 exports.msgPad = (msg, pr = false) => {
-  this.write(`${ico()} ${msg}\n`, pr)
+  this.write(`\n${ico()} ${msg}`, pr)
 }
 
 exports.msgSection = (msg, pr = false) => {
-  if (pr) {
-    this.write(`\n${ico('github')} ${msg}\n\n`, pr)
-  } else {
-    msg = `${QE}${msg} `.padEnd(100, '=')
-    this.write(`\n${msg}\n`)
-    this.write(`${''.padStart(5, ' ').padEnd(100, '=')}\n\n`)
-  }
+  this.write(`\n\n${ico('section')} ${msg.toUpperCase()}\n`, pr)
 }
 
 exports.msgEnd = (msg, pr = false) => {
-  if (pr) {
-    this.write(`\n${ico('github')} ${msg}\n\n`, pr)
-  } else {
-    msg = `${QE}${msg} `.padEnd(100, '=')
-    this.write(`\n${msg}\n\n`)
-  }
+  this.write(`\n\n${ico('section')} ${msg.toUpperCase()}\n`, pr)
 }
 
-exports.newLine = (pr = false) => {
-  this.write('\n', pr)
+exports.newLine = (n = 1, pr = false) => {
+  for (let i = 0; i < n; i++) {
+    this.write('\n', pr)
+  }
 }

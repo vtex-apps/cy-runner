@@ -11,7 +11,7 @@ module.exports.report = async (control, config) => {
     logger.msgPad(`${section.padEnd(30, '.')} ${control.timing[section]}`, true)
   }
 
-  logger.newLine(true)
+  logger.newLine(1, true)
 
   if (config.base.cypress.devMode) {
     system.success('Hope your tests went well. See you soon!')
@@ -52,7 +52,7 @@ module.exports.printSpecs = (control) => {
         logger.msgPad(cypress.specNameClean(test), true)
       })
 
-      logger.newLine(true)
+      logger.newLine(1, true)
     }
   })
 }

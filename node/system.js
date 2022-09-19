@@ -63,10 +63,10 @@ exports.debugFile = () => {
 exports.delay = (ms) => new Promise((res) => setTimeout(res, ms))
 
 // Crash and exit
-exports.crash = (msg, err, decorateGitHub = true) => {
-  logger.msgEnd('ERROR', decorateGitHub)
-  logger.msgError(msg, 'Crash', decorateGitHub)
-  if (typeof err !== 'undefined') logger.msgPad(err, decorateGitHub)
+exports.crash = (msg, err, pr = true) => {
+  logger.msgEnd('ERROR', pr)
+  logger.msgError(msg, 'Crash', pr)
+  if (typeof err !== 'undefined') logger.msgPad(err, pr)
 
   // kill any subprocesses created by cy-runner
   const PID_FILE = path.join(logger.logPath(), '_pid')
@@ -82,10 +82,11 @@ exports.crash = (msg, err, decorateGitHub = true) => {
     }
   }
 
-  logger.newLine()
+  logger.newLine(2)
 
+  // Give GitHub information to print about the error
   // eslint-disable-next-line no-console
-  if (decorateGitHub) console.log(`::error title=${msg}::${err}`)
+  if (pr) console.log(`::error title=${msg}::${err}`)
   process.exit(99)
 }
 
