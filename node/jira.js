@@ -4,7 +4,7 @@ const logger = require('./logger')
 const system = require('./system')
 
 module.exports.issue = async (config, specsFailed, runUrl) => {
-  logger.msgSection('Jira ticket automation')
+  logger.msgSection('Jira ticket automation', true)
 
   // GitHub and Cypress
   const JIRA = config.base.jira
@@ -36,7 +36,6 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
 
   // Jira - You can set config.base.jira.testing as true for tests
   // JIRA.board = JIRA.testing || IS_SCH ? 'ENGINEERS' : JIRA.board
-  // TODO: Enable code to open tickets on the real app board
   JIRA.board = 'ENGINEERS'
   const SUMMARY = IS_SCH ? `SCHEDULE ${GH_REPO}:` : `PR #${GH_REF}:`
   const JQL = `summary ~ '${SUMMARY}' AND project = '${JIRA.board}' AND statusCategory IN ('undefined', 'In Progress', 'To Do')`
@@ -251,12 +250,12 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
       KEY = typeof ISSUE_KEY === 'undefined' ? JIRA_KEY : ISSUE_KEY
       const URL = `https://${JIRA.account}.atlassian.net/browse/${KEY}`
 
-      logger.msgOk(`Issue ${KEY} ${MSG}d`)
-      logger.msgPad(URL)
+      logger.msgOk(`Issue ${KEY} ${MSG}d`, true)
+      logger.msgPad(URL, true)
     })
     .catch((e) => {
-      logger.msgError(`Failed to ${MSG} issue`)
-      logger.msgPad(e)
+      logger.msgError(`Failed to ${MSG} issue`, true)
+      logger.msgPad(e, true)
     })
 }
 
