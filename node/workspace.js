@@ -146,10 +146,14 @@ exports.dumpEnvironment = async () => {
   storage.write((await toolbelt.dependency()).toString(), APPS_DEPENDENCY)
 
   const SRC = system.debugFile()
-  const DST = path.join(logger.logPath(), '_debug.json')
+  let DST = path.join(logger.logPath(), '_debug.json')
 
   logger.msgPad(`${SRC} -> ${DST.replace(system.basePath(), '.')}`)
   storage.copy(SRC, DST)
+
+  DST = path.join(logger.logPath(), '_node_versions.json')
+  logger.msgPad(`Node versions -> ${DST.replace(system.basePath(), '.')}`)
+  storage.append(process.versions, DST)
 }
 
 // Clean sensitive data
