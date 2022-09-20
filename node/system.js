@@ -4,6 +4,7 @@ const path = require('path')
 
 const logger = require('./logger')
 const storage = require('./storage')
+const workspace = require('./workspace')
 
 const BASE_PATH = path.join(__dirname, '..', '..')
 
@@ -81,6 +82,9 @@ exports.crash = (msg, err, pr = true) => {
       logger.msgPad(`Failed to kill ${PID}`)
     }
   }
+
+  // Dump env
+  workspace.dumpEnvironment().then((r) => r)
 
   logger.newLine(2)
 
