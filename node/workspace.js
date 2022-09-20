@@ -153,7 +153,7 @@ exports.dumpEnvironment = async () => {
 
   DST = path.join(logger.logPath(), '_node_versions.json')
   logger.msgPad(`Node versions -> ${DST.replace(system.basePath(), '.')}`)
-  storage.append(process.versions, DST)
+  storage.append(JSON.stringify(process.versions), DST)
 }
 
 // Clean sensitive data
