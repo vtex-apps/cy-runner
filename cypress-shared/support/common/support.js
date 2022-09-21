@@ -228,12 +228,18 @@ export function fillContactInfo(
           .select('CA')
         cy.get(selectors.ContinueShipping, { timeout: 15000 })
           .should('be.visible')
-          .click()
+          .click({ force: true })
       }
     })
   }
 
   cy.get('body').then(($shippingBlock) => {
+    if ($shippingBlock.find(selectors.ContinueShipping).length) {
+      cy.get(selectors.ContinueShipping, { timeout: 15000 })
+        .should('be.visible')
+        .click({ force: true })
+    }
+
     if ($shippingBlock.find(selectors.ReceiverName).length) {
       cy.get(selectors.ReceiverName, { timeout: 5000 })
         .should('be.visible')
