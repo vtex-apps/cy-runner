@@ -204,6 +204,11 @@ export function fillContactInfo(
     delay: 50,
   })
 
+  if (checkoutcustom) {
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(10000)
+  }
+
   cy.get(selectors.ProceedtoShipping).should('be.visible').click()
   cy.get(selectors.ProceedtoShipping, { timeout: 1000 }).should(
     'not.be.visible'
