@@ -204,6 +204,11 @@ export function fillContactInfo(
     delay: 50,
   })
 
+  if (checkoutcustom) {
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(10000)
+  }
+
   cy.get(selectors.ProceedtoShipping).should('be.visible').click()
   cy.get(selectors.ProceedtoShipping, { timeout: 1000 }).should(
     'not.be.visible'
@@ -228,12 +233,18 @@ export function fillContactInfo(
           .select('CA')
         cy.get(selectors.ContinueShipping, { timeout: 15000 })
           .should('be.visible')
-          .click()
+          .click({ force: true })
       }
     })
   }
 
   cy.get('body').then(($shippingBlock) => {
+    if ($shippingBlock.find(selectors.ContinueShipping).length) {
+      cy.get(selectors.ContinueShipping, { timeout: 15000 })
+        .should('be.visible')
+        .click({ force: true })
+    }
+
     if ($shippingBlock.find(selectors.ReceiverName).length) {
       cy.get(selectors.ReceiverName, { timeout: 5000 })
         .should('be.visible')
