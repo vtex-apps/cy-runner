@@ -120,14 +120,11 @@ exports.run = async (test, config, addOptions = {}) => {
   })
 
   // Build options
-  const options = {
+  let options = {
     config: {
       integrationFolder: SPEC_PATH,
       supportFile: `${SPEC_PATH.split(path.sep)[0]}/support`,
       fixturesFolder: `${CY_FOLDER}/fixtures`,
-    },
-    env: {
-      DISPLAY: '',
     },
     spec: test.specs,
     headed: config.base.cypress.runHeaded,
@@ -136,32 +133,13 @@ exports.run = async (test, config, addOptions = {}) => {
   }
 
   const testToRun = []
-  const testResult = []
   let maxJobs = 1
 
   // maxJobs = 0 --> running local without Sorry Cypress
   if (config.base.cypress.maxJobs) {
-    // Tune options if maxJobs is true (grater than zero)
-    const RUN_ID = process.env.GITHUB_RUN_ID ?? system.getId()
-    const RUN_ATTEMPT = process.env.GITHUB_RUN_ATTEMPT ?? 1
-
-    options.key = config.base.cypress.dashboardKey
-    options.record = true
-    options.ciBuildId = `${RUN_ID}-${RUN_ATTEMPT}`
-
-    // Configure Cypress to use Sorry Cypress if not in CI
-    if (!system.isCI()) process.env.CYPRESS_INTERNAL_ENV = 'development'
-
-    // Merge tune with options
+    options = tuneOptions(options, config)
     merge(options, addOptions)
-
-    // Set the number of runners
-    if (test.parallel) {
-      maxJobs =
-        test.specs.length < config.base.cypress.maxJobs
-          ? test.specs.length
-          : config.base.cypress.maxJobs
-    }
+    maxJobs = getMaxJobs(test, config)
   }
 
   // Mount parallel jobs
@@ -169,31 +147,72 @@ exports.run = async (test, config, addOptions = {}) => {
     testToRun.push(
       // eslint-disable-next-line no-loop-func
       cypress.run(options).then((result) => {
+        const specsPassed = []
+        const specsFailed = []
+
+        // If Cypress fails, roll back the spec
         if (result.failures) {
           logger.msgError('Got error from Cypress')
           logger.msgPad(JSON.stringify(result))
+
+          return { success: false, specsPassed, specsFailed, runUrl: null }
         }
 
-        const output = {}
-        const cleanResult = result
-        const logName = result.runs[0].spec.name.replace('.js', '-result.yaml')
-        const logSpec = path.join(logger.logPath(), logName)
+        // Remove sensitive data and get runUrl
+        delete result.config
+        const { runUrl } = result
 
-        // Remove sensitive information
-        delete cleanResult.config
-        output[`epoc-${system.tick()}`] = cleanResult
-        storage.append(jsYaml.dump(output), logSpec)
-        testResult.push(cleanResult)
+        // Return specs passed and failed
+        result.runs.forEach((run) => {
+          const logName = run.spec.name.replace('.js', '-result.yaml')
+          const logFile = path.join(logger.logPath(), logName)
+          const logFlow = {}
+
+          logFlow[`epoc-${system.tick()}`] = result
+          storage.append(jsYaml.dump(logFlow), logFile)
+
+          if (run.stats.failures) specsFailed.push(run.spec.relative)
+          else specsPassed.push(run.spec.relative)
+        })
+
+        return { success: true, specsPassed, specsFailed, runUrl }
       })
     )
   }
 
   try {
-    await Promise.all(testToRun)
+    return await Promise.all(testToRun)
   } catch (e) {
     await workspace.teardown(config)
     system.crash('Failed to run Cypress', e)
   }
+}
 
-  return testResult
+// Tune options
+function tuneOptions(options, config) {
+  const RUN_ID = process.env.GITHUB_RUN_ID ?? system.getId()
+  const RUN_ATTEMPT = process.env.GITHUB_RUN_ATTEMPT ?? 1
+
+  options.key = config.base.cypress.dashboardKey
+  options.record = true
+  options.ciBuildId = `${RUN_ID}-${RUN_ATTEMPT}`
+
+  // Configure Cypress to use Sorry Cypress if not in CI
+  if (!system.isCI()) process.env.CYPRESS_INTERNAL_ENV = 'development'
+
+  return options
+}
+
+// Calculate max jobs
+function getMaxJobs(test, config) {
+  let maxJobs = 1
+
+  if (test.parallel) {
+    maxJobs =
+      test.specs.length < config.base.cypress.maxJobs
+        ? test.specs.length
+        : config.base.cypress.maxJobs
+  }
+
+  return maxJobs
 }

@@ -1,4 +1,6 @@
-const { intersection, startCase } = require('lodash')
+const path = require('path')
+
+const { startCase, difference, intersection } = require('lodash')
 
 const system = require('./system')
 const logger = require('./logger')
@@ -11,53 +13,72 @@ let specsPassed = []
 let runUrl = null
 
 exports.runTests = async (config) => {
+  // Control time and load strategies
   const START = system.tick()
-  const STRATEGIES = config.strategy
+  const STRGS = config.strategy
 
-  // Export envs for make easier debug on GitHub Actions
-  for (const env in config.exportEnvs) {
-    process.env[env] = config.exportEnvs[env]
-  }
+  // Start Xvfb
+  logger.msgOk('Starting Xvfb on port 99')
+  const displayLog = path.join(logger.logPath(), '_display.log')
+  const xvfb = system.spawn(
+    'Xvfb',
+    ['-screen', '0', '1024x768x24', ':99'],
+    displayLog
+  )
 
-  for (const strategy in STRATEGIES) {
-    const test = STRATEGIES[strategy]
+  // Loop strategies
+  for (const strategy in STRGS) {
+    const test = STRGS[strategy]
     const group = `${system.getId()}/${strategy}`
 
     test.name = startCase(strategy)
 
-    if (test.enabled) {
-      let { dependency } = test
-
-      if (dependency?.length) {
-        // Drop eventual duplications
-        dependency = [...new Set(dependency)]
-        specsPassed = [...new Set(specsPassed)]
-        const check = intersection(dependency, specsPassed)
-
-        // All dependencies passed?
-        if (check.length === dependency.length) {
-          // Yes
-          // eslint-disable-next-line no-await-in-loop
-          await runTest(test, config, group)
-        } else {
-          // No
-          logger.msgSection(`[skip] Strategy ${test.name}`)
-          // eslint-disable-next-line no-loop-func
-          logger.msgError('Dependency failed')
-          dependency.sort()
-          dependency.forEach((item) => {
-            logger.msgPad(cypress.specNameClean(item))
-          })
-          specsSkipped = specsSkipped.concat(test.specs)
-        }
-      } else {
-        // eslint-disable-next-line no-await-in-loop
-        await runTest(test, config, group)
-      }
-    } else {
+    // If test disabled, just flag and continue
+    if (!test.enabled) {
       specsDisabled = specsDisabled.concat(test.specs)
+      continue
     }
+
+    // If it has dependencies, and they don't meet, flag and continue
+    if (test.dependency?.length) {
+      // Set to drop eventual user duplications by mistaken
+      const deps = [...new Set(test.dependency)].sort()
+      const pass = [...new Set(specsPassed)].sort()
+      const miss = difference(deps, pass)
+
+      // Dependencies don't meet
+      if (miss?.length) {
+        logger.msgSection(`[skip] Strategy ${test.name}`)
+        const loopPass = intersection(deps, pass)
+        const loopMiss = intersection(deps, miss)
+        const loopSkip = intersection(deps, specsSkipped)
+
+        // Show feedback to user
+        loopPass.forEach((spec) => {
+          logger.msgOk(cypress.specNameClean(spec))
+        })
+        loopSkip.forEach((spec) => {
+          logger.msgWarn(cypress.specNameClean(spec))
+        })
+        loopMiss.forEach((spec) => {
+          logger.msgError(cypress.specNameClean(spec))
+        })
+
+        // Feed skipped list
+        specsSkipped = specsSkipped.concat(test.specs)
+
+        continue
+      }
+    }
+
+    // All set, let's run the test
+    // eslint-disable-next-line no-await-in-loop
+    await runTest(test, config, group)
   }
+
+  // Stops Xvfb
+  logger.msgOk('Killing Xvfb')
+  xvfb.kill()
 
   return {
     time: system.tack(START),
@@ -70,55 +91,35 @@ exports.runTests = async (config) => {
 }
 
 async function runTest(test, config, group) {
-  let testsPassed = false
-  let thisTry = 1
-  const hardTries = test.hardTries + 1
-  const addOptions = {
-    parallel: test.parallel,
-  }
+  const cypressOptions = { parallel: test.parallel }
+  const tries = test.hardTries + 1
+  let testTry = 1
 
-  // Drop duplicates, just in case
-  test.specs = [...new Set(test.specs)]
-
-  while (thisTry <= hardTries && !testsPassed && test.specs.length) {
-    logger.msgSection(`[try ${thisTry}/${hardTries}] Strategy ${test.name}`)
-    addOptions.group = `${group}/${thisTry}`
-
+  test.specs = [...new Set(test.specs)] // Sanitize
+  while (testTry <= tries && test.specs.length) {
+    logger.msgSection(`[try ${testTry}/${tries}] Strategy ${test.name}`)
+    cypressOptions.group = `${group}/${testTry}`
     // eslint-disable-next-line no-await-in-loop
-    const testsResult = await cypress.run(test, config, addOptions)
+    const results = await cypress.run(test, config, cypressOptions)
 
-    testsPassed = true
     // eslint-disable-next-line no-loop-func
-    testsResult.forEach((testResult) => {
-      if (!runUrl) runUrl = testResult.runUrl
-      testResult.runs.forEach((run) => {
-        if (run.stats.failures) {
-          testsPassed = false
-        } else {
-          for (const spec in test.specs) {
-            const [search] = test.specs[spec].split('*')
-            const found = run.spec.relative.includes(search)
-
-            if (found) {
-              specsPassed.push(test.specs[spec])
-              test.specs.splice(Number(spec), 1)
-
-              break
-            }
-          }
-        }
-      })
+    results.forEach((result) => {
+      if (!runUrl) runUrl = result.runUrl
+      if (result.success) {
+        test.specs = difference(test.specs, result.specsPassed)
+        specsPassed = specsPassed.concat(result.specsPassed)
+      }
     })
-    thisTry++
+    testTry++
   }
 
-  await pushResults(testsPassed, test, config)
-}
-
-async function pushResults(testsPassed, test, config) {
-  if (!testsPassed) {
+  if (!test.specs.length) {
+    logger.msgOk(`Strategy ${test.name} ran successfully`)
+    specsPassed = [...new Set(specsPassed)].sort() // Sanitization
+  } else {
     logger.msgError(`Strategy ${test.name} failed`)
     specsFailed = specsFailed.concat(test.specs)
+    specsFailed = [...new Set(specsFailed)].sort() // Sanitization
     if (test.stopOnFail) {
       await cypress.stopOnFail(
         config,
@@ -126,7 +127,5 @@ async function pushResults(testsPassed, test, config) {
         runUrl
       )
     }
-  } else {
-    logger.msgOk(`Strategy ${test.name} ran successfully`)
   }
 }

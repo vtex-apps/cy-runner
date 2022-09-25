@@ -92,7 +92,7 @@ exports.linkApp = async (config) => {
       loop++
       if (loop === STOP) break
 
-      logger.msgPad('waiting 10 seconds until link gets ready')
+      logger.msgPad(`waiting ${130 - loop * 10} seconds until link gets ready`)
       // eslint-disable-next-line no-await-in-loop
       await system.delay(10000)
 
@@ -154,6 +154,11 @@ exports.dumpEnvironment = async () => {
   DST = path.join(logger.logPath(), '_node_versions.json')
   logger.msgPad(`Node versions -> ${DST.replace(system.basePath(), '.')}`)
   storage.append(JSON.stringify(process.versions), DST)
+
+  DST = path.join(logger.logPath(), '_env.txt')
+  logger.msgPad(`Env variables -> ${DST.replace(system.basePath(), '.')}`)
+  delete process.env.VTEX_QE
+  storage.append(JSON.stringify(process.env), DST)
 }
 
 // Clean sensitive data

@@ -48,6 +48,15 @@ exports.getConfig = async (configFile) => {
     config.base.cypress.browser = 'chrome'
   }
 
+  // Inject envs to make sure local tests will run like GitHub
+  if (!config.envs) config.envs = []
+  config.envs.push(
+    'ELECTRON_EXTRA_LAUNCH_ARGS: --disable-gpu --disable-software-rasterizer'
+  )
+  config.envs.push('LIBVA_DRIVER_NAME: --disable-software-rasterizer')
+  config.envs.push('DISPLAY: :99')
+  config.envs.push('NODE_NO_WARNINGS: 1')
+
   // Clean debug and disable Sorry if not listening on 1233
   if (!system.isCI()) {
     logger.msgOk('Cleaning debug file')
@@ -104,6 +113,15 @@ exports.getConfig = async (configFile) => {
     if (storage.exists(lnk)) storage.unLink(lnk)
     storage.link(cyp, lnk)
   }
+
+  // Export envs to make debug easier inside GitHub
+  if (config.envs) logger.msgOk('Exporting envs variables')
+  config.envs.forEach((env) => {
+    const [envName, envValue] = env.split(': ')
+
+    logger.msgPad(`${envName} = ${envValue}`)
+    process.env[envName] = envValue
+  })
 
   return config
 }
