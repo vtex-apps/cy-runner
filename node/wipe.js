@@ -1,4 +1,3 @@
-const system = require('./system')
 const logger = require('./logger')
 const cypress = require('./cypress')
 
@@ -9,18 +8,20 @@ module.exports.wipe = async (config) => {
   if (wipe.enabled) {
     logger.msgOk('Wiping data')
 
-    // Force disable parallelism for wipe
+    // Disable parallelism for wipe and increase verbosity
     config.base.cypress.maxJobs = 0
+    config.base.cypress.quiet = false
 
     // Remove data
-    const { stopOnFail } = wipe
-    const result = await cypress.run(wipe, config)
+    const results = await cypress.run(wipe, config)
+    let success = false
 
-    if (result[0].totalFailed) {
-      logger.msgError('Failed to wipe data')
-      if (stopOnFail) system.crash('Triggered stopOnFail', 'Wipe failed')
-    } else {
-      logger.msgOk('Data wiped successfully')
-    }
+    results.forEach((result) => {
+      if (result.success) if (!result.specsFailed?.length) success = true
+    })
+
+    success
+      ? logger.msgOk('Data wiped successfully')
+      : logger.msgError('Failed to wipe data')
   }
 }
