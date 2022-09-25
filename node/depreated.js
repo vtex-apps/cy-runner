@@ -13,6 +13,7 @@ module.exports.deprecated = async (config) => {
     'workspace.linkApp.logOutput',
   ]
 
+  if (config.lockScript) delete config.lockScript
   DEPRECATED.forEach((flag) => {
     if (get(config, flag)) FOUND.push(flag)
   })

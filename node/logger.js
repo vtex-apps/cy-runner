@@ -32,8 +32,13 @@ function ico(type) {
 // Init logs, clean before each run if local
 exports.init = () => {
   if (system.isCI()) return storage.makeDir(LOG_PATH)
-  storage.delete(LOG_FILE_PR)
-  storage.delete(LOG_PATH)
+  // We need this flag to lock Avalara locally for now
+  // TODO: make this logic better
+  if (!process.env.DONT_CLEAN) {
+    storage.delete(LOG_FILE_PR)
+    storage.delete(LOG_PATH)
+  }
+
   storage.makeDir(LOG_PATH)
 }
 

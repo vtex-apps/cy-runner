@@ -9,10 +9,13 @@ module.exports.wipe = async (config) => {
     logger.msgOk('Wiping data')
 
     // Disable parallelism for wipe and increase verbosity
+    logger.msgPad('Setting maxJobs to 0')
     config.base.cypress.maxJobs = 0
+    logger.msgPad('Setting quiet to false')
     config.base.cypress.quiet = false
 
     // Remove data
+    logger.msgPad('Running wipe')
     const results = await cypress.run(wipe, config)
     let success = false
 
