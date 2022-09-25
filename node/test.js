@@ -98,6 +98,15 @@ async function runTest(test, config, group) {
   test.specs = [...new Set(test.specs)] // Sanitize
   while (testTry <= tries && test.specs.length) {
     logger.msgSection(`[try ${testTry}/${tries}] Strategy ${test.name}`)
+    if (runUrl) {
+      logger.msgOk('Dashboard URL')
+      logger.msgPad(runUrl)
+    }
+
+    logger.msgOk('Specs to run on this try')
+    test.specs.forEach((spec) => {
+      logger.msgPad(cypress.specNameClean(spec))
+    })
     cypressOptions.group = `${group}/${testTry}`
     // eslint-disable-next-line no-await-in-loop
     const results = await cypress.run(test, config, cypressOptions)
@@ -116,10 +125,16 @@ async function runTest(test, config, group) {
   if (!test.specs.length) {
     logger.msgOk(`Strategy ${test.name} ran successfully`)
     specsPassed = [...new Set(specsPassed)].sort() // Sanitization
+    specsPassed.forEach((spec) => {
+      logger.msgPad(`Passed: ${cypress.specNameClean(spec)}`)
+    })
   } else {
     logger.msgError(`Strategy ${test.name} failed`)
     specsFailed = specsFailed.concat(test.specs)
     specsFailed = [...new Set(specsFailed)].sort() // Sanitization
+    specsFailed.forEach((spec) => {
+      logger.msgPad(`Failed: ${cypress.specNameClean(spec)}`)
+    })
     if (test.stopOnFail) {
       await cypress.stopOnFail(
         config,
