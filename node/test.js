@@ -18,13 +18,7 @@ exports.runTests = async (config) => {
   const STRGS = config.strategy
 
   // Start Xvfb
-  logger.msgOk('Starting Xvfb on port 99')
-  const displayLog = path.join(logger.logPath(), '_display.log')
-  const xvfb = system.spawn(
-    'Xvfb',
-    ['-screen', '0', '1024x768x24', ':99'],
-    displayLog
-  )
+  const xvfb = await this.startXvfb()
 
   // Loop strategies
   for (const strategy in STRGS) {
@@ -77,8 +71,7 @@ exports.runTests = async (config) => {
   }
 
   // Stops Xvfb
-  logger.msgOk('Killing Xvfb')
-  xvfb.kill()
+  await this.stopXvfb(xvfb)
 
   return {
     time: system.tack(START),
@@ -88,6 +81,22 @@ exports.runTests = async (config) => {
     specsPassed,
     runUrl,
   }
+}
+
+exports.startXvfb = async () => {
+  logger.msgOk('Starting Xvfb on port 99')
+  const displayLog = path.join(logger.logPath(), '_display.log')
+
+  return system.spawn(
+    'Xvfb',
+    ['-screen', '0', '1024x768x24', ':99'],
+    displayLog
+  )
+}
+
+exports.stopXvfb = async (xvfb) => {
+  logger.msgOk('Stopping Xvfb')
+  xvfb.kill()
 }
 
 async function runTest(test, config, group) {
