@@ -1,141 +1,173 @@
 const path = require('path')
 
-const qe = require('./utils')
-const { teardown } = require('./teardown')
+const system = require('./system')
+const logger = require('./logger')
+const toolbelt = require('./toolbelt')
+const storage = require('./storage')
+const { wipe } = require('./wipe')
 
-exports.workspace = async (config) => {
-  const START = qe.tick()
-  const wrk = config.workspace
-  const { linkApp } = wrk
-  const { installApps } = wrk
-  const { removeApps } = wrk
-  const manageWorkspace =
-    wrk.random ||
-    linkApp.enabled ||
-    installApps.length > 0 ||
-    removeApps.length > 0
+exports.init = async (config) => {
+  const START = system.tick()
+  const NAME = config.workspace.name
 
-  const vtexBin = config.base.vtex.bin
+  logger.msgSection('Workspace set up')
+  logger.msgOk('Changing workspace')
+  logger.msgPad(NAME)
 
-  if (manageWorkspace) {
-    qe.msgSection('Workspace preparation')
-    // Check if vtex cli is logged
-    const tlb = await qe.toolbelt(vtexBin, 'whoami')
+  const check = await toolbelt.changeWorkspace(NAME)
 
-    if (tlb.success) {
-      // Feedback with actual user
-      // eslint-disable-next-line prefer-destructuring
-      const user = tlb.stdout.split(' ')[7]
+  if (!check) system.crash('Failed to change workspace')
 
-      qe.msg(`Toolbelt logged as ${user}`)
-      // Change workspace
-      qe.msg(`Changing workspace to ${wrk.name}`)
-      await qe.toolbelt(vtexBin, `workspace use ${wrk.name}`)
-      // Install apps
-      if (installApps.length > 0) {
-        qe.msg('Installing apps', 'warn', false)
-        await doInstallApps(installApps, vtexBin)
-        qe.msg('Apps installed successfully')
-      }
+  return system.tack(START)
+}
 
-      // Uninstall apps
-      if (removeApps.length > 0) {
-        qe.msg('Uninstalling apps', 'warn', false)
-        await doRemoveApps(removeApps, vtexBin)
-        qe.msg('Apps uninstalled successfully')
-      }
+exports.installApps = async (config) => {
+  const START = system.tick()
+  const APPS = config.workspace.installApps
 
-      // Link app
-      await doLinkApp(config)
+  if (APPS?.length) {
+    logger.msgOk('Installing apps')
+    const check = await toolbelt.install(APPS)
 
-      // Logging all apps
-      await listApps(vtexBin)
-    } else {
-      if (!config.base.vtex.deployCli.enabled) {
-        qe.crash(
-          'You must be logged on toolbelt to manage workspace',
-          `Do a 'vtex login ${config.base.vtex.account}' or enable base.vtex.deployCli`
-        )
-      }
-
-      qe.crash(
-        'You have deployCli enabled, but login fails',
-        'Check your network!'
-      )
-    }
+    if (!check) system.crash('Failed to install apps', 'Check the logs')
   }
 
-  return qe.tock(START)
+  return system.tack(START)
 }
 
-async function listApps(vtexBin) {
-  const appsLogFile = path.join('.', 'logs', 'appsVersions.log')
-  const depsLogFile = path.join('.', 'logs', 'depsVersions.log')
-  const apps = await qe.toolbelt(vtexBin, 'ls')
-  const deps = await qe.toolbelt(vtexBin, 'deps ls')
+exports.uninstallApps = async (config) => {
+  const START = system.tick()
+  const APPS = config.workspace.removeApps
 
-  qe.msg(`Listing apps to ${appsLogFile}`)
-  qe.storage(appsLogFile, 'append', apps.stdout)
-  qe.msg(`Listing deps to ${depsLogFile}`)
-  qe.storage(depsLogFile, 'append', deps.stdout)
-}
+  if (APPS?.length) {
+    logger.msgOk('Uninstalling apps')
+    const check = await toolbelt.uninstall(APPS)
 
-async function doInstallApps(apps, vtexBin) {
-  for (const index in apps) {
-    const app = apps[index]
-    // eslint-disable-next-line no-await-in-loop
-    const tlb = await qe.toolbelt(vtexBin, `install ${app}`)
-
-    if (!tlb.success) qe.crash(`Error on install ${app}`)
-    qe.msg(app, true, true)
+    if (!check) system.crash('Failed to uninstall apps', 'Check the logs')
   }
+
+  return system.tack(START)
 }
 
-async function doRemoveApps(apps, vtexBin) {
-  for (const index in apps) {
-    const app = apps[index]
-    // eslint-disable-next-line no-await-in-loop
-    const tlb = await qe.toolbelt(vtexBin, `uninstall ${app}`)
+exports.updateVtexIgnore = async () => {
+  const IGNORE_FILE = path.join(system.basePath(), '.vtexignore')
+  const SHORT_NAME = IGNORE_FILE.replace(system.rootPath(), '.')
 
-    if (!tlb.success) qe.crash(`Error on remove ${app}`)
-    qe.msg(app, true, true)
-  }
+  logger.msgOk(`Updating ${SHORT_NAME}`)
+  if (!storage.exists(IGNORE_FILE)) storage.write('# cy-r\n', IGNORE_FILE)
+  const EXCLUSIONS = ['cypress', 'cy-runner', 'cypress-shared']
+
+  EXCLUSIONS.forEach((exclusion) => {
+    storage.append(`${exclusion}\n`, IGNORE_FILE)
+  })
 }
 
-async function doLinkApp(config) {
+exports.linkApp = async (config) => {
+  const START = system.tick()
+
   // eslint-disable-next-line vtex/prefer-early-return
   if (config.workspace.linkApp.enabled) {
-    qe.msg('Linking app', 'warn', false)
-    const manifestFile = path.join('..', 'manifest.json')
+    const MANIFEST_FILE = path.join(system.basePath(), 'manifest.json')
+    const SHORT_NAME = MANIFEST_FILE.replace(system.rootPath(), '.')
 
-    qe.msg(`Reading ${manifestFile}`, true, true)
-    let testApp = qe.storage(manifestFile, 'read')
+    // Update vtex ignore
+    await this.updateVtexIgnore()
 
-    testApp = JSON.parse(testApp)
-    const app = `${testApp.vendor}.${testApp.name}`
+    // Read name of app to be linked
+    logger.msgOk(`Reading ${SHORT_NAME}`)
+    const MANIFEST = storage.readYaml(MANIFEST_FILE)
+    const APP = `${MANIFEST.vendor}.${MANIFEST.name}@${MANIFEST.version}`
 
-    const ignoreFile = path.join('..', '.vtexignore')
-    const exclusions = [
-      'cypress',
-      'cy-runner',
-      'cypress-shared',
-      'docs/**/*.{gif,png,jpg}',
-    ]
+    // Link app
+    logger.msgOk(`Linking ${APP}`)
+    let APP_LOG = path.join(logger.logPath(), `_link_${APP}.log`)
+    const APP_PID = path.join(logger.logPath(), `_pid`)
+    const STOP = 13
+    const link = await toolbelt.link(APP_LOG)
+    let check = false
+    let loop = 0
 
-    qe.msg(`Adding cy-runner exclusions to ${ignoreFile}`, true, true)
-    exclusions.forEach((line) => {
-      qe.storage(ignoreFile, 'append', `${line}\n`)
-    })
-    qe.msg(`Linking ${app}`, true, true)
+    while (!check) {
+      // To not wait forever
+      loop++
+      if (loop === STOP) break
 
-    const tlb = await qe.toolbelt(config.base.vtex.bin, `link --no-watch`, app)
+      logger.msgPad(`waiting ${130 - loop * 10} seconds until link gets ready`)
+      // eslint-disable-next-line no-await-in-loop
+      await system.delay(10000)
 
-    if (tlb.success) {
-      qe.msg('App linked successfully')
-    } else {
-      qe.msg('Error linking App', 'error')
-      await teardown(config)
-      qe.crash(`Link ${app} to test failed`)
+      const log = storage.read(APP_LOG)
+
+      check = /App running/.test(log.toString())
     }
+
+    if (check) {
+      logger.msgOk('App linked successfully')
+    } else {
+      APP_LOG = APP_LOG.replace(system.cyRunnerPath(), '.')
+      logger.msgError('Failed to link app, you should', true)
+      logger.msgPad(`1. Read the log ${APP_LOG}`, true)
+      logger.msgPad('2. Fix your code if get some error on log', true)
+      logger.msgPad('3. Try the E2E test again', true)
+      logger.msgWarn('The link fail due an error or timeout (120 s)', true)
+    }
+
+    if (link.pid) storage.write(link.pid.toString(), APP_PID)
+
+    return { success: check, time: system.tack(START), subprocess: link }
   }
+
+  return { success: true, time: system.tack(START), subprocess: null }
+}
+
+exports.teardown = async (config) => {
+  const START = system.tick()
+  const { workspace } = config
+
+  logger.msgSection('Workspace teardown')
+  await this.dumpEnvironment()
+  if (config.base.keepStateFiles) storage.keepStateFiles(config)
+  await wipe(config)
+  await this.cleanSensitiveData()
+  if (workspace.teardown.enabled) await toolbelt.deleteWorkspace(workspace.name)
+
+  return system.tack(START)
+}
+
+// Save apps list
+exports.dumpEnvironment = async () => {
+  const APPS_INSTALLED = path.join(logger.logPath(), '_apps_installed.txt')
+  const APPS_DEPENDENCY = path.join(logger.logPath(), '_apps_dependency.json')
+
+  logger.msgOk('Dumping environment')
+  logger.msgPad(APPS_INSTALLED.replace(system.basePath(), '.'))
+  storage.write((await toolbelt.ls()).toString(), APPS_INSTALLED)
+  logger.msgPad(APPS_DEPENDENCY.replace(system.basePath(), '.'))
+  storage.write((await toolbelt.dependency()).toString(), APPS_DEPENDENCY)
+
+  const SRC = system.debugFile()
+  let DST = path.join(logger.logPath(), '_debug.json')
+
+  logger.msgPad(`${SRC} -> ${DST.replace(system.basePath(), '.')}`)
+  storage.copy(SRC, DST)
+
+  DST = path.join(logger.logPath(), '_node_versions.json')
+  logger.msgPad(`Node versions -> ${DST.replace(system.basePath(), '.')}`)
+  storage.append(JSON.stringify(process.versions), DST)
+
+  DST = path.join(logger.logPath(), '_env.txt')
+  logger.msgPad(`Env variables -> ${DST.replace(system.basePath(), '.')}`)
+  delete process.env.VTEX_QE
+  storage.append(JSON.stringify(process.env), DST)
+}
+
+// Clean sensitive data
+exports.cleanSensitiveData = async () => {
+  const SENSITIVE_FILES = ['cypress.env.json', 'cypress.json']
+
+  logger.msgOk('Cleaning sensitive data')
+  SENSITIVE_FILES.forEach((file) => {
+    logger.msgPad(file)
+    storage.delete(file)
+  })
 }

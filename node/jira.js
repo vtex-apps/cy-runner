@@ -1,14 +1,14 @@
 const axios = require('axios')
 
-const qe = require('./utils')
+const logger = require('./logger')
+const system = require('./system')
 
 module.exports.issue = async (config, specsFailed, runUrl) => {
-  qe.msgSection('Jira integration')
+  logger.msgSection('Jira ticket automation', true)
 
   // GitHub and Cypress
   const JIRA = config.base.jira
-  const CI = process.env.CI ?? false
-  const GH_REPO = process.env.GITHUB_REPOSITORY ?? 'example/App-Teste'
+  const GH_REPO = process.env.GITHUB_REPOSITORY ?? 'example/app-example'
   const GITHUB_REF = process.env.GITHUB_REF ?? 'refs/pull/77/merge'
   const [, , GH_REF] = GITHUB_REF.split('/')
   const GH_RUN = process.env.GITHUB_RUN_ID ?? 7777777777
@@ -22,20 +22,21 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
 
   // If DISPATCH, avoid any ticket creation
   if (IS_DIS) {
-    qe.msg('Running as dispatch, skipping any ticket creation', 'ok')
+    logger.msgWarn('It was triggered by dispatch, skipping ticket creation')
 
     return
   }
 
   // If LOCAL, avoid any ticket creation
-  if (!CI) {
-    qe.msg('Running locally, skipping any ticket creation', 'ok')
+  if (!system.isCI()) {
+    logger.msgWarn('Not on CI, skipping ticket creation')
 
     return
   }
 
   // Jira - You can set config.base.jira.testing as true for tests
-  JIRA.board = JIRA.testing || IS_SCH ? 'ENGINEERS' : JIRA.board
+  // JIRA.board = JIRA.testing || IS_SCH ? 'ENGINEERS' : JIRA.board
+  JIRA.board = 'ENGINEERS'
   const SUMMARY = IS_SCH ? `SCHEDULE ${GH_REPO}:` : `PR #${GH_REF}:`
   const JQL = `summary ~ '${SUMMARY}' AND project = '${JIRA.board}' AND statusCategory IN ('undefined', 'In Progress', 'To Do')`
   const PRIORITY = JIRA.priority ?? 'High'
@@ -227,7 +228,8 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
 
   switch (JIRA_KEY) {
     case 'abort':
-      qe.msg('Issue creation skipped due an JQL error', 'error')
+      logger.msgError('Error on the JQL')
+      logger.msgPad(JQL)
 
       return
 
@@ -248,12 +250,12 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
       KEY = typeof ISSUE_KEY === 'undefined' ? JIRA_KEY : ISSUE_KEY
       const URL = `https://${JIRA.account}.atlassian.net/browse/${KEY}`
 
-      qe.msg(`Issue ${KEY} ${MSG}d`, 'ok', false, false)
-      qe.msg(URL, true, true)
+      logger.msgOk(`Issue ${KEY} ${MSG}d`, true)
+      logger.msgPad(URL, true)
     })
     .catch((e) => {
-      qe.msg(`Fail to ${MSG} issue`, 'error', false, false)
-      qe.msg(e, true, true, false)
+      logger.msgError(`Failed to ${MSG} issue`, true)
+      logger.msgPad(e, true)
     })
 }
 
@@ -280,19 +282,19 @@ async function searchIssue(account, authorization, jiraJQL) {
     .then((response) => {
       if (response.data.total === 1) {
         key = response.data.issues[0].key
-        qe.msg(`Opened issue ${key} found, it'll be updated`, 'warn')
+        logger.msgOk(`Opened issue ${key} found`)
       } else if (response.data.total > 1) {
         key = 'abort'
-        qe.msg('More than one issue found, aborting', 'error')
-        qe.msg(`JQL used: ${jiraJQL}`)
+        logger.msgError('More than one issue found')
+        logger.msgPad(jiraJQL)
       } else {
         key = 'create'
-        qe.msg(`Issue not found, it'll be created`, 'ok')
+        logger.msgWarn('A new issue will be created')
       }
     })
     .catch((e) => {
-      qe.msg('Querying Jira API', 'error')
-      qe.msg(e, true, true, false)
+      logger.msgError('Querying Jira API')
+      logger.msgPad(e)
     })
 
   return key

@@ -1,32 +1,36 @@
-const qe = require('./utils')
+const logger = require('./logger')
+const cypress = require('./cypress')
+const test = require('./test')
 
 module.exports.wipe = async (config) => {
-  const START = qe.tick()
   const { wipe } = config.workspace
 
+  // eslint-disable-next-line vtex/prefer-early-return
   if (wipe.enabled) {
-    const sensitiveFiles = ['cypress.env.json', 'cypress.json']
+    logger.msgOk('Wiping data')
 
-    qe.msg(`Wiping data`, 'warn')
-    const { stopOnFail } = wipe
-    const result = await qe.runCypress(wipe, config, {}, true)
+    // Disable parallelism for wipe and increase verbosity
+    logger.msgPad('Setting maxJobs to 0')
+    config.base.cypress.maxJobs = 0
+    logger.msgPad('Setting quiet to false')
+    config.base.cypress.quiet = false
+    logger.msgPad('Setting browser to Electron')
+    config.base.cypress.browser = 'electron'
 
-    if (result[0].totalFailed) {
-      qe.msg('Failed to clean data', 'error')
-      if (stopOnFail) {
-        qe.crash('Stop due to stopOnFail', 'Wipe failed')
-      }
-    } else {
-      qe.msg('Success to clean data')
-    }
+    // Remove data
+    logger.msgPad('Running wipe')
+    const xvfb = await test.startXvfb()
+    const results = await cypress.run(wipe, config)
 
-    qe.msg('Removing sensitive files', 'warn')
-    sensitiveFiles.forEach((file) => {
-      qe.msg(file, true, true)
-      qe.storage(file, 'rm')
+    await test.stopXvfb(xvfb)
+    let success = false
+
+    results.forEach((result) => {
+      if (result.success) if (!result.specsFailed?.length) success = true
     })
-    qe.msg('Sensitive files removed')
-  }
 
-  return qe.tock(START)
+    success
+      ? logger.msgOk('Data wiped successfully')
+      : logger.msgError('Failed to wipe data')
+  }
 }

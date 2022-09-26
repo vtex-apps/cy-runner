@@ -14,11 +14,11 @@
 const { get } = require('lodash')
 const { mapValues } = require('lodash')
 
-const qe = require('./utils')
+const system = require('./system')
 
 function schemaValidator(schema, config, strategy = '') {
   const skip = []
-  const schemaTraversed = qe.traverse([], schema)
+  const schemaTraversed = system.traverse([], schema)
   const ignore = (key, value) => {
     let byPass = null
 
@@ -88,26 +88,25 @@ function schemaValidator(schema, config, strategy = '') {
     }
 
     if (crash) {
-      qe.crash(
-        `Parse config file failed: ${strategy}${item.key} must be ${msg}`
+      system.crash(
+        'Parse of cy-runner.yml failed',
+        `${strategy}${item.key} must be ${msg}`
       )
     }
   })
 }
 
-exports.validateConfig = (config, file) => {
+exports.validateConfig = (config) => {
   const BASE_SCHEMA = {
     base: {
       secrets: {
         enabled: 2,
         name: 0,
       },
-      twilio: { enabled: 2 },
       vtex: {
         account: 0,
         id: 4,
         domain: 0,
-        deployCli: { enabled: 2, git: 0, branch: 0 },
       },
       cypress: {
         devMode: 2,
@@ -173,12 +172,12 @@ exports.validateConfig = (config, file) => {
   checkDependency(config)
 
   // All set, show the user a positive feedback
-  qe.msg(`${file} loaded and validated successfully`)
+  return true
 }
 
 exports.validateSecrets = (secrets, config) => {
   try {
-    if (config.base.vtex.deployCli.enabled) {
+    if (config.base.secrets.enabled) {
       const VTEX_ATTRIBUTES = [
         'apiKey',
         'apiToken',
@@ -191,30 +190,21 @@ exports.validateSecrets = (secrets, config) => {
         checkSecret(`secrets.vtex.${att}`, secrets.vtex[att])
       })
     }
-
-    // Check TWILIO secrets
-    if (config.base.twilio.enabled) {
-      const TWILIO_ATTRIBUTES = ['apiUser', 'apiToken', 'baseUrl']
-
-      TWILIO_ATTRIBUTES.forEach((att) => {
-        checkSecret(`secrets.twilio.${att}`, secrets.twilio[att])
-      })
-    }
   } catch (e) {
-    qe.crash('You must set this property on your secrets', e)
+    system.crash('This property is missing on your secrets', e)
   }
 }
 
 // Check secrets
 function checkSecret(key, value) {
   key = key.split('secrets.')[1]
-  if (typeof value !== 'string') qe.crash(`Secret must be string: ${key}`)
-  if (value.length <= 0) qe.crash(`Secret can not be null: ${key}`)
+  if (typeof value !== 'string') system.crash('This secret must be string', key)
+  if (value.length <= 0) system.crash("This secret can't be null", key)
 }
 
 // Check dependencies
 function checkDependency(config) {
-  qe.traverse([], config.strategy).forEach((item) => {
+  system.traverse([], config.strategy).forEach((item) => {
     // eslint-disable-next-line vtex/prefer-early-return
     if (/dependency/.test(item.key)) {
       const dep = mapValues(config.strategy, (o) => {
@@ -225,7 +215,7 @@ function checkDependency(config) {
       const check = checkRegex.test(JSON.stringify(dep))
 
       if (!check) {
-        qe.crash(`Spec ${item.key} not found`, item.type)
+        system.crash(`Spec ${item.key} not found`, item.type)
       }
     }
   })

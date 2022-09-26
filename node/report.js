@@ -1,46 +1,58 @@
-const qe = require('./utils')
+const logger = require('./logger')
+const system = require('./system')
+const cypress = require('./cypress')
 
 module.exports.report = async (control, config) => {
-  qe.msgSection('Execution report')
+  logger.msgSection('Execution report', true)
 
-  qe.msg('Execution time')
+  logger.msgOk('Execution time', true)
+
   for (const section in control.timing) {
-    qe.msg(`${section.padEnd(30, '.')} ${control.timing[section]}`, true, true)
+    logger.msgPad(`${section.padEnd(30, '.')} ${control.timing[section]}`, true)
   }
 
-  qe.newLine()
+  logger.newLine(1, true)
 
   if (config.base.cypress.devMode) {
-    qe.success('Hope your tests went well. See you soon!')
+    system.success('Hope your tests went well. See you soon!')
   } else {
-    const items = [
-      ['specsPassed', 'Successful', 'ok'],
-      ['specsSkipped', 'Skipped', 'warn'],
-      ['specsFailed', 'Failed', 'error'],
-    ]
+    this.printSpecs(control)
 
-    items.forEach((item) => {
-      const tests = control[item[0]]
+    if (control.runUrl != null) cypress.showDashboard(control.runUrl)
 
-      // eslint-disable-next-line vtex/prefer-early-return
-      if (tests.length > 0) {
-        const str = tests.length > 1 ? 'specs' : 'spec'
-
-        qe.msg(`${item[1]} ${str}`, item[2])
-        tests.forEach((test) => {
-          qe.msg(test, true, true)
-        })
-        qe.newLine()
-      }
-    })
-
-    if (control.runUrl != null) {
-      qe.msg('Cypress Dashboard URL for this run')
-      qe.msg(control.runUrl, true, true)
-    }
-
-    control.specsFailed.length < 1 && control.specsPassed.length > 0
-      ? qe.success('The test ran successfully, well done!')
-      : qe.fail('The test failed!')
+    // Final result
+    control.specsFailed?.length < 1 &&
+    control.specsSkipped?.length < 1 &&
+    control.specsPassed?.length > 0
+      ? system.success('The test ran successfully, well done!')
+      : system.fail('The test failed! Please, check the artifacts.')
   }
+}
+
+module.exports.printSpecs = (control) => {
+  const items = [
+    ['specsDisabled', 'Disabled', 'ok'],
+    ['specsPassed', 'Successful', 'ok'],
+    ['specsSkipped', 'Skipped', 'warn'],
+    ['specsFailed', 'Failed', 'error'],
+  ]
+
+  items.forEach((item) => {
+    const tests = control[item[0]]
+
+    // eslint-disable-next-line vtex/prefer-early-return
+    if (tests?.length > 0) {
+      const str = tests.length > 1 ? 'specs' : 'spec'
+
+      if (item[2] === 'ok') logger.msgOk(`${item[1]} ${str}`, true)
+      if (item[2] === 'warn') logger.msgWarn(`${item[1]} ${str}`, true)
+      if (item[2] === 'error') logger.msgError(`${item[1]} ${str}`, true)
+      tests.sort()
+      tests.forEach((test) => {
+        logger.msgPad(cypress.specNameClean(test), true)
+      })
+
+      logger.newLine(1, true)
+    }
+  })
 }

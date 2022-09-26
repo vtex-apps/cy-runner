@@ -1,120 +1,155 @@
-/* eslint-disable no-await-in-loop */
-const { intersection } = require('lodash')
+const path = require('path')
 
-const qe = require('./utils')
+const { startCase, difference, intersection } = require('lodash')
+
+const system = require('./system')
+const logger = require('./logger')
+const cypress = require('./cypress')
 
 let specsFailed = []
 let specsSkipped = []
+let specsDisabled = []
 let specsPassed = []
 let runUrl = null
 
-module.exports.strategy = async (config) => {
-  const START = qe.tick()
-  const wrk = config.workspace
-  const strategies = config.strategy
+exports.runTests = async (config) => {
+  // Control time and load strategies
+  const START = system.tick()
+  const STRGS = config.strategy
 
-  for (const strategy in strategies) {
-    const test = strategies[strategy]
+  // Start Xvfb
+  const xvfb = await this.startXvfb()
 
-    test.name = strategy
-    const group = `${wrk.name}/${strategy}`
+  // Loop strategies
+  for (const strategy in STRGS) {
+    const test = STRGS[strategy]
+    const group = `${system.getId()}/${strategy}`
 
-    if (test.enabled) {
-      let { dependency } = test
+    test.name = startCase(strategy)
 
-      qe.msgSection(`Strategy ${strategy}`)
-      if (typeof dependency !== 'undefined') {
-        // Take out possible duplications
-        dependency = [...new Set(dependency)]
-        specsPassed = [...new Set(specsPassed)]
-        const check = intersection(dependency, specsPassed)
-
-        if (check.length === dependency.length) {
-          qe.msg('As the follow specs succeeded')
-          check.forEach((item) => {
-            qe.msg(item, true, true)
-          })
-          qe.msg(`Let's run strategy.${strategy}`)
-          await runTest(test, config, group)
-        } else {
-          qe.msg('As one of the follow specs not succeeded', 'error')
-          dependency.forEach((item) => {
-            qe.msg(item, true, true)
-          })
-          qe.msg(`Let's skip strategy.${strategy}`, 'warn')
-          specsSkipped = specsSkipped.concat(test.specs)
-        }
-      } else {
-        await runTest(test, config, group)
-      }
-    } else {
-      specsSkipped = specsSkipped.concat(test.specs)
+    // If test disabled, just flag and continue
+    if (!test.enabled) {
+      specsDisabled = specsDisabled.concat(test.specs)
+      continue
     }
+
+    // If it has dependencies, and they don't meet, flag and continue
+    if (test.dependency?.length) {
+      // Set to drop eventual user duplications by mistaken
+      const deps = [...new Set(test.dependency)].sort()
+      const pass = [...new Set(specsPassed)].sort()
+      const miss = difference(deps, pass)
+
+      // Dependencies don't meet
+      if (miss?.length) {
+        logger.msgSection(`[skip] Strategy ${test.name}`)
+        const loopPass = intersection(deps, pass)
+        const loopMiss = intersection(deps, miss)
+        const loopSkip = intersection(deps, specsSkipped)
+
+        // Show feedback to user
+        loopPass.forEach((spec) => {
+          logger.msgOk(cypress.specNameClean(spec))
+        })
+        loopSkip.forEach((spec) => {
+          logger.msgWarn(cypress.specNameClean(spec))
+        })
+        loopMiss.forEach((spec) => {
+          logger.msgError(cypress.specNameClean(spec))
+        })
+
+        // Feed skipped list
+        specsSkipped = specsSkipped.concat(test.specs)
+
+        continue
+      }
+    }
+
+    // All set, let's run the test
+    // eslint-disable-next-line no-await-in-loop
+    await runTest(test, config, group)
   }
 
+  // Stops Xvfb
+  await this.stopXvfb(xvfb)
+
   return {
-    time: qe.tock(START),
+    time: system.tack(START),
     specsFailed,
     specsSkipped,
+    specsDisabled,
     specsPassed,
     runUrl,
   }
 }
 
-async function runTest(test, config, group) {
-  let testsPassed = false
-  let thisTry = 1
-  const hardTries = test.hardTries + 1
-  const addOptions = {
-    parallel: test.parallel,
-  }
+exports.startXvfb = async () => {
+  logger.msgOk('Starting Xvfb on port 99')
+  const displayLog = path.join(logger.logPath(), '_display.log')
 
-  // If needed, remove duplicates
-  test.specs = [...new Set(test.specs)]
-
-  while (thisTry <= hardTries && !testsPassed && test.specs.length) {
-    qe.msg(
-      `Hard try ${thisTry} of ${hardTries} for strategy.${test.name}`,
-      'warn'
-    )
-    addOptions.group = `${group}/${thisTry}`
-
-    const testsResult = await qe.runCypress(test, config, addOptions)
-
-    testsPassed = true
-    // eslint-disable-next-line no-loop-func
-    testsResult.forEach((testResult) => {
-      if (!runUrl) runUrl = testResult.runUrl
-      testResult.runs.forEach((run) => {
-        if (run.stats.failures) {
-          testsPassed = false
-        } else {
-          for (const spec in test.specs) {
-            const [search] = test.specs[spec].split('*')
-            const found = run.spec.relative.includes(search)
-
-            if (found) {
-              specsPassed.push(test.specs[spec])
-              test.specs.splice(Number(spec), 1)
-
-              break
-            }
-          }
-        }
-      })
-    })
-    thisTry++
-  }
-
-  await pushResults(testsPassed, test, config)
+  return system.spawn(
+    'Xvfb',
+    ['-screen', '0', '1024x768x24', ':99'],
+    displayLog
+  )
 }
 
-async function pushResults(testsPassed, test, config) {
-  if (!testsPassed) {
-    qe.msg(`strategy.${test.name} failed`, 'error')
-    specsFailed = specsFailed.concat(test.specs)
-    if (test.stopOnFail) await qe.stopOnFail(config, `strategy ${test.name}`)
+exports.stopXvfb = async (xvfb) => {
+  logger.msgOk('Stopping Xvfb')
+  xvfb.kill()
+}
+
+async function runTest(test, config, group) {
+  const cypressOptions = { parallel: test.parallel }
+  const tries = test.hardTries + 1
+  let testTry = 1
+
+  test.specs = [...new Set(test.specs)] // Sanitize
+  while (testTry <= tries && test.specs.length) {
+    logger.msgSection(`[try ${testTry}/${tries}] Strategy ${test.name}`)
+    if (runUrl) {
+      logger.msgOk('Dashboard URL')
+      logger.msgPad(runUrl)
+    }
+
+    logger.msgOk('Specs to run on this try')
+    test.specs.forEach((spec) => {
+      logger.msgPad(cypress.specNameClean(spec))
+    })
+    cypressOptions.group = `${group}/${testTry}`
+    // eslint-disable-next-line no-await-in-loop
+    const results = await cypress.run(test, config, cypressOptions)
+
+    // eslint-disable-next-line no-loop-func
+    results.forEach((result) => {
+      if (!runUrl) runUrl = result.runUrl
+      if (result.success) {
+        test.specs = difference(test.specs, result.specsPassed)
+        specsPassed = specsPassed.concat(result.specsPassed)
+      }
+    })
+    testTry++
+  }
+
+  if (!test.specs.length) {
+    logger.msgOk(`Strategy ${test.name} ran successfully`)
+    specsPassed = [...new Set(specsPassed)].sort() // Sanitization
+    specsPassed.forEach((spec) => {
+      logger.msgPad(`Passed: ${cypress.specNameClean(spec)}`)
+    })
   } else {
-    qe.msg(`strategy.${test.name} succeeded`)
+    logger.msgError(`Strategy ${test.name} failed`)
+    specsFailed = specsFailed.concat(test.specs)
+    specsFailed = [...new Set(specsFailed)].sort() // Sanitization
+    specsFailed.forEach((spec) => {
+      logger.msgPad(`Failed: ${cypress.specNameClean(spec)}`)
+    })
+    if (test.stopOnFail) {
+      await cypress.stopOnFail(
+        config,
+        { strategy: test.name, specsPassed, specsFailed },
+        runUrl
+      )
+    }
   }
 }

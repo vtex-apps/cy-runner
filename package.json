@@ -1,6 +1,6 @@
 {
   "name": "cy-runner",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Tool to orchestrate tests on B2B applications",
   "main": "cy-runner.js",
   "scripts": {
@@ -39,18 +39,20 @@
   },
   "homepage": "https://github.com/vtex-apps/cy-runner#readme",
   "dependencies": {
-    "@vtex/prettier-config": "^1.0.0",
     "axios": "^0.26.0",
     "cypress": "^9.6.0",
     "cypress-file-upload": "^5.0.8",
+    "js-yaml": "^4.1.0",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@vtex/prettier-config": "^1.0.0",
     "eslint": "^7.4.0",
     "eslint-config-vtex": "^12.7.0",
     "eslint-plugin-cypress": "^2.12.1",
     "husky": "^4.2.5",
-    "js-yaml": "^4.1.0",
     "lint-staged": "^10.2.11",
-    "lodash": "^4.17.21",
     "prettier": "^2.4.0",
-    "shelljs": "^0.8.5"
+    "vtex": "3.0.0-beta-ci.3"
   }
 }

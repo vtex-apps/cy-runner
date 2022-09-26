@@ -1,73 +1,82 @@
-const qe = require('./node/utils')
-const { getConfig } = require('./node/config')
-const { vtexCli } = require('./node/cli')
-const { workspace } = require('./node/workspace')
-const { credentials } = require('./node/credential')
-const { strategy } = require('./node/test')
-const { teardown } = require('./node/teardown')
-const { issue } = require('./node/jira')
+const cfg = require('./node/config')
+const system = require('./node/system')
+const logger = require('./node/logger')
+const cypress = require('./node/cypress')
+const workspace = require('./node/workspace')
+const { deprecated } = require('./node/deprecated')
 const { report } = require('./node/report')
+const { runTests } = require('./node/test')
+const { issue } = require('./node/jira')
 
 // Controls test state
 const control = {
-  start: qe.tick(),
+  start: system.tick(),
   timing: {},
   specsFailed: [],
   specsSkipped: [],
+  specsDisabled: [],
   specsPassed: [],
   runUrl: null,
 }
 
 async function main() {
-  // Create logs folder
-  if (!qe.storage('logs')) qe.storage('logs', 'mkdir')
+  // Init logger
+  logger.init()
 
   // Welcome message
-  qe.msgSection('Cypress Runner')
+  logger.msgSection('Cypress Runner')
 
   // Read cy-runner.yml configuration
-  let config = await getConfig('cy-runner.yml')
-
-  // Report configuration to help understand that'll run
-  await qe.sectionsToRun(config)
-
-  // Deploy, start in background, and add VTEX CLI to system PATH
-  let call = await vtexCli(config)
-
-  process.env.PATH = call.path
-  control.timing.vtexCli = call.time
-
-  // Configure workspace (create, install, uninstall, link app)
-  control.timing.workspace = await workspace(config)
-
-  // Get credentials
-  call = await credentials(config)
-  config = call.config
-  control.timing.credentials = call.time
+  const config = await cfg.getConfig('cy-runner.yml')
 
   // Tests
   if (config.base.cypress.devMode) {
-    qe.msgSection('Running in dev mode')
-    qe.msg('When you finish, please wait the process flow', 'warn')
-    await qe.openCypress()
+    await cypress.open()
   } else {
-    call = await strategy(config)
-    control.timing.strategy = call.time
-    control.specsFailed = call.specsFailed
-    control.specsSkipped = call.specsSkipped
-    control.specsPassed = call.specsPassed
-    control.runUrl = call.runUrl
-    if (config.base.jira.enabled && control.specsFailed.length) {
-      await issue(config, control.specsFailed, control.runUrl)
+    // Init workspace set up
+    control.timing.initWorkspace = await workspace.init(config)
+
+    // Install apps
+    control.timing.installApps = await workspace.installApps(config)
+
+    // Uninstall apps
+    control.timing.uninstallApps = await workspace.uninstallApps(config)
+
+    // Link app
+    const link = await workspace.linkApp(config)
+
+    control.timing.linkApp = link.time
+
+    // Run tests
+    if (link.success) {
+      const call = await runTests(config)
+
+      control.timing.strategy = call.time
+      control.specsFailed = call.specsFailed
+      control.specsSkipped = call.specsSkipped
+      control.specsDisabled = call.specsDisabled
+      control.specsPassed = call.specsPassed
+      control.runUrl = call.runUrl
+
+      // Kill link subprocess
+      if (link.subprocess) link.subprocess.kill('SIGHUP')
+
+      // Jira automation
+      if (config.base.jira.enabled && control.specsFailed?.length) {
+        await issue(config, control.specsFailed, control.runUrl)
+      }
     }
   }
 
   // Teardown
-  control.timing.teardown = await teardown(config)
+  control.timing.teardown = await workspace.teardown(config)
+
+  // Report deprecated flags
+  await deprecated(config)
 
   // Final Report
-  control.timing.total = qe.tock(control.start)
+  control.timing.total = system.tack(control.start)
   await report(control, config)
 }
 
-main()
+main().then((r) => r)
