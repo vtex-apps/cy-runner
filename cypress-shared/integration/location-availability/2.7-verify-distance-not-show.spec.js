@@ -5,7 +5,7 @@ import {
   loginViaAPI,
 } from '../../support/common/support'
 import { UsDetails4 } from '../../support/shopper-location/outputvalidation'
-import { verifyHomePage } from '../../support/shopper-location/common'
+import { verifyHomePage } from '../../support/location-availability/common'
 
 const { country, postalCode, city, address } = UsDetails4
 
