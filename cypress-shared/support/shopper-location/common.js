@@ -126,8 +126,6 @@ export function orderProductTestCase(prefix, data) {
     cy.orderProduct()
   })
 }
-<<<<<<< Updated upstream
-=======
 
 export function verifyHomePage(city, postalCode, distance = false) {
   // cy.get('div[class*=vtex-modal-layout]').should('not.be.visible')
