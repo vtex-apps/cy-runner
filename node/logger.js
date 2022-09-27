@@ -5,7 +5,7 @@ const system = require('./system')
 
 const LOG_PATH = path.join(system.cyRunnerPath(), 'logs')
 const LOG_FILE = path.join(LOG_PATH, '_cy-runner.log')
-const LOG_FILE_PR = path.join(system.basePath(), '_gb-decorator.txt')
+const PUL_FILE = path.join(LOG_PATH, '_cy-decorator.txt')
 
 function ico(type) {
   switch (type) {
@@ -33,7 +33,7 @@ function ico(type) {
 exports.init = () => {
   if (system.isCI()) return storage.makeDir(LOG_PATH)
   if (!process.env.DONT_CLEAN) {
-    storage.delete(LOG_FILE_PR)
+    storage.delete(PUL_FILE)
     storage.delete(LOG_PATH)
   }
 
@@ -57,8 +57,8 @@ exports.write = (msg, pr = false) => {
   // Send pr messages to be printed in GitHub PR
   if (pr) {
     storage.append(
-      storage.exists(LOG_FILE_PR) ? msg : `### Cypress Runner\n\n${msg}`,
-      LOG_FILE_PR
+      storage.exists(PUL_FILE) ? msg : `### Cypress Runner\n\n${msg}`,
+      PUL_FILE
     )
   }
 }
