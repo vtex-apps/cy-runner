@@ -54,7 +54,7 @@ exports.changeWorkspace = async (workspace) => {
   const VTEX = await system.vtexBin()
 
   system.exec(`${VTEX} workspace use ${workspace}`, 'pipe')
-  const check = this.whoami()
+  const check = await this.whoami()
 
   return RegExp(check.workspace).test(workspace)
 }
