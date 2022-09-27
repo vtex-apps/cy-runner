@@ -30,7 +30,7 @@ async function main() {
   const config = await cfg.getConfig('cy-runner.yml')
 
   // Save link result to use in teardown
-  let link = null
+  let linkSucceed = false
 
   // Tests
   if (config.base.cypress.devMode) {
@@ -46,9 +46,10 @@ async function main() {
     control.timing.uninstallApps = await workspace.uninstallApps(config)
 
     // Link app
-    link = await workspace.linkApp(config)
+    const link = await workspace.linkApp(config)
 
     control.timing.linkApp = link.time
+    linkSucceed = link.success
 
     // Run tests
     if (link.success) {
@@ -72,7 +73,7 @@ async function main() {
   }
 
   // Teardown
-  control.timing.teardown = await workspace.teardown(config, link.success)
+  control.timing.teardown = await workspace.teardown(config, linkSucceed)
 
   // Report deprecated flags
   await deprecated(config)
