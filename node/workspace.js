@@ -120,14 +120,14 @@ exports.linkApp = async (config) => {
   return { success: true, time: system.tack(START), subprocess: null }
 }
 
-exports.teardown = async (config) => {
+exports.teardown = async (config, link = true) => {
   const START = system.tick()
   const { workspace } = config
 
   logger.msgSection('Workspace teardown')
   await this.dumpEnvironment()
   if (config.base.keepStateFiles) storage.keepStateFiles(config)
-  await wipe(config)
+  if (link) await wipe(config)
   await this.cleanSensitiveData()
   if (workspace.teardown.enabled) await toolbelt.deleteWorkspace(workspace.name)
 
