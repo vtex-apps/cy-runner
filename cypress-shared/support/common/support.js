@@ -480,13 +480,7 @@ function logic(storeFrontCookie, stop) {
         log: false,
       })
       if (storeFrontCookie) {
-        cy.setCookie(
-          `${vtex.authCookieName}_${vtex.account}`,
-          vtex.userAuthCookieValue,
-          {
-            log: false,
-          }
-        )
+        loginAsUser(vtex.robotMail, vtex.robotPassword)
       }
     })
   })
