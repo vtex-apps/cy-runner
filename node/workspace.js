@@ -98,7 +98,7 @@ exports.linkApp = async (config) => {
 
       const log = storage.read(APP_LOG)
 
-      check = /App running/.test(log.toString())
+      check = /App running | App linked successfully/.test(log.toString())
     }
 
     if (check) {
