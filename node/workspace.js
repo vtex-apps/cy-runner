@@ -26,8 +26,16 @@ exports.installApps = async (config) => {
   const APPS = config.workspace.installApps
 
   if (APPS?.length) {
-    logger.msgOk('Installing apps')
-    const check = await toolbelt.install(APPS)
+    const tries = 2
+    let check = { success: false, log: null }
+    let thisTry = 1
+
+    while (thisTry <= tries && !check.success) {
+      logger.msgOk(`[try ${thisTry}/${tries}] Installing apps`)
+      // eslint-disable-next-line no-await-in-loop
+      check = await toolbelt.install(APPS)
+      thisTry++
+    }
 
     if (!check.success) system.crash('Failed to install some app', check.log)
   }
@@ -40,8 +48,16 @@ exports.uninstallApps = async (config) => {
   const APPS = config.workspace.removeApps
 
   if (APPS?.length) {
-    logger.msgOk('Uninstalling apps')
-    const check = await toolbelt.uninstall(APPS)
+    const tries = 2
+    let check = { success: false, log: null }
+    let thisTry = 1
+
+    while (thisTry <= tries && !check.success) {
+      logger.msgOk(`[try ${thisTry}/${tries}] Uninstalling apps`)
+      // eslint-disable-next-line no-await-in-loop
+      check = await toolbelt.uninstall(APPS)
+      thisTry++
+    }
 
     if (!check.success) system.crash('Failed to uninstall some app', check.log)
   }
