@@ -29,7 +29,7 @@ exports.installApps = async (config) => {
     logger.msgOk('Installing apps')
     const check = await toolbelt.install(APPS)
 
-    if (!check) system.crash('Failed to install apps', 'Check the logs')
+    if (!check.success) system.crash('Failed to install some app', check.log)
   }
 
   return system.tack(START)
@@ -43,7 +43,7 @@ exports.uninstallApps = async (config) => {
     logger.msgOk('Uninstalling apps')
     const check = await toolbelt.uninstall(APPS)
 
-    if (!check) system.crash('Failed to uninstall apps', 'Check the logs')
+    if (!check.success) system.crash('Failed to uninstall some app', check.log)
   }
 
   return system.tack(START)
@@ -98,7 +98,7 @@ exports.linkApp = async (config) => {
 
       const log = storage.read(APP_LOG)
 
-      check = /App running/.test(log.toString())
+      check = /App running | App linked successfully/.test(log.toString())
     }
 
     if (check) {
@@ -120,14 +120,15 @@ exports.linkApp = async (config) => {
   return { success: true, time: system.tack(START), subprocess: null }
 }
 
-exports.teardown = async (config) => {
+exports.teardown = async (config, linkSucceed = true) => {
   const START = system.tick()
   const { workspace } = config
 
   logger.msgSection('Workspace teardown')
   await this.dumpEnvironment()
   if (config.base.keepStateFiles) storage.keepStateFiles(config)
-  await wipe(config)
+  // Run wipe only if link succeeds
+  if (linkSucceed) await wipe(config)
   await this.cleanSensitiveData()
   if (workspace.teardown.enabled) await toolbelt.deleteWorkspace(workspace.name)
 

@@ -10,12 +10,8 @@ module.exports.wipe = async (config) => {
     logger.msgOk('Wiping data')
 
     // Disable parallelism for wipe and increase verbosity
-    logger.msgPad('Setting maxJobs to 0')
+    logger.msgPad('Disabling parallelism')
     config.base.cypress.maxJobs = 0
-    logger.msgPad('Setting quiet to false')
-    config.base.cypress.quiet = false
-    logger.msgPad('Setting browser to Electron')
-    config.base.cypress.browser = 'electron'
 
     // Remove data
     logger.msgPad('Running wipe')
