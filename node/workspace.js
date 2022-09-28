@@ -29,7 +29,7 @@ exports.installApps = async (config) => {
     logger.msgOk('Installing apps')
     const check = await toolbelt.install(APPS)
 
-    if (!check) system.crash('Failed to install apps', 'Check the logs')
+    if (!check.success) system.crash('Failed to install some app', check.log)
   }
 
   return system.tack(START)
@@ -43,7 +43,7 @@ exports.uninstallApps = async (config) => {
     logger.msgOk('Uninstalling apps')
     const check = await toolbelt.uninstall(APPS)
 
-    if (!check) system.crash('Failed to uninstall apps', 'Check the logs')
+    if (!check.success) system.crash('Failed to uninstall some app', check.log)
   }
 
   return system.tack(START)

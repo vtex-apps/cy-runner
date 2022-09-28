@@ -84,8 +84,13 @@ exports.install = async (app) => {
   const result = system.exec(`${VTEX} install ${app.join(' ')}`, 'pipe')
   const count = (result.match(/successfully/g) || []).length
 
+  // Feedback
+  count === app.length
+    ? logger.msgOk(`${count} of ${app.length} apps installed`)
+    : logger.msgError(`${count} of ${app.length} apps installed`)
+
   // Return success if the count matches apps requested to install
-  return count === app.length
+  return { success: count === app.length, log: result }
 }
 
 exports.uninstall = async (app) => {
@@ -101,8 +106,13 @@ exports.uninstall = async (app) => {
   const result = system.exec(`${VTEX} uninstall ${app.join(' ')}`, 'pipe')
   const count = (result.match(/successfully/g) || []).length
 
-  // Return success if the count matches apps requested to install
-  return count === app.length
+  // Feedback
+  count === app.length
+    ? logger.msgOk(`${count} of ${app.length} apps uninstalled`)
+    : logger.msgError(`${count} of ${app.length} apps uninstalled`)
+
+  // Return success if the count matches apps requested to uninstall
+  return { success: count === app.length, log: result }
 }
 
 exports.link = async (logFile) => {
