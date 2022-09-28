@@ -6,6 +6,8 @@ const toolbelt = require('./toolbelt')
 const storage = require('./storage')
 const { wipe } = require('./wipe')
 
+const MAX_RETRIES = 3
+
 exports.init = async (config) => {
   const START = system.tick()
   const NAME = config.workspace.name
@@ -26,12 +28,11 @@ exports.installApps = async (config) => {
   const APPS = config.workspace.installApps
 
   if (APPS?.length) {
-    const tries = 2
     let check = { success: false, log: null }
     let thisTry = 1
 
-    while (thisTry <= tries && !check.success) {
-      logger.msgOk(`[try ${thisTry}/${tries}] Installing apps`)
+    while (thisTry <= MAX_RETRIES && !check.success) {
+      logger.msgOk(`[try ${thisTry}/${MAX_RETRIES}] Installing apps`)
       // eslint-disable-next-line no-await-in-loop
       check = await toolbelt.install(APPS)
       thisTry++
@@ -48,12 +49,11 @@ exports.uninstallApps = async (config) => {
   const APPS = config.workspace.removeApps
 
   if (APPS?.length) {
-    const tries = 2
     let check = { success: false, log: null }
     let thisTry = 1
 
-    while (thisTry <= tries && !check.success) {
-      logger.msgOk(`[try ${thisTry}/${tries}] Uninstalling apps`)
+    while (thisTry <= MAX_RETRIES && !check.success) {
+      logger.msgOk(`[try ${thisTry}/${MAX_RETRIES}] Uninstalling apps`)
       // eslint-disable-next-line no-await-in-loop
       check = await toolbelt.uninstall(APPS)
       thisTry++
@@ -107,6 +107,7 @@ exports.linkApp = async (config) => {
       // To not wait forever
       loop++
       if (loop === STOP) break
+      if (link.killed) system.crash('Link failed', JSON.stringify(link))
 
       logger.msgPad(`waiting ${130 - loop * 10} seconds until link gets ready`)
       // eslint-disable-next-line no-await-in-loop
