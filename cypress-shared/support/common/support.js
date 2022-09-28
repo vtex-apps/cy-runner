@@ -206,13 +206,18 @@ export function fillContactInfo(
 
   if (checkoutcustom) {
     // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(10000)
+    cy.wait(5000)
   }
 
   cy.get(selectors.ProceedtoShipping).should('be.visible').click()
   cy.get(selectors.ProceedtoShipping, { timeout: 1000 }).should(
     'not.be.visible'
   )
+
+  if (checkoutcustom) {
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(5000)
+  }
 
   // This block is getting visible only for checkout ui custom E2E tests
   // Screenshot: https://vtex-dev.atlassian.net/browse/ENGINEERS-549?focusedCommentId=69893
@@ -225,15 +230,9 @@ export function fillContactInfo(
         cy.get(selectors.StreetAddress).clear().type('19501 Biscayne Blvd')
         cy.get(selectors.PostalCodeInput).clear().type('33301')
         cy.get(selectors.ShipCity).clear().type('Aventura')
-        cy.get(selectors.ShipCountry, { timeout: 5000 })
-          .should('not.be.disabled')
-          .select('USA')
         cy.get(selectors.ShipState, { timeout: 5000 })
           .should('not.be.disabled')
           .select('CA')
-        cy.get(selectors.ContinueShipping, { timeout: 15000 })
-          .should('be.visible')
-          .click({ force: true })
       }
     })
   }
