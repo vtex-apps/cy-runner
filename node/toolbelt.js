@@ -1,11 +1,21 @@
 const system = require('./system')
 const logger = require('./logger')
 
+const MAX_RETRIES = 3
+
 // Get user, email and workspace name
 exports.whoami = async () => {
   const VTEX = await system.vtexBin()
-  const stdout = system.exec(`${VTEX} whoami`, 'pipe').toString()
-  const check = /Logged/.test(stdout)
+  let stdout = null
+  let check = false
+  let thisTry = 1
+
+  while (thisTry <= MAX_RETRIES && !check) {
+    stdout = system.exec(`${VTEX} whoami`, 'pipe').toString()
+    check = /Logged/.test(stdout)
+    thisTry++
+  }
+
   const mailOrKey = check ? stdout.split(' ')[7] : null
   const workspace = check ? stdout.split(' ')[11] : null
 
@@ -16,17 +26,26 @@ exports.whoami = async () => {
 exports.getLocalToken = async () => {
   const VTEX = await system.vtexBin()
   const userOrRobot = await this.whoami()
+  let result = null
+  let token = null
 
   if (userOrRobot.isLogged) {
-    userOrRobot.token = system
-      .exec(`${VTEX} local token`, 'pipe')
-      .toString()
-      .slice(0, -1)
+    let check = false
+    let thisTry = 1
 
-    return userOrRobot
+    while (thisTry <= MAX_RETRIES && !check) {
+      result = system.exec(`${VTEX} local token`, 'pipe')
+      token = result.slice(0, -1)
+      check = /ey/.test(token)
+      thisTry++
+    }
+
+    userOrRobot.token = token
+
+    if (check) return userOrRobot
   }
 
-  system.crash('No user logged', 'Check if you are logged on VTEX Toolbelt')
+  system.crash('Failed to get local user token', result, true)
 }
 
 // Crash app if on master
@@ -52,11 +71,19 @@ exports.deleteWorkspace = async (workspace) => {
 
 exports.changeWorkspace = async (workspace) => {
   const VTEX = await system.vtexBin()
+  let check = false
+  let thisTry = 1
 
-  system.exec(`${VTEX} workspace use ${workspace}`, 'pipe')
-  const check = await this.whoami()
+  while (thisTry <= MAX_RETRIES && !check) {
+    system.exec(`${VTEX} workspace use ${workspace}`, 'pipe')
+    // eslint-disable-next-line no-await-in-loop
+    const result = await this.whoami()
 
-  return RegExp(check.workspace).test(workspace)
+    check = RegExp(result.workspace).test(workspace)
+    thisTry++
+  }
+
+  return check
 }
 
 exports.ls = async () => {
