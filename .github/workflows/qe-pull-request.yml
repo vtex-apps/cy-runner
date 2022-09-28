@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - master
+      - release/v*
     types:
       - opened
       - synchronize
