@@ -102,12 +102,8 @@ export default {
   NewAddressBtn: '#new-address-button',
   UpdateSelectedAddressBtn: '#edit-address-button',
   ShippingSectionTitle: 'p[class*=shippingSectionTitle]',
-  ShipCountry: '#ship-country',
   ShipStreet: '#ship-street',
   ShipAddressQuery: '#ship-addressQuery',
-  ShipCity: '#ship-city',
-  ShipState: '#ship-state',
-  PostalCodeInput: '#ship-postalCode',
   CalculateBtn: '#cart-shipping-calculate',
   ContinueShipping: '#btn-go-to-shippping-method',
   CalculateShipping: 'button[class*=btnDelivery]',
@@ -117,6 +113,14 @@ export default {
   DeliveryAddressText: '#deliver-at-text > a',
   ChangeShippingAddress: 'button[data-i18n="modal.editShipping"]',
   ConfirmPickup: 'button[id*=confirm-pickup]',
+  FillInvoiceAddress: 'p[class*=omnishipping] ~ button[class*=omnishipping]',
+
+  // Shipping Section Address Container
+  StreetAddress: '#v-custom-ship-street',
+  ShipCity: '#ship-city',
+  ShipState: '#ship-state',
+  ShipCountry: '#ship-country',
+  PostalCodeInput: '#ship-postalCode',
 
   // *************Shipping Section Constants end here************ //
 
@@ -157,6 +161,12 @@ export default {
   CreditCardExpirationYear: '[name=cardExpirationYear]',
   CreditCardCode: '#creditCardpayment-card-0Code',
   PaymentUnAuthorized: 'div[class*=payment-unauthorized]',
+  AffirmPayment: '[data-name=Affirm]',
+  dataReviewCloseBtn: '.payment-unauthorized-modal > .modal-body > .btn',
+  popUpClose: '#affirm-error-modal',
+  invalidPopUpCloseBtn:
+    'div[class*=dialog] > div[class*=dialog-close-button-container] > button[class*=dialog-close-button]',
+  InstallmentContainer: '.installments  span',
   // *************Payment Section Constants end here************ //
 
   // *************Order Form Page Constants end here************ //
@@ -267,9 +277,7 @@ export default {
         title: '.vtex-rich-text-0-x-heading--quickTitle',
       },
       uploadXLS: {
-        menu: '.vtex-store-drawer-0-x-menuIcon',
-        title: '.vtex-rich-text-0-x-heading--quickTitle',
-        link: '.vtex-store-link-0-x-link--quickLink',
+        deleteFile: 'svg[class*=icon-delete]',
         file: 'input[type=file]',
         validate: 'div[class*=validate i]:nth-of-type(2) > button',
       },
@@ -382,6 +390,7 @@ export default {
   city: 'div[class*=addressInputContainer] > label',
   shippingContent:
     'div[class*=container] > p  > span[class*=freeShipping] span[class*=freeShippingLabel]',
+  locationUnavailable: 'div[class*=container] > p ',
   shippingUnavailabilityInformation:
     'div[class*=shippingListContainer] > div[class*=shippingListEmptyMessage]',
   storeUnavailabilityInformation:
@@ -418,4 +427,13 @@ export default {
   addressUpdation:
     'div[class*=userAddressContainer] > section > div[class*=flex] > div[class*=flex-auto] > div[class*=items-center] > div[class*=addressInfoTextContainer] > div[class*=addressInfoAddressContainer]',
   InputText: "input[type='text']",
+  // End here
+
+  // Affirm payment selectors
+  AffirmPaymentOption: 'a[data-name="Affirm"]',
+  AffirmPhoneNumberField: 'input[data-testid="phone-number-field"]',
+  AffirmSubmit: 'button[data-testid="submit-button"]',
+  AffirmPhonePin: 'input[data-testid="phone-pin-field"]',
+  AffirmInstallmentOption: 'span[data-test="installment-length"]',
+  AffirmIndicatorOption: 'div[data-testid="indicator"]', // Auto payment & Privacy policy option selector
 }

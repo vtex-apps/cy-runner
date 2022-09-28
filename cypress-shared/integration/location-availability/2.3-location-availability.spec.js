@@ -1,39 +1,36 @@
+/* eslint-disable jest/expect-expect */
 import {
   preserveCookie,
   updateRetry,
   loginViaAPI,
 } from '../../support/common/support'
-import { franceDetails } from '../../support/shopper-location/outputvalidation'
+import { UsDetails3 } from '../../support/shopper-location/outputvalidation'
 import selectors from '../../support/common/selectors'
-import { addAddress } from '../../support/shopper-location/common'
+import { verifyHomePage } from '../../support/shopper-location/common'
 import { PRODUCTS_LINK_MAPPING } from '../../support/common/utils'
 
-const prefix = 'Pickup not available'
+const { country, postalCode, address, city } = UsDetails3
+
+const prefix = 'Shipping not avaiable'
 
 describe('Validate location availability', () => {
   loginViaAPI()
 
-  addAddress(prefix, { address: franceDetails })
-
   // eslint-disable-next-line jest/expect-expect
-  it(`${prefix} - Verify shipping content`, updateRetry(2), () => {
+  it(`${prefix} - Go to home and add location`, updateRetry(1), () => {
+    cy.addNewLocation(country, postalCode, address)
     cy.get(PRODUCTS_LINK_MAPPING.orange.link).should('be.visible')
-    cy.get(selectors.shippingContent)
-      .should('be.visible')
-      .contains('FREE Shipping:')
+    verifyHomePage(city, postalCode)
   })
 
-  // eslint-disable-next-line jest/expect-expect
   it(
     `${prefix} - Open product specfication page and verify`,
-    updateRetry(2),
+    updateRetry(1),
     () => {
       cy.openProduct(PRODUCTS_LINK_MAPPING.orange.name, true)
-      cy.get(selectors.storeUnavailabilityInformation)
+      cy.get(selectors.AvailabilityHeader)
         .should('be.visible')
-        .contains(
-          'The selected item is not available for pickup near your location.'
-        )
+        .contains('33180')
     }
   )
 

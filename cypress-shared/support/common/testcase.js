@@ -1,6 +1,12 @@
 import { FAIL_ON_STATUS_CODE, VTEX_AUTH_HEADER, ENTITIES } from './constants.js'
 import { updateRetry } from './support.js'
-import { cancelOrderAPI, affiliationAPI } from './apis.js'
+import {
+  cancelOrderAPI,
+  affiliationAPI,
+  invoiceAPI,
+  transactionAPI,
+} from './apis.js'
+import { isValidDate } from './utils.js'
 
 const config = Cypress.env()
 const WIPE_ENV = 'wipe'
@@ -16,6 +22,7 @@ const {
   appToken,
   affiliationId,
   robotMail,
+  urlExternalSeller,
 } = config.base.vtex
 
 const { prefix } = config.workspace
@@ -152,7 +159,7 @@ export function cancelTheOrder(orderEnv) {
 
 export function startE2E(app, workspace) {
   // This startE2E() is for tax App
-  // eg: Avalara, Cybersource
+  // eg: Avalara, Cybersource, Digital River
   it(`Start ${app} E2E tests with this ${workspace}`, () => {
     callOrderFormConfiguration().then((response) => {
       const { taxConfiguration } = response.body
@@ -161,24 +168,28 @@ export function startE2E(app, workspace) {
         expect(response.body.taxConfiguration).to.be.null
       } else {
         const { appId, url } = response.body.taxConfiguration
-        const minutes = parseInt(
-          (Math.abs(new Date().getTime() - new Date(appId).getTime()) /
-            (1000 * 60)) %
-            60,
-          10
-        )
+        const validDate = isValidDate(new Date(appId))
 
-        // if the workspace was blocked longer than 30 minutes then
-        // skip validation & force update taxConfiguration
-
-        if (minutes >= 30) {
-          const [WORKSPACE_IN_TAX_CONFIG] = url.split('//')[1].split('--')
-
-          cy.log(
-            `TaxConfiguration is used by this workspace ${WORKSPACE_IN_TAX_CONFIG} for more than or equal to 30 minutes`
+        if (validDate) {
+          const minutes = Math.abs(
+            // 1 minute = 60000 milliseconds
+            parseInt((new Date() - new Date(appId)) / 60000, 10)
           )
+
+          // if the workspace was blocked longer than 30 minutes then
+          // skip validation & force update taxConfiguration
+
+          if (minutes >= 30) {
+            const [WORKSPACE_IN_TAX_CONFIG] = url.split('//')[1].split('--')
+
+            cy.log(
+              `TaxConfiguration is used by this workspace ${WORKSPACE_IN_TAX_CONFIG} for more than or equal to 30 minutes i.e for ${minutes} minutes`
+            )
+          } else {
+            expect(url).to.include(workspace)
+          }
         } else {
-          expect(url).to.include(workspace)
+          cy.log('appId is having invalid Date!')
         }
       }
     })
@@ -312,4 +323,135 @@ export function deleteAddresses() {
       )
     })
   })
+}
+
+/* 
+Below fn operates with getTestVariables
+*/
+
+export function getTestVariables(testCasePrefix) {
+  return {
+    orderIdEnv: testCasePrefix,
+    transactionIdEnv: `${testCasePrefix}-transactionIdEnv`,
+    paymentTidEnv: `${testCasePrefix}-paymentTidEnv`,
+    productTotalEnv: `${testCasePrefix}-productTotalEnv`,
+  }
+}
+
+export function sendInvoiceTestCase({
+  product,
+  orderIdEnv,
+  externalSellerTestcase = false,
+}) {
+  let total
+
+  it(`In ${product.prefix} - Send Invoice`, () => {
+    cy.getOrderItems().then((item) => {
+      if (externalSellerTestcase) {
+        if (product.directSaleEnv === orderIdEnv) {
+          total = product.directSaleAmount
+        } else {
+          total = product.externalSellerAmount
+        }
+      }
+      // If this is not externalSellerTestCase then it is for refund test case
+      else {
+        total =
+          product.totalWithoutTax || product.total || product.totalProductPrice
+      }
+
+      cy.sendInvoiceAPI(
+        {
+          invoiceNumber: '54321',
+          invoiceValue: total
+            .replace('$ ', '')
+            .replace(/\./, '')
+            .replace(/,/, ''),
+          invoiceUrl: null,
+          issuanceDate: new Date(),
+          invoiceKey: null,
+        },
+        item[orderIdEnv],
+        orderIdEnv === product.externalSaleEnv
+      ).then((response) => {
+        expect(response.status).to.equal(200)
+      })
+    })
+  })
+}
+
+function generateInvoiceAPIURL(product, item, env) {
+  return env === product.externalSaleEnv
+    ? `${invoiceAPI(urlExternalSeller)}/QSS-${item[env]}`
+    : `${invoiceAPI(baseUrl)}/${item[env]}`
+}
+
+export function invoiceAPITestCase({
+  product,
+  env,
+  transactionIdEnv,
+  pickup = false,
+}) {
+  it(
+    `In ${product.prefix} -Invoice API should have expected information`,
+    updateRetry(2),
+    () => {
+      cy.getOrderItems().then((item) => {
+        cy.getAPI(
+          generateInvoiceAPIURL(product, item, env),
+          VTEX_AUTH_HEADER(apiKey, apiToken)
+        ).then((response) => {
+          expect(response.status).to.equal(200)
+          const postalCode = pickup
+            ? product.pickUpPostalCode
+            : product.postalCode
+
+          expect(response.body.shippingData.address.postalCode).to.equal(
+            postalCode
+          )
+          // Setting Transaction Id in .orders.json
+          cy.setOrderItem(
+            transactionIdEnv,
+            response.body.paymentData.transactions[0].transactionId
+          )
+        })
+      })
+    }
+  )
+}
+
+function checkTransactionIdIsAvailable(transactionIdEnv) {
+  if (!transactionIdEnv) {
+    throw new Error('Transaction Id is undefined')
+  }
+}
+
+export function verifyTransactionPaymentsAPITestCase(
+  product,
+  { transactionIdEnv, paymentTidEnv },
+  fn = null
+) {
+  it(
+    `In ${product.prefix} - Verify Transaction Payment`,
+    updateRetry(2),
+    () => {
+      cy.addDelayBetweenRetries(2000)
+      cy.getVtexItems().then((vtex) => {
+        cy.getOrderItems().then((order) => {
+          checkTransactionIdIsAvailable(order[transactionIdEnv])
+          cy.getAPI(
+            `${transactionAPI(vtex.baseUrl)}/${
+              order[transactionIdEnv]
+            }/payments`,
+            VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken)
+          ).then((response) => {
+            expect(response.status).to.equal(200)
+            // Store payment tid in .orders.json
+            cy.setOrderItem(paymentTidEnv, response.body[0].tid)
+            fn && fn(response)
+          })
+        })
+      })
+    }
+  )
 }

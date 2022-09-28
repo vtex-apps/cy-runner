@@ -6,6 +6,13 @@ export default {
     city: 'Essex County',
     state: 'Ontario',
   },
+  poland: {
+    country: 'POL',
+    url: 'https://www.google.com',
+    postalCode: '00-014',
+    city: 'Warszawa',
+    state: 'Masovian Voivodeship',
+  },
   UsDetails: {
     country: 'United States',
     postalCode: '21287',
@@ -17,15 +24,10 @@ export default {
     long: '80.2707',
     city: 'Chennai',
   },
-  franceDetails: {
-    country: 'FRA',
-    postalCode: '93200',
-    city: 'Saint-Denis',
-    state: 'IDF',
-  },
   UsDetails1: {
     country1: 'United States',
     postalCode1: '91766',
+    city: 'Pomona',
   },
   UsDetails2: {
     country: 'United States',
