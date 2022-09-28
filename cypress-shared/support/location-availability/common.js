@@ -1,7 +1,6 @@
 import selectors from '../common/selectors'
 
 export function verifyHomePage(city, postalCode, distance = false) {
-  // cy.get('div[class*=vtex-modal-layout]').should('not.be.visible')
   cy.scrollTo(0, 500)
   cy.getVtexItems().then((vtex) => {
     cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
@@ -9,6 +8,7 @@ export function verifyHomePage(city, postalCode, distance = false) {
         req.continue()
       }
     }).as('updateOrderFormShipping')
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(10000)
     cy.get(selectors.addressContainer).should('be.visible')
     if (distance) {
