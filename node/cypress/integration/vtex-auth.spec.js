@@ -66,7 +66,7 @@ describe('Authentication process', () => {
       fillEmailAndPassword()
 
       // eslint-disable-next-line cypress/no-unnecessary-waiting
-      cy.wait(2000)
+      cy.wait(10000)
 
       cy.get('body').then(async ($body) => {
         if (vtex.robotMail.includes('vtex')) {
