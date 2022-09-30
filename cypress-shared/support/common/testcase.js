@@ -147,6 +147,7 @@ export function cancelTheOrder(orderEnv) {
         method: 'POST',
         url: cancelOrderAPI(baseUrl, order[orderEnv]),
         headers: VTEX_AUTH_HEADER(apiKey, apiToken),
+        ...FAIL_ON_STATUS_CODE,
         body: {
           reason: 'Customer bought it by mistake',
         },
