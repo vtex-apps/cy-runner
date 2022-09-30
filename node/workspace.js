@@ -6,6 +6,8 @@ const toolbelt = require('./toolbelt')
 const storage = require('./storage')
 const { wipe } = require('./wipe')
 
+const MAX_RETRIES = 3
+
 exports.init = async (config) => {
   const START = system.tick()
   const NAME = config.workspace.name
@@ -26,10 +28,17 @@ exports.installApps = async (config) => {
   const APPS = config.workspace.installApps
 
   if (APPS?.length) {
-    logger.msgOk('Installing apps')
-    const check = await toolbelt.install(APPS)
+    let check = { success: false, log: null }
+    let thisTry = 1
 
-    if (!check) system.crash('Failed to install apps', 'Check the logs')
+    while (thisTry <= MAX_RETRIES && !check.success) {
+      logger.msgOk(`[try ${thisTry}/${MAX_RETRIES}] Installing apps`)
+      // eslint-disable-next-line no-await-in-loop
+      check = await toolbelt.install(APPS)
+      thisTry++
+    }
+
+    if (!check.success) system.crash('Failed to install some app', check.log)
   }
 
   return system.tack(START)
@@ -40,10 +49,17 @@ exports.uninstallApps = async (config) => {
   const APPS = config.workspace.removeApps
 
   if (APPS?.length) {
-    logger.msgOk('Uninstalling apps')
-    const check = await toolbelt.uninstall(APPS)
+    let check = { success: false, log: null }
+    let thisTry = 1
 
-    if (!check) system.crash('Failed to uninstall apps', 'Check the logs')
+    while (thisTry <= MAX_RETRIES && !check.success) {
+      logger.msgOk(`[try ${thisTry}/${MAX_RETRIES}] Uninstalling apps`)
+      // eslint-disable-next-line no-await-in-loop
+      check = await toolbelt.uninstall(APPS)
+      thisTry++
+    }
+
+    if (!check.success) system.crash('Failed to uninstall some app', check.log)
   }
 
   return system.tack(START)
@@ -91,6 +107,7 @@ exports.linkApp = async (config) => {
       // To not wait forever
       loop++
       if (loop === STOP) break
+      if (link.killed) system.crash('Link failed', JSON.stringify(link))
 
       logger.msgPad(`waiting ${130 - loop * 10} seconds until link gets ready`)
       // eslint-disable-next-line no-await-in-loop
@@ -98,7 +115,7 @@ exports.linkApp = async (config) => {
 
       const log = storage.read(APP_LOG)
 
-      check = /App running/.test(log.toString())
+      check = /App running | App linked successfully/.test(log.toString())
     }
 
     if (check) {
@@ -120,14 +137,15 @@ exports.linkApp = async (config) => {
   return { success: true, time: system.tack(START), subprocess: null }
 }
 
-exports.teardown = async (config) => {
+exports.teardown = async (config, linkSucceed = true) => {
   const START = system.tick()
   const { workspace } = config
 
   logger.msgSection('Workspace teardown')
   await this.dumpEnvironment()
   if (config.base.keepStateFiles) storage.keepStateFiles(config)
-  await wipe(config)
+  // Run wipe only if link succeeds
+  if (linkSucceed) await wipe(config)
   await this.cleanSensitiveData()
   if (workspace.teardown.enabled) await toolbelt.deleteWorkspace(workspace.name)
 
