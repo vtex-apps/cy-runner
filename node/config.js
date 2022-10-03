@@ -5,6 +5,7 @@ const { get } = require('lodash')
 const logger = require('./logger')
 const storage = require('./storage')
 const credentials = require('./credentials')
+const lock = require('./lock')
 const system = require('./system')
 const cypress = require('./cypress')
 const http = require('./http')
@@ -24,12 +25,16 @@ exports.getConfig = async (configFile) => {
   const WORKSPACE = await this.getWorkspaceName(config)
   const ACCOUNT = config.base.vtex.account
   const DOMAIN = config.base.vtex.domain
+  const RESERVE = config.workspace.reserveOrderForm
 
   config.base.vtex.authUrl = `https://${VTEX_ACCOUNT}${VTEX_AUTH_PATH}`
   config.base.vtex.baseUrl = `https://${WORKSPACE}--${ACCOUNT}.${DOMAIN}`
 
   // Load and parse secrets
   const secrets = credentials.readSecrets(config)
+
+  // Lock the orderForm, if it is the case, in CI the lock is done by GH Actions
+  if (RESERVE) await lock.reserveAccount(config, secrets)
 
   // Do check to avoid waste of time on CI environments
   const SKIP_AUTO_CONFIG = config.base.skipAutoConfigOnCI ?? false

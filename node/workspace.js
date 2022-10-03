@@ -1,5 +1,6 @@
 const path = require('path')
 
+const lock = require('./lock')
 const system = require('./system')
 const logger = require('./logger')
 const toolbelt = require('./toolbelt')
@@ -140,6 +141,9 @@ exports.linkApp = async (config) => {
 exports.teardown = async (config, linkSucceed = true) => {
   const START = system.tick()
   const { workspace } = config
+  const RESERVE = workspace.reserveOrderForm
+
+  if (RESERVE) await lock.releaseAccount(config)
 
   logger.msgSection('Workspace teardown')
   await this.dumpEnvironment()
