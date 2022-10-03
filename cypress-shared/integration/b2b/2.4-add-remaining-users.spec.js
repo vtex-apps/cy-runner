@@ -16,8 +16,8 @@ import { setOrganizationIdInJSON } from '../../support/b2b/common.js'
 import {
   verifySalesChannel,
   verifyBindings,
-  addBindings,
-  removeBindings,
+  addBindingsWhichHidesOrganization,
+  addBindingsWhichShowsOrganization,
 } from '../../support/b2b/graphql.js'
 import { loginToStoreFront } from '../../support/b2b/login.js'
 
@@ -26,7 +26,7 @@ const { users, gmailCreds, organizationName, costCenter1 } = b2b.OrganizationA
 describe('Disable Binding,Verify Organization is not showing up, Sync Checkout UI Custom', () => {
   loginViaCookies({ storeFrontCookie: false })
 
-  removeBindings()
+  addBindingsWhichHidesOrganization()
 
   verifySalesChannel(0)
 
@@ -56,7 +56,7 @@ describe('Enable binding, Verify Organization is showing up & Add Sales Users vi
 
   loginViaCookies({ storeFrontCookie: false })
 
-  addBindings()
+  addBindingsWhichShowsOrganization()
 
   verifySalesChannel(1)
 
