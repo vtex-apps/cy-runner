@@ -6638,8 +6638,9 @@ static-extend@^0.1.1, static-extend@^0.1.2:
     define-property "^0.2.5"
     object-copy "^0.1.0"
 
-"stats-lite@github:vtex/node-stats-lite#dist":
+stats-lite@vtex/node-stats-lite#dist:
   version "2.2.0"
+  uid "1b0d39cc41ef7aaecfd541191f877887a2044797"
   resolved "https://codeload.github.com/vtex/node-stats-lite/tar.gz/1b0d39cc41ef7aaecfd541191f877887a2044797"
   dependencies:
     isnumber "~1.0.0"
@@ -7340,10 +7341,10 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-vtex@3.0.0-beta-ci.3:
-  version "3.0.0-beta-ci.3"
-  resolved "https://registry.yarnpkg.com/vtex/-/vtex-3.0.0-beta-ci.3.tgz#7072b362d91ed3bef0ec5a1311cbd4f2fb5e9220"
-  integrity sha512-UBczSO1UHBLK8Ey/wDZ58UKTjCM9bVGqS2mbRMz5kJpIg/as130hm81Y/EL1/NsciH0zWI2wsK+zKvWKwnHxmA==
+vtex@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/vtex/-/vtex-3.0.0.tgz#a7de6197d154b4e6f363763525d8c3e7d290c573"
+  integrity sha512-Bk68l7E7hsMmSGud17HrO2gSKdg7GtWNVb/VgExwfLuZW9QoZj5ydxTIEtD3erMrO7TUbbflg3pwdL1u2B3rjQ==
   dependencies:
     "@oclif/command" "^1.8.0"
     "@oclif/config" "^1.17.0"
