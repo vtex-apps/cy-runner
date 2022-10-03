@@ -26,6 +26,7 @@ import {
   // filterQuote,
   searchQuote,
 } from '../../support/b2b/quotes.js'
+import { verifyBindings } from '../../support/b2b/graphql.js'
 
 describe('OrganizationA - Create a Buyer and Approver, associate Cost Center and assign payment terms', () => {
   loginViaCookies({ storeFrontCookie: false })
@@ -40,6 +41,8 @@ describe('OrganizationA - Create a Buyer and Approver, associate Cost Center and
     quotes,
     gmailCreds,
   } = b2b.OrganizationA
+
+  verifyBindings(users.OrganizationAdmin1, true)
 
   loginToStoreFront(
     users.OrganizationAdmin1,
