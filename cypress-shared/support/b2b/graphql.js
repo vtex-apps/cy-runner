@@ -133,8 +133,8 @@ function bindingsMutation(payload) {
   })
 }
 
-export function addBindings() {
-  it(`Add Bindings`, () => {
+export function addBindingsWhichShowsOrganization() {
+  it(`Add Bindings which shows organization in profile page`, () => {
     bindingsMutation({
       channels: [
         {
@@ -146,8 +146,8 @@ export function addBindings() {
   })
 }
 
-export function removeBindings() {
-  it(`Remove Bindings`, () => {
+export function addBindingsWhichHidesOrganization() {
+  it(`Add Bindings which hides organization in profile page`, () => {
     bindingsMutation({
       channels: [
         {
