@@ -53,7 +53,9 @@ exports.reserveAccount = async (config, secrets = null) => {
         : logger.msgPad(`Test ${actual} stuck [appId misconfigured], releasing`)
       config.data = getTaxCfg.data
       config.data.taxConfiguration = {}
-      await this.releaseAccount(config, secrets)
+      const release = await this.releaseAccount(config, secrets)
+
+      if (!release.success) system.crash('Failed to release', release.data)
     }
   }
 
@@ -69,6 +71,7 @@ exports.reserveAccount = async (config, secrets = null) => {
   config.data = getTaxCfg.data
   config.data.taxConfiguration = {
     url: `https://${workspace}--${account}.myvtex.com/${prefix}/checkout/order-tax`,
+    authorizationHeader: secrets.vtex.authorizationHeader,
     allowExecutionAfterErrors: false,
     integratedAuthentication: false,
     appId: Date.now(),
@@ -151,10 +154,8 @@ async function setTaxConfiguration(config, secrets) {
 
   const axiosConfig = { url, method: 'post', headers, data: config.data }
   const result = await http.request(axiosConfig)
-  const success = result ? result.status === 204 : false
-  const data = result ? result.data : null
 
-  return { success, data }
+  return { success: result?.status === 204, data: result?.data }
 }
 
 async function setAppsConfiguration(appVersion, config, secrets) {
