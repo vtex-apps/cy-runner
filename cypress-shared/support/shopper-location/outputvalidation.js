@@ -39,4 +39,10 @@ export default {
     city: 'Aventura',
     address: '19501 19501 Biscayne Blvd Aventura 33180',
   },
+  UsDetails4: {
+    country: 'United States',
+    postalCode: '90290',
+    city: 'Toppanga',
+    address: 'USA Kerry Ln Topanga',
+  },
 }
