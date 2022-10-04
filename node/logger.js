@@ -32,11 +32,8 @@ function ico(type) {
 // Init logs, clean before each run if local
 exports.init = () => {
   if (system.isCI()) return storage.makeDir(LOG_PATH)
-  if (!process.env.DONT_CLEAN) {
-    storage.delete(PUL_FILE)
-    storage.delete(LOG_PATH)
-  }
-
+  storage.delete(PUL_FILE)
+  storage.delete(LOG_PATH)
   storage.makeDir(LOG_PATH)
 }
 

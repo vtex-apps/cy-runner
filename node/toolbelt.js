@@ -45,7 +45,10 @@ exports.getLocalToken = async () => {
     if (check) return userOrRobot
   }
 
-  system.crash('Failed to get local user token', result, true)
+  system.crash(
+    'Failed to get local user token',
+    'Are you logged on VTEX Toolbelt?'
+  )
 }
 
 // Crash app if on master
