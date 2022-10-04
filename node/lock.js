@@ -53,18 +53,19 @@ exports.reserveAccount = async (config, secrets = null) => {
         : logger.msgPad(`Test ${actual} stuck [appId misconfigured], releasing`)
       config.data = getTaxCfg.data
       config.data.taxConfiguration = {}
-      const check = await this.releaseAccount(config, secrets)
-
-      if (!check.success) system.crash('Failed to release', check.data)
+      await this.releaseAccount(config, secrets)
     }
   }
 
   // Let's checkAccount
-  logger.msgOk(`Reserving orderForm to workspace ${config.workspace.name}`)
-  const workspace = config.workspace.name
   const { account } = config.base.vtex
   const { prefix } = config.workspace
+  const workspace =
+    config.workspace.name === 'random'
+      ? `${prefix}${await system.getId()}`
+      : config.workspace.name
 
+  logger.msgOk(`Reserving orderForm to workspace ${config.workspace.name}`)
   config.data = getTaxCfg.data
   config.data.taxConfiguration = {
     url: `https://${workspace}--${account}.myvtex.com/${prefix}/checkout/order-tax`,
