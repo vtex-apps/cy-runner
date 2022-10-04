@@ -65,7 +65,7 @@ exports.reserveAccount = async (config, secrets = null) => {
       ? `${prefix}${await system.getId()}`
       : config.workspace.name
 
-  logger.msgOk(`Reserving orderForm to workspace ${config.workspace.name}`)
+  logger.msgOk(`Reserving orderForm to workspace ${workspace}`)
   config.data = getTaxCfg.data
   config.data.taxConfiguration = {
     url: `https://${workspace}--${account}.myvtex.com/${prefix}/checkout/order-tax`,
