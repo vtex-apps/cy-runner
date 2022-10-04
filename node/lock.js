@@ -68,6 +68,8 @@ exports.reserveAccount = async (config, secrets = null) => {
       ? `${prefix}${await system.getId()}`
       : config.workspace.name
 
+  // We need to update the config to be used further
+  config.workspace.name = workspace
   logger.msgOk(`Reserving orderForm to workspace ${workspace}`)
   config.data = getTaxCfg.data
   config.data.taxConfiguration = {
