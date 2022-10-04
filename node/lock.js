@@ -7,7 +7,7 @@ const http = require('./http')
 
 const [, , action] = process.argv
 
-exports.checkAccount = async () => {
+async function checkAccount() {
   logger.init()
   logger.msgSection('Cypress Runner - Handle account level resources')
   const config = storage.readYaml('cy-runner.yml')
@@ -147,7 +147,7 @@ async function setTaxConfiguration(config, secrets) {
   const axiosConfig = { url, method: 'post', headers, data: config.data }
   const result = await http.request(axiosConfig)
 
-  return { success: result.status === 204, data: result.data }
+  return { success: result.status === 204 ?? false, data: result.data ?? null }
 }
 
 async function setAppsConfiguration(appVersion, config, secrets) {
@@ -184,4 +184,4 @@ async function setAppsConfiguration(appVersion, config, secrets) {
 }
 
 // If called outside cy-runner, let's deal with it
-if (action) this.checkAccount().then((r) => r)
+if (action) checkAccount().then((r) => r)
