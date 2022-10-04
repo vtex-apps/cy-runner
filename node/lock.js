@@ -12,9 +12,11 @@ async function checkAccount() {
   logger.msgSection('Cypress Runner - Handle account level resources')
   const config = storage.readYaml('cy-runner.yml')
   const secrets = credentials.readSecrets(config)
+  // eslint-disable-next-line global-require,import/no-self-import
+  const lock = require('./lock')
 
-  if (action === 'reserve') return this.reserveAccount(config, secrets)
-  if (action === 'release') return this.releaseAccount(config, secrets)
+  if (action === 'reserve') return lock.reserveAccount(config, secrets)
+  if (action === 'release') return lock.releaseAccount(config, secrets)
 
   system.crash(
     `You must call me with 'reserve' or 'release' action`,
