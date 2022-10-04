@@ -114,6 +114,8 @@ exports.releaseAccount = async (config, secrets = null) => {
   call.success
     ? logger.msgOk('Released successfully')
     : logger.msgError('Failed to released')
+
+  return call
 }
 
 async function getTaxConfiguration(config, secrets = null) {
