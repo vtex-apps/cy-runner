@@ -1,15 +1,76 @@
 /* eslint-disable jest/valid-expect */
-import { loginViaCookies, updateRetry } from '../../support/common/support.js'
-import { ROLE_ID_EMAIL_MAPPING, OTHER_ROLES } from '../../support/b2b/utils.js'
+import {
+  loginViaCookies,
+  updateRetry,
+  preserveCookie,
+} from '../../support/common/support.js'
+import {
+  ROLE_ID_EMAIL_MAPPING,
+  OTHER_ROLES,
+  ROLE_DROP_DOWN,
+} from '../../support/b2b/utils.js'
 import { addUserViaGraphql } from '../../support/b2b/add_users.js'
 import { syncCheckoutUICustom } from '../../support/common/testcase.js'
 import b2b from '../../support/b2b/constants.js'
+import { setOrganizationIdInJSON } from '../../support/b2b/common.js'
+import {
+  verifySalesChannel,
+  verifyBindings,
+  addBindingsWhichHidesOrganization,
+  addBindingsWhichShowsOrganization,
+} from '../../support/b2b/graphql.js'
+import { loginToStoreFront } from '../../support/b2b/login.js'
 
-describe('Sync Checkout UI Custom & Add Sales Users via Graphql', () => {
+const { users, gmailCreds, organizationName, costCenter1 } = b2b.OrganizationA
+
+describe('Disable Binding,Verify Organization is not showing up, Sync Checkout UI Custom', () => {
   loginViaCookies({ storeFrontCookie: false })
-  const { gmailCreds } = b2b.OrganizationA
+
+  addBindingsWhichHidesOrganization()
+
+  verifySalesChannel(0)
+
+  verifyBindings(users.OrganizationAdmin1, false)
+
+  loginToStoreFront(
+    users.OrganizationAdmin1,
+    ROLE_DROP_DOWN.OrganizationAdmin,
+    gmailCreds
+  )
+
+  setOrganizationIdInJSON(organizationName, costCenter1.name)
+
+  it('Verify Organization is not showing up', () => {
+    cy.organizationShouldNotShowInProfile()
+  })
 
   syncCheckoutUICustom()
+
+  preserveCookie()
+})
+
+describe('Enable binding, Verify Organization is showing up & Add Sales Users via Graphql', () => {
+  before(() => {
+    cy.clearLocalStorage()
+  })
+
+  loginViaCookies({ storeFrontCookie: false })
+
+  addBindingsWhichShowsOrganization()
+
+  verifySalesChannel(1)
+
+  verifyBindings(users.OrganizationAdmin1, true)
+
+  loginToStoreFront(
+    users.OrganizationAdmin1,
+    ROLE_DROP_DOWN.OrganizationAdmin,
+    gmailCreds
+  )
+
+  it('Verify Organization is showing up', () => {
+    cy.organizationShouldShowInProfile()
+  })
 
   it('Set roles in organization JSON', updateRetry(3), () => {
     cy.getVtexItems().then((vtex) => {
@@ -42,4 +103,6 @@ describe('Sync Checkout UI Custom & Add Sales Users via Graphql', () => {
   roles.forEach((r) => {
     addUserViaGraphql(gmailCreds, r)
   })
+
+  preserveCookie()
 })

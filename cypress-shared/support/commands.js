@@ -247,3 +247,29 @@ Cypress.Commands.add(
     }
   }
 )
+
+function visitOrganizationPage() {
+  cy.url().then((url) => {
+    if (!url.includes('account')) {
+      cy.get(selectors.ProfileLabel).should('be.visible')
+      cy.get(selectors.SignInBtn).click()
+      cy.get(selectors.MyAccount).click()
+      cy.waitForSession()
+    }
+
+    closeModalIfOpened()
+    cy.get('a[href*="profile"]').should('be.visible')
+    cy.get('a[href*="wishlist"]').should('be.visible')
+    cy.contains(selectors.QuotesAndSavedCarts).should('be.visible')
+  })
+}
+
+Cypress.Commands.add('organizationShouldNotShowInProfile', () => {
+  visitOrganizationPage()
+  cy.get(selectors.MyOrganization, { timeout: 10000 }).should('not.exist')
+})
+
+Cypress.Commands.add('organizationShouldShowInProfile', () => {
+  visitOrganizationPage()
+  cy.get(selectors.MyOrganization, { timeout: 10000 }).should('be.visible')
+})
