@@ -147,7 +147,11 @@ async function setTaxConfiguration(config, secrets) {
   const axiosConfig = { url, method: 'post', headers, data: config.data }
   const result = await http.request(axiosConfig)
 
-  return { success: result.status === 204 ?? false, data: result.data ?? null }
+  try {
+    return { success: result.status === 204, data: result.data }
+  } catch (_e) {
+    return { success: false, data: null }
+  }
 }
 
 async function setAppsConfiguration(appVersion, config, secrets) {
