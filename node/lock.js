@@ -56,6 +56,7 @@ exports.reserveAccount = async (config, secrets = null) => {
       const release = await this.releaseAccount(config, secrets)
 
       if (!release.success) system.crash('Failed to release', release.data)
+      if (action) logger.msgSection('Reserve account level resources')
     }
   }
 
