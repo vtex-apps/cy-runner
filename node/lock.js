@@ -26,20 +26,36 @@ async function checkAccount() {
   )
 }
 
+function getCypressTestsIndex(config) {
+  return config.data.apps.findIndex((obj) => obj.id === 'cypress-tests')
+}
+
+function releaseCypressTests(config) {
+  const cypressTestsIndex = getCypressTestsIndex(config)
+
+  if (cypressTestsIndex !== -1) {
+    config.data.apps[cypressTestsIndex] = {
+      fields: ['cypress'], // fields should not be empty. So, on release we are setting to random text (eg:cypress)
+      id: 'cypress-tests',
+      major: 1,
+    }
+  }
+
+  return config
+}
+
 exports.reserveAccount = async (config, secrets = null) => {
   logger.msgOk(`Checking current configuration`)
   // Check current configuration
   const getTaxCfg = await getTaxConfiguration(config, secrets)
-  const cypressTestsIndex = getTaxCfg.data.apps.findIndex(
-    (obj) => obj.id === 'cypress-tests'
-  )
+  const cypressTestsIndex = getCypressTestsIndex(getTaxCfg)
 
   const actual = getTaxCfg.data.apps[cypressTestsIndex]?.fields[0]
   const ranTime = getTaxCfg.data.apps[cypressTestsIndex]?.fields[1]
 
   if (getTaxCfg.inUse) {
     // Yes, get the time running in seconds
-    const maxTime = 40 // in minutes
+    const maxTime = 0.3 // in minutes
     const timeRunning = ((Date.now() - ranTime) / 1000 / 60).toFixed(2)
 
     if (timeRunning < maxTime && ranTime) {
@@ -47,7 +63,7 @@ exports.reserveAccount = async (config, secrets = null) => {
       logger.msgError('Another test is running', true)
       system.crash(
         `As ${actual} is being tested, orderForm is reserved`,
-        `Please, trigger the test again in ${40 - timeRunning} minutes`,
+        `Please, trigger the test again in ${maxTime - timeRunning} minutes`,
         { pr: true, dump: false }
       )
     } else {
@@ -56,6 +72,7 @@ exports.reserveAccount = async (config, secrets = null) => {
         ? logger.msgPad(`Test ${actual} stuck [${timeRunning} min.], releasing`)
         : logger.msgPad(`Test ${actual} stuck [appId misconfigured], releasing`)
       config.data = getTaxCfg.data
+      config = releaseCypressTests(config)
       config.data.taxConfiguration = {}
       const release = await this.releaseAccount(config, secrets)
 
@@ -119,6 +136,7 @@ exports.reserveAccount = async (config, secrets = null) => {
       logger.msgError(`Failed to configure ${app}`, true)
       logger.msgPad('Releasing the orderForm')
       config.data.taxConfiguration = {}
+      config = releaseCypressTests(config)
       // eslint-disable-next-line no-await-in-loop
       await this.release(config, secrets)
       system.crash('Failed to configure app', app)
@@ -136,6 +154,7 @@ exports.releaseAccount = async (config, secrets = null) => {
     const getTaxCfg = await getTaxConfiguration(config, secrets)
 
     config.data = getTaxCfg.data
+    config = releaseCypressTests(config)
     config.data.taxConfiguration = {}
   }
 
