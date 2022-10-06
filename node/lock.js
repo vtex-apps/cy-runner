@@ -7,6 +7,8 @@ const http = require('./http')
 
 const [, , action] = process.argv
 
+const TAX_APPS = ['avalara', 'cybersource', 'taxjar', 'digitalriver']
+
 async function checkAccount() {
   logger.init()
   logger.msgSection('Cypress Runner - Handle account level resources')
@@ -28,14 +30,16 @@ exports.reserveAccount = async (config, secrets = null) => {
   logger.msgOk(`Checking current configuration`)
   // Check current configuration
   const getTaxCfg = await getTaxConfiguration(config, secrets)
+  const cypressTestsIndex = getTaxCfg.data.apps.findIndex(
+    (obj) => obj.id === 'cypress-tests'
+  )
+
+  const actual = getTaxCfg.data.apps[cypressTestsIndex]?.fields[0]
+  const ranTime = getTaxCfg.data.apps[cypressTestsIndex]?.fields[1]
 
   if (getTaxCfg.inUse) {
     // Yes, get the time running in seconds
     const maxTime = 40 // in minutes
-    const ranTime = getTaxCfg.data.taxConfiguration.appId
-    let actual = getTaxCfg.data.taxConfiguration.url
-
-    actual = actual.split('/')[2].split('-')[0]
     const timeRunning = ((Date.now() - ranTime) / 1000 / 60).toFixed(2)
 
     if (timeRunning < maxTime && ranTime) {
@@ -72,12 +76,31 @@ exports.reserveAccount = async (config, secrets = null) => {
   config.workspace.name = workspace
   logger.msgOk(`Reserving orderForm to workspace ${workspace}`)
   config.data = getTaxCfg.data
-  config.data.taxConfiguration = {
-    url: `https://${workspace}--${account}.myvtex.com/${prefix}/checkout/order-tax`,
-    authorizationHeader: secrets.vtex.authorizationHeader,
-    allowExecutionAfterErrors: false,
-    integratedAuthentication: false,
-    appId: Date.now(),
+  if (cypressTestsIndex !== -1) {
+    config.data.apps[cypressTestsIndex].fields[0] = workspace
+    config.data.apps[cypressTestsIndex].fields[1] = Date.now()
+  } else {
+    config.data.apps.push({
+      fields: [workspace, Date.now()],
+      id: 'cypress-tests',
+      major: 1,
+    })
+  }
+
+  if (TAX_APPS.includes(prefix)) {
+    config.data.taxConfiguration = {
+      url: `https://${workspace}--${account}.myvtex.com/${prefix}/checkout/order-tax`,
+      authorizationHeader: secrets.vtex.authorizationHeader,
+      allowExecutionAfterErrors: false,
+      integratedAuthentication: false,
+    }
+  } else {
+    // How To use taxConfiguration for new apps
+    // In your app, Go to cy-runner.yml and copy prefix
+    // Add it in TAX_APPS and Create PR in cy-runner repo
+    logger.msgPad(
+      `TaxConfiguration can be used only by these taxApps(${TAX_APPS.toString()})`
+    )
   }
 
   // Configure orderForm
