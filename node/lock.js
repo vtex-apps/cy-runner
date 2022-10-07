@@ -44,8 +44,39 @@ function releaseCypressTests(config) {
   return config
 }
 
+function reserveCypressTests(config, workspace) {
+  const cypressTestsIndex = getCypressTestsIndex(config)
+
+  if (cypressTestsIndex !== -1) {
+    config.data.apps[cypressTestsIndex].fields[0] = workspace
+    config.data.apps[cypressTestsIndex].fields[1] = Date.now()
+  } else {
+    config.data.apps.push({
+      fields: [workspace, Date.now()],
+      id: 'cypress-tests',
+      major: 1,
+    })
+  }
+
+  return config
+}
+
+async function generateWorkspaceName(config, prefix) {
+  return config.workspace.name === 'random'
+    ? `${prefix}${await system.getId()}`
+    : config.workspace.name
+}
+
 exports.reserveAccount = async (config, secrets = null) => {
   logger.msgOk(`Checking current configuration`)
+  // Let's checkAccount
+  const { account } = config.base.vtex
+  const { prefix } = config.workspace
+  const workspace = await generateWorkspaceName(config, prefix)
+
+  // We need to update the config to be used further
+  config.workspace.name = workspace
+
   // Check current configuration
   const getTaxCfg = await getTaxConfiguration(config, secrets)
   const cypressTestsIndex = getCypressTestsIndex(getTaxCfg)
@@ -55,7 +86,7 @@ exports.reserveAccount = async (config, secrets = null) => {
 
   if (getTaxCfg.inUse) {
     // Yes, get the time running in seconds
-    const maxTime = 0.3 // in minutes
+    const maxTime = 40 // in minutes
     const timeRunning = ((Date.now() - ranTime) / 1000 / 60).toFixed(2)
 
     if (timeRunning < maxTime && ranTime) {
@@ -81,28 +112,10 @@ exports.reserveAccount = async (config, secrets = null) => {
     }
   }
 
-  // Let's checkAccount
-  const { account } = config.base.vtex
-  const { prefix } = config.workspace
-  const workspace =
-    config.workspace.name === 'random'
-      ? `${prefix}${await system.getId()}`
-      : config.workspace.name
-
-  // We need to update the config to be used further
-  config.workspace.name = workspace
   logger.msgOk(`Reserving orderForm to workspace ${workspace}`)
   config.data = getTaxCfg.data
-  if (cypressTestsIndex !== -1) {
-    config.data.apps[cypressTestsIndex].fields[0] = workspace
-    config.data.apps[cypressTestsIndex].fields[1] = Date.now()
-  } else {
-    config.data.apps.push({
-      fields: [workspace, Date.now()],
-      id: 'cypress-tests',
-      major: 1,
-    })
-  }
+
+  reserveCypressTests(config, workspace)
 
   if (TAX_APPS.includes(prefix)) {
     config.data.taxConfiguration = {
@@ -181,10 +194,18 @@ async function getTaxConfiguration(config, secrets = null) {
   }
 
   const result = await http.request(axiosConfig)
+  const cypressTestsIndex = getCypressTestsIndex(result)
 
-  return result?.data?.taxConfiguration === null
-    ? { inUse: false, data: result?.data }
-    : { inUse: true, data: result?.data }
+  if (result?.data?.taxConfiguration === null) {
+    if (
+      cypressTestsIndex === -1 ||
+      result.data.apps[cypressTestsIndex].fields[0] === config.workspace.name
+    ) {
+      return { inUse: false, data: result?.data }
+    }
+  }
+
+  return { inUse: true, data: result?.data }
 }
 
 async function setTaxConfiguration(config, secrets) {
