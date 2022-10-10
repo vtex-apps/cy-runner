@@ -84,7 +84,6 @@ exports.runTests = async (config) => {
 }
 
 exports.startXvfb = async () => {
-  logger.msgOk('Starting Xvfb on port 99')
   const displayLog = path.join(logger.logPath(), '_display.log')
 
   return system.spawn(
@@ -95,7 +94,6 @@ exports.startXvfb = async () => {
 }
 
 exports.stopXvfb = async (xvfb) => {
-  logger.msgOk('Stopping Xvfb')
   xvfb.kill()
 }
 

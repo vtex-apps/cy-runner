@@ -126,7 +126,6 @@ cypress:
   videoCompression: false
   browser: chrome
   chromeWebSecurity: false
-  sorry: true
 
 strategy:
   # You can call whatever you want
@@ -161,7 +160,6 @@ cypress:
   videoCompression: false
   browser: chrome
   chromeWebSecurity: false
-  sorry: true
 
 strategy:
   buyItems:
@@ -444,9 +442,6 @@ base:
     # Can be chrome, firefox or electron
     browser: chrome
     chromeWebSecurity: false
-    # Set to development if you want to use
-    # sorry-cypress locally
-    sorry: false
   # If you need to create empty state
   # to use in your tests, for checking transactions
   # or for doing data wipe on the end
