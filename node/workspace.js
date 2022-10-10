@@ -141,7 +141,7 @@ exports.linkApp = async (config) => {
 exports.teardown = async (config, linkSucceed = true) => {
   const START = system.tick()
   const { workspace } = config
-  const RESERVE = workspace?.reserveOrderForm
+  const RESERVE = config.workspace?.reserveAccount?.enabled
 
   if (RESERVE) await lock.releaseAccount(config)
 

@@ -1,3 +1,4 @@
+const cfg = require('./config')
 const logger = require('./logger')
 const system = require('./system')
 const storage = require('./storage')
@@ -6,6 +7,7 @@ const toolbelt = require('./toolbelt')
 const http = require('./http')
 
 const [, , action] = process.argv
+const MAX_TIME = 40 // Forced releasing time for stuck workspace (minutes)
 
 async function checkAccount() {
   logger.init()
@@ -25,108 +27,76 @@ async function checkAccount() {
 }
 
 exports.reserveAccount = async (config, secrets = null) => {
+  // If from action, show next section
+  if (action) logger.msgSection('Reserve account level resources')
+
   logger.msgOk(`Checking current configuration`)
   // Check current configuration
-  const getTaxCfg = await getTaxConfiguration(config, secrets)
+  const orderFormCfg = await getOrderFormConfig(config, secrets)
 
-  if (getTaxCfg.inUse) {
+  // Save results to be used later
+  config.data = orderFormCfg.data
+
+  // Check
+  if (orderFormCfg.startTime) {
     // Yes, get the time running in seconds
-    const maxTime = 40 // in minutes
-    const ranTime = getTaxCfg.data.taxConfiguration.appId
-    let actual = getTaxCfg.data.taxConfiguration.url
+    const ranTime = (Date.now() - orderFormCfg.startTime) / 1000 / 60
 
-    actual = actual.split('/')[2].split('-')[0]
-    const timeRunning = ((Date.now() - ranTime) / 1000 / 60).toFixed(2)
-
-    if (timeRunning < maxTime && ranTime) {
+    if (ranTime < MAX_TIME) {
       // Test running less than 40 minutes, try again later
       logger.msgError('Another test is running', true)
       system.crash(
-        `As ${actual} is being tested, orderForm is reserved`,
-        `Please, trigger the test again in ${40 - timeRunning} minutes`,
+        `Account ${config.base.vtex.account} was reserved to ${orderFormCfg.workspace}`,
+        `Please, try again in ${Math.floor(MAX_TIME - ranTime)} minutes`,
         { pr: true, dump: false }
       )
     } else {
       // Test running more than 40 minutes or appId miss configured
-      ranTime
-        ? logger.msgPad(`Test ${actual} stuck [${timeRunning} min.], releasing`)
-        : logger.msgPad(`Test ${actual} stuck [appId misconfigured], releasing`)
-      config.data = getTaxCfg.data
-      config.data.taxConfiguration = {}
-      const release = await this.releaseAccount(config, secrets)
-
-      if (!release.success) system.crash('Failed to release', release.data)
-      if (action) logger.msgSection('Reserve account level resources')
+      logger.msgPad(
+        `Workspace ${orderFormCfg.workspace} stuck [${Math.floor(
+          ranTime
+        )} minutes], releasing`
+      )
+      config = await this.releaseAccount(config, secrets)
     }
   }
 
-  // Let's checkAccount
+  // Set up base info
+  config.workspace.name = await cfg.getWorkspaceName(config)
   const { account } = config.base.vtex
-  const { prefix } = config.workspace
-  const workspace =
-    config.workspace.name === 'random'
-      ? `${prefix}${await system.getId()}`
-      : config.workspace.name
 
-  // We need to update the config to be used further
-  config.workspace.name = workspace
-  logger.msgOk(`Reserving orderForm to workspace ${workspace}`)
-  config.data = getTaxCfg.data
-  config.data.taxConfiguration = {
-    url: `https://${workspace}--${account}.myvtex.com/${prefix}/checkout/order-tax`,
-    authorizationHeader: secrets.vtex.authorizationHeader,
-    allowExecutionAfterErrors: false,
-    integratedAuthentication: false,
-    appId: Date.now(),
-  }
+  // Reserve app
+  logger.msgOk(`Reserving ${account} to ${config.workspace.name}`)
+  config.data.apps.push({
+    fields: [config.workspace.name, Date.now()],
+    id: 'e2e',
+    major: 1,
+  })
+  await setOrderFormConfig(config, secrets)
 
-  // Configure orderForm
-  const call = await setTaxConfiguration(config, secrets)
-
-  if (!call.success) system.crash('Failed to configure orderForm', call.data)
-
-  // Configure apps
-  const apps = ['vtex.orders-broadcast@0.x', 'vtex.sno@0.x']
-
-  for (const app of apps) {
-    // eslint-disable-next-line no-await-in-loop
-    const check = await setAppsConfiguration(app, config, secrets)
-
-    if (!check) {
-      logger.msgError(`Failed to configure ${app}`, true)
-      logger.msgPad('Releasing the orderForm')
-      config.data.taxConfiguration = {}
-      // eslint-disable-next-line no-await-in-loop
-      await this.release(config, secrets)
-      system.crash('Failed to configure app', app)
-    }
-  }
+  // Set up other reservations
+  await setAppConfig(config, secrets)
 
   // If we reach here, everything is good
   logger.msgOk('Requested successfully')
 }
 
 exports.releaseAccount = async (config, secrets = null) => {
+  // If from action, show start section
   if (action) logger.msgSection('Release account level resources')
-  logger.msgOk(`Releasing orderForm`)
-  if (config.data?.taxConfiguration === undefined) {
-    const getTaxCfg = await getTaxConfiguration(config, secrets)
 
-    config.data = getTaxCfg.data
-    config.data.taxConfiguration = {}
-  }
+  logger.msgOk('Releasing account level resources')
+  const orderFormCfg = await getOrderFormConfig(config, secrets)
 
-  const call = await setTaxConfiguration(config, secrets)
-
-  call.success
-    ? logger.msgOk('Released successfully')
-    : logger.msgError('Failed to released')
-
-  return call
+  config.data = orderFormCfg.data
+  config.data.apps.splice(orderFormCfg.appId, 1)
+  config.data.taxConfiguration = {}
+  await setOrderFormConfig(config, secrets)
+  logger.msgOk('Released successfully')
 }
 
-async function getTaxConfiguration(config, secrets = null) {
-  logger.msgPad('getting current tax configuration')
+async function getOrderFormConfig(config, secrets = null) {
+  logger.msgPad('getting orderForm configuration')
   if (!secrets) secrets = config.base
   const { account } = config.base.vtex
   const axiosConfig = {
@@ -139,13 +109,14 @@ async function getTaxConfiguration(config, secrets = null) {
   }
 
   const result = await http.request(axiosConfig)
+  const appId = result?.data?.apps?.findIndex((app) => app.id === 'e2e')
+  const workspace = appId >= 0 ? result?.data?.apps[appId]?.fields[0] : null
+  const startTime = appId >= 0 ? result?.data?.apps[appId]?.fields[1] : null
 
-  return result?.data?.taxConfiguration === null
-    ? { inUse: false, data: result?.data }
-    : { inUse: true, data: result?.data }
+  return { startTime, workspace, appId, data: result?.data }
 }
 
-async function setTaxConfiguration(config, secrets) {
+async function setOrderFormConfig(config, secrets) {
   logger.msgPad('setting orderForm configuration')
   if (!secrets) secrets = config.base
   const { account } = config.base.vtex
@@ -158,40 +129,80 @@ async function setTaxConfiguration(config, secrets) {
   const axiosConfig = { url, method: 'post', headers, data: config.data }
   const result = await http.request(axiosConfig)
 
-  return { success: result?.status === 204, data: result?.data }
+  if (result?.status !== 204) {
+    system.crash('Failed to set up orderForm configuration', result?.data)
+  }
 }
 
-async function setAppsConfiguration(appVersion, config, secrets) {
-  logger.msgPad(`configuring ${appVersion}`)
+async function setAppConfig(config, secrets) {
+  logger.msgOk('Configuring apps')
   if (!secrets) secrets = config.base
   const { account } = config.base.vtex
-  const graphQLApp = 'vtex.apps-graphql@3.x'
-  const url = `https://${account}.myvtex.com/_v/private/admin-graphql-ide/v0/${graphQLApp}`
+  const { prefix } = config.workspace
   const workspace = config.workspace.name
-  const query =
-    'mutation' +
-    '($app:String, $version:String, $settings:String)' +
-    '{saveAppSettings(app:$app, version:$version, settings:$settings){message}}'
+  const orderFormCfg = await getOrderFormConfig(config, secrets)
+  const apps = config.workspace.reserveAccount.setup
 
-  const [app, version] = appVersion.split('@')
-  const variables = {
-    app,
-    version,
-    settings: `{"targetWorkspace": "${workspace}"}`,
+  config.data = orderFormCfg.data
+  for (const id in apps) {
+    if (apps[id].toLowerCase() === 'orderform') {
+      config.data.taxConfiguration = {
+        url: `https://${workspace}--${account}.myvtex.com/${prefix}/checkout/order-tax`,
+        authorizationHeader: secrets.vtex.authorizationHeader,
+        allowExecutionAfterErrors: false,
+        integratedAuthentication: false,
+        appId: Date.now(),
+      }
+      // eslint-disable-next-line no-await-in-loop
+      await setOrderFormConfig(config, secrets)
+    } else if (apps[id].includes('@')) {
+      logger.msgPad(`configuring ${apps[id]}`)
+      const [app, version] = apps[id].split('@')
+      const graphQLApp = 'vtex.apps-graphql@3.x'
+      const url = `https://${account}.myvtex.com/_v/private/admin-graphql-ide/v0/${graphQLApp}`
+      // eslint-disable-next-line no-await-in-loop
+      const user = await toolbelt.getLocalToken()
+      const headers = { Cookie: `${secrets.vtex.authCookieName}=${user.token}` }
+      let check = null
+
+      const query =
+        'mutation' +
+        '($app:String, $version:String, $settings:String)' +
+        '{saveAppSettings(app:$app, version:$version, settings:$settings){message}}'
+
+      const variables = {
+        app,
+        version,
+        settings: `{"targetWorkspace": "${workspace}"}`,
+      }
+
+      const axiosConfig = {
+        url,
+        method: 'post',
+        headers,
+        data: { query, variables },
+      }
+
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        const result = await http.request(axiosConfig)
+
+        check = RegExp(workspace).test(
+          result?.data?.data?.saveAppSettings?.message
+        )
+      } catch (_e) {
+        check = false
+      }
+
+      if (!check) {
+        logger.msgError(`Failed to configure ${apps[id]}`, true)
+        logger.msgPad('Releasing account level resources')
+        // eslint-disable-next-line no-await-in-loop
+        await this.releaseAccount(config, secrets)
+        system.crash('Failed to configure app', apps[id])
+      }
+    }
   }
-
-  const user = await toolbelt.getLocalToken()
-  const headers = { Cookie: `${secrets.vtex.authCookieName}=${user.token}` }
-  const axiosConfig = {
-    url,
-    method: 'post',
-    headers,
-    data: { query, variables },
-  }
-
-  const result = await http.request(axiosConfig)
-
-  return RegExp(workspace).test(result?.data?.data?.saveAppSettings?.message)
 }
 
 // If called outside cy-runner, let's deal with it
