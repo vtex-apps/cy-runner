@@ -109,8 +109,8 @@ async function getOrderFormConfig(config, secrets = null) {
 
   const result = await http.request(axiosConfig)
   const appId = result?.data?.apps?.findIndex((app) => app.id === 'e2e')
-  const workspace = appId >= 0 ? result.data.apps[appId].fields[0] : null
-  const startTime = appId >= 0 ? result.data.apps[appId].fields[1] : null
+  const workspace = appId >= 0 ? result?.data?.apps[appId]?.fields[0] : null
+  const startTime = appId >= 0 ? result?.data?.apps[appId]?.fields[1] : null
 
   return { startTime, workspace, appId, data: result?.data }
 }
