@@ -90,6 +90,7 @@ exports.releaseAccount = async (config, secrets = null) => {
 
   config.data = orderFormCfg.data
   config.data.apps.splice(orderFormCfg.appId, 1)
+  config.data.taxConfiguration = {}
   await setOrderFormConfig(config, secrets)
   logger.msgOk('Released successfully')
 }
