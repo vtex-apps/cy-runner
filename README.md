@@ -211,154 +211,252 @@ All artifacts from the test are saved on the `cy-runner/logs` folder. If you are
 
 Also, you have the `cy-runner.log` file, that will show you how the tests were conducted, the main failures and the time to do each task. Next we'll show one example of it:
 ```txt
-[QE] === Cypress Runner ============================================================================
-     ===============================================================================================
+#### Cypress Runner
 
      [✓] Loading cy-runner configuration
-      -  ./wordpress-integration/cy-runner.yml
+      -  ./avalara/cy-runner.yml
+     [✓] Checking toolbelt version
      [✓] Defining workspace
-      -  wordpressintegration0481942
+      -  avalara3967668
      [✓] Loading secrets
       -  from file ./cy-runner/.VTEX_QE.json
-     [✓] Cleaning debug file
-      -  /home/user/.vtex/logs/debug.json
-     [✗] Sorry Cypress not running
-      -  disabling dashboard
-      -  disabling parallelization
-      -  waiting 7 seconds to you cancel and try again
+     [!] Auto configuring Cypress flags
+      -  Set base.skipAutoConfigOnCI to true to avoid auto config
 
-[QE] === Sections to run ===========================================================================
-     ===============================================================================================
+#### Sections to run
 
      [✓] base.secrets
      [✓] base.jira
      [✓] workspace.linkApp
+     [✓] workspace.wipe
+      -  wipe.spec.js
      [✓] workspace.teardown
-     [✓] strategy.configuring_wordpress_testcase
-      -  2.1-rest-api.spec.js
-      -  2.5-verify-categories-filter.spec.js
-     [✓] strategy.ui_testcase
-      -  2.2-filter-by-tags.spec.js
-      -  2.3-UI-testcase.spec.js
-      -  2.4-filter-by-date.spec.js
-      -  2.6-verify-search_articles.spec.js
-      -  2.7-search.product.spec.js
-         | 2.5-verify-categories-filter.spec.js
-     [✓] strategy.disable_config_testcase
-      -  2.8-disable-configurations-and-validate.spec.js
-         | 2.2-filter-by-tags.spec.js
-         | 2.3-UI-testcase.spec.js
-         | 2.4-filter-by-date.spec.js
-         | 2.5-verify-categories-filter.spec.js
-         | 2.6-verify-search_articles.spec.js
-         | 2.7-search.product.spec.js
-     [✓] Apps to be installed
-      -  vtex.wordpress-integration@2.x
-      -  vtex.wordpress-integration-qa-theme@0.0.3
-     [✓] Apps to be removed
-      -  vtex.bitcot-qa-theme
+     [✓] strategy.config
+      -  1.0-syncCustomUIConf.spec.js
+     [✓] strategy.apiTests
+      -  1.1-addressVerification.spec.js
+      -  1.2-postalCode.spec.js
+      -  1.3-sku.spec.js
+      -  1.4-taxFallback.spec.js
+         ☍ 1.0-syncCustomUIConf.spec.js
+     [✓] strategy.basicTests
+      -  2.1-singleproduct.spec.js
+      -  2.2-multiproduct.spec.js
+      -  2.5-externalSeller.spec.js
+      -  2.6-promotional_product.spec.js
+         ☍ 1.0-syncCustomUIConf.spec.js
+     [✓] strategy.verifyTax
+      -  2.3-discountProduct.spec.js
+      -  2.4-discountShipping.spec.js
+         ☍ 1.0-syncCustomUIConf.spec.js
+     [✓] strategy.transaction
+      -  2.7-transaction.spec.js
+         ☍ 2.1-singleproduct.spec.js
+         ☍ 2.2-multiproduct.spec.js
+         ☍ 2.3-discountProduct.spec.js
+         ☍ 2.4-discountShipping.spec.js
+         ☍ 2.5-externalSeller.spec.js
+         ☍ 2.6-promotional_product.spec.js
+     [✓] strategy.refund
+      -  2.8-fullRefund-transaction.spec.js
+      -  2.9-partialRefund-transaction.spec.js
+         ☍ 2.1-singleproduct.spec.js
+         ☍ 2.2-multiproduct.spec.js
 
-[QE] === Cypress set up ============================================================================
-     ===============================================================================================
+#### Cypress set up
 
      [✓] Getting admin cookie
      [✓] Getting user cookie
-      -  user.surname@vtex.com.br
+      -  vtexappkey-productusqa-OFGEHT
      [✓] Creating Cypress environment
       -  ./cy-runner/cypress.env.json
       -  ./cy-runner/cypress.json
      [✓] Creating state file
-      -  .wordpress.json
+      -  .orders.json
      [✓] Linking local Cypress code on Cy-Runner
       -  ./cy-runner/cypress-shared/support/common -> ./cypress/support/common
       -  ./cypress -> ./cy-runner/cypress
+     [✓] Exporting envs variables
+      -  ELECTRON_EXTRA_LAUNCH_ARGS = --disable-gpu --disable-software-rasterizer
+      -  LIBVA_DRIVER_NAME = --disable-software-rasterizer
+      -  DISPLAY = :99
+      -  NODE_NO_WARNINGS = 1
 
-[QE] === Workspace set up ==========================================================================
-     ===============================================================================================
+#### Workspace set up
 
      [✓] Changing workspace
-      -  wordpressintegration0481942
-     [✓] Installing apps
-      -  vtex.wordpress-integration@2.x
-      -  vtex.wordpress-integration-qa-theme@0.0.3
-     [✓] Uninstalling apps
-      -  vtex.bitcot-qa-theme
-     [✓] Updating ./wordpress-integration/.vtexignore
-     [✓] Reading ./wordpress-integration/manifest.json
-     [✓] Linking vtex.wordpress-integration@2.21.2
-      -  waiting 10 seconds until link gets ready
-      -  waiting 10 seconds until link gets ready
-      -  waiting 10 seconds until link gets ready
-      -  waiting 10 seconds until link gets ready
-      -  waiting 10 seconds until link gets ready
+      -  avalara3967668
+     [✓] Updating ./avalara/.vtexignore
+     [✓] Reading ./avalara/manifest.json
+     [✓] Linking vtex.avalara@3.4.0
+      -  waiting 120 seconds until link gets ready
+      -  waiting 110 seconds until link gets ready
+      -  waiting 100 seconds until link gets ready
      [✓] App linked successfully
 
-[QE] === [try 1/1] Strategy Configuring Wordpress Testcase =========================================
-     ===============================================================================================
+#### [try 1/2] Strategy Config
 
-     [✓] Strategy Configuring Wordpress Testcase ran successfully
+     [✓] Specs to run on this try
+      -  1.0-syncCustomUIConf.spec.js
+     [✓] Strategy Config ran successfully
+      -  Passed: 1.0-syncCustomUIConf.spec.js
 
-[QE] === [try 1/2] Strategy Ui Testcase ============================================================
-     ===============================================================================================
+#### [try 1/3] Strategy Api Tests
 
-     [✓] Strategy Ui Testcase ran successfully
+     [✓] Dashboard URL
+      -  https://dashboard.cypress.io/projects/9myhsu/runs/364
+     [✓] Specs to run on this try
+      -  1.1-addressVerification.spec.js
+      -  1.2-postalCode.spec.js
+      -  1.3-sku.spec.js
+      -  1.4-taxFallback.spec.js
+     [✓] Strategy Api Tests ran successfully
+      -  Passed: 1.0-syncCustomUIConf.spec.js
+      -  Passed: 1.1-addressVerification.spec.js
+      -  Passed: 1.2-postalCode.spec.js
+      -  Passed: 1.3-sku.spec.js
+      -  Passed: 1.4-taxFallback.spec.js
 
-[QE] === [try 1/2] Strategy Disable Config Testcase ================================================
-     ===============================================================================================
 
-     [✓] Strategy Disable Config Testcase ran successfully
+     [✓] Dashboard URL
+      -  https://dashboard.cypress.io/projects/9myhsu/runs/364
+     [✓] Specs to run on this try
+      -  2.1-singleproduct.spec.js
+      -  2.2-multiproduct.spec.js
+      -  2.5-externalSeller.spec.js
+      -  2.6-promotional_product.spec.js
+      -  Passed: 1.0-syncCustomUIConf.spec.js
+      -  Passed: 1.1-addressVerification.spec.js
+      -  Passed: 1.2-postalCode.spec.js
+      -  Passed: 1.3-sku.spec.js
+      -  Passed: 1.4-taxFallback.spec.js
+      -  Passed: 2.1-singleproduct.spec.js
+      -  Passed: 2.2-multiproduct.spec.js
+      -  Passed: 2.5-externalSeller.spec.js
+      -  Passed: 2.6-promotional_product.spec.js
 
-[QE] === Workspace teardown ========================================================================
-     ===============================================================================================
+#### [try 1/2] Strategy Verify Tax
+
+     [✓] Dashboard URL
+      -  https://dashboard.cypress.io/projects/9myhsu/runs/364
+     [✓] Specs to run on this try
+      -  2.3-discountProduct.spec.js
+      -  2.4-discountShipping.spec.js
+     [✓] Strategy Verify Tax ran successfully
+      -  Passed: 1.0-syncCustomUIConf.spec.js
+      -  Passed: 1.1-addressVerification.spec.js
+      -  Passed: 1.2-postalCode.spec.js
+      -  Passed: 1.3-sku.spec.js
+      -  Passed: 1.4-taxFallback.spec.js
+      -  Passed: 2.1-singleproduct.spec.js
+      -  Passed: 2.2-multiproduct.spec.js
+      -  Passed: 2.3-discountProduct.spec.js
+      -  Passed: 2.4-discountShipping.spec.js
+      -  Passed: 2.5-externalSeller.spec.js
+      -  Passed: 2.6-promotional_product.spec.js
+
+#### [try 1/2] Strategy Transaction
+
+     [✓] Dashboard URL
+      -  https://dashboard.cypress.io/projects/9myhsu/runs/364
+     [✓] Specs to run on this try
+      -  2.7-transaction.spec.js
+     [✓] Strategy Transaction ran successfully
+      -  Passed: 1.0-syncCustomUIConf.spec.js
+      -  Passed: 1.1-addressVerification.spec.js
+      -  Passed: 1.2-postalCode.spec.js
+      -  Passed: 1.3-sku.spec.js
+      -  Passed: 1.4-taxFallback.spec.js
+      -  Passed: 2.1-singleproduct.spec.js
+      -  Passed: 2.2-multiproduct.spec.js
+      -  Passed: 2.3-discountProduct.spec.js
+      -  Passed: 2.4-discountShipping.spec.js
+      -  Passed: 2.5-externalSeller.spec.js
+      -  Passed: 2.6-promotional_product.spec.js
+      -  Passed: 2.7-transaction.spec.js
+
+#### [try 1/3] Strategy Refund
+
+     [✓] Dashboard URL
+      -  https://dashboard.cypress.io/projects/9myhsu/runs/364
+     [✓] Specs to run on this try
+      -  2.8-fullRefund-transaction.spec.js
+      -  2.9-partialRefund-transaction.spec.js
+     [✓] Strategy Refund ran successfully
+      -  Passed: 1.0-syncCustomUIConf.spec.js
+      -  Passed: 1.1-addressVerification.spec.js
+      -  Passed: 1.2-postalCode.spec.js
+      -  Passed: 1.3-sku.spec.js
+      -  Passed: 1.4-taxFallback.spec.js
+      -  Passed: 2.1-singleproduct.spec.js
+      -  Passed: 2.2-multiproduct.spec.js
+      -  Passed: 2.3-discountProduct.spec.js
+      -  Passed: 2.4-discountShipping.spec.js
+      -  Passed: 2.5-externalSeller.spec.js
+      -  Passed: 2.6-promotional_product.spec.js
+      -  Passed: 2.7-transaction.spec.js
+      -  Passed: 2.8-fullRefund-transaction.spec.js
+      -  Passed: 2.9-partialRefund-transaction.spec.js
+
+#### Workspace teardown
 
      [✓] Dumping environment
       -  ./cy-runner/logs/_apps_installed.txt
       -  ./cy-runner/logs/_apps_dependency.json
-      -  /home/user/.vtex/logs/debug.json -> ./cy-runner/logs/_debug.json
+      -  /home/runner/.vtex/logs/debug.json -> ./cy-runner/logs/_debug.json
+      -  Node versions -> ./cy-runner/logs/_node_versions.json
+      -  Env variables -> ./cy-runner/logs/_env.txt
      [!] Moving state files
-      -  .wordpress.json -> ./cy-runner/logs/.wordpress.json
+      -  .orders.json -> ./cy-runner/logs/.orders.json
      [✓] State files moved successfully
+     [✓] Wiping data
+      -  Disabling parallelism
+      -  Running wipe
+     [✓] Data wiped successfully
      [✓] Cleaning sensitive data
       -  cypress.env.json
       -  cypress.json
-     [✓] Workspace wordpressintegration0481942 deleted
+     [✓] Workspace avalara3967668 deleted
 
-[QE] === Deprecation report ========================================================================
-     ===============================================================================================
+#### Deprecation report
 
      [!] Deprecated configuration on your cy-runner.yml
       -  base.twilio
-      -  base.jira.testing
-      -  base.cypress.sorry
      [✓] You should remove it as soon as possible
 
-[QE] === Execution report ==========================================================================
-     ===============================================================================================
+#### Execution report
 
      [✓] Execution time
-      -  initWorkspace................. 7.677 seconds
-      -  installApps................... 8.323 seconds
-      -  uninstallApps................. 5.785 seconds
-      -  linkApp....................... 50.057 seconds
-      -  strategy...................... 240.099 seconds
-      -  teardown...................... 9.455 seconds
-      -  total......................... 332.82 seconds
-
-     [✓] Disabled spec
-      -  2.9-validate-wordpress-with-no-url.spec.js
+      -  initWorkspace................. 3.866 seconds
+      -  installApps................... 0 seconds
+      -  uninstallApps................. 0 seconds
+      -  linkApp....................... 30.037 seconds
+      -  strategy...................... 331.058 seconds
+      -  teardown...................... 13.237 seconds
+      -  total......................... 380.672 seconds
 
      [✓] Successful specs
-      -  2.1-rest-api.spec.js
-      -  2.2-filter-by-tags.spec.js
-      -  2.3-UI-testcase.spec.js
-      -  2.4-filter-by-date.spec.js
-      -  2.5-verify-categories-filter.spec.js
-      -  2.6-verify-search_articles.spec.js
-      -  2.7-search.product.spec.js
-      -  2.8-disable-configurations-and-validate.spec.js
+      -  1.0-syncCustomUIConf.spec.js
+      -  1.1-addressVerification.spec.js
+      -  1.2-postalCode.spec.js
+      -  1.3-sku.spec.js
+      -  1.4-taxFallback.spec.js
+      -  2.1-singleproduct.spec.js
+      -  2.2-multiproduct.spec.js
+      -  2.3-discountProduct.spec.js
+      -  2.4-discountShipping.spec.js
+      -  2.5-externalSeller.spec.js
+      -  2.6-promotional_product.spec.js
+      -  2.7-transaction.spec.js
+      -  2.8-fullRefund-transaction.spec.js
+      -  2.9-partialRefund-transaction.spec.js
 
 
-[QE] === SUCCESS ===================================================================================
+#### [Cypress Dashboard](https://dashboard.cypress.io/projects/9myhsu/runs/364)
+
+     [✓] https://dashboard.cypress.io/projects/9myhsu/runs/364
+
+#### Success
 
      [✓] The test ran successfully, well done!
 
@@ -453,6 +551,14 @@ workspace:
   # base.vtex.deployCly
   name: random
   prefix: b2b
+  # The nex configuration avoid apps that need account
+  # level resources from running in parallel
+  reserveAccount:
+    enabled: false
+    setup:
+      - orderForm
+      - vtex.orders-broadcast@0.x
+      - vtex.sno@0.x
   # Link the PR app for integration tests
   linkApp:
     enabled: true
