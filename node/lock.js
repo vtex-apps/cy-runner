@@ -108,7 +108,7 @@ async function getOrderFormConfig(config, secrets = null) {
   }
 
   const result = await http.request(axiosConfig)
-  const appId = result.data.apps.findIndex((app) => app.id === 'e2e')
+  const appId = result?.data?.apps?.findIndex((app) => app.id === 'e2e')
   const workspace = appId >= 0 ? result.data.apps[appId].fields[0] : null
   const startTime = appId >= 0 ? result.data.apps[appId].fields[1] : null
 
@@ -129,7 +129,7 @@ async function setOrderFormConfig(config, secrets) {
   const result = await http.request(axiosConfig)
 
   if (result?.status !== 204) {
-    system.crash('Failed to set up orderForm configuration', result.data)
+    system.crash('Failed to set up orderForm configuration', result?.data)
   }
 }
 
