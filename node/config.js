@@ -25,7 +25,7 @@ exports.getConfig = async (configFile) => {
   const WORKSPACE = await this.getWorkspaceName(config)
   const ACCOUNT = config.base.vtex.account
   const DOMAIN = config.base.vtex.domain
-  const RESERVE = config.workspace.reserveOrderForm
+  const RESERVE = config.workspace?.reserveOrderForm
 
   config.base.vtex.authUrl = `https://${VTEX_ACCOUNT}${VTEX_AUTH_PATH}`
   config.base.vtex.baseUrl = `https://${WORKSPACE}--${ACCOUNT}.${DOMAIN}`
