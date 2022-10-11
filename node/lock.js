@@ -30,15 +30,23 @@ exports.reserveAccount = async (config, secrets = null) => {
   // If from action, show next section
   if (action) logger.msgSection('Reserve account level resources')
 
+  // Let's checkAccount
+  const { account } = config.base.vtex
+  // Set up base info
+  const workspace = await cfg.getWorkspaceName(config)
+
+  config.workspace.name = workspace
+
   logger.msgOk(`Checking current configuration`)
+
   // Check current configuration
-  const orderFormCfg = await getOrderFormConfig(config, secrets)
+  const orderFormCfg = await getOrderFormConfig(config, workspace, secrets)
 
   // Save results to be used later
   config.data = orderFormCfg.data
 
   // Check
-  if (orderFormCfg.startTime) {
+  if (orderFormCfg.startTime && !orderFormCfg.usedInLocal) {
     // Yes, get the time running in seconds
     const ranTime = (Date.now() - orderFormCfg.startTime) / 1000 / 60
 
@@ -61,17 +69,17 @@ exports.reserveAccount = async (config, secrets = null) => {
     }
   }
 
-  // Set up base info
-  config.workspace.name = await cfg.getWorkspaceName(config)
-  const { account } = config.base.vtex
-
   // Reserve app
   logger.msgOk(`Reserving ${account} to ${config.workspace.name}`)
-  config.data.apps.push({
-    fields: [config.workspace.name, Date.now()],
-    id: 'e2e',
-    major: 1,
-  })
+
+  if (!orderFormCfg.usedInLocal) {
+    config.data.apps.push({
+      fields: [config.workspace.name, Date.now()],
+      id: 'e2e',
+      major: 1,
+    })
+  }
+
   await setOrderFormConfig(config, secrets)
 
   // Set up other reservations
@@ -86,7 +94,8 @@ exports.releaseAccount = async (config, secrets = null) => {
   if (action) logger.msgSection('Release account level resources')
 
   logger.msgOk('Releasing account level resources')
-  const orderFormCfg = await getOrderFormConfig(config, secrets)
+  const workspace = await cfg.getWorkspaceName(config)
+  const orderFormCfg = await getOrderFormConfig(config, workspace, secrets)
 
   config.data = orderFormCfg.data
   config.data.apps.splice(orderFormCfg.appId, 1)
@@ -95,9 +104,12 @@ exports.releaseAccount = async (config, secrets = null) => {
   logger.msgOk('Released successfully')
 }
 
-async function getOrderFormConfig(config, secrets = null) {
+async function getOrderFormConfig(config, dynamicWorkspace, secrets = null) {
   logger.msgPad('getting orderForm configuration')
   if (!secrets) secrets = config.base
+  let startTime = null
+  let usedInLocal = false
+
   const { account } = config.base.vtex
   const axiosConfig = {
     url: `https://${account}.vtexcommercestable.com.br/api/checkout/pvt/configuration/orderForm`,
@@ -111,9 +123,19 @@ async function getOrderFormConfig(config, secrets = null) {
   const result = await http.request(axiosConfig)
   const appId = result?.data?.apps?.findIndex((app) => app.id === 'e2e')
   const workspace = appId >= 0 ? result?.data?.apps[appId]?.fields[0] : null
-  const startTime = appId >= 0 ? result?.data?.apps[appId]?.fields[1] : null
 
-  return { startTime, workspace, appId, data: result?.data }
+  // If we are running tests in CI or dynamicWorkspace is not registered in orderForm Configuration
+  // Then update startTime
+  // else return startTime with null and usedInLocal as true
+  if (system.isCI() || dynamicWorkspace !== workspace) {
+    startTime = appId >= 0 ? result?.data?.apps[appId]?.fields[1] : null
+  } else {
+    // In development(local), QE will use same workspace which is already registered in taxConfiguration
+    // so, we are returning usedInLocal to true
+    usedInLocal = true
+  }
+
+  return { startTime, workspace, appId, data: result?.data, usedInLocal }
 }
 
 async function setOrderFormConfig(config, secrets) {
@@ -127,6 +149,8 @@ async function setOrderFormConfig(config, secrets) {
   }
 
   const axiosConfig = { url, method: 'post', headers, data: config.data }
+
+  logger.msgOk(JSON.stringify(config.data))
   const result = await http.request(axiosConfig)
 
   if (result?.status !== 204) {
@@ -140,7 +164,7 @@ async function setAppConfig(config, secrets) {
   const { account } = config.base.vtex
   const { prefix } = config.workspace
   const workspace = config.workspace.name
-  const orderFormCfg = await getOrderFormConfig(config, secrets)
+  const orderFormCfg = await getOrderFormConfig(config, workspace, secrets)
   const apps = config.workspace.reserveAccount.setup
 
   config.data = orderFormCfg.data
