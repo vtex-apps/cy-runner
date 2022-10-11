@@ -32,27 +32,26 @@ async function main() {
   // Save link result to use in teardown
   let linkSucceed = false
 
+  // Init workspace set up
+  control.timing.initWorkspace = await workspace.init(config)
+
+  // Install apps
+  control.timing.installApps = await workspace.installApps(config)
+
+  // Uninstall apps
+  control.timing.uninstallApps = await workspace.uninstallApps(config)
+
+  // Link app
+  const link = await workspace.linkApp(config)
+
+  control.timing.linkApp = link.time
+  linkSucceed = link.success
+
   // Tests
-  if (config.base.cypress.devMode) {
-    await cypress.open()
-  } else {
-    // Init workspace set up
-    control.timing.initWorkspace = await workspace.init(config)
-
-    // Install apps
-    control.timing.installApps = await workspace.installApps(config)
-
-    // Uninstall apps
-    control.timing.uninstallApps = await workspace.uninstallApps(config)
-
-    // Link app
-    const link = await workspace.linkApp(config)
-
-    control.timing.linkApp = link.time
-    linkSucceed = link.success
-
-    // Run tests
-    if (link.success) {
+  if (linkSucceed) {
+    if (config.base.cypress.devMode) {
+      await cypress.open()
+    } else {
       const call = await runTests(config)
 
       control.timing.strategy = call.time
@@ -70,6 +69,8 @@ async function main() {
         await issue(config, control.specsFailed, control.runUrl)
       }
     }
+  } else {
+    throw new Error('Link failure')
   }
 
   // Teardown
