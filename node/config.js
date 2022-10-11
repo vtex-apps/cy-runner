@@ -120,13 +120,15 @@ exports.getConfig = async (configFile) => {
   }
 
   // Export envs to make debug easier inside GitHub
-  if (config.envs) logger.msgOk('Exporting envs variables')
-  config.envs.forEach((env) => {
-    const [envName, envValue] = env.split(': ')
+  if (config.envs && system.isCI()) {
+    logger.msgOk('Exporting envs variables')
+    config.envs.forEach((env) => {
+      const [envName, envValue] = env.split(': ')
 
-    logger.msgPad(`${envName} = ${envValue}`)
-    process.env[envName] = envValue
-  })
+      logger.msgPad(`${envName} = ${envValue}`)
+      process.env[envName] = envValue
+    })
+  }
 
   return config
 }
