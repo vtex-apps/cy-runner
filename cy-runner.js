@@ -29,30 +29,26 @@ async function main() {
   // Read cy-runner.yml configuration
   const config = await cfg.getConfig('cy-runner.yml')
 
-  // Save link result to use in teardown
-  let linkSucceed = false
+  // Init workspace set up
+  control.timing.initWorkspace = await workspace.init(config)
 
-  // Tests
-  if (config.base.cypress.devMode) {
-    await cypress.open()
-  } else {
-    // Init workspace set up
-    control.timing.initWorkspace = await workspace.init(config)
+  // Install apps
+  control.timing.installApps = await workspace.installApps(config)
 
-    // Install apps
-    control.timing.installApps = await workspace.installApps(config)
+  // Uninstall apps
+  control.timing.uninstallApps = await workspace.uninstallApps(config)
 
-    // Uninstall apps
-    control.timing.uninstallApps = await workspace.uninstallApps(config)
+  // Link app
+  const link = await workspace.linkApp(config)
 
-    // Link app
-    const link = await workspace.linkApp(config)
+  control.timing.linkApp = link.time
 
-    control.timing.linkApp = link.time
-    linkSucceed = link.success
-
-    // Run tests
-    if (link.success) {
+  if (link.success) {
+    if (config.base.cypress.devMode) {
+      logger.msgWarn('Please, wait the flow when you finish')
+      logger.msgPad('This will ensure the release and teardown will run')
+      await cypress.open()
+    } else {
       const call = await runTests(config)
 
       control.timing.strategy = call.time
@@ -62,9 +58,6 @@ async function main() {
       control.specsPassed = call.specsPassed
       control.runUrl = call.runUrl
 
-      // Kill link subprocess
-      if (link.subprocess) link.subprocess.kill('SIGHUP')
-
       // Jira automation
       if (config.base.jira.enabled && control.specsFailed?.length) {
         await issue(config, control.specsFailed, control.runUrl)
@@ -73,7 +66,8 @@ async function main() {
   }
 
   // Teardown
-  control.timing.teardown = await workspace.teardown(config, linkSucceed)
+  if (link.subprocess) link.subprocess.kill('SIGHUP')
+  control.timing.teardown = await workspace.teardown(config, link.success)
 
   // Report deprecated flags
   await deprecated(config)

@@ -33,55 +33,54 @@ exports.getConfig = async (configFile) => {
   // Load and parse secrets
   const secrets = credentials.readSecrets(config)
 
-  // Lock the orderForm, if it is the case, in CI the lock is done by GH Actions
+  // Lock the orderForm, in CI the lock is done by a step on GH Actions
   if (RESERVE) await lock.reserveAccount(config, secrets)
 
-  // Do check to avoid waste of time on CI environments
-  const SKIP_AUTO_CONFIG = config.base.skipAutoConfigOnCI ?? false
+  // Seed envs if not present
+  if (!config.envs) config.envs = []
 
-  // Checks to avoid silly configuration errors on CI
-  if (system.isCI() && !SKIP_AUTO_CONFIG) {
-    logger.msgWarn('Auto configuring Cypress flags')
-    logger.msgPad('Set base.skipAutoConfigOnCI to true to avoid auto config')
+  // Run in different mode if on GitHub (CI)
+  if (system.isCI()) {
+    logger.msgWarn('Running in CI mode')
+    // Enforce config to avoid misconfiguration
     config.base.cypress.devMode = false
     config.base.cypress.runHeaded = false
-    config.base.cypress.getCookies = true
     config.base.cypress.quiet = true
     config.base.cypress.videoUploadOnPasses = false
     config.base.cypress.trashAssetsBeforeRuns = false
     config.base.cypress.watchForFileChanges = false
     config.base.cypress.browser = 'chrome'
-  }
-
-  // Inject envs to make sure local tests will run like GitHub
-  if (!config.envs) config.envs = []
-  config.envs.push(
-    'ELECTRON_EXTRA_LAUNCH_ARGS: --disable-gpu --disable-software-rasterizer'
-  )
-  config.envs.push('LIBVA_DRIVER_NAME: --disable-software-rasterizer')
-  config.envs.push('DISPLAY: :99')
-  config.envs.push('NODE_NO_WARNINGS: 1')
-
-  // Clean debug and disable Sorry if not listening on 1233
-  if (!system.isCI()) {
+    // Inject envs
+    config.envs.push(
+      'ELECTRON_EXTRA_LAUNCH_ARGS: --disable-gpu --disable-software-rasterizer'
+    )
+    config.envs.push('LIBVA_DRIVER_NAME: --disable-software-rasterizer')
+    config.envs.push('DISPLAY: :99')
+    config.envs.push('NODE_NO_WARNINGS: 1')
+  } else {
+    // Clean debug
     logger.msgOk('Cleaning debug file')
     storage.delete(system.debugFile())
-    logger.msgPad(system.debugFile())
+    logger.msgPad(`${system.debugFile()} cleaned successfully`)
 
-    const sorryRunning = await http.runningSorryCypress()
+    // If local and not on dev mode
+    if (!config.base.cypress.devMode) {
+      // Disable parallelism if Sorry Cypress is not running
+      const sorryRunning = await http.runningSorryCypress()
 
-    if (!sorryRunning) {
-      logger.msgError('Sorry Cypress not running')
-      logger.msgPad('disabling dashboard')
-      logger.msgPad('disabling parallelization')
-      logger.msgPad('waiting 7 seconds to you cancel and try again')
-      await system.delay(7000)
-      config.base.cypress.maxJobs = 0
+      if (!sorryRunning) {
+        logger.msgError('Sorry Cypress not detected')
+        logger.msgPad('disabling dashboard')
+        logger.msgPad('disabling parallelization')
+        logger.msgPad('waiting 7 seconds, so you can cancel and try again')
+        await system.delay(7000)
+        config.base.cypress.maxJobs = 0
+      }
     }
   }
 
   // Merge secrets on config
-  if (secrets) config = credentials.mergeSecrets(config, secrets)
+  config = credentials.mergeSecrets(config, secrets)
 
   // Report configuration to help understand that'll run
   await this.sectionsToRun(config)
@@ -120,7 +119,7 @@ exports.getConfig = async (configFile) => {
   }
 
   // Export envs to make debug easier inside GitHub
-  if (config.envs) logger.msgOk('Exporting envs variables')
+  if (config.envs.length) logger.msgOk('Exporting envs variables')
   config.envs.forEach((env) => {
     const [envName, envValue] = env.split(': ')
 
