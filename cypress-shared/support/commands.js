@@ -15,13 +15,13 @@ function closeModalIfOpened() {
   })
 }
 
-function closeMenuIfOpened() {
+Cypress.Commands.add('closeMenuIfOpened', () => {
   cy.get('button[class*=closeIconButton]').then(($el) => {
     if (Cypress.dom.isVisible($el)) {
       cy.get('button[class*=closeIconButton]').first().click()
     }
   })
-}
+})
 
 Cypress.Commands.add('searchInMasterData', searchInMasterData)
 Cypress.Commands.add('deleteDocumentInMasterData', deleteDocumentInMasterData)
@@ -128,7 +128,7 @@ Cypress.Commands.add('gotoMyQuotes', () => {
 })
 
 Cypress.Commands.add('gotoQuickOrder', () => {
-  closeMenuIfOpened()
+  cy.closeMenuIfOpened()
   cy.get(selectors.Menu).should('be.visible').click()
   cy.get(selectors.QuickOrder).should('be.visible').click()
 })
