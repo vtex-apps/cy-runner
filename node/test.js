@@ -84,17 +84,20 @@ exports.runTests = async (config) => {
 }
 
 exports.startXvfb = async () => {
-  const displayLog = path.join(logger.logPath(), '_display.log')
+  // Xvfb only run if running on CI
+  if (system.isCI()) {
+    const displayLog = path.join(logger.logPath(), '_display.log')
 
-  return system.spawn(
-    'Xvfb',
-    ['-screen', '0', '1024x768x24', ':99'],
-    displayLog
-  )
+    return system.spawn(
+      'Xvfb',
+      ['-screen', '0', '1024x768x24', ':99'],
+      displayLog
+    )
+  }
 }
 
 exports.stopXvfb = async (xvfb) => {
-  xvfb.kill()
+  if (system.isCI()) xvfb.kill()
 }
 
 async function runTest(test, config, group) {
