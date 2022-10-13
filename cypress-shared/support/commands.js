@@ -131,6 +131,7 @@ Cypress.Commands.add('gotoQuickOrder', () => {
   cy.closeMenuIfOpened()
   cy.get(selectors.Menu).should('be.visible').click()
   cy.get(selectors.QuickOrder).should('be.visible').click()
+  cy.closeMenuIfOpened()
 })
 
 Cypress.Commands.add('searchProductinB2B', (product) => {
