@@ -13,6 +13,7 @@ function fillSkuAndQuantity(textArea, validate, skuQuantity) {
 }
 
 function checkBackButtonIsVisible() {
+  cy.closeMenuIfOpened()
   const [buttonsBlock, button] = [
     'div[class*=buttonsBlock]',
     'div[class*=vtex-button]',
