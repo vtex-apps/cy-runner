@@ -41,10 +41,6 @@ exports.getCookies = async (config) => {
     const userOrRobot = await toolbelt.getLocalToken()
 
     config.base.vtex.userAuthCookieValue = userOrRobot.token
-    if (userOrRobot.mailOrKey.split('@').length === 2) {
-      config.base.vtex.robotMail = userOrRobot.mailOrKey
-    }
-
     logger.msgPad(userOrRobot.mailOrKey)
 
     return config
@@ -55,7 +51,7 @@ exports.readSecrets = (config) => {
   if (!config.base.secrets.enabled) {
     logger.msgWarn('Secrets disabled')
 
-    return
+    return {}
   }
 
   logger.msgOk('Loading secrets')
