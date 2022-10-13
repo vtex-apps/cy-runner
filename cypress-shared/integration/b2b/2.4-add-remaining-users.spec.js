@@ -23,7 +23,7 @@ import { loginToStoreFront } from '../../support/b2b/login.js'
 
 const { users, gmailCreds, organizationName, costCenter1 } = b2b.OrganizationA
 
-describe('Disable Binding,Verify Organization is not showing up, Sync Checkout UI Custom', () => {
+describe('Add Binding which hides Organization in profile page', () => {
   loginViaCookies({ storeFrontCookie: false })
 
   addBindingsWhichHidesOrganization()
@@ -44,12 +44,10 @@ describe('Disable Binding,Verify Organization is not showing up, Sync Checkout U
     cy.organizationShouldNotShowInProfile()
   })
 
-  syncCheckoutUICustom()
-
   preserveCookie()
 })
 
-describe('Enable binding, Verify Organization is showing up & Add Sales Users via Graphql', () => {
+describe('Add binding which shows Organization in profile page, Sync Checkout UI Custom & Add Sales Users via Graphql', () => {
   before(() => {
     cy.clearLocalStorage()
   })
@@ -97,6 +95,8 @@ describe('Enable binding, Verify Organization is showing up & Add Sales Users vi
       })
     })
   })
+
+  syncCheckoutUICustom()
 
   const roles = Object.keys(ROLE_ID_EMAIL_MAPPING)
 
