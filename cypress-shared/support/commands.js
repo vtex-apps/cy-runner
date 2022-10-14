@@ -93,7 +93,7 @@ Cypress.Commands.add(
       }
 
       closeModalIfOpened()
-      cy.get(selectors.MyOrganization).click()
+      cy.get(selectors.MyOrganization).should('be.visible').click()
       const noOfdivision = salesRepOrManager ? 2 : 4
 
       cy.get(selectors.MyOrganizationCostCenterUserDiv).should(
