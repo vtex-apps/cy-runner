@@ -16,6 +16,7 @@ function closeModalIfOpened() {
 }
 
 Cypress.Commands.add('closeMenuIfOpened', () => {
+  cy.addDelayBetweenRetries(5000)
   cy.get('button[class*=closeIconButton]').then(($el) => {
     if (Cypress.dom.isVisible($el)) {
       cy.get('button[class*=closeIconButton]').first().click()
@@ -92,7 +93,7 @@ Cypress.Commands.add(
       }
 
       closeModalIfOpened()
-      cy.get(selectors.MyOrganization).click()
+      cy.get(selectors.MyOrganization).should('be.visible').click()
       const noOfdivision = salesRepOrManager ? 2 : 4
 
       cy.get(selectors.MyOrganizationCostCenterUserDiv).should(

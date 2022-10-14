@@ -304,12 +304,63 @@ export function setWorkspaceAndGatewayAffiliations({
 
 export function syncCheckoutUICustom() {
   // eslint-disable-next-line jest/expect-expect
-  it(`Sync Checkout UI Custom in ${prefix}`, updateRetry(2), () => {
+  it(`In ${prefix} - Sync Checkout UI Custom`, updateRetry(2), () => {
     cy.visit('admin/app/vtex-checkout-ui-custom/')
     cy.contains('Publish', { timeout: 25000 }).should('be.visible').click()
     cy.contains('History', { timeout: 35000 }).should('be.visible').click()
     cy.contains(WORKSPACE, { timeout: 15000 }).should('be.visible')
   })
+}
+
+export function syncCheckoutUICustomAPI() {
+  // eslint-disable-next-line jest/expect-expect
+  it(
+    `In ${prefix} - Sync Checkout UI Custom via API`,
+    { retries: 9, responseTimeout: 5000, requestTimeout: 5000 },
+    () => {
+      cy.getVtexItems().then((vtex) => {
+        // Define constants
+        const APP_NAME = 'vtex.checkout-ui-custom'
+        const APP_VERSION = '0.x'
+        const APP = `${APP_NAME}@${APP_VERSION}`
+        const CUSTOM_URL = `https://${vtex.account}.myvtex.com/_v/private/admin-graphql-ide/v0/${APP}`
+        const GRAPHQL_QUERY =
+          '{getLast(workspace: "master")' +
+          '{email workspace layout javascript css javascriptActive cssActive colors}}'
+
+        const GRAPHQL_MUTATION =
+          'mutation' +
+          '($email: String, $workspace: String, $layout: CustomFields, $javascript: String, $css: String, $javascriptActive: Boolean, $cssActive: Boolean, $colors: CustomFields)' +
+          '{saveChanges(email: $email, workspace: $workspace, layout: $layout, javascript: $javascript, css: $css, javascriptActive: $javascriptActive, cssActive: $cssActive, colors: $colors)}'
+
+        // Getting master values
+        cy.request({
+          method: 'POST',
+          url: CUSTOM_URL,
+          body: { query: GRAPHQL_QUERY },
+        })
+          .as('GRAPHQL')
+          .its('status')
+          .should('equal', 200)
+
+        // Mutating it to the new workspace
+        cy.get('@GRAPHQL').then((query) => {
+          query.body.data.getLast.workspace = WORKSPACE
+
+          cy.request({
+            method: 'POST',
+            url: CUSTOM_URL,
+            body: {
+              query: GRAPHQL_MUTATION,
+              variables: query.body.data.getLast,
+            },
+          })
+            .its('body.data.saveChanges', { timeout: 5000 })
+            .should('contain', 'DocumentId')
+        })
+      })
+    }
+  )
 }
 
 export function deleteAddresses() {
