@@ -16,6 +16,7 @@ function closeModalIfOpened() {
 }
 
 Cypress.Commands.add('closeMenuIfOpened', () => {
+  cy.addDelayBetweenRetries(5000)
   cy.get('button[class*=closeIconButton]').then(($el) => {
     if (Cypress.dom.isVisible($el)) {
       cy.get('button[class*=closeIconButton]').first().click()
