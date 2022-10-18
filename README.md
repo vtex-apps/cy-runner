@@ -5,6 +5,7 @@
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=vtex-apps_cy-runner&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=vtex-apps_cy-runner)
 
 Tool to orchestrate Cypress tests at VTEX
+teste
 
 ## Features
 * Automate authentication on VTEX Toolbelt (using [VTEX Toolbelt Action](https://github.com/vtex/action-toolbelt))
