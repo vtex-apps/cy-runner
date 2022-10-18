@@ -230,7 +230,7 @@ Cypress.Commands.add('addNewLocation', (country, postalCode, street) => {
     .within(() => {
       cy.get(selectors.InputText).clear().type('Aventura')
     })
-  cy.waitForGraphql('address', selectors.SaveButton)
+  cy.waitForGraphql('setRegionId', selectors.SaveButton)
   cy.once('uncaught:exception', () => false)
 })
 
