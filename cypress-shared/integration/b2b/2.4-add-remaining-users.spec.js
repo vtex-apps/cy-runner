@@ -10,7 +10,7 @@ import {
   ROLE_DROP_DOWN,
 } from '../../support/b2b/utils.js'
 import { addUserViaGraphql } from '../../support/b2b/add_users.js'
-import { syncCheckoutUICustom } from '../../support/common/testcase.js'
+import { syncCheckoutUICustomAPI } from '../../support/common/testcase.js'
 import b2b from '../../support/b2b/constants.js'
 import { setOrganizationIdInJSON } from '../../support/b2b/common.js'
 import {
@@ -50,6 +50,7 @@ describe('Add Binding which hides Organization in profile page', () => {
 describe('Add binding which shows Organization in profile page, Sync Checkout UI Custom & Add Sales Users via Graphql', () => {
   before(() => {
     cy.clearLocalStorage()
+    cy.clearCookies()
   })
 
   loginViaCookies({ storeFrontCookie: false })
@@ -96,7 +97,7 @@ describe('Add binding which shows Organization in profile page, Sync Checkout UI
     })
   })
 
-  syncCheckoutUICustom()
+  syncCheckoutUICustomAPI()
 
   const roles = Object.keys(ROLE_ID_EMAIL_MAPPING)
 
