@@ -93,9 +93,13 @@ export function ordertheProduct(role) {
     cy.intercept('**/paymentData').as('paymentData')
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(10000)
-    cy.get(`[data-name='${PAYMENT_TERMS.NET30}']`).should('be.visible').click()
+    cy.get(`[data-name='${PAYMENT_TERMS.NET30}']`)
+      .should('be.visible')
+      .click({ force: true })
     cy.wait('@paymentData')
-    cy.contains(BUTTON_LABEL.completeOrder).click()
+    cy.contains(BUTTON_LABEL.completeOrder)
+      .should('be.visible')
+      .click({ force: true })
     cy.get(selectors.Search, { timeout: 30000 }).should('be.visible')
   })
 }
