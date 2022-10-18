@@ -8,7 +8,7 @@ const { report } = require('./node/report')
 const { runTests } = require('./node/test')
 const { issue } = require('./node/jira')
 
-// Controls test state
+// Controls test state [teste]
 const control = {
   start: system.tick(),
   timing: {},
