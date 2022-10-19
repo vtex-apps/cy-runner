@@ -307,8 +307,16 @@ export function syncCheckoutUICustom() {
   it(`Sync Checkout UI Custom in ${prefix}`, updateRetry(2), () => {
     cy.visit('admin/app/vtex-checkout-ui-custom/')
     cy.contains('Publish', { timeout: 25000 }).should('be.visible').click()
+    cy.getVtexItems().then((vtex) => {
+      cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
+        if (req.body.operationName === 'GetHistory') {
+          req.continue()
+        }
+      }).as('GetHistory')
+    })
     cy.contains('History', { timeout: 35000 }).should('be.visible').click()
     cy.contains(WORKSPACE, { timeout: 15000 }).should('be.visible')
+    cy.wait('@GetHistory')
   })
 }
 
