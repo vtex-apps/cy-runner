@@ -92,7 +92,7 @@ export function ordertheProduct(role) {
   it(`Verify ${role} is able to order the product`, () => {
     cy.intercept('**/paymentData').as('paymentData')
     cy.get(`[data-name='${PAYMENT_TERMS.NET30}']`).should('be.visible').click()
-    cy.wait('@paymentData')
+    // cy.wait('@paymentData')
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(10000)
     cy.contains(BUTTON_LABEL.completeOrder)
