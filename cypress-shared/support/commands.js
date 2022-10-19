@@ -93,7 +93,9 @@ Cypress.Commands.add(
       }
 
       closeModalIfOpened()
-      cy.get(selectors.MyOrganization).should('be.visible').click()
+      cy.get(selectors.MyOrganization, { timeout: 30000 })
+        .should('be.visible')
+        .click()
       const noOfdivision = salesRepOrManager ? 2 : 4
 
       cy.get(selectors.MyOrganizationCostCenterUserDiv).should(
@@ -152,8 +154,8 @@ Cypress.Commands.add('searchProductinB2B', (product) => {
       .should('be.visible')
       .should('be.enabled')
       .clear()
-      .type(product)
-      .type('{enter}')
+      .type(product, { force: true })
+      .type('{enter}', { force: true })
   })
 })
 
@@ -281,10 +283,10 @@ function visitOrganizationPage() {
 
 Cypress.Commands.add('organizationShouldNotShowInProfile', () => {
   visitOrganizationPage()
-  cy.get(selectors.MyOrganization, { timeout: 10000 }).should('not.exist')
+  cy.get(selectors.MyOrganization, { timeout: 20000 }).should('not.exist')
 })
 
 Cypress.Commands.add('organizationShouldShowInProfile', () => {
   visitOrganizationPage()
-  cy.get(selectors.MyOrganization, { timeout: 10000 }).should('be.visible')
+  cy.get(selectors.MyOrganization, { timeout: 25000 }).should('be.visible')
 })
