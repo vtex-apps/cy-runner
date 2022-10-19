@@ -32,7 +32,7 @@ import {
 import {
   quickOrderBySkuAndQuantityTestCase1,
   quickOrderBySkuAndQuantityTestCase2,
-  quickOrderBySkuAnd51QuantityTestCase,
+  // quickOrderBySkuAnd51QuantityTestCase,
 } from '../../support/b2b/quick_order.js'
 
 describe('Organization A - Cost Center A1 - Organization Admin2 Scenario', () => {
@@ -98,7 +98,7 @@ describe('Organization A - Cost Center A1 - Organization Admin2 Scenario', () =>
     quotes.OrganizationAdmin2.quotes1
   )
   quickOrderBySkuAndQuantityTestCase2(ROLE_DROP_DOWN.OrganizationAdmin)
-  quickOrderBySkuAnd51QuantityTestCase(ROLE_DROP_DOWN.OrganizationAdmin)
+  // quickOrderBySkuAnd51QuantityTestCase(ROLE_DROP_DOWN.OrganizationAdmin)
   filterQuoteByStatus(STATUSES.declined)
 
   checkoutProduct(product)

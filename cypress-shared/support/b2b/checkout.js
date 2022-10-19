@@ -90,10 +90,14 @@ export function verifyPayment(promissory = true) {
 
 export function ordertheProduct(role) {
   it(`Verify ${role} is able to order the product`, () => {
-    cy.intercept('**/paymentData').as('paymentData')
-    cy.get(`[data-name='${PAYMENT_TERMS.NET30}']`).should('be.visible').click()
-    cy.wait('@paymentData')
-    cy.contains(BUTTON_LABEL.completeOrder).click()
+    cy.get(`[data-name='${PAYMENT_TERMS.NET30}']`)
+      .should('be.visible')
+      .click({ force: true })
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(5000)
+    cy.contains(BUTTON_LABEL.completeOrder)
+      .should('be.visible')
+      .click({ force: true })
     cy.get(selectors.Search, { timeout: 30000 }).should('be.visible')
   })
 }
