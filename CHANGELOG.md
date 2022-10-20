@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Changed
+- Stop validating dollar in minicart
+
 ### Added
 - Group logs features
 
