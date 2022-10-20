@@ -2,7 +2,7 @@ import selectors from '../common/selectors.js'
 import { fillQuoteInformation } from './quotes.js'
 import { BUTTON_LABEL, TOAST_MSG } from '../validation_text.js'
 import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
-import { validateToastMsg } from './utils.js'
+import { validateToastMsg, validateToolTipMsg } from './utils.js'
 import { updateRetry } from '../common/support.js'
 
 export const POPUP_MSG = "You can't have more than 50 items"
@@ -68,18 +68,15 @@ export function quickOrderBySkuAnd51QuantityTestCase(role) {
     `Verify ${role} is able to add 50 products to cart with 51 quantity by quick order - [Sku's Code],[Quantity]`,
     updateRetry(2),
     () => {
-      const { textArea, validate, addtoCart, remove } =
-        selectors.QuickOrderPage().skus
+      const { textArea, validate } = selectors.QuickOrderPage().skus
 
       cy.gotoQuickOrder()
       checkBackButtonIsVisible()
       fillSkuAndQuantity(textArea, validate, '880270a,51{enter}')
-      cy.waitForGraphql(GRAPHL_OPERATIONS.addToCart, addtoCart)
-      validateToastMsg(POPUP_MSG)
-      cy.get(selectors.OpenCart).first().should('be.visible').click()
-      cy.get(selectors.QuantityInCart).should('have.value', 50)
-      cy.get(remove).click()
-      cy.get(selectors.CloseCart).click()
+      // TODO: https://vtex-dev.atlassian.net/browse/QUICKORDER-37
+      // Once above ticket gets fixed then disable below code
+      // cy.get(addtoCart).should('not.exist')
+      validateToolTipMsg(POPUP_MSG)
     }
   )
 }
