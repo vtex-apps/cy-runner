@@ -1,5 +1,6 @@
 ## [Unreleased]
 ### Added
+- Shorter report on PR decorator
 - Enable quickOrderBySkuAnd51QuantityTestCase - Instead of toast message verify tooltip message
 
 ### Changed
