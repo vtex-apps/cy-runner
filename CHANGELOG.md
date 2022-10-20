@@ -1,6 +1,8 @@
 ## [Unreleased]
 ### Added
 - Affirm API - intercept for GetHistory graphql
+
+### Added
 - Enable quickOrderBySkuAnd51QuantityTestCase - Instead of toast message verify tooltip message
 
 ### Changed
