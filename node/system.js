@@ -155,9 +155,14 @@ exports.tick = () => {
   return Date.now()
 }
 
-// Finish timer
+// Finish time
 exports.tack = (start) => {
-  return `${(Date.now() - start) / 1000} seconds`
+  const seconds = (Date.now() - start) / 1000
+  const convert = (x) => (x < 10 ? `0${x}` : x)
+
+  return `${convert(seconds / (60 * 60))}:
+          ${convert((seconds / 60) % 60)}:
+          ${convert(seconds % 60)}`
 }
 
 // Init ID
