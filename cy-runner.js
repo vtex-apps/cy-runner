@@ -19,6 +19,8 @@ const control = {
   runUrl: null,
 }
 
+const lintShouldFail = true
+
 async function main() {
   // Init logger
   logger.init()
