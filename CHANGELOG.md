@@ -5,6 +5,7 @@
 
 ### Added
 - Group logs features
+- Enable quickOrderBySkuAnd51QuantityTestCase - Instead of toast message verify tooltip message
 
 ## [2.0.0] - 2022-10-02
 
