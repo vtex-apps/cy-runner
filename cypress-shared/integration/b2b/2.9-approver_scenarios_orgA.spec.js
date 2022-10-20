@@ -62,6 +62,7 @@ describe('Organization A - Cost Center A1 - Approver Scenario', () => {
   )
   quickOrderByXLS(quotes.Approver.quotes1)
   // Negative test case not working
+  // Ticket - https://vtex-dev.atlassian.net/browse/QUICKORDER-36
   // quickOrderByXLSNegativeTestCase(quotes.Approver.quotes2)
   searchQuote(quotes.Buyer.quotes6)
 
