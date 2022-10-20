@@ -1,4 +1,6 @@
 ## [Unreleased]
+### Added
+- Enable quickOrderBySkuAnd51QuantityTestCase - Instead of toast message verify tooltip message
 
 ### Changed
 - Stop validating dollar in minicart
