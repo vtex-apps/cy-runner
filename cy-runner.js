@@ -19,6 +19,8 @@ const control = {
   runUrl: null,
 }
 
+const unused = null
+
 async function main() {
   // Init logger
   logger.init()
