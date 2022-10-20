@@ -18,19 +18,12 @@ export function fillQuoteInformation({
       cy.get(selectors.RemoveProduct).should('be.visible')
       cy.get('#total-price div[class*=checkout-summary]')
         .should('be.visible')
-        .should('contain', '$')
+        .invoke('text')
+        .should('match', /\d/)
 
       const price = $div.text()
 
       cy.get(selectors.CreateQuote).last().should('be.visible').click()
-
-      cy.get(selectors.CurrencyContainer, { timeout: 5000 }).should(
-        'be.visible'
-      )
-
-      cy.get(selectors.QuoteTotal, { timeout: 8000 })
-        .first()
-        .should('not.contain', '$0.00')
 
       cy.get(selectors.QuoteName).should('be.visible').clear().type(quoteEnv)
       if (notes) {
