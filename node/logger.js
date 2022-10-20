@@ -81,6 +81,16 @@ exports.msgPad = (msg, pr = false) => {
 }
 
 exports.msgSection = (msg, pr = false) => {
+  if (system.isCI()) {
+    // If first section, don't close group
+    // eslint-disable-next-line no-console
+    if (msg !== 'Cypress Runner') console.log(`::endgroup::`)
+
+    // Open group for each new section
+    // eslint-disable-next-line no-console
+    console.log(`::group::${msg}`)
+  }
+
   this.write(`\n\n${ico('section')} ${msg}\n`, pr)
 }
 

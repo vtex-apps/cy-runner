@@ -27,20 +27,24 @@ function checkBackButtonIsVisible() {
 }
 
 export function quickOrderBySkuAndQuantityTestCase2(role) {
-  it(`Verify ${role} is able remove invalid skus in quick order - [Sku's Code],[Quantity]`, () => {
-    const { textArea, validate } = selectors.QuickOrderPage().skus
+  it(
+    `Verify ${role} is able remove invalid skus in quick order - [Sku's Code],[Quantity]`,
+    updateRetry(2),
+    () => {
+      const { textArea, validate } = selectors.QuickOrderPage().skus
 
-    cy.gotoQuickOrder()
-    checkBackButtonIsVisible()
-    fillSkuAndQuantity(textArea, validate, '880270a,2{enter}1,2{enter}')
-    checkBackButtonIsVisible()
-  })
+      cy.gotoQuickOrder()
+      checkBackButtonIsVisible()
+      fillSkuAndQuantity(textArea, validate, '880270a,2{enter}1,2{enter}')
+      checkBackButtonIsVisible()
+    }
+  )
 }
 
 export function quickOrderBySkuAndQuantityTestCase1(role, quoteEnv) {
   it(
     `Verify ${role} is able to create quote by quick order - [Sku's Code],[Quantity]`,
-    updateRetry(1),
+    updateRetry(2),
     () => {
       const { textArea, validate, invalid, content, addtoCart } =
         selectors.QuickOrderPage().skus
@@ -62,7 +66,7 @@ export function quickOrderBySkuAndQuantityTestCase1(role, quoteEnv) {
 export function quickOrderBySkuAnd51QuantityTestCase(role) {
   it(
     `Verify ${role} is able to add 50 products to cart with 51 quantity by quick order - [Sku's Code],[Quantity]`,
-    updateRetry(1),
+    updateRetry(2),
     () => {
       const { textArea, validate, addtoCart, remove } =
         selectors.QuickOrderPage().skus
@@ -90,7 +94,7 @@ function searchOneByOneProduct(search, { product, quantity }, number) {
 export function quickOrderByOneByOneTestCase(role, product, quoteEnv) {
   it(
     `Verify ${role} is able to create quote by quick order - One by One`,
-    updateRetry(1),
+    updateRetry(2),
     () => {
       cy.gotoQuickOrder()
       const { search, quantity, add } = selectors.QuickOrderPage().oneByOne
@@ -108,7 +112,7 @@ export function quickOrderByOneByOneTestCase(role, product, quoteEnv) {
 export function quickOrderByOneByOneNegativeTestCase(role, product, quoteEnv) {
   it(
     `Verify ${role} is able to create quote by quick order with 51 products - One by One`,
-    updateRetry(1),
+    updateRetry(2),
     () => {
       cy.gotoQuickOrder()
       const { search, quantity, add, clear } =

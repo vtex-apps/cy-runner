@@ -92,7 +92,7 @@ export function verifySalesChannel(binding = true) {
 
 export function verifyBindings(email, binding) {
   it(`Verify Bindings with this emailId - ${email}`, updateRetry(3), () => {
-    cy.addDelayBetweenRetries(2000)
+    cy.addDelayBetweenRetries(5000)
     const GRAPHQL_GET_SALES_CHANNEL_QUERY =
       'query($email:String!){' + `getBinding(email:$email)}`
 
