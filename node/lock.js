@@ -57,7 +57,7 @@ exports.reserveAccount = async (config, secrets = null) => {
           ranTime
         )} minutes], releasing`
       )
-      config = await this.releaseAccount(config, secrets)
+      await this.releaseAccount(config, secrets)
     }
   }
 

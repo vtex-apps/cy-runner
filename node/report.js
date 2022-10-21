@@ -3,7 +3,7 @@ const system = require('./system')
 const cypress = require('./cypress')
 
 module.exports.report = async (control, config) => {
-  logger.msgSection('Execution report', true)
+  logger.msgSection('Execution report')
 
   logger.msgOk('Execution time', true)
 
@@ -11,7 +11,7 @@ module.exports.report = async (control, config) => {
     logger.msgPad(`${section.padEnd(30, '.')} ${control.timing[section]}`, true)
   }
 
-  logger.newLine(1, true)
+  logger.newLine(1)
 
   if (config.base.cypress.devMode) {
     system.success('Hope your tests went well. See you soon!')
@@ -44,15 +44,15 @@ module.exports.printSpecs = (control) => {
     if (tests?.length > 0) {
       const str = tests.length > 1 ? 'specs' : 'spec'
 
-      if (item[2] === 'ok') logger.msgOk(`${item[1]} ${str}`, true)
-      if (item[2] === 'warn') logger.msgWarn(`${item[1]} ${str}`, true)
-      if (item[2] === 'error') logger.msgError(`${item[1]} ${str}`, true)
+      if (item[2] === 'ok') logger.msgOk(`${item[1]} ${str}`)
+      if (item[2] === 'warn') logger.msgWarn(`${item[1]} ${str}`)
+      if (item[2] === 'error') logger.msgError(`${item[1]} ${str}`)
       tests.sort()
       tests.forEach((test) => {
-        logger.msgPad(cypress.specNameClean(test), true)
+        logger.msgPad(cypress.specNameClean(test))
       })
 
-      logger.newLine(1, true)
+      logger.newLine(1)
     }
   })
 }
