@@ -3,7 +3,7 @@ const system = require('./system')
 const cypress = require('./cypress')
 
 module.exports.report = async (control, config) => {
-  logger.msgSection('Execution report', true)
+  logger.msgSection('Execution report')
 
   logger.msgOk('Execution time', true)
 
