@@ -54,7 +54,7 @@ exports.write = (msg, pr = false) => {
   // Send pr messages to be printed in GitHub PR
   if (pr) {
     storage.append(
-      storage.exists(PUL_FILE) ? msg : `### Cypress Runner\n\n${msg}`,
+      storage.exists(PUL_FILE) ? msg : `#### Cy-Runner\n\n${msg}`,
       PUL_FILE
     )
   }
