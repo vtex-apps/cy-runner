@@ -67,7 +67,7 @@ export function deleteCostCenter(costcenter) {
       .should('be.visible')
       .click()
     cy.get(selectors.MyOrganizationCostCenterUserDiv).should('have.length', 4)
-    cy.contains(costcenter, { timeout: 5000 }).should('not.exist')
+    cy.contains(costcenter, { timeout: 8000 }).should('not.exist')
   })
 }
 

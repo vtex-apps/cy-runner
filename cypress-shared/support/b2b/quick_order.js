@@ -134,9 +134,9 @@ function quickOrderCategory(quoteEnv, number) {
 
   cy.get(title).contains(BUTTON_LABEL.QuickOrder)
   cy.contains(product).should('be.visible').click()
-  cy.get(quantity, { timeout: 5000 })
+  cy.get(quantity, { timeout: 8000 })
     .first()
-    .clear({ timeout: 5000 })
+    .clear({ timeout: 8000 })
     .type(number)
   cy.get(addtoCart).should('be.visible').click()
   cy.get(selectors.ToastMsgInB2B, { timeout: 10000 }).contains(

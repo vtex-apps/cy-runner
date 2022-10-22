@@ -39,20 +39,20 @@ export function fillQuoteInformation({
       if (requestQuote) {
         if (!impersonatedRole) {
           cy.get('div')
-            .contains(selectors.RequestQuote, { timeout: 5000 })
+            .contains(selectors.RequestQuote, { timeout: 12000 })
             .should('be.visible')
             .should('not.be.disabled')
             .click()
         } else {
           cy.get('div')
-            .contains(selectors.SaveQuote, { timeout: 5000 })
+            .contains(selectors.SaveQuote, { timeout: 12000 })
             .should('be.visible')
             .should('not.be.disabled')
             .click()
         }
       } else {
         cy.get('div')
-          .contains(selectors.SaveForLater, { timeout: 5000 })
+          .contains(selectors.SaveForLater, { timeout: 12000 })
           .should('be.visible')
           .should('not.be.disabled')
           .click()
