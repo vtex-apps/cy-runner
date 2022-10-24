@@ -15,11 +15,6 @@ import { loginToStoreFront } from '../../support/b2b/login.js'
 const { users, gmailCreds } = b2b.OrganizationA
 
 describe('Add binding which shows Organization in profile page', () => {
-  before(() => {
-    cy.clearLocalStorage()
-    cy.clearCookies()
-  })
-
   loginViaCookies({ storeFrontCookie: false })
 
   addBindingsWhichShowsOrganization()
