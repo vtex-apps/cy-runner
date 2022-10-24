@@ -2,6 +2,7 @@
 import {
   loginViaCookies,
   preserveCookie,
+  updateRetry,
 } from '../../support/common/support.js'
 import { ROLE_DROP_DOWN } from '../../support/b2b/utils.js'
 import b2b from '../../support/b2b/constants.js'
@@ -21,7 +22,7 @@ describe('Add binding which shows Organization in profile page', () => {
 
   verifySalesChannel(1)
 
-   verifyBindings(users.OrganizationAdmin1, false)
+  verifyBindings(users.OrganizationAdmin1, true)
 
   loginToStoreFront(
     users.OrganizationAdmin1,
@@ -29,7 +30,7 @@ describe('Add binding which shows Organization in profile page', () => {
     gmailCreds
   )
 
-  it('Verify Organization is showing up', () => {
+  it('Verify Organization is showing up', updateRetry(2), () => {
     cy.organizationShouldShowInProfile()
   })
 

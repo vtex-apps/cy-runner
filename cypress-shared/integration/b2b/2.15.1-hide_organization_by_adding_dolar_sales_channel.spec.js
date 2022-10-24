@@ -2,10 +2,9 @@
 import {
   loginViaCookies,
   preserveCookie,
+  updateRetry,
 } from '../../support/common/support.js'
-import {
-  ROLE_DROP_DOWN,
-} from '../../support/b2b/utils.js'
+import { ROLE_DROP_DOWN } from '../../support/b2b/utils.js'
 import b2b from '../../support/b2b/constants.js'
 import {
   verifySalesChannel,
@@ -32,8 +31,7 @@ describe('Add Binding which hides Organization in profile page', () => {
     gmailCreds
   )
 
-
-  it('Verify Organization is not showing up', () => {
+  it('Verify Organization is not showing up', updateRetry(2), () => {
     cy.organizationShouldNotShowInProfile()
   })
 
