@@ -25,23 +25,23 @@ const { users, gmailCreds, organizationName, costCenter1 } = b2b.OrganizationA
 describe('Add Binding which hides Organization in profile page', () => {
   loginViaCookies({ storeFrontCookie: false })
 
-  addBindingsWhichHidesOrganization()
+  // addBindingsWhichHidesOrganization()
 
-  verifySalesChannel(0)
+  // verifySalesChannel(0)
 
-  verifyBindings(users.OrganizationAdmin1, false)
+  // verifyBindings(users.OrganizationAdmin1, false)
 
-  loginToStoreFront(
-    users.OrganizationAdmin1,
-    ROLE_DROP_DOWN.OrganizationAdmin,
-    gmailCreds
-  )
+  // loginToStoreFront(
+  //   users.OrganizationAdmin1,
+  //   ROLE_DROP_DOWN.OrganizationAdmin,
+  //   gmailCreds
+  // )
 
-  setOrganizationIdInJSON(organizationName, costCenter1.name)
+  // setOrganizationIdInJSON(organizationName, costCenter1.name)
 
-  it('Verify Organization is not showing up', () => {
-    cy.organizationShouldNotShowInProfile()
-  })
+  // it('Verify Organization is not showing up', () => {
+  //   cy.organizationShouldNotShowInProfile()
+  // })
 
   syncCheckoutUICustomAPI()
 
