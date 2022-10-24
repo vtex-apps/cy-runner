@@ -7,7 +7,6 @@ import { ROLE_DROP_DOWN } from '../../support/b2b/utils.js'
 import b2b from '../../support/b2b/constants.js'
 import {
   verifySalesChannel,
-  verifyBindings,
   addBindingsWhichShowsOrganization,
 } from '../../support/b2b/graphql.js'
 import { loginToStoreFront } from '../../support/b2b/login.js'
@@ -20,8 +19,6 @@ describe('Add binding which shows Organization in profile page', () => {
   addBindingsWhichShowsOrganization()
 
   verifySalesChannel(1)
-
-  verifyBindings(users.OrganizationAdmin1, true)
 
   loginToStoreFront(
     users.OrganizationAdmin1,
