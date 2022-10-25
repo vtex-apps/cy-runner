@@ -12,64 +12,18 @@ import {
 import { addUserViaGraphql } from '../../support/b2b/add_users.js'
 import { syncCheckoutUICustomAPI } from '../../support/common/testcase.js'
 import b2b from '../../support/b2b/constants.js'
-import { setOrganizationIdInJSON } from '../../support/b2b/common.js'
-import {
-  verifySalesChannel,
-  verifyBindings,
-  addBindingsWhichHidesOrganization,
-  addBindingsWhichShowsOrganization,
-} from '../../support/b2b/graphql.js'
 import { loginToStoreFront } from '../../support/b2b/login.js'
 
-const { users, gmailCreds, organizationName, costCenter1 } = b2b.OrganizationA
-
-describe('Add Binding which hides Organization in profile page', () => {
-  loginViaCookies({ storeFrontCookie: false })
-
-  addBindingsWhichHidesOrganization()
-
-  verifySalesChannel(0)
-
-  verifyBindings(users.OrganizationAdmin1, false)
-
-  loginToStoreFront(
-    users.OrganizationAdmin1,
-    ROLE_DROP_DOWN.OrganizationAdmin,
-    gmailCreds
-  )
-
-  setOrganizationIdInJSON(organizationName, costCenter1.name)
-
-  it('Verify Organization is not showing up', () => {
-    cy.organizationShouldNotShowInProfile()
-  })
-
-  preserveCookie()
-})
+const { users, gmailCreds } = b2b.OrganizationA
 
 describe('Add binding which shows Organization in profile page, Sync Checkout UI Custom & Add Sales Users via Graphql', () => {
-  before(() => {
-    cy.clearLocalStorage()
-    cy.clearCookies()
-  })
-
   loginViaCookies({ storeFrontCookie: false })
-
-  addBindingsWhichShowsOrganization()
-
-  verifySalesChannel(1)
-
-  verifyBindings(users.OrganizationAdmin1, true)
 
   loginToStoreFront(
     users.OrganizationAdmin1,
     ROLE_DROP_DOWN.OrganizationAdmin,
     gmailCreds
   )
-
-  it('Verify Organization is showing up', () => {
-    cy.organizationShouldShowInProfile()
-  })
 
   it('Set roles in organization JSON', updateRetry(3), () => {
     cy.getVtexItems().then((vtex) => {
