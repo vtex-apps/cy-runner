@@ -74,6 +74,12 @@ describe('Organization A - Cost Center A1 - Sales Admin Scenario', () => {
     users.SalesManager
   )
 
+  salesUserShouldImpersonateNonSalesUser(
+    roleObject.SalesAdmin.role,
+    impersonatedRole,
+    users.Approver1
+  )
+
   verifyQuotesAndSavedCarts()
   QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
   searchQuote(quotes.Buyer.quotes1)
@@ -90,12 +96,6 @@ describe('Organization A - Cost Center A1 - Sales Admin Scenario', () => {
   updateQuote(quotes.Buyer.quotes6, { price, quantity })
   // rejectQuote(quotes.Buyer.quotes3, roleObject.SalesAdmin.role)
   filterQuoteByStatus(STATUSES.ready, STATUSES.declined)
-
-  salesUserShouldImpersonateNonSalesUser(
-    roleObject.SalesAdmin.role,
-    impersonatedRole,
-    users.Approver1
-  )
 
   QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
 

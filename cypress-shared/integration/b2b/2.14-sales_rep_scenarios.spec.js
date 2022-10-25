@@ -83,18 +83,18 @@ describe('Organization A - Cost Center A1 - Sales Rep Scenario', () => {
     users.SalesManager
   )
 
+  salesUserShouldImpersonateNonSalesUser(
+    roleObject.SalesRepresentative.role,
+    impersonatedRole,
+    users.Buyer1
+  )
+
   searchQuote(quotes.SalesRep.updateQuote)
   const price = '30.00'
 
   updateQuote(quotes.SalesRep.updateQuote, { price })
   filterQuoteByStatus(STATUSES.revised)
   QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
-
-  salesUserShouldImpersonateNonSalesUser(
-    roleObject.SalesRepresentative.role,
-    impersonatedRole,
-    users.Buyer1
-  )
 
   const quote = 'IMPERSONATE_QUOTE_3'
 
