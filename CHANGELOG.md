@@ -1,4 +1,8 @@
 ## [Unreleased]
+
+### Changed
+- Split bindings testcase into two files
+
 ### Added
 - For SyncCheckout UI Custom testcase - intercept GetHistory graphql
 
