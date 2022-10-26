@@ -61,6 +61,7 @@ describe('Organization A - Cost Center A1 - Organization Admin2 Scenario', () =>
     costCenter2.name,
     ROLE_DROP_DOWN.OrganizationAdmin
   )
+  organizationAdminShouldNotAbleToEditSalesUsers()
   userShouldNotImpersonateThisUser(
     ROLE_DROP_DOWN.OrganizationAdmin,
     roleObject.SalesManager.role,
@@ -71,7 +72,6 @@ describe('Organization A - Cost Center A1 - Organization Admin2 Scenario', () =>
     ROLE_DROP_DOWN.Buyer,
     users.Buyer1
   )
-  organizationAdminShouldNotAbleToEditSalesUsers()
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
   quoteShouldbeVisibleTestCase(
     organizationName,
