@@ -77,9 +77,6 @@ describe('Organization A - Cost Center A1 - Sales Manager Scenario', () => {
     roleObject.SalesRepresentative.role,
     users.SalesRep
   )
-  searchQuote(quotes.OrganizationAdmin.quotes1)
-  filterQuoteByStatus(STATUSES.pending)
-  QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
 
   const impersonatedRole = ROLE_DROP_DOWN.OrganizationAdmin
 
@@ -88,6 +85,9 @@ describe('Organization A - Cost Center A1 - Sales Manager Scenario', () => {
     impersonatedRole,
     users.OrganizationAdmin1
   )
+  searchQuote(quotes.OrganizationAdmin.quotes1)
+  filterQuoteByStatus(STATUSES.pending)
+  QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
 
   const quote = 'IMPERSONATE_QUOTE_2'
 

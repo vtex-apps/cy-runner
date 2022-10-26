@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 ### Changed
+- Reorder sales user / organization admin cypress tests
+
+### Changed
 - Split bindings testcase into two files
 
 ### Added

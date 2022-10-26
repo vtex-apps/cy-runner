@@ -347,8 +347,8 @@ export function createOrganizationWithoutName(
 
 export function organizationAdminShouldNotAbleToEditSalesUsers() {
   it(
-    `Organization should not be able to edit Sales Users`,
-    updateRetry(1),
+    `Organization admin should not be able to edit Sales Users`,
+    updateRetry(2),
     () => {
       cy.gotoMyOrganization()
       cy.get(selectors.AddUser).should('be.visible')
