@@ -71,8 +71,8 @@ describe('Organization A - Cost Center A1 - Organization Admin2 Scenario', () =>
     ROLE_DROP_DOWN.Buyer,
     users.Buyer1
   )
-  productShouldNotbeAvailableTestCase(nonAvailableProduct)
   organizationAdminShouldNotAbleToEditSalesUsers()
+  productShouldNotbeAvailableTestCase(nonAvailableProduct)
   quoteShouldbeVisibleTestCase(
     organizationName,
     quotes.OrganizationAdmin.quotes1,
