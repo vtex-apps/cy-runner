@@ -1,6 +1,10 @@
 ## [Unreleased]
 
 ### Changed
+- In Shopper Location testcase, we are getting different city name for poland postal code
+So, updated the testcase
+
+### Changed
 - Selectors in affirm payment flow got changed. So, we need to update the selectors in cypress
 - Use syncCheckoutUICustomAPI instead of syncCheckoutUICustom 
 
