@@ -1,6 +1,10 @@
 ## [Unreleased]
 
 ### Changed
+- Selectors in affirm payment flow got changed. So, we need to update the selectors in cypress
+- Use syncCheckoutUICustomAPI instead of syncCheckoutUICustom 
+
+### Changed
 - Reorder sales user / organization admin cypress tests
 
 ### Changed
