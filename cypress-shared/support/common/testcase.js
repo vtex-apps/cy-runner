@@ -316,7 +316,6 @@ export function syncCheckoutUICustom() {
     })
     cy.contains('History', { timeout: 35000 }).should('be.visible').click()
     cy.wait('@GetHistory')
-    cy.contains(WORKSPACE, { timeout: 15000 }).should('be.visible')
   })
 }
 
