@@ -29,7 +29,7 @@ module.exports.report = async (control, config) => {
       system.success('The test ran successfully, well done!')
     } else {
       const url =
-        'https://www.notion.so/vtexhandbook/My-PR-got-failed-what-s-next-12'
+        'https://www.notion.so/vtexhandbook/My-PR-got-failed-what-s-next'
 
       logger.msgSection(`[Notion documentation](${url})`, true)
       logger.msgOk(url, true)
