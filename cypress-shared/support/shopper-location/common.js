@@ -65,7 +65,9 @@ export function addAddress(prefix, { address, lat, long }) {
         .should('be.visible')
         .should('have.contain', `Hello,`)
       scroll()
-      cy.get(selectors.addressContainer).should('be.visible').click()
+      cy.get(selectors.addressContainer, { timeout: 20000 })
+        .should('be.visible')
+        .click()
       cy.get(selectors.findMyLocation).click()
 
       cy.get(selectors.countryDropdown).select(address.country)
@@ -93,22 +95,7 @@ export function autocomplete(city, province) {
     cy.get(`div[class*=addressInputContainer] input[value="${city}"]`)
       .invoke('val')
       .should('equal', city)
-    if (province === 'IDF') {
-      cy.get(selectors.addressInputContainer)
-        .eq(3)
-        .invoke('val')
-        .should('equal', province)
-    } else if (province === 'Masovian Voivodeship') {
-      cy.get(`div[class*=addressInputContainer] input[value="${province}"]`)
-        .last()
-        .clear()
-        .type(province)
-    } else {
-      cy.get(selectors.province)
-        .find('option:selected')
-        .last()
-        .should('have.text', province)
-    }
+    cy.get(selectors.ProvinceField).should('exist').select(province)
   })
 }
 
