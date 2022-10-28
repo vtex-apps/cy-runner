@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 ### Changed
+- Use Sync Checkout UI Custom via API everywhere
+
+### Changed
 - In Shopper Location testcase, we are getting different city name for poland postal code
 So, updated the testcase
 
