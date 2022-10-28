@@ -1,6 +1,7 @@
 ## [Unreleased]
 
 ### Changed
+- Added a link for Notion page on errors
 - Use Sync Checkout UI Custom via API everywhere
 
 ### Changed
