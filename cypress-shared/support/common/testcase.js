@@ -304,24 +304,6 @@ export function setWorkspaceAndGatewayAffiliations({
 
 export function syncCheckoutUICustom() {
   // eslint-disable-next-line jest/expect-expect
-  it(`In ${prefix} - Sync Checkout UI Custom`, updateRetry(2), () => {
-    cy.visit('admin/app/vtex-checkout-ui-custom/')
-    cy.contains('Publish', { timeout: 25000 }).should('be.visible').click()
-    cy.getVtexItems().then((vtex) => {
-      cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
-        if (req.body.operationName === 'GetHistory') {
-          req.continue()
-        }
-      }).as('GetHistory')
-    })
-    cy.contains('History', { timeout: 35000 }).should('be.visible').click()
-    cy.wait('@GetHistory')
-    cy.contains(WORKSPACE, { timeout: 15000 }).should('be.visible')
-  })
-}
-
-export function syncCheckoutUICustomAPI() {
-  // eslint-disable-next-line jest/expect-expect
   it(
     `In ${prefix} - Sync Checkout UI Custom via API`,
     { retries: 9, responseTimeout: 5000, requestTimeout: 5000 },

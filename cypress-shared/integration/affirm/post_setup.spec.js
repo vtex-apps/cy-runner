@@ -2,7 +2,7 @@ import { loginViaCookies } from '../../support/common/support.js'
 import {
   startPaymentE2ETests,
   setWorkspaceAndGatewayAffiliations,
-  syncCheckoutUICustomAPI,
+  syncCheckoutUICustom,
 } from '../../support/common/testcase.js'
 
 describe('Setting up affirm in dynamic environment', () => {
@@ -10,5 +10,5 @@ describe('Setting up affirm in dynamic environment', () => {
 
   startPaymentE2ETests()
   setWorkspaceAndGatewayAffiliations()
-  syncCheckoutUICustomAPI()
+  syncCheckoutUICustom()
 })
