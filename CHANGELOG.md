@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 ### Changed
+- As per this PR - https://github.com/vtex-apps/shopper-location/pull/51, Shopper Location now will show province has dropdown field. So, updated the testcase
+
+### Changed
 - Use Sync Checkout UI Custom via API everywhere
 
 ### Changed
