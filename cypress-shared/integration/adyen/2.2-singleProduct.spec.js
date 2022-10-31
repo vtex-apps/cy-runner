@@ -1,16 +1,16 @@
-/* eslint-disable cypress/no-force */
 /* eslint-disable jest/expect-expect */
+import { completePyamentWithDinersCard } from '../../support/adyen/testcase'
 import { singleProduct } from '../../support/common/outputvalidation'
-import selectors from '../../support/common/selectors'
 import {
-  fillContactInfo,
   loginViaCookies,
   preserveCookie,
-  // saveOrderId,
   updateRetry,
 } from '../../support/common/support'
+import { getTestVariables } from '../../support/common/testcase'
 
 const { prefix, postalCode, productName, productQuantity } = singleProduct
+
+const { orderIdEnv } = getTestVariables(prefix)
 
 describe(`${prefix} scenarios`, () => {
   loginViaCookies()
@@ -40,42 +40,7 @@ describe(`${prefix} scenarios`, () => {
     })
   })
 
-  // eslint-disable-next-line jest/expect-expect
-  it(`In ${prefix} -Ordering the product`, updateRetry(2), () => {
-    cy.get(selectors.FirstName).then(($el) => {
-      if (Cypress.dom.isVisible($el)) {
-        fillContactInfo()
-      }
-    })
-    cy.get('#payment-group-creditCardPaymentGroup').click()
-
-    cy.getIframeBody('.payment-method iframe')
-      .find('input[name="cardNumber"]', { timeout: 45000 })
-      .should('be.visible')
-      .type('3600 6666 3333 44', { force: true })
-
-    cy.getIframeBody('.payment-method iframe')
-      .find('input[name="ccName"]', { timeout: 45000 })
-      .should('be.visible')
-      .type('Testing', { force: true })
-
-    cy.getIframeBody('.payment-method iframe')
-      .find('select[name="cardExpirationMonth"]', { timeout: 45000 })
-      .should('be.visible')
-      .select('03', { force: true })
-
-    cy.getIframeBody('.payment-method iframe')
-      .find('select[name="cardExpirationYear"]', { timeout: 45000 })
-      .should('be.visible')
-      .select('30', { force: true })
-
-    cy.getIframeBody('.payment-method iframe')
-      .find('.PaymentCardCVV input', { timeout: 45000 })
-      .should('be.visible')
-      .type('737', { force: true })
-    cy.get(selectors.BuyNowBtn).last().click()
-    // saveOrderId(orderIdEnv)
-  })
+  completePyamentWithDinersCard(prefix, orderIdEnv)
 
   //   invoiceAPITestCase({
   //     product: singleProduct,

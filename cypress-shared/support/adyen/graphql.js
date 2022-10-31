@@ -7,11 +7,11 @@ const config = Cypress.env()
 const { vtex } = config.base
 
 export function updateAdyenConnectorSettings({
-  merchantAccount = 'StevenBowenAfP',
-  apiKey = 'AQEmhmfuXNWTK0Qc+iSDhmEuouq5R5xIAzvm2vHcSangnOYX0q2Z90wQwV1bDb7kfNy1WIxIIkxgBw==-ThKfZoywEinJQfpndwjkGrW4eMQilzlabwMZx7Ieyv0=-[#e[wr87Vqu*hdM9',
-  productionAPI = 'http://checkout-test.adyen.com',
-  webhookUsername = 'VTEX',
-  webhookPassword = 'VTEX',
+  merchantAccount = vtex.merchantAccount,
+  apiKey = vtex.adyenApiKey,
+  productionAPI = vtex.adyenProductionAPI,
+  webhookUsername = vtex.adyenWebhookUsername,
+  webhookPassword = vtex.adyenWebhookPassword,
   useAdyenPlatforms = true,
 }) {
   it(`Configuring connector adyen`, updateRetry(2), () => {
