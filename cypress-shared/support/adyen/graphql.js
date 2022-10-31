@@ -59,8 +59,8 @@ export function updateAdyenConnectorSettings({
 }
 
 export function updateAdyenPlatformSettings({
-  apiKey = 'AQEmhmfuXNWTK0Qc+iSDhmEuouq5R5xIAzvm2vHcSangnOYX0q2Z90wQwV1bDb7kfNy1WIxIIkxgBw==-ThKfZoywEinJQfpndwjkGrW4eMQilzlabwMZx7Ieyv0=-[#e[wr87Vqu*hdM9',
-  productionAPI = 'http://checkout-test.adyen.com',
+  apiKey = vtex.adyenApiKey,
+  productionAPI = vtex.adyenProductionAPI,
 }) {
   it(`Configuring connector adyen`, updateRetry(2), () => {
     // Define constants
