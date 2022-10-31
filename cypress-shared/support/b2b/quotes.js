@@ -39,20 +39,20 @@ export function fillQuoteInformation({
       if (requestQuote) {
         if (!impersonatedRole) {
           cy.get('div')
-            .contains(selectors.RequestQuote, { timeout: 12000 })
+            .contains(selectors.RequestQuote, { timeout: 20000 })
             .should('be.visible')
             .should('not.be.disabled')
             .click()
         } else {
           cy.get('div')
-            .contains(selectors.SaveQuote, { timeout: 12000 })
+            .contains(selectors.SaveQuote, { timeout: 20000 })
             .should('be.visible')
             .should('not.be.disabled')
             .click()
         }
       } else {
         cy.get('div')
-          .contains(selectors.SaveForLater, { timeout: 12000 })
+          .contains(selectors.SaveForLater, { timeout: 20000 })
           .should('be.visible')
           .should('not.be.disabled')
           .click()
@@ -84,9 +84,7 @@ export function createQuote(
     ? `Create Quote by ${role} who impersonated ${impersonatedRole}, verify state is ${expectedStatus} and store in env ${quoteEnv}`
     : `Create Quote as ${role}, verify state is ${expectedStatus} and store in env ${quoteEnv}`
 
-  const retries = impersonatedRole ? 1 : 3
-
-  it(title, { retries }, () => {
+  it(title, updateRetry(2), () => {
     cy.closeCart()
     cy.searchProductinB2B(product)
     cy.waitForGraphql('addToCart', selectors.B2BAddtoCart)
