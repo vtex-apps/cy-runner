@@ -101,7 +101,7 @@ export function quoteShouldNotBeVisibleTestCase(
 ) {
   it(
     `${organization} user created Quote - ${quoteId} should not be visible for ${currentOrganization} user`,
-    { retries: 2 },
+    updateRetry(3),
     () => {
       viewQuote(quoteId, false)
       cy.get(selectors.QuoteFromMyQuotesPage, { timeout: 15000 })
@@ -118,7 +118,7 @@ export function quoteShouldbeVisibleTestCase(
 ) {
   it(
     `${organization} user created Quote - ${quoteId} should be visible for ${currentOrganization} user`,
-    { retries: 2 },
+    updateRetry(3),
     () => {
       viewQuote(quoteId, false)
       cy.get(selectors.QuoteFromMyQuotesPage, { timeout: 15000 })

@@ -1,9 +1,10 @@
 import selectors from '../common/selectors.js'
+import { updateRetry } from '../common/support.js'
 import { BUTTON_LABEL } from '../validation_text.js'
 import { PAYMENT_TERMS } from './utils.js'
 
 export function checkoutProduct(product) {
-  it('Checkout the Product', { retries: 1 }, () => {
+  it('Checkout the Product', updateRetry(2), () => {
     cy.searchProductinB2B(product)
     cy.get(selectors.searchResult)
       .first()
@@ -26,7 +27,7 @@ export function checkoutProduct(product) {
 }
 
 export function fillContactInfo() {
-  it('Fill Contact Information', { retries: 3 }, () => {
+  it('Fill Contact Information', updateRetry(3), () => {
     cy.get(selectors.FirstName).then(($el) => {
       if (Cypress.dom.isVisible($el)) {
         cy.get(selectors.FirstName).clear().type('Syed', { delay: 50 })
@@ -49,8 +50,9 @@ export function fillContactInfo() {
 }
 
 export function verifyAddress(address) {
-  it('Verify Auto fill Address in checkout', { retries: 3 }, () => {
+  it('Verify Auto fill Address in checkout', updateRetry(3), () => {
     cy.get('body').then(($shipping) => {
+      cy.addReloadBetweenRetries()
       if ($shipping.find(selectors.OpenShipping).length) {
         cy.get(selectors.OpenShipping, { timeout: 5000 }).click()
       }
@@ -74,7 +76,7 @@ export function verifyAddress(address) {
 }
 
 export function verifyPayment(promissory = true) {
-  it('Verify enabled payments is shown in the checkout', { retries: 3 }, () => {
+  it('Verify enabled payments is shown in the checkout', updateRetry(3), () => {
     if (cy.state('runnable')._currentRetry > 0) cy.reload()
     if (promissory) {
       cy.get(`[data-name='${PAYMENT_TERMS.Promissory}']`).should('be.visible')
