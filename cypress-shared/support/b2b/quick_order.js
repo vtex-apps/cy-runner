@@ -8,7 +8,7 @@ import { updateRetry } from '../common/support.js'
 export const POPUP_MSG = "You can't have more than 50 items"
 
 function fillSkuAndQuantity(textArea, validate, skuQuantity) {
-  cy.get(textArea).clear().type(skuQuantity)
+  cy.get(textArea).clear().type(skuQuantity, { force: true })
   cy.get(validate).should('be.visible').click()
 }
 
@@ -138,7 +138,7 @@ function quickOrderCategory(quoteEnv, number) {
     .first()
     .scrollIntoView()
     .clear({ timeout: 8000 })
-    .type(number)
+    .type(number, { force: true })
   cy.get(addtoCart).should('be.visible').click()
   cy.get(selectors.ToastMsgInB2B, { timeout: 10000 }).contains(
     number > 50 ? POPUP_MSG : TOAST_MSG.addedToTheCart
