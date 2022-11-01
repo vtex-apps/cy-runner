@@ -6,14 +6,7 @@ const config = Cypress.env()
 // Constants
 const { vtex } = config.base
 
-export function updateAdyenConnectorSettings({
-  merchantAccount = vtex.merchantAccount,
-  apiKey = vtex.adyenApiKey,
-  productionAPI = vtex.adyenProductionAPI,
-  webhookUsername = vtex.adyenWebhookUsername,
-  webhookPassword = vtex.adyenWebhookPassword,
-  useAdyenPlatforms = true,
-}) {
+export function updateAdyenConnectorSettings({ useAdyenPlatforms = true }) {
   it(`Configuring connector adyen`, updateRetry(2), () => {
     const version = '*.x'
     const app = 'vtex.connector-adyen'
@@ -27,18 +20,15 @@ export function updateAdyenConnectorSettings({
       '($app:String,$version:String,$settings:String)' +
       '{saveAppSettings(app:$app,version:$version,settings:$settings){message}}'
 
-    cy.log(
-      `{"merchantAccount":${merchantAccount}, "apiKey" : ${apiKey}, "productionAPI": ${productionAPI}, "webhookUsername":${webhookUsername}, "webhookPassword": ${webhookPassword}, "useAdyenPlatforms":${useAdyenPlatforms}, "vtexAppKey": ${vtex.apiKey}, "vtexAppToken": ${vtex.apiToken}}`
-    )
     const QUERY_VARIABLES = {
       app,
       version,
       settings: JSON.stringify({
-        merchantAccount,
-        apiKey,
-        productionAPI,
-        webhookUsername,
-        webhookPassword,
+        merchantAccount: vtex.merchantAccount,
+        apiKey: vtex.adyenApiKey,
+        productionAPI: vtex.adyenProductionAPI,
+        webhookUsername: vtex.adyenWebhookUsername,
+        webhookPassword: vtex.adyenWebhookPassword,
         useAdyenPlatforms,
         vtexAppKey: vtex.apiKey,
         vtexAppToken: vtex.apiToken,
@@ -58,10 +48,7 @@ export function updateAdyenConnectorSettings({
   })
 }
 
-export function updateAdyenPlatformSettings({
-  apiKey = vtex.adyenApiKey,
-  productionAPI = vtex.adyenProductionAPI,
-}) {
+export function updateAdyenPlatformSettings() {
   it(`Configuring connector adyen`, updateRetry(2), () => {
     // Define constants
     const version = '*.x'
@@ -79,8 +66,8 @@ export function updateAdyenPlatformSettings({
       app,
       version,
       settings: JSON.stringify({
-        apiKey,
-        productionAPI,
+        apiKey: vtex.adyenApiKey,
+        productionAPI: vtex.adyenProductionAPI,
       }),
     }
 

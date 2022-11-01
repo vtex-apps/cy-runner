@@ -1,6 +1,11 @@
 import selectors from '../common/selectors'
 import { fillContactInfo, saveOrderId, updateRetry } from '../common/support'
 
+const config = Cypress.env()
+
+// Constants
+const { vtex } = config.base
+
 export function completePyamentWithDinersCard(prefix, orderIdEnv) {
   it(`In ${prefix} - Ordering the product`, updateRetry(2), () => {
     cy.get(selectors.FirstName).then(($el) => {
@@ -41,5 +46,63 @@ export function completePyamentWithDinersCard(prefix, orderIdEnv) {
       cy.get(selectors.BuyNowBtn).last().click()
       saveOrderId(orderIdEnv)
     })
+  })
+}
+
+export function verifyAdyenConnectorSettings() {
+  it(`Verify adyen connector settings in UI`, updateRetry(2), () => {
+    cy.visit('/admin/adyen')
+    cy.getIframeBody('iframe[data-testid="admin-iframe-container"]')
+      .find('section[class="pb4"]')
+      .contains('Adyen Merchant Account')
+      .find('input')
+      .should('have.value', vtex.merchantAccount)
+    cy.getIframeBody('iframe[data-testid="admin-iframe-container"]')
+      .find('section[class="pb4"]')
+      .contains('Adyen API Key')
+      .find('input')
+      .should('have.value', vtex.adyenApiKey)
+    cy.getIframeBody('iframe[data-testid="admin-iframe-container"]')
+      .find('section[class="pb4"]')
+      .contains('Adyen Production API URI')
+      .find('input')
+      .should('have.value', vtex.adyenProductionAPI)
+    cy.getIframeBody('iframe[data-testid="admin-iframe-container"]')
+      .find('section[class="pb4"]')
+      .contains('Adyen Webhook Username')
+      .find('input')
+      .should('have.value', vtex.adyenWebhookUsername)
+    cy.getIframeBody('iframe[data-testid="admin-iframe-container"]')
+      .find('section[class="pb4"]')
+      .contains('Adyen Webhook Password')
+      .find('input')
+      .should('have.value', vtex.adyenWebhookPassword)
+    cy.getIframeBody('iframe[data-testid="admin-iframe-container"]')
+      .find('section[class="pb4"]')
+      .contains('VTEX App Key')
+      .find('input')
+      .should('have.value', vtex.apiKey)
+    cy.getIframeBody('iframe[data-testid="admin-iframe-container"]')
+      .find('section[class="pb4"]')
+      .contains('VTEX App Token')
+      .find('input')
+      .should('have.value', vtex.apiToken)
+    cy.getIframeBody('iframe[data-testid="admin-iframe-container"]')
+      .find('section[class="pb4"]')
+      .contains('Using Adyen for Platforms')
+      .should('have.text', 'Using Adyen for Platforms')
+  })
+}
+
+export function verifyAdyenPlatformSettings() {
+  it(`Verify adyen platform settings in UI`, updateRetry(2), () => {
+    cy.visit('/admin/app/adyen-for-platforms')
+    cy.contains('Settings').should('be.visible').click()
+
+    cy.get('input[id="apiKey"]').should('have.value', vtex.adyenApiKey)
+    cy.get('input[id="liveEndpoint"]').should(
+      'have.value',
+      vtex.adyenProductionAPI
+    )
   })
 }
