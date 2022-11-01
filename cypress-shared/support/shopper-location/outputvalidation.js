@@ -11,7 +11,7 @@ export default {
     url: 'https://www.google.com',
     postalCode: '00-014',
     city: 'Warsaw',
-    state: 'Masovian Voivodeship',
+    state: 'mazowieckie',
   },
   UsDetails: {
     country: 'United States',
