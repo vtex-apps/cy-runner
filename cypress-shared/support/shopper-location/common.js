@@ -102,9 +102,8 @@ export function autocomplete(city, province) {
       if (elements.length === 4) {
         cy.get(selectors.ProvinceField).should('exist').select(province)
       } else {
-        cy.contains('span', 'Province')
-          .parent()
-          .find('div input')
+        cy.get(selectors.ShopperLocationTextFields)
+          .last()
           .should('not.have.value', '')
           .clear()
           .type(province)
