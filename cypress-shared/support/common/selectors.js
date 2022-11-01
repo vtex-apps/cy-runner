@@ -427,6 +427,8 @@ export default {
   addressUpdation:
     'div[class*=userAddressContainer] > section > div[class*=flex] > div[class*=flex-auto] > div[class*=items-center] > div[class*=addressInfoTextContainer] > div[class*=addressInfoAddressContainer]',
   InputText: "input[type='text']",
+  ShopperLocationTextFields:
+    'div[class*=fields-container] div[class*=shopper-location] input[type=text]',
   ProvinceField:
     'div[class*=fields-container] div[class*=shopper-location] select',
   // End here

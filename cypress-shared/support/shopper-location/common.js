@@ -92,10 +92,24 @@ export function autocomplete(city, province) {
   cy.getVtexItems().then((vtex) => {
     cy.intercept('POST', vtex.baseUrl).as('events')
     cy.wait('@events')
+    cy.intercept('GET', '**=US').as('maps')
     cy.get(`div[class*=addressInputContainer] input[value="${city}"]`)
       .invoke('val')
       .should('equal', city)
-    cy.get(selectors.ProvinceField).should('exist').select(province)
+    cy.wait('@maps').its('response.statusCode').should('equal', 200)
+    cy.get(selectors.ShopperLocationTextFields).should('be.visible')
+    cy.get(selectors.ShopperLocationTextFields).then((elements) => {
+      if (elements.length === 4) {
+        cy.get(selectors.ProvinceField).should('exist').select(province)
+      } else {
+        cy.contains('span', 'Province')
+          .parent()
+          .find('div input')
+          .should('not.have.value', '')
+          .clear()
+          .type(province)
+      }
+    })
   })
 }
 
