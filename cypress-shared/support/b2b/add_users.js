@@ -1,4 +1,5 @@
 import selectors from '../common/selectors.js'
+import { updateRetry } from '../common/support.js'
 import {
   generateEmailWithSuffix,
   generateName,
@@ -47,7 +48,7 @@ export function addUser({ organizationName, costCenter, role, gmailCreds }) {
 
   it(
     `Adding ${dropDownText} in ${organizationName} with ${costCenter}`,
-    { retries: 3 },
+    updateRetry(3),
     () => {
       const userName = generateName(suffixInEmail)
       const email = generateEmailWithSuffix(
@@ -76,7 +77,7 @@ export function duplicateUserTestCase({
 
   it(
     `Add duplicate user ${email} from same organization and verify popup`,
-    { retries: 3 },
+    updateRetry(3),
     () => {
       const userName = generateName(suffixInEmail)
 
@@ -105,7 +106,7 @@ export function addAndupdateUser({
     suffixInEmail
   )
 
-  it(`Adding ${email} & update its role & Costcenter`, { retries: 3 }, () => {
+  it(`Adding ${email} & update its role & Costcenter`, updateRetry(3), () => {
     const { dropDownText: previous } = currentRole
 
     addUserFn({ userName, email, costCenter: currentCostCenter }, previous)
@@ -138,7 +139,7 @@ export function addSameUserAgainInOrganization({
 
   it.skip(
     `Adding ${email} with role ${previous} & update the role to ${dropDownText}`,
-    { retries: 3 },
+    updateRetry(3),
     () => {
       addUserFn({ userName, email, costCenter }, previous)
       addUserFn({ userName, email, costCenter }, dropDownText)
@@ -189,7 +190,7 @@ export function updateRoleOfTheUser({
 }) {
   it(
     `Updating the user from this role ${currentRole.dropDownText} to this role ${updatedRole.dropDownText} in ${organization} with ${costCenter}`,
-    { retries: 3 },
+    updateRetry(3),
     () => {
       const { suffixInEmail } = currentRole
       const { dropDownText } = updatedRole
@@ -218,7 +219,7 @@ export function updateCostCenterOftheUser({
 }) {
   it(
     `Updating the user from this costcenter ${currentCostCenter} to this costcenter ${updatedCostCenter} in ${organization}`,
-    { retries: 3 },
+    updateRetry(3),
     () => {
       const { suffixInEmail } = role
 
@@ -241,7 +242,7 @@ export function addUserViaGraphql(gmailCreds, roleKey) {
 
   it(
     `Adding ${roleKey} in ${organizationName} with ${costCenter1.name}`,
-    { retries: 3 },
+    updateRetry(3),
     () => {
       const { suffixInEmail, role } = ROLE_ID_EMAIL_MAPPING[roleKey]
       // Define constants

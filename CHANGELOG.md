@@ -1,6 +1,12 @@
 ## [Unreleased]
 
 ### Changed
+- Replace {retries: } with updateRetry
+- Fix 2.4 title
+- For create quotes, 20 seconds timeout
+- Use force true for button click
+
+### Changed
 - Handle both province dropdown and text field
 
 ### Changed
