@@ -7,6 +7,9 @@
 - Use force true for button click
 
 ### Changed
+- Handle both province dropdown and text field
+
+### Changed
 - Added a link for Notion page on errors
 
 ### Changed

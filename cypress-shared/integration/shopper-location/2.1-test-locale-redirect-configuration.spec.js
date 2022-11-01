@@ -32,7 +32,7 @@ describe('Testing local redirect configuration', () => {
     scroll()
     cy.get(selectors.addressUpdation)
       .should('be.visible')
-      .contains('Warsaw, Masovian Voivodeship, 00-014')
+      .contains('Warsaw, mazowieckie, 00-014')
   })
 
   // eslint-disable-next-line jest/expect-expect
