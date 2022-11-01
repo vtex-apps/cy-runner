@@ -52,7 +52,6 @@ export function fillContactInfo() {
 export function verifyAddress(address) {
   it('Verify Auto fill Address in checkout', updateRetry(3), () => {
     cy.get('body').then(($shipping) => {
-      cy.addReloadBetweenRetries()
       if ($shipping.find(selectors.OpenShipping).length) {
         cy.get(selectors.OpenShipping, { timeout: 5000 }).click()
       }

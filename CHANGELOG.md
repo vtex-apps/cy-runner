@@ -1,6 +1,12 @@
 ## [Unreleased]
 
 ### Changed
+- Replace {retries: } with updateRetry
+- Fix 2.4 title
+- For create quotes, 20 seconds timeout
+- Use force true for button click
+
+### Changed
 - Added a link for Notion page on errors
 
 ### Changed
