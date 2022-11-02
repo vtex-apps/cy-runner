@@ -13,6 +13,7 @@ export function verifyHomePage(city, postalCode, distance = false) {
     cy.get(selectors.addressContainer).should('be.visible')
     if (distance) {
       cy.get(selectors.Distance).should('not.exist')
+      cy.get(selectors.shippingInfo).contains('Get it in')
     } else {
       cy.get(selectors.AddressCity).contains(city)
       cy.get(selectors.AddressZip).contains(postalCode)
