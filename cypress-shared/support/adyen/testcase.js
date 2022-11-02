@@ -83,12 +83,12 @@ export function verifyAdyenConnectorSettings() {
       .find('input')
       .should('have.value', vtex.apiKey)
     cy.getIframeBody('iframe[data-testid="admin-iframe-container"]')
-      .find('section[class="pb4"]')
+      .find('section[class="pb6"]')
       .contains('VTEX App Token')
       .find('input')
       .should('have.value', vtex.apiToken)
     cy.getIframeBody('iframe[data-testid="admin-iframe-container"]')
-      .find('section[class="pb4"]')
+      .find('section[class="pb4"] span')
       .contains('Using Adyen for Platforms')
       .should('have.text', 'Using Adyen for Platforms')
   })
@@ -99,10 +99,10 @@ export function verifyAdyenPlatformSettings() {
     cy.visit('/admin/app/adyen-for-platforms')
     cy.contains('Settings').should('be.visible').click()
 
-    cy.get('input[id="apiKey"]').should('have.value', vtex.adyenApiKey)
+    cy.get('input[id="apiKey"]').should('have.value', vtex.adyenPlatformApiKey)
     cy.get('input[id="liveEndpoint"]').should(
       'have.value',
-      vtex.adyenProductionAPI
+      vtex.adyenPlatformProductionAPI
     )
   })
 }
