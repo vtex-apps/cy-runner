@@ -438,4 +438,12 @@ export default {
   AffirmPhonePin: 'input[data-testid="phone-pin-field"]',
   AffirmInstallmentOption: 'span[data-test="installment-length"]',
   AffirmIndicatorOption: 'div[data-testid="indicator"]', // Auto payment & Privacy policy option selector
+
+  // Adyen selectors starts
+  AdyenAdminIframe: 'iframe[data-testid="admin-iframe-container"]',
+  AdyenAdminSectionPB4: 'section[class="pb4"]',
+  AdyenAdminSectionPB6: 'section[class="pb6"]',
+  AdyenAdminUsePlatformToggle: 'section[class="pb4"] span',
+  AdyenPlatformApiKey: 'input[id="apiKey"]',
+  AdyenPlatformProductionURI: 'input[id="liveEndpoint"]',
 }
