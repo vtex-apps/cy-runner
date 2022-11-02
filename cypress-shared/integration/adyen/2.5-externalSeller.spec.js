@@ -5,7 +5,10 @@ import {
   updateRetry,
 } from '../../support/common/support.js'
 import { externalSeller } from '../../support/outputvalidation.js'
-import { getTestVariables } from '../../support/common/testcase.js'
+import {
+  getTestVariables,
+  verifyOrderStatus,
+} from '../../support/common/testcase.js'
 import { completePyamentWithDinersCard } from '../../support/adyen/testcase.js'
 
 describe('External Seller Testcase', () => {
@@ -32,6 +35,8 @@ describe('External Seller Testcase', () => {
   })
 
   completePyamentWithDinersCard(prefix, orderIdEnv)
+
+  verifyOrderStatus(orderIdEnv, 'handling')
 
   preserveCookie()
 })

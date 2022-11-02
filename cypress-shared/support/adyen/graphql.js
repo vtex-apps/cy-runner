@@ -66,8 +66,8 @@ export function updateAdyenPlatformSettings() {
       app,
       version,
       settings: JSON.stringify({
-        apiKey: vtex.adyenApiKey,
-        productionAPI: vtex.adyenProductionAPI,
+        apiKey: vtex.adyenPlatformApiKey,
+        productionAPI: vtex.adyenPlatformProductionAPI,
       }),
     }
 

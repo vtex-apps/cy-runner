@@ -6,7 +6,10 @@ import {
   preserveCookie,
   updateRetry,
 } from '../../support/common/support'
-import { getTestVariables } from '../../support/common/testcase'
+import {
+  getTestVariables,
+  verifyOrderStatus,
+} from '../../support/common/testcase'
 
 const { prefix, postalCode, productName, productQuantity } = singleProduct
 
@@ -41,6 +44,8 @@ describe(`${prefix} scenarios`, () => {
   })
 
   completePyamentWithDinersCard(prefix, orderIdEnv)
+
+  verifyOrderStatus(orderIdEnv, 'handling')
 
   //   invoiceAPITestCase({
   //     product: singleProduct,

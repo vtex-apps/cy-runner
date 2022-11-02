@@ -5,7 +5,10 @@ import {
   updateRetry,
 } from '../../support/common/support.js'
 import { discountProduct } from '../../support/affirm/outputvalidation'
-import { getTestVariables } from '../../support/common/testcase.js'
+import {
+  getTestVariables,
+  verifyOrderStatus,
+} from '../../support/common/testcase.js'
 import { completePyamentWithDinersCard } from '../../support/adyen/testcase.js'
 import selectors from '../../support/common/selectors.js'
 
@@ -45,6 +48,8 @@ describe(`${prefix} Scenarios`, () => {
   })
 
   completePyamentWithDinersCard(prefix, orderIdEnv)
+
+  verifyOrderStatus(orderIdEnv, 'handling')
 
   preserveCookie()
 })

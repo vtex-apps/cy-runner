@@ -5,6 +5,9 @@ export default {
   workFlowAPI: (baseUrl, orderId) => {
     return `${baseUrl}/api/oms/pvt/orders/${orderId}/workflow`
   },
+  getOrderAPI: (baseUrl, orderId) => {
+    return `${baseUrl}/api/oms/pvt/orders/${orderId}`
+  },
   startHandlingAPI: (baseUrl, orderId) => {
     return `${baseUrl}/api/oms/pvt/orders/${orderId}/start-handling`
   },

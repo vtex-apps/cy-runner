@@ -12,7 +12,7 @@ import { setWorkspaceAndGatewayAffiliations } from '../../support/common/testcas
 describe('Setting up adyen payments in dynamic environment', () => {
   loginViaCookies()
 
-  updateAdyenConnectorSettings()
+  updateAdyenConnectorSettings({ useAdyenPlatforms: true })
   verifyAdyenConnectorSettings()
   updateAdyenPlatformSettings()
   verifyAdyenPlatformSettings()

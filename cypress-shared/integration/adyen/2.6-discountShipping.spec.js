@@ -1,8 +1,13 @@
 /* eslint-disable jest/expect-expect */
-import { loginViaCookies, updateRetry } from '../../support/common/support.js'
+import {
+  loginViaCookies,
+  preserveCookie,
+  updateRetry,
+} from '../../support/common/support.js'
 import { discountShipping } from '../../support/common/outputvalidation.js'
 import { getTestVariables } from '../../support/common/utils.js'
 import { completePyamentWithDinersCard } from '../../support/adyen/testcase.js'
+import { verifyOrderStatus } from '../../support/common/testcase.js'
 
 describe('Discount Shipping Testcase', () => {
   loginViaCookies()
@@ -32,4 +37,8 @@ describe('Discount Shipping Testcase', () => {
   })
 
   completePyamentWithDinersCard(prefix, orderIdEnv)
+
+  verifyOrderStatus(orderIdEnv, 'handling')
+
+  preserveCookie()
 })

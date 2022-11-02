@@ -5,7 +5,10 @@ import {
   preserveCookie,
 } from '../../support/common/support.js'
 import { multiProduct } from '../../support/common/outputvalidation'
-import { getTestVariables } from '../../support/common/testcase.js'
+import {
+  getTestVariables,
+  verifyOrderStatus,
+} from '../../support/common/testcase.js'
 import { completePyamentWithDinersCard } from '../../support/adyen/testcase.js'
 
 const { prefix, product1Name, product2Name, postalCode, productQuantity } =
@@ -43,6 +46,8 @@ describe('Multi Product Testcase', () => {
   })
 
   completePyamentWithDinersCard(prefix, orderIdEnv)
+
+  verifyOrderStatus(orderIdEnv, 'handling')
 
   preserveCookie()
 })

@@ -5,6 +5,7 @@ import {
   affiliationAPI,
   invoiceAPI,
   transactionAPI,
+  getOrderAPI,
 } from './apis.js'
 import { isValidDate } from './utils.js'
 
@@ -514,4 +515,21 @@ export function verifyTransactionPaymentsAPITestCase(
       })
     }
   )
+}
+
+export function verifyOrderStatus(env, status) {
+  it(`Verify order status is ${status}`, updateRetry(5), () => {
+    cy.addDelayBetweenRetries(60000)
+    cy.getVtexItems().then((vtex) => {
+      cy.getOrderItems().then((order) => {
+        cy.getAPI(
+          getOrderAPI(vtex.baseUrl, order[env]),
+          VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken)
+        ).then((response) => {
+          expect(response.status).to.equal(200)
+          expect(response.body.status).to.equal(status)
+        })
+      })
+    })
+  })
 }
