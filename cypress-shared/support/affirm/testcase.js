@@ -73,12 +73,10 @@ export function initiatePayment({
 
         cy.getIframeBody('#checkout-application')
           .find(selectors.AffirmIndicatorOption)
-          .first()
           .click()
 
         cy.getIframeBody('#checkout-application')
-          .find(selectors.AffirmIndicatorOption)
-          .last()
+          .find(selectors.AffirmDisClosureCheckbox)
           .click()
 
         cy.getIframeBody('#checkout-application')

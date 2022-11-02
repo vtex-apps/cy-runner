@@ -21,11 +21,20 @@ module.exports.report = async (control, config) => {
     if (control.runUrl != null) cypress.showDashboard(control.runUrl)
 
     // Final result
-    control.specsFailed?.length < 1 &&
-    control.specsSkipped?.length < 1 &&
-    control.specsPassed?.length > 0
-      ? system.success('The test ran successfully, well done!')
-      : system.fail('The test failed! Please, check the artifacts.')
+    if (
+      control.specsFailed?.length < 1 &&
+      control.specsSkipped?.length < 1 &&
+      control.specsPassed?.length > 0
+    ) {
+      system.success('The test ran successfully, well done!')
+    } else {
+      const url =
+        'https://www.notion.so/vtexhandbook/My-PR-got-failed-what-s-next'
+
+      logger.msgSection(`[Notion documentation](${url})`, true)
+      logger.msgOk(url, true)
+      system.fail('The test failed! Please, check the artifacts.')
+    }
   }
 }
 

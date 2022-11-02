@@ -10,13 +10,13 @@ import {
   ROLE_DROP_DOWN,
 } from '../../support/b2b/utils.js'
 import { addUserViaGraphql } from '../../support/b2b/add_users.js'
-import { syncCheckoutUICustomAPI } from '../../support/common/testcase.js'
+import { syncCheckoutUICustom } from '../../support/common/testcase.js'
 import b2b from '../../support/b2b/constants.js'
 import { loginToStoreFront } from '../../support/b2b/login.js'
 
 const { users, gmailCreds } = b2b.OrganizationA
 
-describe('Add binding which shows Organization in profile page, Sync Checkout UI Custom & Add Sales Users via Graphql', () => {
+describe('Sync Checkout UI Custom & Add Sales Users via Graphql', () => {
   loginViaCookies({ storeFrontCookie: false })
 
   loginToStoreFront(
@@ -51,7 +51,7 @@ describe('Add binding which shows Organization in profile page, Sync Checkout UI
     })
   })
 
-  syncCheckoutUICustomAPI()
+  syncCheckoutUICustom()
 
   const roles = Object.keys(ROLE_ID_EMAIL_MAPPING)
 
