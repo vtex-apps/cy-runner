@@ -429,6 +429,10 @@ export default {
   addressUpdation:
     'div[class*=userAddressContainer] > section > div[class*=flex] > div[class*=flex-auto] > div[class*=items-center] > div[class*=addressInfoTextContainer] > div[class*=addressInfoAddressContainer]',
   InputText: "input[type='text']",
+  ShopperLocationTextFields:
+    'div[class*=fields-container] div[class*=shopper-location] input[type=text]',
+  ProvinceField:
+    'div[class*=fields-container] div[class*=shopper-location] select',
   // End here
 
   // Affirm payment selectors
@@ -438,6 +442,7 @@ export default {
   AffirmPhonePin: 'input[data-testid="phone-pin-field"]',
   AffirmInstallmentOption: 'span[data-test="installment-length"]',
   AffirmIndicatorOption: 'div[data-testid="indicator"]', // Auto payment & Privacy policy option selector
+  AffirmDisClosureCheckbox: 'div[data-testid="disclosure-checkbox-indicator"]',
 
   // Adyen selectors starts
   AdyenAdminIframe: 'iframe[data-testid="admin-iframe-container"]',
@@ -446,4 +451,5 @@ export default {
   AdyenAdminUsePlatformToggle: 'section[class="pb4"] span',
   AdyenPlatformApiKey: 'input[id="apiKey"]',
   AdyenPlatformProductionURI: 'input[id="liveEndpoint"]',
+// End here
 }

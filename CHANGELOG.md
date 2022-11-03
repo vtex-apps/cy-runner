@@ -1,6 +1,29 @@
 ## [Unreleased]
 
 ### Changed
+- Replace {retries: } with updateRetry
+- Fix 2.4 title
+- For create quotes, 20 seconds timeout
+- Use force true for button click
+
+### Changed
+- Handle both province dropdown and text field
+
+### Changed
+- Added a link for Notion page on errors
+
+### Changed
+- Use Sync Checkout UI Custom via API everywhere
+
+### Changed
+- In Shopper Location testcase, we are getting different city name for poland postal code
+So, updated the testcase
+
+### Changed
+- Selectors in affirm payment flow got changed. So, we need to update the selectors in cypress
+- Use syncCheckoutUICustomAPI instead of syncCheckoutUICustom 
+
+### Changed
 - Reorder sales user / organization admin cypress tests
 
 ### Changed
