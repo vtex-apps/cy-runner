@@ -416,6 +416,7 @@ export default {
   AddressZip:
     'div[class*=addressDistanceContainer] > span[class*=addressCity] > span[class*=addressZip]',
   Distance: 'div[class*=addressDistanceContainer] > span[class*=distance]',
+  shippingInfo: 'p[class*=firstShipping]',
   VerifyMaxItem: 'div[class*=storeList] > div[class*=pickupItem]',
   OrderByFaster:
     'div[class*=storeList] > div[class*=pickupItem] > div[class*=pickupEstimate] > div[class*=estimateTranslated]',
