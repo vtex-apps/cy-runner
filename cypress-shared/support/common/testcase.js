@@ -5,6 +5,7 @@ import {
   affiliationAPI,
   invoiceAPI,
   transactionAPI,
+  startHandlingAPI,
   getOrderAPI,
 } from './apis.js'
 import { isValidDate } from './utils.js'
@@ -243,18 +244,24 @@ export function startPaymentE2ETests() {
 export const AUTO_SETTLEMENT_OPTIONS = {
   enable: 'after_antifraud',
   disable: 'disabled',
+  afterAuthorization: 'after_authorization',
 }
 
 export function setWorkspaceAndGatewayAffiliations({
   autoSellement = true,
+  afterAuthorization = false,
   wipe = false,
 } = {}) {
   // If you are using this function in your testcase
   // then ensure, you are having affiliationId, apiKey,apiToken,appKey and appToken in .VTEX_QE.json
 
-  const autoSellementValue = autoSellement
+  let autoSellementValue = autoSellement
     ? AUTO_SETTLEMENT_OPTIONS.enable
     : AUTO_SETTLEMENT_OPTIONS.disable
+
+  if (afterAuthorization) {
+    autoSellementValue = AUTO_SETTLEMENT_OPTIONS.afterAuthorization
+  }
 
   const workspace = wipe ? '' : WORKSPACE
 
@@ -497,6 +504,22 @@ export function verifyTransactionPaymentsAPITestCase(
       })
     }
   )
+}
+
+export function startHandlingOrder(product, env) {
+  it(`In ${product.prefix} - Start handling order`, updateRetry(3), () => {
+    cy.addDelayBetweenRetries(5000)
+    cy.getOrderItems().then((item) => {
+      cy.request({
+        method: 'POST',
+        url: startHandlingAPI(baseUrl, item[env]),
+        headers: VTEX_AUTH_HEADER(apiKey, apiToken),
+        ...FAIL_ON_STATUS_CODE,
+      }).then((response) => {
+        expect(response.status).to.match(/204|409/)
+      })
+    })
+  })
 }
 
 export function verifyOrderStatus(env, status) {

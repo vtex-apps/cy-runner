@@ -7,6 +7,9 @@ import {
 import { multiProduct } from '../../support/common/outputvalidation'
 import {
   getTestVariables,
+  invoiceAPITestCase,
+  sendInvoiceTestCase,
+  startHandlingOrder,
   verifyOrderStatus,
 } from '../../support/common/testcase.js'
 import { completePyamentWithDinersCard } from '../../support/adyen/testcase.js'
@@ -14,7 +17,7 @@ import { completePyamentWithDinersCard } from '../../support/adyen/testcase.js'
 const { prefix, product1Name, product2Name, postalCode, productQuantity } =
   multiProduct
 
-const { orderIdEnv } = getTestVariables(prefix)
+const { orderIdEnv, transactionIdEnv } = getTestVariables(prefix)
 
 describe('Multi Product Testcase', () => {
   loginViaCookies()
@@ -47,7 +50,19 @@ describe('Multi Product Testcase', () => {
 
   completePyamentWithDinersCard(prefix, orderIdEnv)
 
+  verifyOrderStatus(orderIdEnv, 'ready-for-handling')
+
+  startHandlingOrder(multiProduct, orderIdEnv)
+
   verifyOrderStatus(orderIdEnv, 'handling')
+
+  invoiceAPITestCase({
+    product: multiProduct,
+    env: orderIdEnv,
+    transactionIdEnv,
+  })
+
+  sendInvoiceTestCase({ product: multiProduct, orderIdEnv })
 
   preserveCookie()
 })

@@ -8,12 +8,15 @@ import {
 } from '../../support/common/support'
 import {
   getTestVariables,
+  invoiceAPITestCase,
+  sendInvoiceTestCase,
+  startHandlingOrder,
   verifyOrderStatus,
 } from '../../support/common/testcase'
 
 const { prefix, postalCode, productName, productQuantity } = singleProduct
 
-const { orderIdEnv } = getTestVariables(prefix)
+const { orderIdEnv, transactionIdEnv } = getTestVariables(prefix)
 
 describe(`${prefix} scenarios`, () => {
   loginViaCookies()
@@ -45,15 +48,19 @@ describe(`${prefix} scenarios`, () => {
 
   completePyamentWithDinersCard(prefix, orderIdEnv)
 
+  verifyOrderStatus(orderIdEnv, 'ready-for-handling')
+
+  startHandlingOrder(singleProduct, orderIdEnv)
+
   verifyOrderStatus(orderIdEnv, 'handling')
 
-  //   invoiceAPITestCase({
-  //     product: singleProduct,
-  //     env: orderIdEnv,
-  //     transactionIdEnv,
-  //   })
+  invoiceAPITestCase({
+    product: singleProduct,
+    env: orderIdEnv,
+    transactionIdEnv,
+  })
 
-  //   sendInvoiceTestCase({ product: singleProduct, orderIdEnv })
+  sendInvoiceTestCase({ product: singleProduct, orderIdEnv })
 
   preserveCookie()
 })

@@ -7,6 +7,9 @@ import {
 import { discountProduct } from '../../support/affirm/outputvalidation'
 import {
   getTestVariables,
+  invoiceAPITestCase,
+  sendInvoiceTestCase,
+  startHandlingOrder,
   verifyOrderStatus,
 } from '../../support/common/testcase.js'
 import { completePyamentWithDinersCard } from '../../support/adyen/testcase.js'
@@ -18,7 +21,7 @@ const { prefix, productName, postalCode, productQuantity, totalAmount } =
 describe(`${prefix} Scenarios`, () => {
   loginViaCookies()
 
-  const { orderIdEnv } = getTestVariables(prefix)
+  const { orderIdEnv, transactionIdEnv } = getTestVariables(prefix)
 
   it(`In ${prefix} - Adding Product to Cart`, updateRetry(1), () => {
     // Search the product
@@ -49,7 +52,19 @@ describe(`${prefix} Scenarios`, () => {
 
   completePyamentWithDinersCard(prefix, orderIdEnv)
 
+  verifyOrderStatus(orderIdEnv, 'ready-for-handling')
+
+  startHandlingOrder(discountProduct, orderIdEnv)
+
   verifyOrderStatus(orderIdEnv, 'handling')
+
+  invoiceAPITestCase({
+    product: discountProduct,
+    env: orderIdEnv,
+    transactionIdEnv,
+  })
+
+  sendInvoiceTestCase({ product: discountProduct, orderIdEnv })
 
   preserveCookie()
 })

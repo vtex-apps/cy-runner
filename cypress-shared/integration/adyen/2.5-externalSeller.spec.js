@@ -7,6 +7,9 @@ import {
 import { externalSeller } from '../../support/outputvalidation.js'
 import {
   getTestVariables,
+  invoiceAPITestCase,
+  sendInvoiceTestCase,
+  startHandlingOrder,
   verifyOrderStatus,
 } from '../../support/common/testcase.js'
 import { completePyamentWithDinersCard } from '../../support/adyen/testcase.js'
@@ -16,7 +19,7 @@ describe('External Seller Testcase', () => {
 
   const { prefix, product1Name, product2Name, postalCode } = externalSeller
 
-  const { orderIdEnv } = getTestVariables(prefix)
+  const { orderIdEnv, transactionIdEnv } = getTestVariables(prefix)
 
   it(`In ${prefix} - Adding Product to Cart`, updateRetry(3), () => {
     // Search the product
@@ -36,7 +39,19 @@ describe('External Seller Testcase', () => {
 
   completePyamentWithDinersCard(prefix, orderIdEnv)
 
+  verifyOrderStatus(orderIdEnv, 'ready-for-handling')
+
+  startHandlingOrder(externalSeller, orderIdEnv)
+
   verifyOrderStatus(orderIdEnv, 'handling')
+
+  invoiceAPITestCase({
+    product: externalSeller,
+    env: orderIdEnv,
+    transactionIdEnv,
+  })
+
+  sendInvoiceTestCase({ product: externalSeller, orderIdEnv })
 
   preserveCookie()
 })

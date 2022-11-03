@@ -6,7 +6,7 @@ const config = Cypress.env()
 // Constants
 const { vtex } = config.base
 
-export function updateAdyenConnectorSettings({ useAdyenPlatforms = true }) {
+export function updateAdyenConnectorSettings() {
   it(`Configuring connector adyen`, updateRetry(2), () => {
     const version = '*.x'
     const app = 'vtex.connector-adyen'
@@ -29,7 +29,7 @@ export function updateAdyenConnectorSettings({ useAdyenPlatforms = true }) {
         productionAPI: vtex.adyenProductionAPI,
         webhookUsername: vtex.adyenWebhookUsername,
         webhookPassword: vtex.adyenWebhookPassword,
-        useAdyenPlatforms,
+        useAdyenPlatforms: true,
         vtexAppKey: vtex.apiKey,
         vtexAppToken: vtex.apiToken,
       }),
