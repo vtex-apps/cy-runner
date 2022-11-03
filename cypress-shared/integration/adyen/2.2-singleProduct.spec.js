@@ -10,13 +10,16 @@ import {
   getTestVariables,
   invoiceAPITestCase,
   sendInvoiceTestCase,
+} from '../../support/common/testcase'
+import {
   startHandlingOrder,
   verifyOrderStatus,
-} from '../../support/common/testcase'
+} from '../../support/adyen/testcases'
 
 const { prefix, postalCode, productName, productQuantity } = singleProduct
 
-const { orderIdEnv, transactionIdEnv } = getTestVariables(prefix)
+const singleProductEnvs = getTestVariables(prefix)
+const { orderIdEnv, transactionIdEnv } = singleProductEnvs
 
 describe(`${prefix} scenarios`, () => {
   loginViaCookies()
@@ -48,11 +51,13 @@ describe(`${prefix} scenarios`, () => {
 
   completePyamentWithDinersCard(prefix, orderIdEnv)
 
-  verifyOrderStatus(orderIdEnv, 'ready-for-handling')
+  verifyOrderStatus({
+    product: singleProduct,
+    env: singleProductEnvs.orderIdEnv,
+    status: 'ready-for-handling',
+  })
 
-  startHandlingOrder(singleProduct, orderIdEnv)
-
-  verifyOrderStatus(orderIdEnv, 'handling')
+  startHandlingOrder(singleProduct, singleProductEnvs.orderIdEnv)
 
   invoiceAPITestCase({
     product: singleProduct,
@@ -61,6 +66,12 @@ describe(`${prefix} scenarios`, () => {
   })
 
   sendInvoiceTestCase({ product: singleProduct, orderIdEnv })
+
+  verifyOrderStatus({
+    product: singleProduct,
+    env: singleProductEnvs.orderIdEnv,
+    status: 'invoiced',
+  })
 
   preserveCookie()
 })
