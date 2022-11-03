@@ -1,3 +1,4 @@
+import { createAdyenWebhook } from '../../support/adyen/adyen_apis.js'
 import {
   updateAdyenConnectorSettings,
   updateAdyenPlatformSettings,
@@ -16,5 +17,6 @@ describe('Setting up adyen payments in dynamic environment', () => {
   verifyAdyenConnectorSettings()
   updateAdyenPlatformSettings()
   verifyAdyenPlatformSettings()
+  createAdyenWebhook()
   setWorkspaceAndGatewayAffiliations()
 })
