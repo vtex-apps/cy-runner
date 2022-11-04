@@ -6,16 +6,20 @@ import {
 } from '../../support/common/support.js'
 import { multiProduct } from '../../support/common/outputvalidation'
 import {
+  completePyamentWithDinersCard,
+  startHandlingOrder,
+  verifyOrderStatus,
+} from '../../support/adyen/testcase'
+import {
   getTestVariables,
   invoiceAPITestCase,
   sendInvoiceTestCase,
-  startHandlingOrder,
-  verifyOrderStatus,
-} from '../../support/common/testcase.js'
-import { completePyamentWithDinersCard } from '../../support/adyen/testcase.js'
+} from '../../support/common/testcase'
 
 const { prefix, product1Name, product2Name, postalCode, productQuantity } =
   multiProduct
+
+const multiProductEnvs = getTestVariables(prefix)
 
 const { orderIdEnv, transactionIdEnv } = getTestVariables(prefix)
 
@@ -50,11 +54,13 @@ describe('Multi Product Testcase', () => {
 
   completePyamentWithDinersCard(prefix, orderIdEnv)
 
-  verifyOrderStatus(orderIdEnv, 'ready-for-handling')
+  verifyOrderStatus({
+    product: multiProduct,
+    env: multiProductEnvs.orderIdEnv,
+    status: 'ready-for-handling',
+  })
 
-  startHandlingOrder(multiProduct, orderIdEnv)
-
-  verifyOrderStatus(orderIdEnv, 'handling')
+  startHandlingOrder(multiProduct, multiProductEnvs.orderIdEnv)
 
   invoiceAPITestCase({
     product: multiProduct,
@@ -63,6 +69,12 @@ describe('Multi Product Testcase', () => {
   })
 
   sendInvoiceTestCase({ product: multiProduct, orderIdEnv })
+
+  verifyOrderStatus({
+    product: multiProduct,
+    env: multiProductEnvs.orderIdEnv,
+    status: 'invoiced',
+  })
 
   preserveCookie()
 })
