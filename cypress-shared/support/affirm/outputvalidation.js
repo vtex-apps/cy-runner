@@ -29,6 +29,7 @@ export default {
     productName: PRODUCTS.cauliflower,
     productQuantity: '1',
     totalProductPrice: '95.00',
+    totalAmount: '$ 95.00',
   },
   discountShipping: {
     prefix: 'discountShipping',

@@ -10,11 +10,9 @@ import {
   getTestVariables,
   invoiceAPITestCase,
   sendInvoiceTestCase,
-} from '../../support/common/testcase'
-import {
-  startHandlingOrder,
   verifyOrderStatus,
-} from '../../support/adyen/testcases'
+} from '../../support/common/testcase'
+import { startHandlingOrder } from '../../support/adyen/testcases'
 
 const { prefix, postalCode, productName, productQuantity } = singleProduct
 
@@ -53,11 +51,11 @@ describe(`${prefix} scenarios`, () => {
 
   verifyOrderStatus({
     product: singleProduct,
-    env: singleProductEnvs.orderIdEnv,
+    env: orderIdEnv,
     status: 'ready-for-handling',
   })
 
-  startHandlingOrder(singleProduct, singleProductEnvs.orderIdEnv)
+  startHandlingOrder(singleProduct, orderIdEnv)
 
   invoiceAPITestCase({
     product: singleProduct,
@@ -69,7 +67,7 @@ describe(`${prefix} scenarios`, () => {
 
   verifyOrderStatus({
     product: singleProduct,
-    env: singleProductEnvs.orderIdEnv,
+    env: orderIdEnv,
     status: 'invoiced',
   })
 

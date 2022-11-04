@@ -522,19 +522,23 @@ export function startHandlingOrder(product, env) {
   })
 }
 
-export function verifyOrderStatus(env, status) {
-  it(`Verify order status is ${status}`, updateRetry(5), () => {
-    cy.addDelayBetweenRetries(60000)
-    cy.getVtexItems().then((vtex) => {
-      cy.getOrderItems().then((order) => {
-        cy.getAPI(
-          getOrderAPI(vtex.baseUrl, order[env]),
-          VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken)
-        ).then((response) => {
-          expect(response.status).to.equal(200)
-          expect(response.body.status).to.equal(status)
+export function verifyOrderStatus({ product, env, status }) {
+  it(
+    `In ${product.prefix} - Verify order status is ${status}`,
+    updateRetry(5),
+    () => {
+      cy.addDelayBetweenRetries(60000)
+      cy.getVtexItems().then((vtex) => {
+        cy.getOrderItems().then((order) => {
+          cy.getAPI(
+            getOrderAPI(vtex.baseUrl, order[env]),
+            VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken)
+          ).then((response) => {
+            expect(response.status).to.equal(200)
+            expect(response.body.status).to.equal(status)
+          })
         })
       })
-    })
-  })
+    }
+  )
 }

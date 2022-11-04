@@ -43,11 +43,19 @@ describe('Discount Shipping Testcase', () => {
 
   completePyamentWithDinersCard(prefix, orderIdEnv)
 
-  verifyOrderStatus(orderIdEnv, 'ready-for-handling')
+  verifyOrderStatus({
+    product: discountShipping,
+    env: orderIdEnv,
+    status: 'ready-for-handling',
+  })
 
   startHandlingOrder(discountShipping, orderIdEnv)
 
-  verifyOrderStatus(orderIdEnv, 'handling')
+  verifyOrderStatus({
+    product: discountShipping,
+    env: orderIdEnv,
+    status: 'handling',
+  })
 
   invoiceAPITestCase({
     product: discountShipping,
@@ -56,6 +64,12 @@ describe('Discount Shipping Testcase', () => {
   })
 
   sendInvoiceTestCase({ product: discountShipping, orderIdEnv })
+
+  verifyOrderStatus({
+    product: discountShipping,
+    env: orderIdEnv,
+    status: 'invoiced',
+  })
 
   preserveCookie()
 })

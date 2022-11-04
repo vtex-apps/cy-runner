@@ -50,11 +50,19 @@ describe('Multi Product Testcase', () => {
 
   completePyamentWithDinersCard(prefix, orderIdEnv)
 
-  verifyOrderStatus(orderIdEnv, 'ready-for-handling')
+  verifyOrderStatus({
+    product: multiProduct,
+    env: orderIdEnv,
+    status: 'ready-for-handling',
+  })
 
   startHandlingOrder(multiProduct, orderIdEnv)
 
-  verifyOrderStatus(orderIdEnv, 'handling')
+  verifyOrderStatus({
+    product: multiProduct,
+    env: orderIdEnv,
+    status: 'handling',
+  })
 
   invoiceAPITestCase({
     product: multiProduct,
@@ -63,6 +71,12 @@ describe('Multi Product Testcase', () => {
   })
 
   sendInvoiceTestCase({ product: multiProduct, orderIdEnv })
+
+  verifyOrderStatus({
+    product: multiProduct,
+    env: orderIdEnv,
+    status: 'invoiced',
+  })
 
   preserveCookie()
 })

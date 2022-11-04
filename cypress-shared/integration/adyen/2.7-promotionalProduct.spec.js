@@ -50,11 +50,19 @@ describe('Promotional Product scenarios', () => {
 
   completePyamentWithDinersCard(prefix, orderIdEnv)
 
-  verifyOrderStatus(orderIdEnv, 'ready-for-handling')
+  verifyOrderStatus({
+    product: promotionProduct,
+    env: orderIdEnv,
+    status: 'ready-for-handling',
+  })
 
   startHandlingOrder(promotionProduct, orderIdEnv)
 
-  verifyOrderStatus(orderIdEnv, 'handling')
+  verifyOrderStatus({
+    product: promotionProduct,
+    env: orderIdEnv,
+    status: 'handling',
+  })
 
   invoiceAPITestCase({
     product: promotionProduct,
@@ -63,6 +71,12 @@ describe('Promotional Product scenarios', () => {
   })
 
   sendInvoiceTestCase({ product: promotionProduct, orderIdEnv })
+
+  verifyOrderStatus({
+    product: promotionProduct,
+    env: orderIdEnv,
+    status: 'invoiced',
+  })
 
   preserveCookie()
 })

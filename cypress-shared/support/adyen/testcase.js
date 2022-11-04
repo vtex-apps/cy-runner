@@ -6,7 +6,11 @@ const config = Cypress.env()
 // Constants
 const { vtex } = config.base
 
-export function completePyamentWithDinersCard(prefix, orderIdEnv) {
+export function completePyamentWithDinersCard(
+  prefix,
+  orderIdEnv,
+  externalSeller = false
+) {
   it(`In ${prefix} - Ordering the product`, updateRetry(2), () => {
     cy.get(selectors.FirstName).then(($el) => {
       if (Cypress.dom.isVisible($el)) {
@@ -44,7 +48,7 @@ export function completePyamentWithDinersCard(prefix, orderIdEnv) {
         .find(selectors.CreditCardCode)
         .type('737')
       cy.get(selectors.BuyNowBtn).last().click()
-      saveOrderId(orderIdEnv)
+      saveOrderId(orderIdEnv, externalSeller)
     })
   })
 }
