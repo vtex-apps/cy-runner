@@ -1,5 +1,8 @@
 /* eslint-disable jest/expect-expect */
-import { completePyamentWithDinersCard } from '../../support/adyen/testcase'
+import {
+  completePyamentWithDinersCard,
+  startHandlingOrder,
+} from '../../support/adyen/testcase'
 import { singleProduct } from '../../support/common/outputvalidation'
 import {
   loginViaCookies,
@@ -12,7 +15,6 @@ import {
   sendInvoiceTestCase,
   verifyOrderStatus,
 } from '../../support/common/testcase'
-import { startHandlingOrder } from '../../support/adyen/testcases'
 
 const { prefix, postalCode, productName, productQuantity } = singleProduct
 

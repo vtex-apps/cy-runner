@@ -6,13 +6,15 @@ import {
 } from '../../support/common/support.js'
 import { multiProduct } from '../../support/common/outputvalidation'
 import {
+  completePyamentWithDinersCard,
+  startHandlingOrder,
+  verifyOrderStatus,
+} from '../../support/adyen/testcase'
+import {
   getTestVariables,
   invoiceAPITestCase,
   sendInvoiceTestCase,
-  startHandlingOrder,
-  verifyOrderStatus,
-} from '../../support/common/testcase.js'
-import { completePyamentWithDinersCard } from '../../support/adyen/testcase.js'
+} from '../../support/common/testcase'
 
 const { prefix, product1Name, product2Name, postalCode, productQuantity } =
   multiProduct

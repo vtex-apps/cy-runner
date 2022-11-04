@@ -1,7 +1,8 @@
 export default {
   createAccount: {
-    accountHolderCode:
-      'saravanantestqa' + Date.now().toString().substring(6, 13),
+    accountHolderCode: `saravanantestqa${Date.now()
+      .toString()
+      .substring(6, 13)}`,
     sellerId: 'productusqaseller',
     country: 'US',
     legalBusinessName: 'saravanan',
