@@ -111,7 +111,7 @@ export function closeCart() {
   cy.get(selectors.CloseCart).click()
 }
 
-export function fillAddress(postalCode, timeout) {
+export function fillAddress(postalCode, timeout = 5000) {
   const { fullAddress, country } = addressList[postalCode]
 
   cy.get(selectors.FirstName).then(($el) => {
