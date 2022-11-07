@@ -111,7 +111,7 @@ export function closeCart() {
   cy.get(selectors.CloseCart).click()
 }
 
-export function fillAddress(postalCode) {
+export function fillAddress(postalCode, timeout) {
   const { fullAddress, country } = addressList[postalCode]
 
   cy.get(selectors.FirstName).then(($el) => {
@@ -125,7 +125,7 @@ export function fillAddress(postalCode) {
         cy.get(selectors.ShippingPreview).should('be.visible')
       }
 
-      cy.get(selectors.ShipCountry, { timeout: 5000 })
+      cy.get(selectors.ShipCountry, { timeout })
         .should('not.be.disabled')
         .select('USA')
         .select(country)
@@ -273,7 +273,7 @@ export function updateShippingInformation({
   startShipping()
   cy.intercept('https://rc.vtex.com/v8').as('v8')
   cy.intercept('**/shippingData').as('shippingData')
-  cy.fillAddress(postalCode).then(() => {
+  cy.fillAddress(postalCode, timeout).then(() => {
     if (invalid) {
       cy.get(selectors.DeliveryUnavailable, { timeout }).contains(
         'cannot be shipped to the given address.'
