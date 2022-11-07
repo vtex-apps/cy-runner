@@ -270,6 +270,7 @@ export function updateShippingInformation({
 }) {
   const { deliveryScreenAddress } = addressList[postalCode]
 
+  cy.addDelayBetweenRetries(10000)
   startShipping()
   cy.intercept('https://rc.vtex.com/v8').as('v8')
   cy.intercept('**/shippingData').as('shippingData')
