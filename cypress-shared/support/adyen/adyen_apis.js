@@ -3,7 +3,7 @@ import { updateRetry } from '../common/support'
 
 const config = Cypress.env()
 const { name } = config.workspace
-const { adyenCompanyID, adyenApiKey } = config.base.vtex
+const { adyenCompanyID, adyenApiKey, baseUrl } = config.base.vtex
 
 export function createAdyenWebhook() {
   it(`Create standard notification webhook in Adyen`, updateRetry(4), () => {
@@ -70,6 +70,36 @@ export function verifyOrderInAdyen(product, { paymentTidEnv }) {
           item[paymentTidEnv]
         )
       })
+    })
+  })
+}
+
+export function deleteAccountHoldersFromMasterData() {
+  it('Delete account holders from master data', () => {
+    cy.request({
+      method: 'GET',
+      url: `${baseUrl}/_v/api/adyen-platforms/v0/account?seller=productusqaseller`,
+      ...FAIL_ON_STATUS_CODE,
+    }).then(({ status, body }) => {
+      expect(status).to.equal(200)
+      for (const { accountHolderCode } of body) {
+        cy.request({
+          method: 'GET',
+          url: `https://productusqa.myvtex.com/api/dataentities/account/search?accountHolderCode=${accountHolderCode}&_schema=account-dev@0.1`,
+          ...FAIL_ON_STATUS_CODE,
+        }).then((entitySearchResponse) => {
+          const [{ id }] = entitySearchResponse.body
+
+          expect(entitySearchResponse.status).to.equal(200)
+          cy.request({
+            method: 'DELETE',
+            url: `https://productusqa.myvtex.com/api/dataentities/account/documents/${id}`,
+            ...FAIL_ON_STATUS_CODE,
+          }).then((deleteDocumentResponse) => {
+            expect(deleteDocumentResponse.status).to.equal(204)
+          })
+        })
+      }
     })
   })
 }
