@@ -55,3 +55,21 @@ export function deleteAdyenWebhook() {
     })
   })
 }
+
+export function verifyOrderInAdyen(product, { paymentTidEnv }) {
+  it(`In ${product.prefix} - Verify order in adyen`, updateRetry(4), () => {
+    cy.addDelayBetweenRetries(10000)
+    cy.getOrderItems().then((item) => {
+      cy.request({
+        method: 'GET',
+        url: `https://ca-test.adyen.com/ca/ca/ui-api/payments/v1/pspref/${item[paymentTidEnv]}/details`,
+        ...FAIL_ON_STATUS_CODE,
+      }).then((response) => {
+        expect(response.status).to.equal(200)
+        expect(response.body.paymentOverview.pspReference).to.equal(
+          item[paymentTidEnv]
+        )
+      })
+    })
+  })
+}

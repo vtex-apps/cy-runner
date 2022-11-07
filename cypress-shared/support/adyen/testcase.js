@@ -1,13 +1,21 @@
 import selectors from '../common/selectors'
 import { fillContactInfo, saveOrderId, updateRetry } from '../common/support'
 import { FAIL_ON_STATUS_CODE, VTEX_AUTH_HEADER } from '../common/constants'
-import { invoiceAPI, startHandlingAPI } from '../common/apis'
+import { startHandlingAPI } from '../common/apis'
 
 const config = Cypress.env()
 
 // Constants
 const { vtex } = config.base
-const { apiKey, apiToken, baseUrl } = config.base.vtex
+const {
+  apiKey,
+  apiToken,
+  baseUrl,
+  adyenLoginUrl,
+  adyenLoginUsername,
+  adyenLoginAccount,
+  adyenLoginPassword,
+} = config.base.vtex
 
 export function completePyamentWithDinersCard(
   prefix,
@@ -116,42 +124,6 @@ export function verifyAdyenPlatformSettings() {
   })
 }
 
-export function verifyOrderStatus({ product, env, status }) {
-  it(
-    `In ${product.prefix} - Change order state to ready for handling & Invoice API should have expected information`,
-    updateRetry(8),
-    () => {
-      cy.addDelayBetweenRetries(20000)
-      cy.getOrderItems().then((item) => {
-        // Define constants
-        const APP_NAME = 'vtex.taxjar'
-        const APP_VERSION = '*.x'
-        const APP = `${APP_NAME}@${APP_VERSION}`
-        const CUSTOM_URL = `${baseUrl}/_v/private/admin-graphql-ide/v0/${APP}`
-        const GRAPHQL_MUTATION =
-          'mutation' +
-          `{changeState(orderId:"${item[env]}",newState:"ready-for-handling")}`
-
-        cy.request({
-          method: 'POST',
-          url: CUSTOM_URL,
-          ...FAIL_ON_STATUS_CODE,
-          body: {
-            query: GRAPHQL_MUTATION,
-          },
-        })
-        cy.getAPI(
-          `${invoiceAPI(baseUrl)}/${item[env]}`,
-          VTEX_AUTH_HEADER(apiKey, apiToken)
-        ).then((response) => {
-          expect(response.status).to.equal(200)
-          expect(response.body.status).to.equal(status)
-        })
-      })
-    }
-  )
-}
-
 export function startHandlingOrder(product, env) {
   it(`In ${product.prefix} - Start handling order`, updateRetry(3), () => {
     cy.addDelayBetweenRetries(5000)
@@ -180,4 +152,15 @@ export function orderTaxAPITestCase(fixtureName, tax) {
       })
     }
   )
+}
+
+export function loginToAdyen() {
+  it('Login to adyen dashboard', updateRetry(2), () => {
+    cy.visit(adyenLoginUrl)
+    cy.get(selectors.AdyenLoginUsername).type(adyenLoginUsername)
+    cy.contains('Next').click()
+    cy.get(selectors.AdyenLoginAccount).type(adyenLoginAccount)
+    cy.get(selectors.AdyenLoginPassword).type(adyenLoginPassword)
+    cy.get(selectors.AdyenLoginSubmit).click()
+  })
 }

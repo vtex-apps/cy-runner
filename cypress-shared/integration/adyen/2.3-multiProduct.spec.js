@@ -8,12 +8,12 @@ import { multiProduct } from '../../support/common/outputvalidation'
 import {
   completePyamentWithDinersCard,
   startHandlingOrder,
-  verifyOrderStatus,
 } from '../../support/adyen/testcase'
 import {
   getTestVariables,
   invoiceAPITestCase,
   sendInvoiceTestCase,
+  verifyOrderStatus,
 } from '../../support/common/testcase'
 
 const { prefix, product1Name, product2Name, postalCode, productQuantity } =

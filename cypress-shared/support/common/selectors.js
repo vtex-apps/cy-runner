@@ -451,5 +451,9 @@ export default {
   AdyenAdminUsePlatformToggle: 'section[class="pb4"] span',
   AdyenPlatformApiKey: 'input[id="apiKey"]',
   AdyenPlatformProductionURI: 'input[id="liveEndpoint"]',
-// End here
+  AdyenLoginUsername: 'input[name="userName"]',
+  AdyenLoginPassword: 'input[name="password"]',
+  AdyenLoginAccount: 'input[name="account"]',
+  AdyenLoginSubmit: 'button[type="submit"]',
+  // End here
 }
