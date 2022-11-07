@@ -1,7 +1,7 @@
 ## [Unreleased]
 
 ### Added
-- For updateShippingInformation, Add delay between retries
+- For updateShippingInformation, Add 10s delay between retries
 
 ### Changed
 - Replace {retries: } with updateRetry
