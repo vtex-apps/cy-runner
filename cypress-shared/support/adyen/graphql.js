@@ -49,7 +49,7 @@ export function updateAdyenConnectorSettings() {
 }
 
 export function updateAdyenPlatformSettings() {
-  it(`Configuring connector adyen`, updateRetry(2), () => {
+  it(`Configuring adyen platform`, updateRetry(2), () => {
     // Define constants
     const version = '*.x'
     const app = 'vtex.adyen-platforms'
