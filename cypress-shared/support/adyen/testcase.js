@@ -6,6 +6,7 @@ import {
   invoiceAPITestCase,
   sendInvoiceTestCase,
   verifyOrderStatus,
+  startHandlingOrder,
 } from '../common/testcase'
 
 const config = Cypress.env()
@@ -147,36 +148,6 @@ export function createOnBoardingLink(create) {
       ).should('not.be.visible')
     }
   })
-}
-
-export function startHandlingOrder(product, env) {
-  it(`In ${product.prefix} - Start handling order`, updateRetry(3), () => {
-    cy.addDelayBetweenRetries(5000)
-    cy.getOrderItems().then((item) => {
-      cy.request({
-        method: 'POST',
-        url: startHandlingAPI(baseUrl, item[env]),
-        headers: VTEX_AUTH_HEADER(apiKey, apiToken),
-        ...FAIL_ON_STATUS_CODE,
-      }).then((response) => {
-        expect(response.status).to.match(/204|409/)
-      })
-    })
-  })
-}
-
-export function orderTaxAPITestCase(fixtureName, tax) {
-  // Verify tax amounts via order-tax API
-  it(
-    `For ${fixtureName} - Verify tax amounts via order-tax API`,
-    { retries: 0 },
-    () => {
-      // Load fixtures request payload and use them in orderTax API
-      cy.fixture(fixtureName).then((requestPayload) => {
-        cy.orderTaxApi(requestPayload, tax)
-      })
-    }
-  )
 }
 
 export function loginToAdyen() {
