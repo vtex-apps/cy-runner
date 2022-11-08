@@ -53,6 +53,34 @@ describe('External Seller Testcase', () => {
     status: 'handling',
   })
 
+  describe(`${prefix} - Testing Invoice API for External Sale`, () => {
+    it('Get External Sale orderId and update in Cypress env', () => {
+      cy.getOrderItems().then((order) => {
+        if (!order[externalSeller.externalSaleEnv]) {
+          throw new Error('External Sale Order id is missing')
+        }
+      })
+    })
+
+    sendInvoiceTestCase({
+      product: externalSeller,
+      orderIdEnv: externalSeller.externalSaleEnv,
+      externalSellerTestcase: true,
+    })
+
+    invoiceAPITestCase({
+      product: externalSeller,
+      env: externalSeller.externalSaleEnv,
+      transactionIdEnv,
+    })
+
+    verifyOrderStatus({
+      product: externalSeller,
+      env: orderIdEnv,
+      status: 'invoiced',
+    })
+  })
+
   describe(`${prefix} - Testing Invoice API for Direct Sale`, () => {
     it('Get Direct Sale orderId and update in Cypress env', () => {
       cy.getOrderItems().then((order) => {
@@ -72,34 +100,6 @@ describe('External Seller Testcase', () => {
     invoiceAPITestCase({
       product: externalSeller,
       env: externalSeller.directSaleEnv,
-      transactionIdEnv,
-    })
-
-    verifyOrderStatus({
-      product: externalSeller,
-      env: orderIdEnv,
-      status: 'invoiced',
-    })
-  })
-
-  describe(`${prefix} - Testing Invoice API for External Sale`, () => {
-    it('Get External Sale orderId and update in Cypress env', () => {
-      cy.getOrderItems().then((order) => {
-        if (!order[externalSeller.externalSaleEnv]) {
-          throw new Error('External Sale Order id is missing')
-        }
-      })
-    })
-
-    sendInvoiceTestCase({
-      product: externalSeller,
-      orderIdEnv: externalSeller.externalSaleEnv,
-      externalSellerTestcase: true,
-    })
-
-    invoiceAPITestCase({
-      product: externalSeller,
-      env: externalSeller.externalSaleEnv,
       transactionIdEnv,
     })
 
