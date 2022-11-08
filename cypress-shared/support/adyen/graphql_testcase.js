@@ -10,7 +10,7 @@ const { vtex } = config.base
 function commonGraphlValidation(response) {
   expect(response.status).to.equal(200)
   expect(response.body.data).to.not.equal(null)
-  // expect(response.body).to.not.have.own.property('errors')
+  expect(response.body).to.not.have.own.property('errors')
 }
 
 export function graphql(getQuery, validateResponseFn = null) {
@@ -45,7 +45,7 @@ export function sellers() {
   return {
     query:
       'query' +
-      '{sellers{id,name,logo,isActive,fulfillmentEndpoint,allowHybridPayments,taxCode,email,description,sellerCommissionConfiguration}}',
+      '{sellers @context(provider: "vtex.adyen-platforms"){id,name,logo,isActive,fulfillmentEndpoint,allowHybridPayments,taxCode,email,description,sellerCommissionConfiguration}}',
     queryVariables: {},
   }
 }
@@ -113,7 +113,7 @@ export function updateAccount(accountCode, schedule) {
   const query =
     'mutation' +
     '($accountCode:String!,$schedule:String!)' +
-    '{updateAccount(accountCode:$accountCode,schedule:$schedule){accountCode,schedule}}'
+    '{updateAccount (accountCode:$accountCode,schedule:$schedule) @context(provider: "vtex.adyen-platforms") {accountCode,schedule}}'
 
   return {
     query,
