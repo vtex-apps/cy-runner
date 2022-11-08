@@ -27,6 +27,8 @@ import { createOnBoardingLink } from '../../support/adyen/testcase'
 const ordersJson = '.orders.json'
 const accountHolderJson = '.accountholder.json'
 const accountTokenJson = '.accounttoken.json'
+const accountHolderCodeJson = '.accountholderCode.json'
+
 const { sellerId } = createAccount
 const prefix = 'Graphql testcase'
 
@@ -91,19 +93,9 @@ describe('Adyen GraphQL Validation', () => {
   })
 
   it(`${prefix} - onboardingComplete`, updateRetry(2), () => {
-    cy.readFile(accountHolderJson).then((items) => {
-      const accountCode = items.accountList
-      for (const account in accountCode) {
-        if (
-          accountCode[account].accountHolderCode === items.accountHolderCode
-        ) {
-          accountCode[account].status = 'Active'
-        }
-      }
-      graphql(
-        onboardingComplete(accountCode[0].accountHolderCode),
-        validateonboardingComplete
-      )
+    cy.readFile(accountHolderCodeJson).then((items) => {
+      const accountHolderCode = items.accountHolderCode
+      graphql(onboardingComplete(accountHolderCode), validateonboardingComplete)
     })
   })
 

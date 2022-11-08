@@ -10,6 +10,7 @@ import {
 import { verifyOrderInAdyen } from './adyen_apis'
 
 const config = Cypress.env()
+const accountHolderCodeJson = '.accountholderCode.json'
 
 // Constants
 const { vtex } = config.base
@@ -129,20 +130,32 @@ export function verifyAdyenPlatformSettings() {
 }
 
 export function createOnBoardingLink(create) {
-  it('Create the onboarding link', () => {
+  it.only('Create the onboarding link', () => {
     cy.visit('/admin/app/adyen-for-platforms')
     cy.contains('Adyen for Platforms').should('be.visible')
     cy.contains('productusqa2').should('be.visible').click()
     if (create) {
+      cy.intercept('POST', `${vtex.baseUrl}/**`).as('RefreshOnboarding')
       cy.contains('Create New Link').should('be.visible')
       cy.contains('Create New Link').click()
+
+      /* eslint-disable jest/valid-expect-in-promise */
+      cy.wait('@RefreshOnboarding')
+        .its('response')
+        .then((response) => {
+          cy.writeFile(accountHolderCodeJson, {
+            accountHolderCode:
+              response.body.data.adyenAccountHolder.accountHolderCode,
+          })
+        })
+
       cy.get(
         '.vtex-admin-ui-1o3wdue > .vtex-admin-ui-jdrpky > .vtex-admin-ui-79elbk'
       ).should('be.visible')
     } else {
       cy.get(
         '.vtex-admin-ui-1o3wdue > .vtex-admin-ui-jdrpky > .vtex-admin-ui-79elbk'
-      ).should('not.be.visible')
+      ).should('not.exist')
     }
   })
 }
