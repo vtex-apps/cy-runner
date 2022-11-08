@@ -1,12 +1,11 @@
 import selectors from '../common/selectors'
 import { fillContactInfo, saveOrderId, updateRetry } from '../common/support'
-import { FAIL_ON_STATUS_CODE, VTEX_AUTH_HEADER } from '../common/constants'
-import { startHandlingAPI } from '../common/apis'
 import {
   invoiceAPITestCase,
   sendInvoiceTestCase,
   verifyOrderStatus,
   verifyTransactionPaymentsAPITestCase,
+  startHandlingOrder,
 } from '../common/testcase'
 import { verifyOrderInAdyen } from './adyen_apis'
 
@@ -15,9 +14,6 @@ const config = Cypress.env()
 // Constants
 const { vtex } = config.base
 const {
-  apiKey,
-  apiToken,
-  baseUrl,
   adyenLoginUrl,
   adyenLoginUsername,
   adyenLoginAccount,
@@ -132,34 +128,23 @@ export function verifyAdyenPlatformSettings() {
   })
 }
 
-export function startHandlingOrder(product, env) {
-  it(`In ${product.prefix} - Start handling order`, updateRetry(3), () => {
-    cy.addDelayBetweenRetries(5000)
-    cy.getOrderItems().then((item) => {
-      cy.request({
-        method: 'POST',
-        url: startHandlingAPI(baseUrl, item[env]),
-        headers: VTEX_AUTH_HEADER(apiKey, apiToken),
-        ...FAIL_ON_STATUS_CODE,
-      }).then((response) => {
-        expect(response.status).to.match(/204|409/)
-      })
-    })
-  })
-}
-
-export function orderTaxAPITestCase(fixtureName, tax) {
-  // Verify tax amounts via order-tax API
-  it(
-    `For ${fixtureName} - Verify tax amounts via order-tax API`,
-    { retries: 0 },
-    () => {
-      // Load fixtures request payload and use them in orderTax API
-      cy.fixture(fixtureName).then((requestPayload) => {
-        cy.orderTaxApi(requestPayload, tax)
-      })
+export function createOnBoardingLink(create) {
+  it('Create the onboarding link', () => {
+    cy.visit('/admin/app/adyen-for-platforms')
+    cy.contains('Adyen for Platforms').should('be.visible')
+    cy.contains('productusqa2').should('be.visible').click()
+    if (create) {
+      cy.contains('Create New Link').should('be.visible')
+      cy.contains('Create New Link').click()
+      cy.get(
+        '.vtex-admin-ui-1o3wdue > .vtex-admin-ui-jdrpky > .vtex-admin-ui-79elbk'
+      ).should('be.visible')
+    } else {
+      cy.get(
+        '.vtex-admin-ui-1o3wdue > .vtex-admin-ui-jdrpky > .vtex-admin-ui-79elbk'
+      ).should('not.be.visible')
     }
-  )
+  })
 }
 
 export function loginToAdyen() {

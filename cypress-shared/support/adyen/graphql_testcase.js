@@ -124,6 +124,20 @@ export function updateAccount(accountCode, schedule) {
   }
 }
 
+export function onboardingComplete(accountHolderCode) {
+  const query =
+    'mutation' +
+    '($accountHolderCode:String!)' +
+    '{onboardingComplete(accountHolderCode:$accountHolderCode){accountHolderCode,urlToken,invalidFields{errorDescription}}}'
+
+  return {
+    query,
+    queryVariables: {
+      accountHolderCode,
+    },
+  }
+}
+
 export function validateSellersResponse(response) {
   expect(response.body.data).to.not.equal(null)
 }
@@ -147,6 +161,11 @@ export function validateCloseAccountHolderResponse(response) {
 export function validateRefreshOnboardingResponse(response) {
   expect(response.body.data).to.not.equal(null)
 }
+
 export function validateUpdateAccount(response) {
+  expect(response.body.data).to.not.equal(null)
+}
+
+export function validateonboardingComplete(response) {
   expect(response.body.data).to.not.equal(null)
 }
