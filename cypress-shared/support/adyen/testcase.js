@@ -112,6 +112,7 @@ export function verifyAdyenConnectorSettings() {
 export function verifyAdyenPlatformSettings() {
   it(`Verify adyen platform settings in UI`, updateRetry(2), () => {
     cy.visit('/admin/app/adyen-for-platforms')
+    cy.contains('Settings').should('be.visible')
     cy.contains('Settings').should('be.visible').click()
     cy.get(selectors.AdyenPlatformApiKey).should(
       'have.value',
