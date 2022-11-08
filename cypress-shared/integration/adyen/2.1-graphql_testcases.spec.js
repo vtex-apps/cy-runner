@@ -1,3 +1,4 @@
+/* eslint-disable padding-line-between-statements */
 /* eslint-disable jest/expect-expect */
 import {
   graphql,
@@ -73,8 +74,10 @@ describe('Adyen GraphQL Validation', () => {
     cy.readFile(accountHolderJson).then((items) => {
       const accountCode = items.accountList
       for (const account in accountCode) {
-        if (accountCode[account].accountHolderCode == items.accountHolderCode) {
-          accountCode[account].status = Active
+        if (
+          accountCode[account].accountHolderCode === items.accountHolderCode
+        ) {
+          accountCode[account].status = 'Active'
         }
       }
       graphql(
