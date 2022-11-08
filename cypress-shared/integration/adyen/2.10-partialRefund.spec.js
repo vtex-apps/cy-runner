@@ -1,14 +1,22 @@
+/* eslint-disable jest/expect-expect */
 import { multiProduct } from '../../support/common/outputvalidation.js'
 import { refund } from '../../support/common/refund_apis.js'
 import { getTestVariables } from '../../support/common/testcase.js'
-import { loginViaCookies } from '../../support/common/support.js'
+import {
+  loginViaCookies,
+  preserveCookie,
+} from '../../support/common/support.js'
 import { getRefundPayload } from '../../support/common/refund.js'
+import { verifyOrderInAdyen } from '../../support/adyen/adyen_apis.js'
+import { loginToAdyen } from '../../support/adyen/testcase.js'
 
 describe('Testing Adyen transaction API for partial refund', () => {
   const multiProductEnvs = getTestVariables(multiProduct.prefix)
   const { orderIdEnv } = multiProductEnvs
 
   loginViaCookies()
+
+  loginToAdyen()
 
   it('Verify whether we have an order to request for partial refund', () => {
     cy.getOrderItems().then((order) => {
@@ -28,4 +36,8 @@ describe('Testing Adyen transaction API for partial refund', () => {
     getRefundPayload,
     { startHandling: false }
   )
+
+  verifyOrderInAdyen(multiProduct, multiProductEnvs, true)
+
+  preserveCookie()
 })

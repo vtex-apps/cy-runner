@@ -2,6 +2,11 @@ import selectors from '../common/selectors'
 import { fillContactInfo, saveOrderId, updateRetry } from '../common/support'
 import { FAIL_ON_STATUS_CODE, VTEX_AUTH_HEADER } from '../common/constants'
 import { startHandlingAPI } from '../common/apis'
+import {
+  invoiceAPITestCase,
+  sendInvoiceTestCase,
+  verifyOrderStatus,
+} from '../common/testcase'
 
 const config = Cypress.env()
 
@@ -163,5 +168,38 @@ export function loginToAdyen() {
     cy.get(selectors.AdyenLoginAccount).type(adyenLoginAccount)
     cy.get(selectors.AdyenLoginPassword).type(adyenLoginPassword)
     cy.get(selectors.AdyenLoginSubmit).click()
+  })
+}
+
+export function verifyProductInvoiceTestcase(product, env) {
+  verifyOrderStatus({
+    product,
+    env: env.orderIdEnv,
+    status: 'ready-for-handling',
+  })
+
+  startHandlingOrder(product, env.orderIdEnv)
+
+  verifyOrderStatus({
+    product,
+    env: env.orderIdEnv,
+    status: 'handling',
+  })
+
+  invoiceAPITestCase({
+    product,
+    env: env.orderIdEnv,
+    transactionIdEnv: env.transactionIdEnv,
+  })
+
+  sendInvoiceTestCase({
+    product,
+    orderIdEnv: env.orderIdEnv,
+  })
+
+  verifyOrderStatus({
+    product,
+    env: env.orderIdEnv,
+    status: 'invoiced',
   })
 }

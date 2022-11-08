@@ -1,25 +1,17 @@
 /* eslint-disable jest/expect-expect */
-import {
-  completePyamentWithDinersCard,
-  startHandlingOrder,
-} from '../../support/adyen/testcase'
+import { completePyamentWithDinersCard } from '../../support/adyen/testcase'
 import { singleProduct } from '../../support/common/outputvalidation'
 import {
   loginViaCookies,
   preserveCookie,
   updateRetry,
 } from '../../support/common/support'
-import {
-  getTestVariables,
-  invoiceAPITestCase,
-  sendInvoiceTestCase,
-  verifyOrderStatus,
-} from '../../support/common/testcase'
+import { getTestVariables } from '../../support/common/testcase'
 
 const { prefix, postalCode, productName, productQuantity } = singleProduct
 
 const singleProductEnvs = getTestVariables(prefix)
-const { orderIdEnv, transactionIdEnv } = singleProductEnvs
+const { orderIdEnv } = singleProductEnvs
 
 describe(`${prefix} scenarios`, () => {
   loginViaCookies()
@@ -50,28 +42,6 @@ describe(`${prefix} scenarios`, () => {
   })
 
   completePyamentWithDinersCard(prefix, orderIdEnv)
-
-  verifyOrderStatus({
-    product: singleProduct,
-    env: orderIdEnv,
-    status: 'ready-for-handling',
-  })
-
-  startHandlingOrder(singleProduct, orderIdEnv)
-
-  invoiceAPITestCase({
-    product: singleProduct,
-    env: orderIdEnv,
-    transactionIdEnv,
-  })
-
-  sendInvoiceTestCase({ product: singleProduct, orderIdEnv })
-
-  verifyOrderStatus({
-    product: singleProduct,
-    env: orderIdEnv,
-    status: 'invoiced',
-  })
 
   preserveCookie()
 })

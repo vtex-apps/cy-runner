@@ -56,7 +56,7 @@ export function deleteAdyenWebhook() {
   })
 }
 
-export function verifyOrderInAdyen(product, { paymentTidEnv }) {
+export function verifyOrderInAdyen(product, { paymentTidEnv }, refund = true) {
   it(`In ${product.prefix} - Verify order in adyen`, updateRetry(4), () => {
     cy.addDelayBetweenRetries(10000)
     cy.getOrderItems().then((item) => {
@@ -69,6 +69,9 @@ export function verifyOrderInAdyen(product, { paymentTidEnv }) {
         expect(response.body.paymentOverview.pspReference).to.equal(
           item[paymentTidEnv]
         )
+        if (refund) {
+          expect(response.body.paymentOverview.status).to.equal('SentForRefund')
+        }
       })
     })
   })

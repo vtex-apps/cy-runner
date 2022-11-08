@@ -5,13 +5,7 @@ import {
   updateRetry,
 } from '../../support/common/support.js'
 import { discountProduct } from '../../support/affirm/outputvalidation'
-import {
-  getTestVariables,
-  invoiceAPITestCase,
-  sendInvoiceTestCase,
-  startHandlingOrder,
-  verifyOrderStatus,
-} from '../../support/common/testcase.js'
+import { getTestVariables } from '../../support/common/testcase.js'
 import { completePyamentWithDinersCard } from '../../support/adyen/testcase.js'
 import selectors from '../../support/common/selectors.js'
 
@@ -21,7 +15,7 @@ const { prefix, productName, postalCode, productQuantity, totalAmount } =
 describe(`${prefix} Scenarios`, () => {
   loginViaCookies()
 
-  const { orderIdEnv, transactionIdEnv } = getTestVariables(prefix)
+  const { orderIdEnv } = getTestVariables(prefix)
 
   it(`In ${prefix} - Adding Product to Cart`, updateRetry(1), () => {
     // Search the product
@@ -51,34 +45,6 @@ describe(`${prefix} Scenarios`, () => {
   })
 
   completePyamentWithDinersCard(prefix, orderIdEnv)
-
-  verifyOrderStatus({
-    product: discountProduct,
-    env: orderIdEnv,
-    status: 'ready-for-handling',
-  })
-
-  startHandlingOrder(discountProduct, orderIdEnv)
-
-  verifyOrderStatus({
-    product: discountProduct,
-    env: orderIdEnv,
-    status: 'handling',
-  })
-
-  invoiceAPITestCase({
-    product: discountProduct,
-    env: orderIdEnv,
-    transactionIdEnv,
-  })
-
-  sendInvoiceTestCase({ product: discountProduct, orderIdEnv })
-
-  verifyOrderStatus({
-    product: discountProduct,
-    env: orderIdEnv,
-    status: 'invoiced',
-  })
 
   preserveCookie()
 })

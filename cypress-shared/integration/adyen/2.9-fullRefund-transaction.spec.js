@@ -3,13 +3,20 @@ import { singleProduct } from '../../support/common/outputvalidation.js'
 import { refund } from '../../support/common/refund_apis.js'
 import { getRefundPayload } from '../../support/common/refund.js'
 import { getTestVariables } from '../../support/common/testcase.js'
-import { loginViaCookies } from '../../support/common/support.js'
+import {
+  loginViaCookies,
+  preserveCookie,
+} from '../../support/common/support.js'
+import { verifyOrderInAdyen } from '../../support/adyen/adyen_apis.js'
+import { loginToAdyen } from '../../support/adyen/testcase.js'
 
 describe('Testing Adyen transaction API for full refund', () => {
   const singleProductEnvs = getTestVariables(singleProduct.prefix)
   const { orderIdEnv } = singleProductEnvs
 
   loginViaCookies()
+
+  loginToAdyen()
 
   it('Verify whether we have an order to request for full refund', () => {
     cy.getOrderItems().then((order) => {
@@ -29,4 +36,8 @@ describe('Testing Adyen transaction API for full refund', () => {
     getRefundPayload,
     { startHandling: false }
   )
+
+  verifyOrderInAdyen(singleProduct, singleProductEnvs, true)
+
+  preserveCookie()
 })

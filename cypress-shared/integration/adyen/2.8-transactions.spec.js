@@ -13,7 +13,10 @@ import {
   verifyTransactionPaymentsAPITestCase,
 } from '../../support/common/testcase.js'
 import { verifyOrderInAdyen } from '../../support/adyen/adyen_apis.js'
-import { loginToAdyen } from '../../support/adyen/testcase.js'
+import {
+  loginToAdyen,
+  verifyProductInvoiceTestcase,
+} from '../../support/adyen/testcase.js'
 
 describe(`Transaction Scenarios`, () => {
   loginViaCookies()
@@ -26,6 +29,21 @@ describe(`Transaction Scenarios`, () => {
   const discountProductEnvs = getTestVariables(discountProduct.prefix)
   const externalSellerEnvs = getTestVariables(externalSeller.prefix)
   const promotionalProductEnvs = getTestVariables(promotionProduct.prefix)
+
+  // single product
+  verifyProductInvoiceTestcase(singleProduct, singleProductEnvs)
+
+  // multi product
+  verifyProductInvoiceTestcase(multiProduct, multiProductEnvs)
+
+  // discount product
+  verifyProductInvoiceTestcase(discountProduct, discountProductEnvs)
+
+  // discount shipping product
+  verifyProductInvoiceTestcase(discountShipping, discountShippingEnvs)
+
+  // promotional product
+  verifyProductInvoiceTestcase(promotionProduct, promotionalProductEnvs)
 
   verifyTransactionPaymentsAPITestCase(singleProduct, singleProductEnvs)
   verifyTransactionPaymentsAPITestCase(multiProduct, multiProductEnvs)
