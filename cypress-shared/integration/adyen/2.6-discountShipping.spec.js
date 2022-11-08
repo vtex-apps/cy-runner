@@ -5,13 +5,13 @@ import {
   updateRetry,
 } from '../../support/common/support.js'
 import { discountShipping } from '../../support/common/outputvalidation.js'
-import { getTestVariables } from '../../support/common/utils.js'
 import { completePyamentWithDinersCard } from '../../support/adyen/testcase.js'
 import {
   invoiceAPITestCase,
   sendInvoiceTestCase,
   startHandlingOrder,
   verifyOrderStatus,
+  getTestVariables,
 } from '../../support/common/testcase.js'
 
 describe('Discount Shipping Testcase', () => {

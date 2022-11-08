@@ -109,6 +109,21 @@ export function refreshOnboarding(payload) {
   }
 }
 
+export function updateAccount(accountCode, schedule) {
+  const query =
+    'mutation' +
+    '($accountCode:String!,$schedule:String!)' +
+    '{updateAccount(accountCode:$accountCode,schedule:$schedule){accountCode,schedule}}'
+
+  return {
+    query,
+    queryVariables: {
+      accountCode,
+      schedule,
+    },
+  }
+}
+
 export function validateSellersResponse(response) {
   expect(response.body.data).to.not.equal(null)
 }
@@ -130,5 +145,8 @@ export function validateCloseAccountHolderResponse(response) {
 }
 
 export function validateRefreshOnboardingResponse(response) {
+  expect(response.body.data).to.not.equal(null)
+}
+export function validateUpdateAccount(response) {
   expect(response.body.data).to.not.equal(null)
 }

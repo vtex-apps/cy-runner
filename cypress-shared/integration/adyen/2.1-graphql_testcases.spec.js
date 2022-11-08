@@ -12,12 +12,14 @@ import {
   validateGetAdyenAccountResponse,
   getAdyenAccount,
   adyenAccountHolder,
+  updateAccount,
   validateAdyenAccountHolderResponse,
+  validateUpdateAccount,
 } from '../../support/adyen/graphql_testcase'
 import { updateRetry, loginViaCookies } from '../../support/common/support'
 import { createAccount } from '../../support/adyen/outputvalidation'
 
-const { accountHolderCode, sellerId } = createAccount
+const { accountHolderCode, sellerId, schedule, accountCode } = createAccount
 const prefix = 'Graphql testcase'
 
 describe('Adyen GraphQL Validation', () => {
@@ -54,5 +56,9 @@ describe('Adyen GraphQL Validation', () => {
       closeAccountHolder(accountHolderCode),
       validateCloseAccountHolderResponse
     )
+  })
+
+  it(`${prefix} - updateAccount`, updateRetry(2), () => {
+    graphql(updateAccount(accountCode, schedule), validateUpdateAccount)
   })
 })
