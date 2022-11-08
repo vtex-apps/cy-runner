@@ -6,8 +6,12 @@ import {
 import {
   verifyAdyenConnectorSettings,
   verifyAdyenPlatformSettings,
+  createOnBoardingLink,
 } from '../../support/adyen/testcase.js'
-import { loginViaCookies } from '../../support/common/support.js'
+import {
+  loginViaCookies,
+  preserveCookie,
+} from '../../support/common/support.js'
 import { setWorkspaceAndGatewayAffiliations } from '../../support/common/testcase.js'
 
 describe('Setting up adyen payments in dynamic environment', () => {
@@ -19,4 +23,7 @@ describe('Setting up adyen payments in dynamic environment', () => {
   verifyAdyenPlatformSettings()
   createAdyenWebhook()
   setWorkspaceAndGatewayAffiliations({ afterAuthorization: true })
+  createOnBoardingLink(true)
+
+  preserveCookie()
 })

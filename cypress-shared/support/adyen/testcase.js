@@ -130,6 +130,25 @@ export function verifyAdyenPlatformSettings() {
   })
 }
 
+export function createOnBoardingLink(create) {
+  it('Create the onboarding link', () => {
+    cy.visit('/admin/app/adyen-for-platforms')
+    cy.contains('Adyen for Platforms').should('be.visible')
+    cy.contains('productusqa2').should('be.visible').click()
+    if (create) {
+      cy.contains('Create New Link').should('be.visible')
+      cy.contains('Create New Link').click()
+      cy.get(
+        '.vtex-admin-ui-1o3wdue > .vtex-admin-ui-jdrpky > .vtex-admin-ui-79elbk'
+      ).should('be.visible')
+    } else {
+      cy.get(
+        '.vtex-admin-ui-1o3wdue > .vtex-admin-ui-jdrpky > .vtex-admin-ui-79elbk'
+      ).should('not.be.visible')
+    }
+  })
+}
+
 export function startHandlingOrder(product, env) {
   it(`In ${product.prefix} - Start handling order`, updateRetry(3), () => {
     cy.addDelayBetweenRetries(5000)
