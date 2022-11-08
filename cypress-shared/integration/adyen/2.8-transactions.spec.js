@@ -45,6 +45,9 @@ describe(`Transaction Scenarios`, () => {
   // promotional product
   verifyProductInvoiceTestcase(promotionProduct, promotionalProductEnvs)
 
+  // external sellet product
+  verifyProductInvoiceTestcase(externalSeller, externalSellerEnvs)
+
   verifyTransactionPaymentsAPITestCase(singleProduct, singleProductEnvs)
   verifyTransactionPaymentsAPITestCase(multiProduct, multiProductEnvs)
   verifyTransactionPaymentsAPITestCase(discountProduct, discountProductEnvs)
