@@ -6,7 +6,9 @@ import {
   invoiceAPITestCase,
   sendInvoiceTestCase,
   verifyOrderStatus,
+  verifyTransactionPaymentsAPITestCase,
 } from '../common/testcase'
+import { verifyOrderInAdyen } from './adyen_apis'
 
 const config = Cypress.env()
 
@@ -190,7 +192,7 @@ export function verifyProductInvoiceTestcase(
     status: 'handling',
   })
 
-  if (externalSeller) {
+  if (externalSeller === true) {
     verifyExternalSellerInvoice(product, env)
   } else {
     sendInvoiceTestCase({
@@ -210,37 +212,11 @@ export function verifyProductInvoiceTestcase(
       status: 'invoiced',
     })
   }
+
+  verifyOrderTransactions(product, env)
 }
 
 export function verifyExternalSellerInvoice(externalSeller, env) {
-  describe(`Testing Invoice API for External Sale`, () => {
-    it('Get External Sale orderId and update in Cypress env', () => {
-      cy.getOrderItems().then((order) => {
-        if (!order[externalSeller.externalSaleEnv]) {
-          throw new Error('External Sale Order id is missing')
-        }
-      })
-    })
-
-    sendInvoiceTestCase({
-      product: externalSeller,
-      orderIdEnv: externalSeller.externalSaleEnv,
-      externalSellerTestcase: true,
-    })
-
-    invoiceAPITestCase({
-      product: externalSeller,
-      env: externalSeller.externalSaleEnv,
-      transactionIdEnv: env.transactionIdEnv,
-    })
-
-    verifyOrderStatus({
-      product: externalSeller,
-      env: env.orderIdEnv,
-      status: 'invoiced',
-    })
-  })
-
   describe(`Testing Invoice API for Direct Sale`, () => {
     it('Get Direct Sale orderId and update in Cypress env', () => {
       cy.getOrderItems().then((order) => {
@@ -268,5 +244,39 @@ export function verifyExternalSellerInvoice(externalSeller, env) {
       env: env.orderIdEnv,
       status: 'invoiced',
     })
+  })
+
+  describe(`Testing Invoice API for External Sale`, () => {
+    it('Get External Sale orderId and update in Cypress env', () => {
+      cy.getOrderItems().then((order) => {
+        if (!order[externalSeller.externalSaleEnv]) {
+          throw new Error('External Sale Order id is missing')
+        }
+      })
+    })
+
+    sendInvoiceTestCase({
+      product: externalSeller,
+      orderIdEnv: externalSeller.externalSaleEnv,
+      externalSellerTestcase: true,
+    })
+
+    invoiceAPITestCase({
+      product: externalSeller,
+      env: externalSeller.externalSaleEnv,
+    })
+
+    verifyOrderStatus({
+      product: externalSeller,
+      env: env.orderIdEnv,
+      status: 'invoiced',
+    })
+  })
+}
+
+function verifyOrderTransactions(product, env) {
+  describe('Verify Order Transactions', updateRetry(2), () => {
+    verifyTransactionPaymentsAPITestCase(product, env)
+    verifyOrderInAdyen(product, env)
   })
 }

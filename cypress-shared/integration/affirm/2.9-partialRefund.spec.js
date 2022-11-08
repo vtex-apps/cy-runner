@@ -1,3 +1,4 @@
+/* eslint-disable jest/expect-expect */
 import { multiProduct } from '../../support/affirm/outputvalidation.js'
 import { refund } from '../../support/common/refund_apis.js'
 import { getTestVariables } from '../../support/common/testcase.js'

@@ -439,7 +439,7 @@ function generateInvoiceAPIURL(product, item, env) {
 export function invoiceAPITestCase({
   product,
   env,
-  transactionIdEnv,
+  transactionIdEnv = false,
   pickup = false,
 }) {
   it(
@@ -460,10 +460,12 @@ export function invoiceAPITestCase({
             postalCode
           )
           // Setting Transaction Id in .orders.json
-          cy.setOrderItem(
-            transactionIdEnv,
-            response.body.paymentData.transactions[0].transactionId
-          )
+          if (transactionIdEnv) {
+            cy.setOrderItem(
+              transactionIdEnv,
+              response.body.paymentData.transactions[0].transactionId
+            )
+          }
         })
       })
     }

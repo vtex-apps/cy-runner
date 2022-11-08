@@ -56,7 +56,7 @@ export function deleteAdyenWebhook() {
   })
 }
 
-export function verifyOrderInAdyen(product, { paymentTidEnv }, refund = true) {
+export function verifyOrderInAdyen(product, { paymentTidEnv }, refund = false) {
   it(`In ${product.prefix} - Verify order in adyen`, updateRetry(4), () => {
     cy.addDelayBetweenRetries(10000)
     cy.getOrderItems().then((item) => {
