@@ -23,8 +23,9 @@ import { updateRetry, loginViaCookies } from '../../support/common/support'
 import { createAccount, schedule } from '../../support/adyen/outputvalidation'
 import { getAllAccount, getOnBoarding } from '../../support/adyen/api_testcase'
 import { createOnBoardingLink } from '../../support/adyen/testcase'
+import { deleteAccountHoldersFromMasterData } from '../../support/adyen/adyen_apis.js'
 
-const ordersJson = '.orders.json'
+const accountJson = '.account.json'
 const accountHolderJson = '.accountholder.json'
 const accountTokenJson = '.accounttoken.json'
 const accountHolderCodeJson = '.accountholderCode.json'
@@ -36,10 +37,12 @@ const prefix = 'Graphql testcase'
 describe('Adyen GraphQL Validation', () => {
   loginViaCookies()
 
+  deleteAccountHoldersFromMasterData()
+
   it(`${prefix} - Create Account Holder`, updateRetry(2), () => {
     graphql(createAccountHolder(createAccount), (response) => {
       validateCreateAccountHolderResponse(response)
-      cy.writeFile(ordersJson, {
+      cy.writeFile(accountJson, {
         newAccount: response.body.data.createAccountHolder.adyenAccountHolder,
       })
     })
@@ -58,7 +61,7 @@ describe('Adyen GraphQL Validation', () => {
   })
 
   it(`${prefix} - Refresh On Boarding`, updateRetry(2), () => {
-    cy.readFile(ordersJson).then((items) => {
+    cy.readFile(accountJson).then((items) => {
       graphql(
         refreshOnboarding(items.newAccount.accountHolderCode),
         (response) => {
@@ -102,7 +105,7 @@ describe('Adyen GraphQL Validation', () => {
   createOnBoardingLink(false)
 
   it(`${prefix} - Close Account Holder`, updateRetry(2), () => {
-    cy.readFile(ordersJson).then((items) => {
+    cy.readFile(accountJson).then((items) => {
       graphql(
         closeAccountHolder(items.newAccount.accountHolderCode),
         validateCloseAccountHolderResponse
