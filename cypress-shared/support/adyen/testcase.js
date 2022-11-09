@@ -189,7 +189,7 @@ export function verifyProductInvoiceTestcase(
   verifyOrderStatus({
     product,
     env: env.orderIdEnv,
-    status: 'handling',
+    status: /handling|invoiced/,
     timeout: 30000,
   })
 
@@ -210,7 +210,7 @@ export function verifyProductInvoiceTestcase(
     verifyOrderStatus({
       product,
       env: env.orderIdEnv,
-      status: 'invoiced',
+      status: /handling|invoiced/,
       timeout: 30000,
     })
   }
@@ -244,7 +244,7 @@ export function verifyExternalSellerInvoice(externalSeller, env) {
     verifyOrderStatus({
       product: externalSeller,
       env: env.orderIdEnv,
-      status: 'invoiced',
+      status: /handling|invoiced/,
       timeout: 30000,
     })
   })
@@ -272,7 +272,7 @@ export function verifyExternalSellerInvoice(externalSeller, env) {
     verifyOrderStatus({
       product: externalSeller,
       env: env.orderIdEnv,
-      status: 'invoiced',
+      status: /handling|invoiced/,
       timeout: 30000,
     })
   })
