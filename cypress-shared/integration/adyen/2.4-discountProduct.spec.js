@@ -2,44 +2,23 @@
 import {
   loginViaCookies,
   preserveCookie,
-  updateRetry,
 } from '../../support/common/support.js'
 import { discountProduct } from '../../support/affirm/outputvalidation'
-import { getTestVariables } from '../../support/common/testcase.js'
+import {
+  getTestVariables,
+  checkoutProduct,
+} from '../../support/common/testcase.js'
 import { completePyamentWithDinersCard } from '../../support/adyen/testcase.js'
 import selectors from '../../support/common/selectors.js'
 
-const { prefix, productName, postalCode, productQuantity, totalAmount } =
-  discountProduct
+const { prefix, totalAmount } = discountProduct
 
 describe(`${prefix} Scenarios`, () => {
   loginViaCookies()
 
   const { orderIdEnv } = getTestVariables(prefix)
 
-  it(`In ${prefix} - Adding Product to Cart`, updateRetry(1), () => {
-    // Search the product
-    cy.searchProduct(productName)
-    // Add product to cart
-    cy.addProduct(productName, { proceedtoCheckout: true })
-  })
-
-  it(
-    `In ${prefix} - Updating product quantity to ${productQuantity}`,
-    updateRetry(4),
-    () => {
-      // Update Product quantity to 1
-      cy.updateProductQuantity(productName, {
-        quantity: productQuantity,
-        verifySubTotal: false,
-      })
-    }
-  )
-
-  it(`In ${prefix} - Updating Shipping Information`, updateRetry(4), () => {
-    // Update Shipping Section
-    cy.updateShippingInformation({ postalCode })
-  })
+  checkoutProduct(discountProduct)
 
   it(`In ${prefix} - Verifying total amounts and discount for a discounted product`, () => {
     // Verify Total

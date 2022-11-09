@@ -6,7 +6,13 @@ const accountHolderJson = '.accountholder.json'
 const accountTokenJson = '.accounttoken.json'
 const config = Cypress.env()
 
-const { baseUrl, apiKey, apiToken } = config.base.vtex
+const {
+  baseUrl,
+  apiKey,
+  apiToken,
+  adyenWebhookUsername,
+  adyenWebhookPassword,
+} = config.base.vtex
 
 export function getAllAccount(seller) {
   it('Get All List of Account', updateRetry(3), () => {
@@ -42,8 +48,8 @@ export function Adyenhook(data) {
         ...VTEX_AUTH_HEADER(apiKey, apiToken),
       },
       auth: {
-        username: 'VTEX',
-        password: 'VTEX',
+        username: adyenWebhookUsername,
+        password: adyenWebhookPassword,
       },
       ...FAIL_ON_STATUS_CODE,
       body: data,

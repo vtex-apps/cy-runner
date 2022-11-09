@@ -65,7 +65,7 @@ describe('Adyen GraphQL Validation', () => {
       graphql(
         refreshOnboarding(items.newAccount.accountHolderCode),
         (response) => {
-          validateRefreshOnboardingResponse
+          validateRefreshOnboardingResponse()
           cy.writeFile(accountTokenJson, {
             accountToken: response.body.data.refreshOnboarding,
           })
@@ -97,7 +97,7 @@ describe('Adyen GraphQL Validation', () => {
 
   it(`${prefix} - onboardingComplete`, updateRetry(2), () => {
     cy.readFile(accountHolderCodeJson).then((items) => {
-      const accountHolderCode = items.accountHolderCode
+      const { accountHolderCode } = items
       graphql(onboardingComplete(accountHolderCode), validateonboardingComplete)
     })
   })
