@@ -130,7 +130,7 @@ export function verifyAdyenPlatformSettings() {
 }
 
 export function createOnBoardingLink(create) {
-  it.only('Create the onboarding link', () => {
+  it('Create the onboarding link', () => {
     cy.visit('/admin/app/adyen-for-platforms')
     cy.contains('Adyen for Platforms').should('be.visible')
     cy.contains('productusqa2').should('be.visible').click()
