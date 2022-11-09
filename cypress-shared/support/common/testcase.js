@@ -524,12 +524,12 @@ export function startHandlingOrder(product, env) {
   })
 }
 
-export function verifyOrderStatus({ product, env, status }) {
+export function verifyOrderStatus({ product, env, status, timeout = 10000 }) {
   it(
     `In ${product.prefix} - Verify order status is ${status}`,
     updateRetry(5),
     () => {
-      cy.addDelayBetweenRetries(30000)
+      cy.addDelayBetweenRetries(timeout)
       cy.getVtexItems().then((vtex) => {
         cy.getOrderItems().then((order) => {
           cy.getAPI(
@@ -537,7 +537,7 @@ export function verifyOrderStatus({ product, env, status }) {
             VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken)
           ).then((response) => {
             expect(response.status).to.equal(200)
-            expect(response.body.status).to.equal(status)
+            expect(response.body.status).to.match(status)
           })
         })
       })

@@ -22,13 +22,17 @@ describe('Promotional Product scenarios', () => {
     cy.addProduct(productName, { proceedtoCheckout: true })
   })
 
-  it(`In ${prefix} - Updating product quantity to 2`, updateRetry(3), () => {
-    // Update Product quantity to 1
-    cy.updateProductQuantity(productName, {
-      quantity: productQuantity,
-      verifySubTotal: false,
-    })
-  })
+  it(
+    `In ${prefix} - Updating product quantity to ${productQuantity}`,
+    updateRetry(3),
+    () => {
+      // Update Product quantity to 1
+      cy.updateProductQuantity(productName, {
+        quantity: productQuantity,
+        verifySubTotal: false,
+      })
+    }
+  )
 
   it(`In ${prefix} - Updating Shipping Information`, updateRetry(3), () => {
     // Update Shipping Section

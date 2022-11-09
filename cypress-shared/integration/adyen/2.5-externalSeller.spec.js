@@ -11,7 +11,8 @@ import { completePyamentWithDinersCard } from '../../support/adyen/testcase.js'
 describe('External Seller Testcase', () => {
   loginViaCookies()
 
-  const { prefix, product1Name, product2Name, postalCode } = externalSeller
+  const { prefix, product1Name, product2Name, postalCode, productQuantity } =
+    externalSeller
 
   const { orderIdEnv } = getTestVariables(prefix)
 
@@ -25,6 +26,17 @@ describe('External Seller Testcase', () => {
     // Add product to cart
     cy.addProduct(product2Name, { proceedtoCheckout: true })
   })
+
+  it(
+    `In ${prefix} - Updating product quantity to ${productQuantity}`,
+    updateRetry(4),
+    () => {
+      cy.updateProductQuantity(product1Name, {
+        quantity: productQuantity,
+        verifySubTotal: false,
+      })
+    }
+  )
 
   it(`In ${prefix} - Updating Shipping Information`, updateRetry(3), () => {
     // Update Shipping Section

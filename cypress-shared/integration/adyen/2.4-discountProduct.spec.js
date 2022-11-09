@@ -24,13 +24,17 @@ describe(`${prefix} Scenarios`, () => {
     cy.addProduct(productName, { proceedtoCheckout: true })
   })
 
-  it(`In ${prefix} - Updating product quantity to 1`, updateRetry(4), () => {
-    // Update Product quantity to 1
-    cy.updateProductQuantity(productName, {
-      quantity: productQuantity,
-      verifySubTotal: false,
-    })
-  })
+  it(
+    `In ${prefix} - Updating product quantity to ${productQuantity}`,
+    updateRetry(4),
+    () => {
+      // Update Product quantity to 1
+      cy.updateProductQuantity(productName, {
+        quantity: productQuantity,
+        verifySubTotal: false,
+      })
+    }
+  )
 
   it(`In ${prefix} - Updating Shipping Information`, updateRetry(4), () => {
     // Update Shipping Section

@@ -37,6 +37,7 @@ export function completePyamentWithDinersCard(
     cy.getIframeBody(selectors.PaymentMethodIFrame).then(($body) => {
       if (!$body.find(selectors.CardExist).length) {
         // Credit cart not exist
+        // https://docs.adyen.com/development-resources/testing/test-card-numbers#diners
         cy.getIframeBody(selectors.PaymentMethodIFrame)
           .find(selectors.CreditCardNumber)
           .type('3600 6666 3333 44')
@@ -179,7 +180,8 @@ export function verifyProductInvoiceTestcase(
   verifyOrderStatus({
     product,
     env: env.orderIdEnv,
-    status: 'ready-for-handling',
+    status: /handling|invoiced/,
+    timeout: 30000,
   })
 
   startHandlingOrder(product, env.orderIdEnv)
@@ -188,6 +190,7 @@ export function verifyProductInvoiceTestcase(
     product,
     env: env.orderIdEnv,
     status: 'handling',
+    timeout: 30000,
   })
 
   if (externalSeller === true) {
@@ -208,6 +211,7 @@ export function verifyProductInvoiceTestcase(
       product,
       env: env.orderIdEnv,
       status: 'invoiced',
+      timeout: 30000,
     })
   }
 
@@ -241,6 +245,7 @@ export function verifyExternalSellerInvoice(externalSeller, env) {
       product: externalSeller,
       env: env.orderIdEnv,
       status: 'invoiced',
+      timeout: 30000,
     })
   })
 
@@ -268,6 +273,7 @@ export function verifyExternalSellerInvoice(externalSeller, env) {
       product: externalSeller,
       env: env.orderIdEnv,
       status: 'invoiced',
+      timeout: 30000,
     })
   })
 }
