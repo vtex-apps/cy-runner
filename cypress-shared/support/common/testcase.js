@@ -529,7 +529,7 @@ export function verifyOrderStatus({ product, env, status }) {
     `In ${product.prefix} - Verify order status is ${status}`,
     updateRetry(5),
     () => {
-      cy.addDelayBetweenRetries(20000)
+      cy.addDelayBetweenRetries(30000)
       cy.getVtexItems().then((vtex) => {
         cy.getOrderItems().then((order) => {
           cy.getAPI(

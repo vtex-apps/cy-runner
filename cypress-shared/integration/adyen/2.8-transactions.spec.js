@@ -8,11 +8,7 @@ import {
   externalSeller,
   promotionProduct,
 } from '../../support/common/outputvalidation'
-import {
-  getTestVariables,
-  verifyTransactionPaymentsAPITestCase,
-} from '../../support/common/testcase.js'
-import { verifyOrderInAdyen } from '../../support/adyen/adyen_apis.js'
+import { getTestVariables } from '../../support/common/testcase.js'
 import {
   loginToAdyen,
   verifyProductInvoiceTestcase,
@@ -47,18 +43,4 @@ describe(`Transaction Scenarios`, () => {
 
   // external sellet product
   verifyProductInvoiceTestcase(externalSeller, externalSellerEnvs, true)
-
-  verifyTransactionPaymentsAPITestCase(singleProduct, singleProductEnvs)
-  verifyTransactionPaymentsAPITestCase(multiProduct, multiProductEnvs)
-  verifyTransactionPaymentsAPITestCase(discountProduct, discountProductEnvs)
-  verifyTransactionPaymentsAPITestCase(discountShipping, discountShippingEnvs)
-  verifyTransactionPaymentsAPITestCase(externalSeller, externalSellerEnvs)
-  verifyTransactionPaymentsAPITestCase(promotionProduct, promotionalProductEnvs)
-
-  verifyOrderInAdyen(singleProduct, singleProductEnvs)
-  verifyOrderInAdyen(multiProduct, multiProductEnvs)
-  verifyOrderInAdyen(discountProduct, discountProductEnvs)
-  verifyOrderInAdyen(discountShipping, discountShippingEnvs)
-  verifyOrderInAdyen(externalSeller, externalSellerEnvs)
-  verifyOrderInAdyen(promotionProduct, promotionalProductEnvs)
 })
