@@ -4,6 +4,7 @@ import { updateRetry } from '../common/support'
 const config = Cypress.env()
 const { name } = config.workspace
 const { adyenCompanyID, adyenApiKey, baseUrl } = config.base.vtex
+const webhookJson = '.webhook.json'
 
 export function createAdyenWebhook() {
   it(`Create standard notification webhook in Adyen`, updateRetry(4), () => {
@@ -33,7 +34,9 @@ export function createAdyenWebhook() {
     }).then((response) => {
       expect(response.status).to.equal(200)
       expect(response.body.active).to.equal(true)
-      cy.setOrderItem('adyenWebhookID', response.body.id)
+      cy.writeFile(webhookJson, {
+        adyenWebhookID: response.body.id,
+      })
     })
   })
 }
@@ -41,10 +44,10 @@ export function createAdyenWebhook() {
 export function deleteAdyenWebhook() {
   it(`Delete webhook in Adyen`, updateRetry(4), () => {
     cy.addDelayBetweenRetries(10000)
-    cy.getOrderItems().then((item) => {
+    cy.readFile(webhookJson).then((webhookid) => {
       cy.request({
         method: 'DELETE',
-        url: `https://management-test.adyen.com/v1/companies/${adyenCompanyID}/webhooks/${item.adyenWebhookID}`,
+        url: `https://management-test.adyen.com/v1/companies/${adyenCompanyID}/webhooks/${webhookid.adyenWebhookID}`,
         headers: {
           'X-API-Key': adyenApiKey,
         },
