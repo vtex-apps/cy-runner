@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 ### Added
+- Add log false for adyen creds
+
+### Added
 - Added Adyen Tests
 
 ### Added
