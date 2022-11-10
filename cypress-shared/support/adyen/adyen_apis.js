@@ -3,7 +3,13 @@ import { updateRetry } from '../common/support'
 
 const config = Cypress.env()
 const { name } = config.workspace
-const { adyenCompanyID, adyenApiKey, baseUrl } = config.base.vtex
+const {
+  adyenCompanyID,
+  adyenApiKey,
+  baseUrl,
+  adyenWebhookUsername,
+  adyenWebhookPassword,
+} = config.base.vtex
 const webhookJson = '.webhook.json'
 
 export function createAdyenWebhook() {
@@ -18,8 +24,8 @@ export function createAdyenWebhook() {
       body: {
         type: 'standard',
         url: `https://${name}--productusqa.myvtex.com/_v/api/connector-adyen/v0/hook`,
-        username: 'VTEX',
-        password: 'VTEX',
+        username: adyenWebhookUsername,
+        password: adyenWebhookPassword,
         active: 'true',
         sslVersion: 'TLSv1.2',
         communicationFormat: 'json',
