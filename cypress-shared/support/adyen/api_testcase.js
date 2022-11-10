@@ -26,7 +26,8 @@ export function getAllAccount(seller) {
 }
 
 export function getOnBoarding() {
-  it('Get Onboarding', updateRetry(3), () => {
+  it('Get Onboarding', updateRetry(6), () => {
+    cy.addDelayBetweenRetries(10000)
     cy.getVtexItems().then((vtex) => {
       cy.readFile(accountTokenJson).then((items) => {
         cy.getAPI(onboarding(vtex.baseUrl, items.accountToken.urlToken)).then(
