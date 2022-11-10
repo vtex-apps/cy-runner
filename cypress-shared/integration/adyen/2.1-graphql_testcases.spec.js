@@ -65,7 +65,7 @@ describe('Adyen GraphQL Validation', () => {
       graphql(
         refreshOnboarding(items.newAccount.accountHolderCode),
         (response) => {
-          validateRefreshOnboardingResponse()
+          validateRefreshOnboardingResponse(response)
           cy.writeFile(accountTokenJson, {
             accountToken: response.body.data.refreshOnboarding,
           })
