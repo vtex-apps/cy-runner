@@ -5,6 +5,8 @@ import {
   affiliationAPI,
   invoiceAPI,
   transactionAPI,
+  startHandlingAPI,
+  getOrderAPI,
 } from './apis.js'
 import { isValidDate } from './utils.js'
 
@@ -242,18 +244,24 @@ export function startPaymentE2ETests() {
 export const AUTO_SETTLEMENT_OPTIONS = {
   enable: 'after_antifraud',
   disable: 'disabled',
+  afterAuthorization: 'after_authorization',
 }
 
 export function setWorkspaceAndGatewayAffiliations({
   autoSellement = true,
+  afterAuthorization = false,
   wipe = false,
 } = {}) {
   // If you are using this function in your testcase
   // then ensure, you are having affiliationId, apiKey,apiToken,appKey and appToken in .VTEX_QE.json
 
-  const autoSellementValue = autoSellement
+  let autoSellementValue = autoSellement
     ? AUTO_SETTLEMENT_OPTIONS.enable
     : AUTO_SETTLEMENT_OPTIONS.disable
+
+  if (afterAuthorization) {
+    autoSellementValue = AUTO_SETTLEMENT_OPTIONS.afterAuthorization
+  }
 
   const workspace = wipe ? '' : WORKSPACE
 
@@ -431,7 +439,7 @@ function generateInvoiceAPIURL(product, item, env) {
 export function invoiceAPITestCase({
   product,
   env,
-  transactionIdEnv,
+  transactionIdEnv = false,
   pickup = false,
 }) {
   it(
@@ -452,10 +460,12 @@ export function invoiceAPITestCase({
             postalCode
           )
           // Setting Transaction Id in .orders.json
-          cy.setOrderItem(
-            transactionIdEnv,
-            response.body.paymentData.transactions[0].transactionId
-          )
+          if (transactionIdEnv) {
+            cy.setOrderItem(
+              transactionIdEnv,
+              response.body.paymentData.transactions[0].transactionId
+            )
+          }
         })
       })
     }
@@ -496,4 +506,74 @@ export function verifyTransactionPaymentsAPITestCase(
       })
     }
   )
+}
+
+export function startHandlingOrder(product, env) {
+  it(`In ${product.prefix} - Start handling order`, updateRetry(3), () => {
+    cy.addDelayBetweenRetries(5000)
+    cy.getOrderItems().then((item) => {
+      cy.request({
+        method: 'POST',
+        url: startHandlingAPI(baseUrl, item[env]),
+        headers: VTEX_AUTH_HEADER(apiKey, apiToken),
+        ...FAIL_ON_STATUS_CODE,
+      }).then((response) => {
+        expect(response.status).to.match(/204|409/)
+      })
+    })
+  })
+}
+
+export function verifyOrderStatus({ product, env, status, timeout = 10000 }) {
+  it(
+    `In ${product.prefix} - Verify order status is ${status}`,
+    updateRetry(5),
+    () => {
+      cy.addDelayBetweenRetries(timeout)
+      cy.getVtexItems().then((vtex) => {
+        cy.getOrderItems().then((order) => {
+          cy.getAPI(
+            getOrderAPI(vtex.baseUrl, order[env]),
+            VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken)
+          ).then((response) => {
+            expect(response.status).to.equal(200)
+            expect(response.body.status).to.match(status)
+          })
+        })
+      })
+    }
+  )
+}
+
+export function checkoutProduct(product) {
+  const {
+    prefix: testPrefix,
+    productName,
+    postalCode,
+    productQuantity,
+  } = product
+
+  it(`In ${testPrefix} - Adding Product to Cart`, updateRetry(1), () => {
+    // Search the product
+    cy.searchProduct(productName)
+    // Add product to cart
+    cy.addProduct(productName, { proceedtoCheckout: true })
+  })
+
+  it(
+    `In ${testPrefix} - Updating product quantity to ${productQuantity}`,
+    updateRetry(4),
+    () => {
+      // Update Product quantity to 1
+      cy.updateProductQuantity(productName, {
+        quantity: productQuantity,
+        verifySubTotal: false,
+      })
+    }
+  )
+
+  it(`In ${testPrefix} - Updating Shipping Information`, updateRetry(4), () => {
+    // Update Shipping Section
+    cy.updateShippingInformation({ postalCode })
+  })
 }

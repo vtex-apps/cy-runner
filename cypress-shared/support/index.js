@@ -7,7 +7,7 @@ import './common/env_orders'
 
 // Configure it to preserve cookies
 Cypress.Cookies.defaults({
-  preserve: 'VtexIdclientAutCookie',
+  preserve: /VtexIdclientAutCookie|JSESSIONID/,
 })
 
 Cypress.on('uncaught:exception', (_, __) => {

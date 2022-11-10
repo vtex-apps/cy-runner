@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 ### Added
+- Added Adyen Tests
+
+### Added
 - For updateShippingInformation, Add 10s delay between retries
 
 ### Changed

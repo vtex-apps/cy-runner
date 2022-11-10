@@ -152,6 +152,7 @@ export default {
   BuyNowBtn: '#payment-data-submit > span',
   PaymentConfirmationLabel: '.vtex-order-placed-2-x-confirmationTitle',
   OrderIdLabel: '.vtex-order-placed-2-x-orderNumber',
+  CreditCardLink: '#payment-group-creditCardPaymentGroup',
   PaymentMethodIFrame: '.payment-method iframe',
   CardExist: '#use-another-card',
   CreditCard: 'a[data-name*=American]',
@@ -160,6 +161,7 @@ export default {
   CreditCardExpirationMonth: '[name=cardExpirationMonth]',
   CreditCardExpirationYear: '[name=cardExpirationYear]',
   CreditCardCode: '#creditCardpayment-card-0Code',
+  CrediCardCvvCode: '.PaymentCardCVV input',
   PaymentUnAuthorized: 'div[class*=payment-unauthorized]',
   AffirmPayment: '[data-name=Affirm]',
   dataReviewCloseBtn: '.payment-unauthorized-modal > .modal-body > .btn',
@@ -442,4 +444,17 @@ export default {
   AffirmInstallmentOption: 'span[data-test="installment-length"]',
   AffirmIndicatorOption: 'div[data-testid="indicator"]', // Auto payment & Privacy policy option selector
   AffirmDisClosureCheckbox: 'div[data-testid="disclosure-checkbox-indicator"]',
+
+  // Adyen selectors starts
+  AdyenAdminIframe: 'iframe[data-testid="admin-iframe-container"]',
+  AdyenAdminSectionPB4: 'section[class="pb4"]',
+  AdyenAdminSectionPB6: 'section[class="pb6"]',
+  AdyenAdminUsePlatformToggle: 'section[class="pb4"] span',
+  AdyenPlatformApiKey: 'input[id="apiKey"]',
+  AdyenPlatformProductionURI: 'input[id="liveEndpoint"]',
+  AdyenLoginUsername: 'input[name="userName"]',
+  AdyenLoginPassword: 'input[name="password"]',
+  AdyenLoginAccount: 'input[name="account"]',
+  AdyenLoginSubmit: 'button[type="submit"]',
+  // End here
 }
