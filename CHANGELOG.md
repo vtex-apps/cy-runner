@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+### Added
+- Added Adyen Tests
+
+### Added
+- For updateShippingInformation, Add 10s delay between retries
+
 ### Changed
 - Replace {retries: } with updateRetry
 - Fix 2.4 title

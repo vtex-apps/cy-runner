@@ -544,3 +544,36 @@ export function verifyOrderStatus({ product, env, status, timeout = 10000 }) {
     }
   )
 }
+
+export function checkoutProduct(product) {
+  const {
+    prefix: testPrefix,
+    productName,
+    postalCode,
+    productQuantity,
+  } = product
+
+  it(`In ${testPrefix} - Adding Product to Cart`, updateRetry(1), () => {
+    // Search the product
+    cy.searchProduct(productName)
+    // Add product to cart
+    cy.addProduct(productName, { proceedtoCheckout: true })
+  })
+
+  it(
+    `In ${testPrefix} - Updating product quantity to ${productQuantity}`,
+    updateRetry(4),
+    () => {
+      // Update Product quantity to 1
+      cy.updateProductQuantity(productName, {
+        quantity: productQuantity,
+        verifySubTotal: false,
+      })
+    }
+  )
+
+  it(`In ${testPrefix} - Updating Shipping Information`, updateRetry(4), () => {
+    // Update Shipping Section
+    cy.updateShippingInformation({ postalCode })
+  })
+}
