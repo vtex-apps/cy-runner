@@ -147,6 +147,7 @@ exports.teardown = async (config, linkSucceed = true) => {
 
   logger.msgSection('Workspace teardown')
   await this.dumpEnvironment()
+  storage.keepDebugFiles()
   if (config.base.keepStateFiles) storage.keepStateFiles(config)
   // Run wipe only if link succeeds
   if (linkSucceed) await wipe(config)

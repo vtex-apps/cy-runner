@@ -93,7 +93,7 @@ exports.getConfig = async (configFile) => {
   cypress.saveCypressJson(config)
 
   // Create state files
-  storage.createStateFiles(config)
+  storage.createDebugAndStateFiles(config)
 
   // Make link if base has Cypress folder
   const lnk = path.join(__dirname, '..', 'cypress')

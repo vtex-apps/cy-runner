@@ -7,6 +7,8 @@ const system = require('./system')
 const logger = require('./logger')
 const schema = require('./schema')
 
+const DEBUG_FILE = '.debug.json'
+
 exports.read = (file) => {
   try {
     return fs.readFileSync(file, { encoding: 'utf-8' })
@@ -128,9 +130,11 @@ exports.writeJson = (config, jsonFile) => {
   }
 }
 
-exports.createStateFiles = (config) => {
+exports.createDebugAndStateFiles = (config) => {
   try {
     const { stateFiles } = config.base
+
+    stateFiles.push(DEBUG_FILE)
     const SIZE = stateFiles.length
     const PLURAL = SIZE > 1 ? 'files' : 'file'
 
@@ -146,6 +150,24 @@ exports.createStateFiles = (config) => {
   }
 }
 
+exports.keepFiles = (stateFile) => {
+  const SRC = path.join(system.cyRunnerPath(), stateFile)
+  const DST = path.join(logger.logPath(), stateFile)
+
+  logger.msgPad(`${stateFile} -> ${DST.replace(system.basePath(), '.')}`)
+  this.copy(SRC, DST)
+}
+
+exports.keepDebugFiles = () => {
+  try {
+    logger.msgWarn('Moving debug file')
+    this.keepFiles(DEBUG_FILE)
+    logger.msgOk('Debug file moved successfully')
+  } catch (e) {
+    system.crash('Failed to keep debug files', e)
+  }
+}
+
 // ENGINEERS-465
 exports.keepStateFiles = (config) => {
   try {
@@ -153,12 +175,7 @@ exports.keepStateFiles = (config) => {
 
     logger.msgWarn('Moving state files')
     stateFiles.forEach((stateFile) => {
-      const SRC = path.join(system.cyRunnerPath(), stateFile)
-      const DST = path.join(logger.logPath(), stateFile)
-
-      logger.msgPad(`${stateFile} -> ${DST.replace(system.basePath(), '.')}`)
-
-      this.copy(SRC, DST)
+      this.keepFiles(stateFile)
     })
     logger.msgOk('State files moved successfully')
   } catch (e) {

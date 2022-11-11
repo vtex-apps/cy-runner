@@ -106,3 +106,22 @@ Cypress.Commands.add(
     saveOrderId(orderIdEnv, externalSeller)
   }
 )
+
+const debugJson = '.debug.json'
+
+// Set Debug items
+Cypress.Commands.add('setDebugItem', (item, value) => {
+  cy.readFile(debugJson).then((items) => {
+    items[item] = value
+    cy.writeFile(debugJson, items)
+  })
+})
+
+Cypress.Commands.add('storeOrderForm', () => {
+  cy.window().then(($win) => {
+    cy.setDebugItem(
+      Cypress.currentTest.titlePath,
+      $win.vtexjs.checkout.orderForm
+    )
+  })
+})
