@@ -100,7 +100,7 @@ Cypress.Commands.add(
       .should('be.visible')
       .last()
       .click()
-
+    cy.get(selectors.Search, { timeout: 30000 }).should('be.visible')
     // if orderIdEnv or externalSeller is must be passed then only we store orderId
     // otherwise we just verify order is placed or not
     saveOrderId(orderIdEnv, externalSeller)

@@ -4,6 +4,9 @@
 - Store orderForm information in _orderFormDebug.json
 
 ### Added
+- Verifying search input field is displayed after placed an order
+
+### Added
 - Move updating shipping policy function to common folder
 
 ### Added
