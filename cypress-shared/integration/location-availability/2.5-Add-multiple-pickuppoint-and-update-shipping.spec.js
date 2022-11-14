@@ -7,7 +7,7 @@ import { addPickUpPoint } from '../../support/location-availability/support'
 import {
   graphql,
   updateShippingPolicy,
-} from '../../support/location-availability/shipping-policy.graphql'
+} from '../../support/common/shipping-policy.graphql'
 import data from '../../support/location-availability/shipping-policy.json'
 
 const prefix = 'Multiple pickup points'

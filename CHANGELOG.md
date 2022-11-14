@@ -4,6 +4,9 @@
 - Store orderForm information in .orderFormDebug.json
 
 ### Added
+- Move updating shipping policy function to common folder
+
+### Added
 - Add log false for adyen creds
 
 ### Added
