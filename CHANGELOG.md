@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 ### Added
+- Store orderForm information in _orderFormDebug.json
+
+### Added
 - Verifying search input field is displayed after placed an order
 
 ### Added
