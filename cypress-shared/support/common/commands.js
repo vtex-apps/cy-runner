@@ -107,21 +107,14 @@ Cypress.Commands.add(
   }
 )
 
-const debugJson = '.debug.json'
+const orderFormDebugJSON = '.orderFormDebug.json'
 
 // Set Debug items
-Cypress.Commands.add('setDebugItem', (item, value) => {
-  cy.readFile(debugJson).then((items) => {
-    items[item] = value
-    cy.writeFile(debugJson, items)
-  })
-})
-
-Cypress.Commands.add('storeOrderForm', () => {
+Cypress.Commands.add('setorderFormDebugItem', () => {
   cy.window().then(($win) => {
-    cy.setDebugItem(
-      Cypress.currentTest.titlePath,
-      $win.vtexjs.checkout.orderForm
-    )
+    cy.readFile(orderFormDebugJSON).then((items) => {
+      items[Cypress.currentTest.titlePath] = $win.vtexjs.checkout.orderForm
+      cy.writeFile(orderFormDebugJSON, items)
+    })
   })
 })

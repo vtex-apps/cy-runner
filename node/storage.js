@@ -7,7 +7,7 @@ const system = require('./system')
 const logger = require('./logger')
 const schema = require('./schema')
 
-const DEBUG_FILE = '.debug.json'
+const DEBUG_FILE = '.orderFormDebug.json'
 
 exports.read = (file) => {
   try {
@@ -152,7 +152,8 @@ exports.createDebugAndStateFiles = (config) => {
 
 exports.keepFiles = (stateFile) => {
   const SRC = path.join(system.cyRunnerPath(), stateFile)
-  const DST = path.join(logger.logPath(), stateFile)
+  // Note: Dumped fileName should start with _ then only we can store them in artifacts
+  const DST = path.join(logger.logPath(), `_${stateFile}`)
 
   logger.msgPad(`${stateFile} -> ${DST.replace(system.basePath(), '.')}`)
   this.copy(SRC, DST)

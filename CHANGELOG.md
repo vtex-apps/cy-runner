@@ -1,7 +1,7 @@
 ## [Unreleased]
 
 ### Added
-- Store orderForm info in .debug.json
+- Store orderForm information in .orderFormDebug.json
 
 ### Added
 - Add log false for adyen creds

@@ -146,6 +146,7 @@ exports.teardown = async (config, linkSucceed = true) => {
   if (RESERVE) await lock.releaseAccount(config)
 
   logger.msgSection('Workspace teardown')
+  // Note: Dumped fileName should start with _ then only we can store them in artifacts
   storage.keepDebugFiles()
   if (config.base.keepStateFiles) storage.keepStateFiles(config)
   await this.dumpEnvironment()
