@@ -271,6 +271,7 @@ export function updateShippingInformation({
   const { deliveryScreenAddress } = addressList[postalCode]
 
   cy.addDelayBetweenRetries(10000)
+  cy.storeOrderForm()
   cy.get(selectors.CartTimeline).should('be.visible').click({ force: true })
   startShipping()
   cy.intercept('https://rc.vtex.com/v8').as('v8')
