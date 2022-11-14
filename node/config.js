@@ -39,6 +39,9 @@ exports.getConfig = async (configFile) => {
   // Seed envs if not present
   if (!config.envs) config.envs = []
 
+  // TODO: Migrate this to its own yaml file
+  config.base.stateFiles.push('.orderFormDebug.json')
+
   // Run in different mode if on GitHub (CI)
   if (system.isCI()) {
     logger.msgWarn('Running in CI mode')
@@ -93,7 +96,7 @@ exports.getConfig = async (configFile) => {
   cypress.saveCypressJson(config)
 
   // Create state files
-  storage.createDebugAndStateFiles(config)
+  storage.createStateFiles(config)
 
   // Make link if base has Cypress folder
   const lnk = path.join(__dirname, '..', 'cypress')

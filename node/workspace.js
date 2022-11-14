@@ -147,7 +147,7 @@ exports.teardown = async (config, linkSucceed = true) => {
 
   logger.msgSection('Workspace teardown')
   // Note: Dumped fileName should start with _ then only we can store them in artifacts
-  storage.keepDebugFiles()
+  storage.keepOrderFormDebugFile(config.base.stateFiles.at(-1))
   if (config.base.keepStateFiles) storage.keepStateFiles(config)
   await this.dumpEnvironment()
   // Run wipe only if link succeeds

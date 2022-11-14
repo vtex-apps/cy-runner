@@ -7,8 +7,6 @@ const system = require('./system')
 const logger = require('./logger')
 const schema = require('./schema')
 
-const DEBUG_FILE = '.orderFormDebug.json'
-
 exports.read = (file) => {
   try {
     return fs.readFileSync(file, { encoding: 'utf-8' })
@@ -130,11 +128,10 @@ exports.writeJson = (config, jsonFile) => {
   }
 }
 
-exports.createDebugAndStateFiles = (config) => {
+exports.createStateFiles = (config) => {
   try {
     const { stateFiles } = config.base
 
-    stateFiles.push(DEBUG_FILE)
     const SIZE = stateFiles.length
     const PLURAL = SIZE > 1 ? 'files' : 'file'
 
@@ -159,13 +156,13 @@ exports.keepFiles = (stateFile) => {
   this.copy(SRC, DST)
 }
 
-exports.keepDebugFiles = () => {
+exports.keepOrderFormDebugFile = (fileName) => {
   try {
-    logger.msgWarn('Moving debug file')
-    this.keepFiles(DEBUG_FILE)
-    logger.msgOk('Debug file moved successfully')
+    logger.msgWarn('Moving orderFormDebug file')
+    this.keepFiles(fileName)
+    logger.msgOk('orderFormDebug file moved successfully')
   } catch (e) {
-    system.crash('Failed to keep debug files', e)
+    system.crash('Failed to keep orderFormDebug file', e)
   }
 }
 
