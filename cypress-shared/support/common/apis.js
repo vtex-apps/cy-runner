@@ -27,4 +27,10 @@ export default {
 
     return url
   },
+  getPickupPoints: (baseUrl) => {
+    return `${baseUrl}/api/logistics/pvt/configuration/pickuppoints`
+  },
+  deletePickupPoint: (baseUrl, pickupPointid) => {
+    return `${baseUrl}/api/logistics/pvt/configuration/pickuppoints/${pickupPointid}`
+  },
 }
