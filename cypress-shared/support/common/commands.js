@@ -107,7 +107,7 @@ Cypress.Commands.add(
   }
 )
 
-const orderFormDebugJSON = '.orderFormDebug.json'
+const orderFormDebugJSON = '_orderFormDebug.json'
 
 // Set Debug items
 Cypress.Commands.add('setorderFormDebugItem', () => {

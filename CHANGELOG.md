@@ -1,7 +1,7 @@
 ## [Unreleased]
 
 ### Added
-- Store orderForm information in .orderFormDebug.json
+- Store orderForm information in _orderFormDebug.json
 
 ### Added
 - Move updating shipping policy function to common folder

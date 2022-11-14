@@ -146,10 +146,8 @@ exports.teardown = async (config, linkSucceed = true) => {
   if (RESERVE) await lock.releaseAccount(config)
 
   logger.msgSection('Workspace teardown')
-  // Note: Dumped fileName should start with _ then only we can store them in artifacts
-  storage.keepOrderFormDebugFile(config.base.stateFiles.at(-1))
-  if (config.base.keepStateFiles) storage.keepStateFiles(config)
   await this.dumpEnvironment()
+  if (config.base.keepStateFiles) storage.keepStateFiles(config)
   // Run wipe only if link succeeds
   if (linkSucceed) await wipe(config)
   await this.cleanSensitiveData()

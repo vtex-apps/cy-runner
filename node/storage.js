@@ -131,7 +131,6 @@ exports.writeJson = (config, jsonFile) => {
 exports.createStateFiles = (config) => {
   try {
     const { stateFiles } = config.base
-
     const SIZE = stateFiles.length
     const PLURAL = SIZE > 1 ? 'files' : 'file'
 
@@ -147,25 +146,6 @@ exports.createStateFiles = (config) => {
   }
 }
 
-exports.keepFiles = (stateFile) => {
-  const SRC = path.join(system.cyRunnerPath(), stateFile)
-  // Note: Dumped fileName should start with _ then only we can store them in artifacts
-  const DST = path.join(logger.logPath(), `_${stateFile}`)
-
-  logger.msgPad(`${stateFile} -> ${DST.replace(system.basePath(), '.')}`)
-  this.copy(SRC, DST)
-}
-
-exports.keepOrderFormDebugFile = (fileName) => {
-  try {
-    logger.msgWarn('Moving orderFormDebug file')
-    this.keepFiles(fileName)
-    logger.msgOk('orderFormDebug file moved successfully')
-  } catch (e) {
-    system.crash('Failed to keep orderFormDebug file', e)
-  }
-}
-
 // ENGINEERS-465
 exports.keepStateFiles = (config) => {
   try {
@@ -173,7 +153,12 @@ exports.keepStateFiles = (config) => {
 
     logger.msgWarn('Moving state files')
     stateFiles.forEach((stateFile) => {
-      this.keepFiles(stateFile)
+      const SRC = path.join(system.cyRunnerPath(), stateFile)
+      const DST = path.join(logger.logPath(), stateFile)
+
+      logger.msgPad(`${stateFile} -> ${DST.replace(system.basePath(), '.')}`)
+
+      this.copy(SRC, DST)
     })
     logger.msgOk('State files moved successfully')
   } catch (e) {
