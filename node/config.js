@@ -39,6 +39,10 @@ exports.getConfig = async (configFile) => {
   // Seed envs if not present
   if (!config.envs) config.envs = []
 
+  // TODO: Migrate this to its own yaml file
+  config.base.stateFiles.push('_orderFormDebug.json')
+  config.base.keepStateFiles = true
+
   // Run in different mode if on GitHub (CI)
   if (system.isCI()) {
     logger.msgWarn('Running in CI mode')
