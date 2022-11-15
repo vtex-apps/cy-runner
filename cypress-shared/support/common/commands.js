@@ -100,9 +100,21 @@ Cypress.Commands.add(
       .should('be.visible')
       .last()
       .click()
-
+    cy.get(selectors.Search, { timeout: 30000 }).should('be.visible')
     // if orderIdEnv or externalSeller is must be passed then only we store orderId
     // otherwise we just verify order is placed or not
     saveOrderId(orderIdEnv, externalSeller)
   }
 )
+
+const orderFormDebugJSON = '_orderFormDebug.json'
+
+// Set Debug items
+Cypress.Commands.add('setorderFormDebugItem', () => {
+  cy.window().then(($win) => {
+    cy.readFile(orderFormDebugJSON).then((items) => {
+      items[Cypress.currentTest.titlePath] = $win.vtexjs.checkout.orderForm
+      cy.writeFile(orderFormDebugJSON, items)
+    })
+  })
+})

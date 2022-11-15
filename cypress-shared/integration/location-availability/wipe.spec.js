@@ -2,7 +2,7 @@
 import {
   graphql,
   updateShippingPolicy,
-} from '../../support/location-availability/shipping-policy.graphql'
+} from '../../support/common/shipping-policy.graphql'
 import data from '../../support/location-availability/shipping-policy.json'
 import {
   loginViaCookies,
