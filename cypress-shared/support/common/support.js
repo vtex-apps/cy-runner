@@ -290,7 +290,6 @@ export function updateShippingInformation({
         .contains('Pickup')
       cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
     } else {
-      cy.get(selectors.CartTimeline).should('be.visible').click({ force: true })
       cy.get(selectors.DeliveryAddressText, { timeout: 15000 })
         .invoke('text')
         .should(

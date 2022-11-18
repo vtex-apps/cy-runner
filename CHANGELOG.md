@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Removed
+- [ENGINEERS-886] - Removed cartTimeline click in one of the place of updateShippingInformation
+
 ### Added
 - Store orderForm information in _orderFormDebug.json
 
