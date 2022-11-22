@@ -15,9 +15,9 @@ describe('Verify distance not show in Home page', () => {
   // eslint-disable-next-line jest/expect-expect
   it(
     'Go to home add location & verify distance not shows',
-    updateRetry(1),
+    updateRetry(3),
     () => {
-      cy.addNewLocation(country, postalCode, address)
+      cy.addNewLocation(country, postalCode, address,city)
       verifyHomePage(city, postalCode, true)
     }
   )

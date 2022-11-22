@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Added
+- Changes in addNewLocation function in commands.js
+
 ### Removed
 - [ENGINEERS-886] - Removed cartTimeline click in one of the place of updateShippingInformation
 
