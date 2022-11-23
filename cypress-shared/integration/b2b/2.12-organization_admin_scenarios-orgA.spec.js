@@ -33,7 +33,7 @@ import {
   quickOrderBySkuAndQuantityTestCase1,
   quickOrderBySkuAndQuantityTestCase2,
   quickOrderBySkuAnd51QuantityTestCase,
-} from '../../support/b2b/quick_order.js'
+} from '../../support/quick-order/testcase.js'
 
 describe('Organization A - Cost Center A1 - Organization Admin2 Scenario', () => {
   loginViaCookies({ storeFrontCookie: false })

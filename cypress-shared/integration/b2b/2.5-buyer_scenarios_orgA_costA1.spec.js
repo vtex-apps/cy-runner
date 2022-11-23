@@ -26,7 +26,7 @@ import {
 import {
   quickOrderByOneByOneTestCase,
   quickOrderByOneByOneNegativeTestCase,
-} from '../../support/b2b/quick_order.js'
+} from '../../support/quick-order/testcase.js'
 
 describe('Organization A - Cost Center A1 - Buyer Scenarios', () => {
   loginViaCookies({ storeFrontCookie: false })

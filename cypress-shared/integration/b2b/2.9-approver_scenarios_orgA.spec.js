@@ -25,7 +25,7 @@ import {
 import {
   quickOrderByXLS,
   // quickOrderByXLSNegativeTestCase,
-} from '../../support/b2b/quick_order.js'
+} from '../../support/quick-order/testcase.js'
 import {
   fillContactInfo,
   verifyAddress,

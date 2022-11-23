@@ -42,7 +42,7 @@ Cypress.Commands.add('waitForSession', (selector = null) => {
 
 Cypress.Commands.add(
   'waitForGraphql',
-  (operationName, selector = null, contains = null) => {
+  (operationName, selector = null, contains = null, timeout = 30000) => {
     cy.getVtexItems().then((vtex) => {
       cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
         if (req.body.operationName === operationName) {
@@ -57,7 +57,7 @@ Cypress.Commands.add(
         cy.get(selector).last().click()
       }
 
-      cy.wait(`@${operationName}`, { timeout: 30000 })
+      cy.wait(`@${operationName}`, { timeout })
     })
   }
 )
@@ -130,14 +130,24 @@ Cypress.Commands.add('gotoMyQuotes', () => {
   cy.get(selectors.QuotesToolBar, { timeout: 20000 }).should('be.visible')
 })
 
-Cypress.Commands.add('gotoQuickOrder', () => {
+Cypress.Commands.add('gotoQuickOrder', (b2b = false) => {
   cy.location().then((loc) => {
     let closeMenu = false
 
     if (loc.pathname.includes('quickorder')) closeMenu = true
-    cy.get(selectors.Menu).should('be.visible').click()
-    cy.get(selectors.QuickOrder).should('be.visible').click()
-    closeMenu && cy.closeMenuIfOpened()
+    if (b2b) {
+      cy.get(selectors.Menu).should('be.visible').click()
+      cy.get(selectors.QuickOrder).should('be.visible').click()
+      closeMenu && cy.closeMenuIfOpened()
+    } else {
+      if (!loc.pathname.includes('quickorder')) {
+        cy.visit('/quickorder')
+      }
+
+      cy.get(selectors.ProfileLabel, { timeout: 20000 })
+        .should('be.visible')
+        .should('have.contain', `Hello,`)
+    }
   })
 })
 
@@ -196,6 +206,7 @@ Cypress.Commands.add('orderProduct', () => {
   })
   cy.get(selectors.PromissoryPayment).click()
   cy.get(selectors.BuyNowBtn).last().click()
+  cy.get(selectors.Search, { timeout: 30000 }).should('be.visible')
 })
 
 Cypress.Commands.add('openStoreFront', (login = false) => {
