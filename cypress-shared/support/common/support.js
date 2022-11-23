@@ -49,7 +49,18 @@ function setProductQuantity({ position, quantity, timeout }, subTotal, check) {
 
 function clickProceedtoCheckout() {
   // Click Proceed to Checkout button
-  cy.get(selectors.ProceedtoCheckout).should('be.visible').click()
+  const operationName = 'AppSettings'
+
+  cy.getVtexItems().then((vtex) => {
+    cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
+      if (req.body.operationName === operationName) {
+        req.continue()
+      }
+    }).as(operationName)
+    cy.get(selectors.ProceedtoCheckout).should('be.visible').click()
+    cy.wait(`@${operationName}`, { timeout: 30000 })
+  })
+
   cy.get(selectors.CartTimeline, { timeout: 30000 })
     .should('be.visible')
     .click({ force: true })
