@@ -1,6 +1,6 @@
 import { loginViaCookies, updateRetry } from '../../support/common/support.js'
 import { multiProduct } from '../../support/fedex-shipping/outputvalidation.js'
-import { data } from '../../fixtures/multiProductPayload.json'
+import { data } from '../../fixtures/fedex-shipping-fixtures/multiProductPayload.json'
 import {
   loadCalculateShippingAPI,
   validateCalculateShipping,

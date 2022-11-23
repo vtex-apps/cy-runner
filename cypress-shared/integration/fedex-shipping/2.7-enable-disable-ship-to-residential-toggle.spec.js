@@ -5,7 +5,7 @@ import {
   validateSaveAppSettingResponse,
 } from '../../support/fedex-shipping/graphql_testcase.js'
 import { appSetting } from '../../support/fedex-shipping/outputvalidation.js'
-import { data } from '../../fixtures/shippingRatePayload.json'
+import { data } from '../../fixtures/fedex-shipping-fixtures/shippingRatePayload.json'
 import {
   loadCalculateShippingAPI,
   validateCalculateShipping,

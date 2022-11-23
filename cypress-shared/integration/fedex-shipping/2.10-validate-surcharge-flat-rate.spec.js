@@ -1,6 +1,6 @@
 import { updateRetry, loginViaCookies } from '../../support/common/support'
 import { appSetting } from '../../support/fedex-shipping/outputvalidation'
-import { data } from '../../fixtures/shippingRatePayload.json'
+import { data } from '../../fixtures/fedex-shipping-fixtures/shippingRatePayload.json'
 import { updateSLASettings } from '../../support/fedex-shipping/common.js'
 import {
   loadCalculateShippingAPI,

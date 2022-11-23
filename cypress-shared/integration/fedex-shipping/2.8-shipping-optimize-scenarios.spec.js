@@ -8,7 +8,7 @@ import {
   appSetting,
   smartPackingAccessKey,
 } from '../../support/fedex-shipping/outputvalidation.js'
-import { data } from '../../fixtures/shippingOptimizePayload.json'
+import { data } from '../../fixtures/fedex-shipping-fixtures/shippingOptimizePayload.json'
 import {
   loadCalculateShippingAPI,
   validateCalculateShipping,

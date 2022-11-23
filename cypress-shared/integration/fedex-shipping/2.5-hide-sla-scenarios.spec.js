@@ -6,7 +6,7 @@ import {
   saveAppSetting,
   validateSaveAppSettingResponse,
 } from '../../support/fedex-shipping/graphql_testcase.js'
-import { data } from '../../fixtures/shippingRatePayload.json'
+import { data } from '../../fixtures/fedex-shipping-fixtures/shippingRatePayload.json'
 import { loadCalculateShippingAPI } from '../../support/fedex-shipping/api_testcase.js'
 
 const prefix = 'Hide Sla'

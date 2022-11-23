@@ -1,6 +1,6 @@
 import { loginViaCookies, updateRetry } from '../../support/common/support.js'
 import { singleProduct, warehouseId } from '../../support/fedex-shipping/outputvalidation.js'
-import { data } from '../../fixtures/shippingRatePayload.json'
+import { data } from '../../fixtures/fedex-shipping-fixtures/shippingRatePayload.json'
 import {
   loadCalculateShippingAPI,
   validateCalculateShipping,

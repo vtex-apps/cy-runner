@@ -1,5 +1,5 @@
 import { loginViaCookies, updateRetry } from '../../support/common/support.js'
-import { data } from '../../fixtures/shippingRatePayload.json'
+import { data } from '../../fixtures/fedex-shipping-fixtures/shippingRatePayload.json'
 import {
   loadCalculateShippingAPI,
   validateCalculateShipping,
