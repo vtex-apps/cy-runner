@@ -134,14 +134,21 @@ export function fillAddress(postalCode, timeout = 5000) {
       if ($body.find(selectors.ShippingPreview).length) {
         // shipping preview should be visible
         cy.get(selectors.ShippingPreview).should('be.visible')
+        if ($body.find(selectors.DeliveryAddress).length) {
+          cy.get(selectors.DeliveryAddress).should('be.visible').click()
+        } else if ($body.find(selectors.ShippingCalculateLink).length) {
+          cy.get(selectors.ShippingCalculateLink).should('be.visible').click()
+        }
       }
+    })
 
-      cy.get(selectors.ShipCountry, { timeout })
-        .should('not.be.disabled')
-        .select('USA')
-        .select(country)
+    cy.get(selectors.ShipCountry, { timeout })
+      .should('not.be.disabled')
+      .select('USA')
+      .select(country)
 
-      if ($body.find(selectors.ShipAddressQuery).length) {
+    cy.get('body').then(($shippingBody) => {
+      if ($shippingBody.find(selectors.ShipAddressQuery).length) {
         // Type shipping address query
         // Google autocompletion takes some seconds to show dropdown
         // So, we use 500 seconds wait before and after typing of address
