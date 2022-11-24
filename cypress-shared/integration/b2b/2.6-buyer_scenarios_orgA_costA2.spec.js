@@ -47,10 +47,11 @@ describe('Organization A - Cost Center A2 - Buyer Scenarios', () => {
     organizationBQuote.OrganizationAdmin.quotes1,
     organizationB
   )
-  quickOrderByCategory(ROLE_DROP_DOWN.Buyer, quotes.Buyer2.quotes1)
+  quickOrderByCategory(ROLE_DROP_DOWN.Buyer, quotes.Buyer2.quotes1, '$84.60')
   quickOrderByCategoryNegativeTestCase(
     ROLE_DROP_DOWN.Buyer,
-    quotes.Buyer2.quotes2
+    quotes.Buyer2.quotes2,
+    '$4,230.00'
   )
   createQuote({
     product: product3,

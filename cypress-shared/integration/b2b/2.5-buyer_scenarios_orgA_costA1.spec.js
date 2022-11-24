@@ -101,12 +101,14 @@ describe('Organization A - Cost Center A1 - Buyer Scenarios', () => {
   quickOrderByOneByOneTestCase(
     ROLE_DROP_DOWN.Buyer,
     product2,
-    quotes.Buyer.quotes6
+    quotes.Buyer.quotes6,
+    '$486.00'
   )
   quickOrderByOneByOneNegativeTestCase(
     ROLE_DROP_DOWN.Buyer,
     product2,
-    quotes.Buyer.quotes7
+    quotes.Buyer.quotes7,
+    '$24,300.00'
   )
   filterQuoteByStatus(STATUSES.ready)
 

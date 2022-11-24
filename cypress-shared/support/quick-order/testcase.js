@@ -45,7 +45,11 @@ export function quickOrderBySkuAndQuantityTestCase2(role, b2b = true) {
   )
 }
 
-export function quickOrderBySkuAndQuantityTestCase1(role, quoteEnv = false) {
+export function quickOrderBySkuAndQuantityTestCase1(
+  role,
+  quoteEnv = false,
+  totalPrice = '$180.00'
+) {
   const title = `Verify ${role} is able to ${
     quoteEnv ? 'create quote by quick order' : 'add product to checkout'
   } - [Sku's Code],[Quantity]`
@@ -64,7 +68,7 @@ export function quickOrderBySkuAndQuantityTestCase1(role, quoteEnv = false) {
     validateToastMsg(TOAST_MSG.addedToTheCart)
     cy.get(selectors.OpenCart).first().should('be.visible').click()
     cy.get(selectors.MiniCartProductName).should('contain', 'Cauliflower')
-    cy.get(selectors.TotalPrice).should('have.text', '$180.00')
+    cy.get(selectors.TotalPrice).should('have.text', totalPrice)
     quoteEnv ? fillQuoteInformation({ quoteEnv }) : ProceedToCheckOut()
   })
 }
@@ -101,7 +105,12 @@ function searchOneByOneProduct(search, { product, quantity }, number) {
       .type(`${number}`)
 }
 
-export function quickOrderByOneByOneTestCase(role, product, quoteEnv) {
+export function quickOrderByOneByOneTestCase(
+  role,
+  product,
+  quoteEnv,
+  totalPrice = '$540.00'
+) {
   it(
     `Verify ${role} is able to ${
       quoteEnv ? 'create quote by' : 'use'
@@ -117,20 +126,25 @@ export function quickOrderByOneByOneTestCase(role, product, quoteEnv) {
       cy.get(selectors.ToastMsgInB2B).contains('added to the cart')
       cy.get(selectors.OpenCart).first().click()
       cy.get(selectors.MiniCartProductName).should('contain', product)
-      cy.get(selectors.TotalPrice).should('have.text', '$540.00')
+      cy.get(selectors.TotalPrice).should('have.text', totalPrice)
       quoteEnv && fillQuoteInformation({ quoteEnv })
     }
   )
 }
 
-export function quickOrderByOneByOneNegativeTestCase(role, product, quoteEnv) {
+export function quickOrderByOneByOneNegativeTestCase(
+  role,
+  product,
+  quoteEnv,
+  totalPrice = '$27,000.00'
+) {
   it(
     `Verify ${role} is able to ${
       quoteEnv ? 'create quote by' : 'use'
     } quick order with 51 products - One by One`,
     updateRetry(2),
     () => {
-      cy.gotoQuickOrder()
+      cy.gotoQuickOrder(quoteEnv)
       const { search, quantity, add } = selectors.QuickOrderPage().oneByOne
 
       searchOneByOneProduct(search, { product, quantity }, 51)
@@ -140,7 +154,7 @@ export function quickOrderByOneByOneNegativeTestCase(role, product, quoteEnv) {
       cy.get(selectors.MiniCartProductName)
         .should('be.visible')
         .should('contain', product)
-      cy.get(selectors.TotalPrice).should('have.text', '$27,000.00')
+      cy.get(selectors.TotalPrice).should('have.text', totalPrice)
       cy.get(selectors.MiniCartQuantityForMaxOrder).should('have.value', '50')
       // Use the product which is already added in cart
       quoteEnv && fillQuoteInformation({ quoteEnv })
@@ -148,11 +162,12 @@ export function quickOrderByOneByOneNegativeTestCase(role, product, quoteEnv) {
   )
 }
 
-function quickOrderCategory(quoteEnv, number) {
+function quickOrderCategory(quoteEnv, number, totalPrice) {
   cy.gotoQuickOrder(quoteEnv)
   const { product, addtoCart, quantity } = selectors.QuickOrderPage().categories
 
-  cy.waitForGraphql('SearchByCategory', null, product)
+  cy.get(addtoCart).should('be.visible')
+  cy.contains(product).should('be.visible').click()
   cy.get(quantity, { timeout: 15000 })
     .first()
     .scrollIntoView()
@@ -164,35 +179,37 @@ function quickOrderCategory(quoteEnv, number) {
   )
   cy.get(selectors.OpenCart).first().should('be.visible').click()
   cy.get(selectors.MiniCartProductName).should('contain', 'Golf Shoes')
+  cy.get(selectors.TotalPrice).should('have.text', totalPrice)
   if (number > 50) {
-    cy.get(selectors.TotalPrice).should('have.text', '$4,700.00')
     cy.get(selectors.MiniCartQuantityForMaxOrder).should('have.value', '50')
-  } else {
-    cy.get(selectors.TotalPrice).should('have.text', '$94.00')
   }
 
   // Use the product which is already added in cart
   quoteEnv && fillQuoteInformation({ quoteEnv })
 }
 
-export function quickOrderByCategory(role, quoteEnv) {
+export function quickOrderByCategory(role, quoteEnv, totalPrice = "'$94.00'") {
   it(
     `Verify ${role} is able ${
       quoteEnv ? `to create quote by` : `use`
     } quick order - Categories`,
     updateRetry(2),
     () => {
-      quickOrderCategory(quoteEnv, 1)
+      quickOrderCategory(quoteEnv, 1, totalPrice)
     }
   )
 }
 
-export function quickOrderByCategoryNegativeTestCase(role, quoteEnv) {
+export function quickOrderByCategoryNegativeTestCase(
+  role,
+  quoteEnv,
+  totalPrice = '$4,700.00'
+) {
   it(
     `Verify ${role} is able to create quote by quick order with 51 products - Categories`,
     updateRetry(2),
     () => {
-      quickOrderCategory(quoteEnv, 51)
+      quickOrderCategory(quoteEnv, 51, totalPrice)
     }
   )
 }

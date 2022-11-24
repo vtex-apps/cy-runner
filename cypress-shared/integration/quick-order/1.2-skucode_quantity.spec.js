@@ -12,7 +12,7 @@ describe('Quickorder - SkuCode Quantity testcase', () => {
 
   it(
     `In SkuCode Quantity testcase - Updating Shipping Information`,
-    updateRetry(4),
+    updateRetry(3),
     () => {
       // Update Shipping Section
       cy.updateShippingInformation({

@@ -147,6 +147,8 @@ Cypress.Commands.add('gotoQuickOrder', (b2b = false) => {
         .should('be.visible')
         .should('have.contain', `Hello,`)
     }
+
+    cy.url().should('include', 'quickorder')
   })
 })
 
@@ -221,7 +223,7 @@ Cypress.Commands.add('openStoreFront', (login = false) => {
   scroll()
 })
 
-Cypress.Commands.add('addNewLocation', (country, postalCode, street,city) => {
+Cypress.Commands.add('addNewLocation', (country, postalCode, street, city) => {
   cy.openStoreFront()
   cy.get(selectors.addressContainer).should('be.visible').click()
   cy.get(selectors.countryDropdown).select(country)
