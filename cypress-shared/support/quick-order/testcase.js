@@ -188,7 +188,7 @@ function quickOrderCategory(quoteEnv, number, totalPrice) {
   quoteEnv && fillQuoteInformation({ quoteEnv })
 }
 
-export function quickOrderByCategory(role, quoteEnv, totalPrice = "'$94.00'") {
+export function quickOrderByCategory(role, quoteEnv, totalPrice = '$94.00') {
   it(
     `Verify ${role} is able ${
       quoteEnv ? `to create quote by` : `use`
