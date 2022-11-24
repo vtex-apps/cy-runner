@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 ### Added
+- Move fedex shipping cypress tests inside cy-runner
+
+### Added
 - Changes in addNewLocation function in commands.js
 
 ### Removed
