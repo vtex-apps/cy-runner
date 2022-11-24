@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 ### Added
+- Added quickorder tests inside cy-runner
+
+### Added
 - Move fedex shipping cypress tests inside cy-runner
 
 ### Added

@@ -116,7 +116,7 @@ export function fillAddress(postalCode, timeout = 5000) {
 
   cy.get(selectors.FirstName).then(($el) => {
     if (Cypress.dom.isVisible($el)) {
-      return cy.wrap(true)
+      return
     }
 
     cy.get('body').then(($body) => {
@@ -141,19 +141,17 @@ export function fillAddress(postalCode, timeout = 5000) {
 
         cy.get(selectors.ShipAddressQuery) // eslint-disable-line cypress/no-unnecessary-waiting
           .click()
-          .type(`${fullAddress}`, { delay: 80 })
-          .wait(500)
+          .type(`${fullAddress}`, { delay: 100 })
+          .wait(1000)
           .type('{downarrow}{enter}')
 
-        return cy.wrap(false)
+        return
       }
 
       cy.get(selectors.PostalCodeInput, { timeout: 10000 })
         .should('be.visible')
         .clear()
         .type(postalCode)
-
-      return cy.wrap(true)
     })
   })
 }

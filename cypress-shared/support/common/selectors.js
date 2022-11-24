@@ -20,7 +20,7 @@ export default {
   PayPaliframe: 'iframe[name*=paypal]',
   PayPalImg: "button[aria-label*='PayPal Pay Later Message']",
   AddtoCart: 'span[class*=vtex-add-to-cart-button]',
-  TotalPrice: '#total-price > .vtex-checkout-summary-0-x-price',
+  TotalPrice: '#total-price > div[class*=price]',
   RemoveProduct: 'div[class*="removeButton"]',
   PickupInStore: '.srp-toggle__pickup',
   PickupItems: '.srp-items',
@@ -263,6 +263,9 @@ export default {
   // *************B2B Product Constants end here************ //
 
   QuickOrder: 'a[href*=quick]',
+  MiniCartQuantityForMaxOrder:
+    'div[class*=quantityInputContainer] input[id*=quantity-input]',
+  MiniCartProductName: 'a[class*=productName]',
   QuickOrderPage: () => {
     return {
       popupMsgSelector: 'div[class*=toast-container] div[class*=copy]',
@@ -281,7 +284,7 @@ export default {
       uploadXLS: {
         deleteFile: 'svg[class*=icon-delete]',
         file: 'input[type=file]',
-        validate: 'div[class*=validate i]:nth-of-type(2) > button',
+        validate: 'div[class*=validate i] > button',
       },
       oneByOne: {
         search: 'input[placeholder*=product]',
