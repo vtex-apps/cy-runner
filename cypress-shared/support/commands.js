@@ -55,6 +55,8 @@ Cypress.Commands.add(
         cy.contains(selector).click()
       } else if (selector) {
         cy.get(selector).last().click()
+      } else if (contains) {
+        cy.contains(contains).click()
       }
 
       cy.wait(`@${operationName}`, { timeout })
@@ -140,10 +142,7 @@ Cypress.Commands.add('gotoQuickOrder', (b2b = false) => {
       cy.get(selectors.QuickOrder).should('be.visible').click()
       closeMenu && cy.closeMenuIfOpened()
     } else {
-      if (!loc.pathname.includes('quickorder')) {
-        cy.visit('/quickorder')
-      }
-
+      cy.visit('/quickorder')
       cy.get(selectors.ProfileLabel, { timeout: 20000 })
         .should('be.visible')
         .should('have.contain', `Hello,`)

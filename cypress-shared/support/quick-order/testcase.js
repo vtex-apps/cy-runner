@@ -63,6 +63,8 @@ export function quickOrderBySkuAndQuantityTestCase1(role, quoteEnv = false) {
     cy.waitForGraphql(GRAPHL_OPERATIONS.addToCart, addtoCart)
     validateToastMsg(TOAST_MSG.addedToTheCart)
     cy.get(selectors.OpenCart).first().should('be.visible').click()
+    cy.get(selectors.MiniCartProductName).should('contain', 'Cauliflower')
+    cy.get(selectors.TotalPrice).should('have.text', '$180.00')
     quoteEnv ? fillQuoteInformation({ quoteEnv }) : ProceedToCheckOut()
   })
 }
@@ -101,7 +103,9 @@ function searchOneByOneProduct(search, { product, quantity }, number) {
 
 export function quickOrderByOneByOneTestCase(role, product, quoteEnv) {
   it(
-    `Verify ${role} is able to create quote by quick order - One by One`,
+    `Verify ${role} is able to ${
+      quoteEnv ? 'create quote by' : 'use'
+    } quick order - One by One`,
     updateRetry(2),
     () => {
       cy.gotoQuickOrder(quoteEnv)
@@ -121,7 +125,9 @@ export function quickOrderByOneByOneTestCase(role, product, quoteEnv) {
 
 export function quickOrderByOneByOneNegativeTestCase(role, product, quoteEnv) {
   it(
-    `Verify ${role} is able to create quote by quick order with 51 products - One by One`,
+    `Verify ${role} is able to ${
+      quoteEnv ? 'create quote by' : 'use'
+    } quick order with 51 products - One by One`,
     updateRetry(2),
     () => {
       cy.gotoQuickOrder()
@@ -146,7 +152,7 @@ function quickOrderCategory(quoteEnv, number) {
   cy.gotoQuickOrder(quoteEnv)
   const { product, addtoCart, quantity } = selectors.QuickOrderPage().categories
 
-  cy.contains(product).should('be.visible').click()
+  cy.waitForGraphql('SearchByCategory', null, product)
   cy.get(quantity, { timeout: 15000 })
     .first()
     .scrollIntoView()
@@ -157,12 +163,12 @@ function quickOrderCategory(quoteEnv, number) {
     number > 50 ? POPUP_MSG : TOAST_MSG.addedToTheCart
   )
   cy.get(selectors.OpenCart).first().should('be.visible').click()
-  cy.get(selectors.MiniCartProductName).should('contain', product)
+  cy.get(selectors.MiniCartProductName).should('contain', 'Golf Shoes')
   if (number > 50) {
     cy.get(selectors.TotalPrice).should('have.text', '$4,700.00')
     cy.get(selectors.MiniCartQuantityForMaxOrder).should('have.value', '50')
   } else {
-    cy.get(selectors.TotalPrice).should('have.text', '$540.00')
+    cy.get(selectors.TotalPrice).should('have.text', '$94.00')
   }
 
   // Use the product which is already added in cart
@@ -193,6 +199,8 @@ export function quickOrderByCategoryNegativeTestCase(role, quoteEnv) {
 
 function validateForm(quoteEnv, vtex, productCount) {
   cy.intercept('POST', `${vtex.baseUrl}/**`).as('validateForm')
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
+  cy.wait(3000)
   cy.contains(BUTTON_LABEL.AddToCart).should('be.visible').click()
   cy.wait('@validateForm')
   cy.get(selectors.QuantityBadgeInCart).should('have.text', productCount)
@@ -216,15 +224,10 @@ function uploadXLS(filePath, b2b) {
   cy.get(selectors.QuickOrderPage().uploadXLS.file, {
     timeout: 10000,
   }).attachFile(filePath)
-  cy.waitForGraphql(
-    'getSkuFromRefIds',
-    selectors.QuickOrderPage().uploadXLS.validate,
-    null,
-    10000
-  )
-  // cy.get(selectors.QuickOrderPage().uploadXLS.validate)
-  //   .should('be.visible')
-  //   .click()
+  cy.get(selectors.QuickOrderPage().uploadXLS.validate)
+    .should('be.visible')
+    .should('be.enabled')
+    .click()
 }
 
 export function quickOrderByXLS(quoteEnv = false) {

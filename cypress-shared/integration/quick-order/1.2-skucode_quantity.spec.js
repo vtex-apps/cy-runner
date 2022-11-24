@@ -27,7 +27,7 @@ describe('Quickorder - SkuCode Quantity testcase', () => {
     `In SkuCode Quantity testcase - Verify quantity by price`,
     updateRetry(4),
     () => {
-      cy.get('.quantity.badge').first().should('have.text', '1')
+      cy.get('.quantity.badge').first().should('have.text', '2')
     }
   )
 

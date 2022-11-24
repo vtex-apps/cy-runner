@@ -32,7 +32,7 @@ describe('Quickorder - SkuCode Quantity testcase', () => {
     updateRetry(4),
     () => {
       cy.get('.quantity.badge').first().should('have.text', '2')
-      cy.get('.quantity.badge').last().should('have.text', '1')
+      cy.get('.quantity.badge').last().should('have.text', '50')
     }
   )
 
