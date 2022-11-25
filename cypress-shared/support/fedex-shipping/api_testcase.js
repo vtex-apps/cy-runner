@@ -14,23 +14,27 @@ export function loadDocks() {
 
 export function loadCalculateShippingAPI(data, validateResponseFn) {
   return cy.getVtexItems().then((vtex) => {
-    cy.request({
-      method: 'POST',
-      url: calculateShippingAPI(vtex.account, Cypress.env('workspace').name),
-      headers: { VtexIdclientAutCookie: vtex.userAuthCookieValue },
-      ...FAIL_ON_STATUS_CODE,
-      body: data,
-    }).as('RESPONSE')
+    cy.getAppSettingstoJSON().then((items) => {
+      cy.request({
+        method: 'POST',
+        url: calculateShippingAPI(vtex.account, Cypress.env('workspace').name),
+        headers: {
+          VtexIdclientAutCookie: items[vtex.userAuthCookieName],
+        },
+        ...FAIL_ON_STATUS_CODE,
+        body: data,
+      }).as('RESPONSE')
 
-    if (validateResponseFn) {
-      cy.get('@RESPONSE').then((response) => {
-        expect(response.status).to.have.equal(200)
-        expect(response.body).to.be.an('array').and.to.have.lengthOf.above(0)
-        validateResponseFn(response)
-      })
-    } else {
-      return cy.get('@RESPONSE')
-    }
+      if (validateResponseFn) {
+        cy.get('@RESPONSE').then((response) => {
+          expect(response.status).to.have.equal(200)
+          expect(response.body).to.be.an('array').and.to.have.lengthOf.above(0)
+          validateResponseFn(response)
+        })
+      } else {
+        return cy.get('@RESPONSE')
+      }
+    })
   })
 }
 

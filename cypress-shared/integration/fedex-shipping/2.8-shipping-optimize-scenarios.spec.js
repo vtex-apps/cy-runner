@@ -45,12 +45,12 @@ describe(`${prefix} Scenarios`, () => {
   })
 
   it(
-    `${prefix} - Select shipping optiomize type None and validate`,
+    `${prefix} - Select shipping optimize type None and validate`,
     updateRetry(3),
     () => {
       appSetting.optimizeShippingType = 0 // Update shipping type to None
 
-      cy.readAppSettingsFromJSON().then((sl) => {
+      cy.readSlaSettings().then((sl) => {
         graphql(
           FEDEX_SHIPPING_APP,
           saveAppSetting(appSetting, sl),
@@ -78,7 +78,7 @@ describe(`${prefix} Scenarios`, () => {
     () => {
       appSetting.optimizeShippingType = 1 // Update shipping type to Pack all in one
 
-      cy.readAppSettingsFromJSON().then((getSla) => {
+      cy.readSlaSettings().then((getSla) => {
         graphql(
           FEDEX_SHIPPING_APP,
           saveAppSetting(appSetting, getSla),
@@ -107,7 +107,7 @@ describe(`${prefix} Scenarios`, () => {
       appSetting.optimizeShippingType = 2 // Update shipping type to Smart Packing
       appSetting.packingAccessKey = smartPackingAccessKey // Add Smart Packing Access Key
 
-      cy.readAppSettingsFromJSON().then((s) => {
+      cy.readSlaSettings().then((s) => {
         // update settings
         graphql(
           FEDEX_SHIPPING_APP,

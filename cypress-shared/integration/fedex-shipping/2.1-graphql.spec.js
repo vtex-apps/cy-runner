@@ -37,7 +37,7 @@ describe('FedEx GraphQL Validation', () => {
   it(`${prefix} - Get App Settings`, updateRetry(2), () => {
     graphql(FEDEX_SHIPPING_APP, getAppSettings(), (response) => {
       validateGetAppSettingsResponse(response)
-      cy.writeAppSettingstoJSON(response.body)
+      cy.setAppSettingstoJSON("config",response.body)
     })
   })
 
@@ -48,6 +48,15 @@ describe('FedEx GraphQL Validation', () => {
       validateSaveAppSettingResponse
     )
   })
+
+    it('Get userAuthCookie and set cookie', () => {
+      cy.getVtexItems().then((vtex) => {
+        const cookieName = vtex.userAuthCookieName
+        cy.getCookie(cookieName).then(({ value }) => {
+          cy.setAppSettingstoJSON(cookieName, value)
+        })
+      })
+    })
 
   it(`${prefix} - Update Dock Connection`, updateRetry(2), () => {
     for (const { id } of Object.values(docks)) {

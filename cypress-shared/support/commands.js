@@ -305,12 +305,21 @@ Cypress.Commands.add('organizationShouldShowInProfile', () => {
 
 const fedexJson = '.fedexPayload.json'
 
-Cypress.Commands.add('writeAppSettingstoJSON', (data) => {
-  cy.writeFile(fedexJson, data)
+Cypress.Commands.add('setAppSettingstoJSON', (key,value) => {
+  cy.readFile(fedexJson).then((items) => {
+    items[key] = value
+    cy.writeFile(fedexJson, items)
+  })
+})
+
+Cypress.Commands.add('getAppSettingstoJSON', () => {
+  cy.readFile(fedexJson).then((items) => {
+    return items
+  })
 })
 
 Cypress.Commands.add('hideSla', (hide) => {
-  cy.readFile('.fedexPayload.json').then((items) => {
+  cy.readFile(fedexJson).then((items) => {
     const { slaSettings } = items.data.getAppSettings
 
     for (const ship in slaSettings) {
@@ -321,8 +330,8 @@ Cypress.Commands.add('hideSla', (hide) => {
   })
 })
 
-Cypress.Commands.add('readAppSettingsFromJSON', () => {
-  cy.readFile('.fedexPayload.json').then((items) => {
+Cypress.Commands.add('readSlaSettings', () => {
+  cy.readFile(fedexJson).then((items) => {
     const { slaSettings } = items.data.getAppSettings
 
     return slaSettings
