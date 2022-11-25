@@ -303,7 +303,7 @@ Cypress.Commands.add('organizationShouldShowInProfile', () => {
   cy.get(selectors.MyOrganization, { timeout: 25000 }).should('be.visible')
 })
 
-const fedexJson = '.fedexPayload.json'
+const fedexJson = 'fedexPayload.json'
 
 Cypress.Commands.add('setAppSettingstoJSON', (key, value) => {
   cy.readFile(fedexJson).then((items) => {
