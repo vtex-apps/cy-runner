@@ -1,4 +1,8 @@
-import { updateRetry, loginViaCookies } from '../../support/common/support'
+import {
+  updateRetry,
+  loginViaCookies,
+  preserveCookie,
+} from '../../support/common/support'
 import {
   graphql,
   getAppSettings,
@@ -32,12 +36,13 @@ import {
 const prefix = 'Graphql testcase'
 
 describe('FedEx GraphQL Validation', () => {
-  loginViaCookies({ storeFrontCookie: true })
+  loginViaCookies()
 
   it(`${prefix} - Get App Settings`, updateRetry(2), () => {
+    cy.visit('/')
     graphql(FEDEX_SHIPPING_APP, getAppSettings(), (response) => {
       validateGetAppSettingsResponse(response)
-      cy.setAppSettingstoJSON("config",response.body)
+      cy.setAppSettingstoJSON('config', response.body)
     })
   })
 
@@ -49,14 +54,15 @@ describe('FedEx GraphQL Validation', () => {
     )
   })
 
-    it('Get userAuthCookie and set cookie', () => {
-      cy.getVtexItems().then((vtex) => {
-        const cookieName = vtex.userAuthCookieName
-        cy.getCookie(cookieName).then(({ value }) => {
-          cy.setAppSettingstoJSON(cookieName, value)
-        })
+  it('Get userAuthCookie and set cookie', updateRetry(2), () => {
+    cy.getVtexItems().then((vtex) => {
+      const cookieName = vtex.userAuthCookieName
+
+      cy.getCookie(cookieName).then(({ value }) => {
+        cy.setAppSettingstoJSON(cookieName, value)
       })
     })
+  })
 
   it(`${prefix} - Update Dock Connection`, updateRetry(2), () => {
     for (const { id } of Object.values(docks)) {
@@ -115,4 +121,6 @@ describe('FedEx GraphQL Validation', () => {
       Object.values(docks)
     )
   })
+
+  preserveCookie()
 })
