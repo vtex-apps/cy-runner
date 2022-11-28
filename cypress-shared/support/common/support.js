@@ -258,7 +258,8 @@ export function updateShippingInformation({
 }) {
   const { deliveryScreenAddress } = addressList[postalCode]
 
-  cy.addDelayBetweenRetries(10000)
+  // cy.addDelayBetweenRetries(10000)
+  if (cy.state('runnable')._currentRetry > 1) cy.reload()
   cy.setorderFormDebugItem()
   cy.get(selectors.CartTimeline).should('be.visible').click({ force: true })
   cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
