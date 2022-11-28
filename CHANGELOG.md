@@ -4,6 +4,15 @@
 - Removed delayBetweenRetries + Added reload then fillContact info first then shipping info
 
 ### Added
+- Added package optimization tests inside cy-runner
+
+### Added
+- Added quickorder tests inside cy-runner
+
+### Added
+- Move fedex shipping cypress tests inside cy-runner
+
+### Added
 - Changes in addNewLocation function in commands.js
 
 ### Removed

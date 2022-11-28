@@ -33,4 +33,10 @@ export default {
   deletePickupPoint: (baseUrl, pickupPointid) => {
     return `${baseUrl}/api/logistics/pvt/configuration/pickuppoints/${pickupPointid}`
   },
+  loadDocksAPI: (baseUrl) => {
+    return `${baseUrl}/admin/shipping-strategy/loading-docks/`
+  },
+  calculateShippingAPI: (account, workspace) => {
+    return `https://app.io.vtex.com/vtexus.fedex-shipping/v1/${account}/${workspace}/shp-rates/calculate`
+  },
 }

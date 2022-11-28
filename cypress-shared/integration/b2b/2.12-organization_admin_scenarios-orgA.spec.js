@@ -33,7 +33,7 @@ import {
   quickOrderBySkuAndQuantityTestCase1,
   quickOrderBySkuAndQuantityTestCase2,
   quickOrderBySkuAnd51QuantityTestCase,
-} from '../../support/b2b/quick_order.js'
+} from '../../support/quick-order/testcase.js'
 
 describe('Organization A - Cost Center A1 - Organization Admin2 Scenario', () => {
   loginViaCookies({ storeFrontCookie: false })
@@ -95,7 +95,8 @@ describe('Organization A - Cost Center A1 - Organization Admin2 Scenario', () =>
   // )
   quickOrderBySkuAndQuantityTestCase1(
     ROLE_DROP_DOWN.OrganizationAdmin,
-    quotes.OrganizationAdmin2.quotes1
+    quotes.OrganizationAdmin2.quotes1,
+    '$162.00'
   )
   quickOrderBySkuAndQuantityTestCase2(ROLE_DROP_DOWN.OrganizationAdmin)
   quickOrderBySkuAnd51QuantityTestCase(ROLE_DROP_DOWN.OrganizationAdmin)
