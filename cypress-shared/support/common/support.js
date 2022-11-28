@@ -115,11 +115,6 @@ export function fillAddress(postalCode, timeout = 5000) {
   cy.get(selectors.CartTimeline).should('be.visible').click()
   const { fullAddress, country } = addressList[postalCode]
 
-  // cy.get(selectors.FirstName).then(($el) => {
-  //   if (Cypress.dom.isVisible($el)) {
-  //     return
-  //   }
-
   cy.get('body').then(($body) => {
     if ($body.find(selectors.ShippingPreview).length) {
       // shipping preview should be visible
@@ -159,7 +154,6 @@ export function fillAddress(postalCode, timeout = 5000) {
       }
     })
   })
-  // })
 }
 
 function fillAddressLine1(deliveryScreenAddress) {
@@ -258,15 +252,12 @@ export function updateShippingInformation({
 }) {
   const { deliveryScreenAddress } = addressList[postalCode]
 
-  // cy.addDelayBetweenRetries(10000)
   if (cy.state('runnable')._currentRetry > 1) cy.reload()
   cy.setorderFormDebugItem()
   cy.get(selectors.CartTimeline).should('be.visible').click({ force: true })
   cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
-  // cy.intercept('https://rc.vtex.com/v8').as('v8')
   cy.get(selectors.FirstName).then(($el) => {
     if (Cypress.dom.isVisible($el)) {
-      // cy.wait('@v8')
       fillContactInfo(shippingStrategySelector, phoneNumber, checkoutcustom)
     }
   })
