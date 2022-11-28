@@ -20,7 +20,7 @@ describe(`${prefix} Scenarios`, () => {
 
   it(`${prefix} - Disable Ship to Residential`, updateRetry(3), () => {
     appSetting.residential = false
-    cy.readAppSettingsFromJSON().then((sl) => {
+    cy.readSlaSettings().then((sl) => {
       graphql(
         FEDEX_SHIPPING_APP,
         saveAppSetting(appSetting, sl),
@@ -41,7 +41,7 @@ describe(`${prefix} Scenarios`, () => {
 
   it(`${prefix} - Enable Ship to Residential`, updateRetry(3), () => {
     appSetting.residential = true
-    cy.readAppSettingsFromJSON().then((s) => {
+    cy.readSlaSettings().then((s) => {
       graphql(
         FEDEX_SHIPPING_APP,
         saveAppSetting(appSetting, s),

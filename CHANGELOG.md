@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 ### Added
+- Added package optimization tests inside cy-runner
+
+### Added
 - Added quickorder tests inside cy-runner
 
 ### Added
