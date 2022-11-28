@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 ### Added
+- Removed delayBetweenRetries + Added reload then fillContact info first then shipping info
+
+### Added
 - Changes in addNewLocation function in commands.js
 
 ### Removed
