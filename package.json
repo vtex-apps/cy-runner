@@ -52,7 +52,7 @@
     "eslint-plugin-cypress": "^2.12.1",
     "husky": "^4.2.5",
     "lint-staged": "^10.2.11",
-    "prettier": "^2.4.0",
+    "prettier": "^2.8.0",
     "vtex": "3.0.0-beta-ci.3"
   }
 }
