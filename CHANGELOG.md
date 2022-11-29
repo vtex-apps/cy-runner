@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 ### Added
+- Removed delayBetweenRetries + Added reload then fillContact info first then shipping info
+
+### Added
 - Added package optimization tests inside cy-runner
 
 ### Added
