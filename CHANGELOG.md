@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 ### Added
+- Added defaultDeliveryEstimateInDays new field in fedex app settings
+
+### Added
 - Removed delayBetweenRetries + Added reload then fillContact info first then shipping info
 
 ### Added
