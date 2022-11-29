@@ -13,6 +13,7 @@ export default {
     unitWeight: 'KG',
     unitDimension: 'CM',
     packingAccessKey: '',
+    defaultDeliveryEstimateInDays: '0',
   },
   smartPackingAccessKey: 'fedexdev',
   docks: {
