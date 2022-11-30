@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Changed
+- Moved gmail to common folder
+
 ### Added
 - Removed delayBetweenRetries + Added reload then fillContact info first then shipping info
 

@@ -1,4 +1,4 @@
-const GmailAPI = require('./gmail')
+const GmailAPI = require('./common/gmail')
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
