@@ -18,7 +18,7 @@ describe('Validate location availability', () => {
 
   // eslint-disable-next-line jest/expect-expect
   it(`${prefix} - Go to home and add location`, updateRetry(1), () => {
-    cy.addNewLocation(country, postalCode, address,city)
+    cy.addNewLocation(country, postalCode, address, city)
     cy.get(PRODUCTS_LINK_MAPPING.orange.link).should('be.visible')
     verifyHomePage(city, postalCode)
   })
