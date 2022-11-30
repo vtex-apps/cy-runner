@@ -2,6 +2,7 @@
 
 ### Changed
 - Moved gmail to common folder
+- In, commonGraphlValidation() added expect(response.body).to.not.equal('OK')
 
 ### Added
 - Removed delayBetweenRetries + Added reload then fillContact info first then shipping info
