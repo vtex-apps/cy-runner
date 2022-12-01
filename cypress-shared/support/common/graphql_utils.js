@@ -8,6 +8,7 @@ const { vtex } = config.base
 export function commonGraphlValidation(response) {
   expect(response.status).to.equal(200)
   expect(response.body.data).to.not.equal(null)
+  expect(response.body).to.not.equal('OK')
   expect(response.body).to.not.have.own.property('errors')
 }
 

@@ -461,7 +461,7 @@ export default {
   AdyenLoginSubmit: 'button[type="submit"]',
   // End here
 
-  // Fedex-Shipping selectors 
+  // Fedex-Shipping selectors
   SmartPackingAccessKey: '#accessKey', // Fedex Smart Packing Access key field
   PickingOptimizeAlert: 'div[role="alert"] p', // Fedex alert
   PackingBoxLength: '#length', // Packing optimization Box Length
