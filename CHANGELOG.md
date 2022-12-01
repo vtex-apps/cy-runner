@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Added
+- Added checkout ui custom configuration in checkout_ui_custom.js
+
 ### Changed
 - Moved gmail to common folder
 - In, commonGraphlValidation() added expect(response.body).to.not.equal('OK')
