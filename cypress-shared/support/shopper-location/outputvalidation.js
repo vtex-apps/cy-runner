@@ -17,6 +17,7 @@ export default {
     country: 'United States',
     postalCode: '21287',
     city: 'Baltimore',
+    address: '1800 ORLEANS ST , BALTIMORE, MD',
     state: 'Maryland',
   },
   location: {
