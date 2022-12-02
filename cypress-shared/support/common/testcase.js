@@ -9,9 +9,12 @@ import {
   getOrderAPI,
 } from './apis.js'
 import { isValidDate } from './utils.js'
+import getConfiguration from './checkout_ui_custom.js'
 
 const config = Cypress.env()
 const WIPE_ENV = 'wipe'
+
+const { vtex } = config.base
 
 // Constants
 const {
@@ -25,7 +28,7 @@ const {
   affiliationId,
   robotMail,
   urlExternalSeller,
-} = config.base.vtex
+} = vtex
 
 const { prefix } = config.workspace
 const WORKSPACE = config.workspace.name
@@ -316,47 +319,26 @@ export function syncCheckoutUICustom() {
     `In ${prefix} - Sync Checkout UI Custom via API`,
     { retries: 9, responseTimeout: 5000, requestTimeout: 5000 },
     () => {
-      cy.getVtexItems().then((vtex) => {
-        // Define constants
-        const APP_NAME = 'vtex.checkout-ui-custom'
-        const APP_VERSION = '0.x'
-        const APP = `${APP_NAME}@${APP_VERSION}`
-        const CUSTOM_URL = `https://${vtex.account}.myvtex.com/_v/private/admin-graphql-ide/v0/${APP}`
-        const GRAPHQL_QUERY =
-          '{getLast(workspace: "master")' +
-          '{email workspace layout javascript css javascriptActive cssActive colors}}'
+      // Define constants
+      const APP_NAME = 'vtex.checkout-ui-custom'
+      const APP_VERSION = '*.x'
+      const APP = `${APP_NAME}@${APP_VERSION}`
+      const CUSTOM_URL = `https://${vtex.account}.myvtex.com/_v/private/admin-graphql-ide/v0/${APP}`
+      const GRAPHQL_MUTATION =
+        'mutation' +
+        '($email: String, $workspace: String, $layout: CustomFields, $javascript: String, $css: String, $javascriptActive: Boolean, $cssActive: Boolean, $colors: CustomFields)' +
+        '{saveChanges (email: $email, workspace: $workspace, layout: $layout, javascript: $javascript, css: $css, javascriptActive: $javascriptActive, cssActive: $cssActive, colors: $colors) @context(provider: "vtex.checkout-ui-custom@*.x")}'
 
-        const GRAPHQL_MUTATION =
-          'mutation' +
-          '($email: String, $workspace: String, $layout: CustomFields, $javascript: String, $css: String, $javascriptActive: Boolean, $cssActive: Boolean, $colors: CustomFields)' +
-          '{saveChanges(email: $email, workspace: $workspace, layout: $layout, javascript: $javascript, css: $css, javascriptActive: $javascriptActive, cssActive: $cssActive, colors: $colors)}'
-
-        // Getting master values
-        cy.request({
-          method: 'POST',
-          url: CUSTOM_URL,
-          body: { query: GRAPHQL_QUERY },
-        })
-          .as('GRAPHQL')
-          .its('status')
-          .should('equal', 200)
-
-        // Mutating it to the new workspace
-        cy.get('@GRAPHQL').then((query) => {
-          query.body.data.getLast.workspace = WORKSPACE
-
-          cy.request({
-            method: 'POST',
-            url: CUSTOM_URL,
-            body: {
-              query: GRAPHQL_MUTATION,
-              variables: query.body.data.getLast,
-            },
-          })
-            .its('body.data.saveChanges', { timeout: 5000 })
-            .should('contain', 'DocumentId')
-        })
+      cy.request({
+        method: 'POST',
+        url: CUSTOM_URL,
+        body: {
+          query: GRAPHQL_MUTATION,
+          variables: getConfiguration(WORKSPACE),
+        },
       })
+        .its('body.data.saveChanges', { timeout: 5000 })
+        .should('contain', 'DocumentId')
     }
   )
 }
@@ -488,20 +470,16 @@ export function verifyTransactionPaymentsAPITestCase(
     updateRetry(2),
     () => {
       cy.addDelayBetweenRetries(2000)
-      cy.getVtexItems().then((vtex) => {
-        cy.getOrderItems().then((order) => {
-          checkTransactionIdIsAvailable(order[transactionIdEnv])
-          cy.getAPI(
-            `${transactionAPI(vtex.baseUrl)}/${
-              order[transactionIdEnv]
-            }/payments`,
-            VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken)
-          ).then((response) => {
-            expect(response.status).to.equal(200)
-            // Store payment tid in .orders.json
-            cy.setOrderItem(paymentTidEnv, response.body[0].tid)
-            fn && fn(response)
-          })
+      cy.getOrderItems().then((order) => {
+        checkTransactionIdIsAvailable(order[transactionIdEnv])
+        cy.getAPI(
+          `${transactionAPI(vtex.baseUrl)}/${order[transactionIdEnv]}/payments`,
+          VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken)
+        ).then((response) => {
+          expect(response.status).to.equal(200)
+          // Store payment tid in .orders.json
+          cy.setOrderItem(paymentTidEnv, response.body[0].tid)
+          fn && fn(response)
         })
       })
     }
@@ -530,15 +508,13 @@ export function verifyOrderStatus({ product, env, status, timeout = 10000 }) {
     updateRetry(5),
     () => {
       cy.addDelayBetweenRetries(timeout)
-      cy.getVtexItems().then((vtex) => {
-        cy.getOrderItems().then((order) => {
-          cy.getAPI(
-            getOrderAPI(vtex.baseUrl, order[env]),
-            VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken)
-          ).then((response) => {
-            expect(response.status).to.equal(200)
-            expect(response.body.status).to.match(status)
-          })
+      cy.getOrderItems().then((order) => {
+        cy.getAPI(
+          getOrderAPI(vtex.baseUrl, order[env]),
+          VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken)
+        ).then((response) => {
+          expect(response.status).to.equal(200)
+          expect(response.body.status).to.match(status)
         })
       })
     }
