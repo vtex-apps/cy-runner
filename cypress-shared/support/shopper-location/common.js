@@ -112,9 +112,12 @@ export function autocomplete(city, province) {
   })
 }
 
-export function orderProductTestCase(prefix, data) {
+export function orderProductTestCase(
+  prefix,
+  { country, postalCode, address, city }
+) {
   it(`${prefix} - Adding Location`, updateRetry(2), () => {
-    addLocation(data)
+    cy.addNewLocation(country, postalCode, address, city)
   })
 
   it(

@@ -1,6 +1,6 @@
 import selectors from '../common/selectors.js'
 import { STATUSES } from './utils.js'
-import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
+import { GRAPHL_OPERATIONS } from '../graphql_operations.js'
 import { BUTTON_LABEL } from '../validation_text.js'
 import { updateRetry } from '../common/support.js'
 

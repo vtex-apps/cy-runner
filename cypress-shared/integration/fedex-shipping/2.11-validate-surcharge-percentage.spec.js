@@ -1,5 +1,6 @@
 /* eslint-disable jest/valid-expect */
 /* eslint-disable jest/expect-expect */
+/* eslint-disable jest/valid-expect-in-promise */
 import { updateRetry, loginViaCookies } from '../../support/common/support'
 import { appSetting } from '../../support/fedex-shipping/outputvalidation'
 import { data } from '../../fixtures/fedex-shipping-fixtures/shippingRatePayload.json'

@@ -12,7 +12,7 @@ export function pack(data) {
       method: 'POST',
       url: packAll(baseUrl),
       headers: {
-        AccessKey: AccessKey,
+        AccessKey,
       },
       ...FAIL_ON_STATUS_CODE,
       body: data,

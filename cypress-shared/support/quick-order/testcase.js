@@ -1,7 +1,7 @@
 import selectors from '../common/selectors.js'
 import { fillQuoteInformation } from '../b2b/quotes.js'
 import { BUTTON_LABEL, TOAST_MSG } from '../validation_text.js'
-import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
+import { GRAPHL_OPERATIONS } from '../graphql_operations.js'
 import { validateToastMsg, validateToolTipMsg } from '../b2b/utils.js'
 import { updateRetry } from '../common/support.js'
 
