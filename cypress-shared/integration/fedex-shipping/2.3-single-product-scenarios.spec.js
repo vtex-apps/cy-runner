@@ -11,12 +11,12 @@ import {
   validateCalculateShipping,
 } from '../../support/fedex-shipping/api_testcase.js'
 import {
-  graphql,
   verifyInventoryIsUnlimitedForFedexWareHouse,
   validateInventory,
 } from '../../support/fedex-shipping/graphql_testcase.js'
 import { INVENTORY_GRAPHQL_APP } from '../../support/fedex-shipping/graphql_apps.js'
 import sla from '../../support/fedex-shipping/sla.js'
+import { graphql } from '../../support/common/graphql_utils'
 
 const { prefix } = singleProduct
 let amount = ''
