@@ -28,7 +28,6 @@ export function loadCalculateShippingAPI(data, validateResponseFn) {
       if (validateResponseFn) {
         cy.get('@RESPONSE').then((response) => {
           expect(response.status).to.have.equal(200)
-          expect(response.body).to.be.an('array').and.to.have.lengthOf.above(0)
           validateResponseFn(response)
         })
       } else {
@@ -46,10 +45,15 @@ export function validateCalculateShipping(response) {
 
 export function validateNonSupportedCountryCalculateShipping(response) {
   expect(response.status).to.have.equal(200)
+  expect(response.body).to.be.an('array').and.to.be.empty
   // If we receive empty array with valid payload then we can assume that fedex shipping site is down
   // expect(response.body).to.be.an('array').and.to.have.lengthOf.above(0)
 }
 
 export function validateCustomDeliveryTime(response) {
   expect(response.status).to.have.equal(200)
+  expect(response.body).to.be.an('array').and.to.have.lengthOf.above(0)
+  if (response.body[0].estimateDate === null) {
+    expect(response.body[0].estimateDate).to.have.equal('0')
+  }
 }

@@ -1,47 +1,3 @@
-import { FAIL_ON_STATUS_CODE } from '../common/constants'
-
-const config = Cypress.env()
-
-// Constants
-const { vtex } = config.base
-
-export function graphql(
-  appName,
-  getQuery,
-  validateResponseFn = null,
-  params = null
-) {
-  const { query, queryVariables } = getQuery
-
-  // Define constants
-  const APP_VERSION = '*.x'
-  const APP_NAME = appName
-  const APP = `${APP_NAME}@${APP_VERSION}`
-  const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${APP}`
-
-  cy.request({
-    method: 'POST',
-    url: CUSTOM_URL,
-    ...FAIL_ON_STATUS_CODE,
-    body: {
-      query,
-      variables: queryVariables,
-    },
-  }).as('RESPONSE')
-
-  if (validateResponseFn) {
-    cy.get('@RESPONSE').then((response) => {
-      expect(response.status).to.equal(200)
-      expect(response.body.data).to.not.equal(null)
-      expect(response.body).to.not.have.own.property('errors')
-      expect(response.body).to.not.equal('OK')
-      validateResponseFn(response, params)
-    })
-  } else {
-    return cy.get('@RESPONSE')
-  }
-}
-
 /* 
 vtexus.fedex-shipping and vtex.packing-optimization uses same graphql name
 eg: getAppSettings(), saveAppSetting()
@@ -120,7 +76,7 @@ export function validateGetDockConnectionResponse(response) {
       shippingRatesProviders.length > 1 && name.includes('Fedex')
   )
 
-  expect(results.length).to.equal(2)
+  expect(results.length).to.equal(4)
 }
 
 export function validateSaveAppSettingResponse(response) {

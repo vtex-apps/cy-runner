@@ -32,6 +32,11 @@ export default {
       name: 'Fedex Kuwait Dock',
       shippingRatesProviders: ['vtexus.fedex-shipping'],
     },
+    fedexFranceDock: {
+      id: 'IND00112233',
+      name: 'Fedex France Dock',
+      shippingRatesProviders: ['vtexus.fedex-shipping'],
+    },
   },
   warehouseId: 'Fedex_WareHouse',
   Apache2020SkuId: '880330',
