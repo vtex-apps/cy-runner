@@ -143,7 +143,7 @@ export function fillAddress(postalCode, timeout = 5000) {
 
         cy.get(selectors.ShipAddressQuery) // eslint-disable-line cypress/no-unnecessary-waiting
           .click()
-          .type(`${fullAddress}`, { delay: 100 })
+          .type(`   ${fullAddress}`, { delay: 100 })
           .wait(1000)
           .type('{downarrow}{enter}')
       } else {
