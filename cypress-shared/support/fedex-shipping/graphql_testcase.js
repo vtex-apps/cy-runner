@@ -108,7 +108,6 @@ export function loadingDock(id) {
 }
 
 export function validateGetAppSettingsResponse(response) {
-  cy.log(response)
   expect(response.body.data.getAppSettings).to.not.equal(null)
 }
 

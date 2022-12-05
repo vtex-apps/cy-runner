@@ -1,5 +1,11 @@
+/* eslint-disable jest/expect-expect */
+/* eslint-disable jest/valid-expect */
+/* eslint-disable jest/valid-expect-in-promise */
 import { loginViaCookies, updateRetry } from '../../support/common/support.js'
-import { singleProduct, warehouseId } from '../../support/fedex-shipping/outputvalidation.js'
+import {
+  singleProduct,
+  warehouseId,
+} from '../../support/fedex-shipping/outputvalidation.js'
 import { data } from '../../fixtures/fedex-shipping-fixtures/shippingRatePayload.json'
 import {
   loadCalculateShippingAPI,

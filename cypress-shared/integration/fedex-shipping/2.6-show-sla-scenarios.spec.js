@@ -1,3 +1,4 @@
+/* eslint-disable jest/expect-expect */
 import { updateRetry, loginViaCookies } from '../../support/common/support.js'
 import { appSetting } from '../../support/fedex-shipping/outputvalidation.js'
 import { FEDEX_SHIPPING_APP } from '../../support/fedex-shipping/graphql_apps.js'

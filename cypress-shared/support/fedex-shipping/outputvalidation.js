@@ -27,6 +27,11 @@ export default {
       name: 'Fedex Italy Dock',
       shippingRatesProviders: ['vtexus.fedex-shipping'],
     },
+    fedexKuwaitDock: {
+      id: 'KUWA0112233',
+      name: 'Fedex Kuwait Dock',
+      shippingRatesProviders: ['vtexus.fedex-shipping'],
+    },
   },
   warehouseId: 'Fedex_WareHouse',
   Apache2020SkuId: '880330',
