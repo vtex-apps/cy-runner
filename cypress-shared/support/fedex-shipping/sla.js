@@ -3,4 +3,5 @@ export default {
   FirstOvernight: 'First Overnight',
   FedexGroundDelivery: 'FedEx Ground',
   InternationalEconomy: 'International Economy',
+  StandardOvernight: 'Standard Overnight',
 }

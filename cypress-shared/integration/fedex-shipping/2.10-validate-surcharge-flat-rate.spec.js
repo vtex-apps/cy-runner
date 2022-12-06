@@ -1,5 +1,6 @@
 /* eslint-disable jest/valid-expect */
 /* eslint-disable jest/valid-expect-in-promise */
+/* eslint-disable jest/expect-expect */
 import { updateRetry, loginViaCookies } from '../../support/common/support'
 import { appSetting } from '../../support/fedex-shipping/outputvalidation'
 import { data } from '../../fixtures/fedex-shipping-fixtures/shippingRatePayload.json'
@@ -26,7 +27,9 @@ describe('Modify SLA - Validate Surcharge Flat Rate in checkout', () => {
     loadCalculateShippingAPI(data).then((response) => {
       validateCalculateShipping(response)
       const filtershippingMethod = response.body.filter(
-        (b) => b.shippingMethod === sla.FirstOvernight
+        (b) =>
+          b.shippingMethod === sla.FirstOvernight ||
+          b.shippingMethod === sla.StandardOvernight
       )
 
       amount = filtershippingMethod[0].price
@@ -41,7 +44,9 @@ describe('Modify SLA - Validate Surcharge Flat Rate in checkout', () => {
     loadCalculateShippingAPI(data).then((response) => {
       validateCalculateShipping(response)
       const filtershippingMethod = response.body.filter(
-        (b) => b.shippingMethod === sla.FirstOvernight
+        (b) =>
+          b.shippingMethod === sla.FirstOvernight ||
+          b.shippingMethod === sla.StandardOvernight
       )
 
       const calculateFlatRate = amount + surchargeFlatRate

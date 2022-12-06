@@ -1,3 +1,4 @@
+/* eslint-disable jest/expect-expect */
 /* eslint-disable jest/valid-expect */
 /* eslint-disable jest/valid-expect-in-promise */
 import { loginViaCookies, updateRetry } from '../../support/common/support.js'
@@ -39,7 +40,9 @@ describe(`${prefix} Scenarios`, () => {
     loadCalculateShippingAPI(data).then((response) => {
       validateCalculateShipping(response)
       const filtershippingMethod = response.body.filter(
-        (b) => b.shippingMethod === sla.FirstOvernight
+        (b) =>
+          b.shippingMethod === sla.FirstOvernight ||
+          b.shippingMethod === sla.StandardOvernight
       )
 
       amount = filtershippingMethod[0].price
@@ -54,7 +57,9 @@ describe(`${prefix} Scenarios`, () => {
       loadCalculateShippingAPI(data).then((response) => {
         validateCalculateShipping(response)
         const filtershippingMethod = response.body.filter(
-          (b) => b.shippingMethod === sla.FirstOvernight
+          (b) =>
+            b.shippingMethod === sla.FirstOvernight ||
+            b.shippingMethod === sla.StandardOvernight
         )
 
         expect(filtershippingMethod[0].price).to.equal(amount * 2)

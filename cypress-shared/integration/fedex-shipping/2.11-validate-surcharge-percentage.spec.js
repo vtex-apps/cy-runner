@@ -1,4 +1,5 @@
 /* eslint-disable jest/valid-expect */
+/* eslint-disable jest/expect-expect */
 /* eslint-disable jest/valid-expect-in-promise */
 import { updateRetry, loginViaCookies } from '../../support/common/support'
 import { appSetting } from '../../support/fedex-shipping/outputvalidation'
@@ -26,7 +27,9 @@ describe('Modify SLA - Validate Surcharge Percentage in checkout', () => {
     loadCalculateShippingAPI(data).then((response) => {
       validateCalculateShipping(response)
       const filtershippingMethod = response.body.filter(
-        (b) => b.shippingMethod === sla.FirstOvernight
+        (b) =>
+          b.shippingMethod === sla.FirstOvernight ||
+          b.shippingMethod === sla.StandardOvernight
       )
 
       amount = filtershippingMethod[0].price
@@ -44,7 +47,9 @@ describe('Modify SLA - Validate Surcharge Percentage in checkout', () => {
       loadCalculateShippingAPI(data).then((response) => {
         validateCalculateShipping(response)
         const filtershippingMethod = response.body.filter(
-          (b) => b.shippingMethod === sla.FirstOvernight
+          (b) =>
+            b.shippingMethod === sla.FirstOvernight ||
+            b.shippingMethod === sla.StandardOvernight
         )
 
         const calculatePercentage = (amount * surchargePercent) / 100
