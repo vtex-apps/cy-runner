@@ -1,3 +1,4 @@
+/* eslint-disable jest/no-disabled-tests */
 /* eslint-disable jest/expect-expect */
 import {
   updateRetry,
@@ -15,7 +16,7 @@ import {
 describe('Verify fedex shipping price for Kuwait and verify custom delivery time', () => {
   loginViaCookies()
 
-  it(
+  it.skip(
     `Verify shipping price for fedex supported country Kuwait`,
     updateRetry(5),
     () => {
