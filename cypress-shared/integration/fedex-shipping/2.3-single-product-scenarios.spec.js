@@ -20,7 +20,7 @@ import sla from '../../support/fedex-shipping/sla.js'
 import { graphql } from '../../support/common/graphql_utils'
 
 const { prefix } = singleProduct
-let amount = ''
+let shippingMethod = {}
 
 describe(`${prefix} Scenarios`, () => {
   loginViaCookies()
@@ -40,10 +40,12 @@ describe(`${prefix} Scenarios`, () => {
     loadCalculateShippingAPI(data).then((response) => {
       validateCalculateShipping(response)
       const filtershippingMethod = response.body.filter(
-        (b) => b.shippingMethod === sla.FirstOvernight
+        (b) =>
+          b.shippingMethod === sla.FirstOvernight ||
+          b.shippingMethod === sla.StandardOvernight
       )
 
-      amount = filtershippingMethod[0].price
+      shippingMethod = filtershippingMethod[0]
     })
   })
 
@@ -55,10 +57,15 @@ describe(`${prefix} Scenarios`, () => {
       loadCalculateShippingAPI(data).then((response) => {
         validateCalculateShipping(response)
         const filtershippingMethod = response.body.filter(
-          (b) => b.shippingMethod === sla.FirstOvernight
+          (b) =>
+            b.shippingMethod === sla.FirstOvernight ||
+            b.shippingMethod === sla.StandardOvernight
         )
 
-        expect(filtershippingMethod[0].price).to.equal(amount * 2)
+        expect(shippingMethod.shippingMethod).to.equal(
+          filtershippingMethod[0].shippingMethod
+        )
+        expect(filtershippingMethod[0].price).to.equal(shippingMethod.price * 2)
       })
     }
   )
