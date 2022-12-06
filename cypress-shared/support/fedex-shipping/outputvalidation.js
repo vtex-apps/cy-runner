@@ -32,9 +32,9 @@ export default {
       name: 'Fedex Kuwait Dock',
       shippingRatesProviders: ['vtexus.fedex-shipping'],
     },
-    fedexFranceDock: {
+    fedexIndiaDock: {
       id: 'IND00112233',
-      name: 'Fedex France Dock',
+      name: 'Fedex India Dock',
       shippingRatesProviders: ['vtexus.fedex-shipping'],
     },
   },

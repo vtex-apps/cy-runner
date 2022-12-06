@@ -16,7 +16,7 @@ import {
 describe('Verify fedex shipping price for Kuwait and verify custom delivery time', () => {
   loginViaCookies()
 
-  it.skip(
+  it(
     `Verify shipping price for fedex supported country Kuwait`,
     updateRetry(5),
     () => {
@@ -28,12 +28,13 @@ describe('Verify fedex shipping price for Kuwait and verify custom delivery time
   )
 
   it(
-    `Verify shipping price for fedex non supported country France`,
+    `Verify shipping price for fedex non supported country India`,
     updateRetry(5),
     () => {
-      data.destination.city = 'Strasbourg'
-      data.destination.country = 'FRA'
-      data.destination.zipCode = '93200'
+      data.destination.state = 'TamilNadu'
+      data.destination.city = 'Chennai'
+      data.destination.country = 'IND'
+      data.destination.zipCode = '600079'
       loadCalculateShippingAPI(
         data,
         validateNonSupportedCountryCalculateShipping
