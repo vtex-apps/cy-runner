@@ -44,6 +44,7 @@ describe('Modify SLA - Validate Surcharge Percentage in checkout', () => {
     `${prefix} - Validate Surcharge Percentage Changes`,
     updateRetry(3),
     () => {
+      // eslint-disable-next-line jest/valid-expect-in-promise
       loadCalculateShippingAPI(data).then((response) => {
         validateCalculateShipping(response)
         const filtershippingMethod = response.body.filter(

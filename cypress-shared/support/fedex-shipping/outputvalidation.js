@@ -13,6 +13,7 @@ export default {
     unitWeight: 'KG',
     unitDimension: 'CM',
     packingAccessKey: '',
+    defaultDeliveryEstimateInDays: '0',
   },
   smartPackingAccessKey: 'fedexdev',
   docks: {
@@ -24,6 +25,16 @@ export default {
     fedexBrazilDock: {
       id: 'S0001-E0001-Dock',
       name: 'Fedex Italy Dock',
+      shippingRatesProviders: ['vtexus.fedex-shipping'],
+    },
+    fedexKuwaitDock: {
+      id: 'KUWA0112233',
+      name: 'Fedex Kuwait Dock',
+      shippingRatesProviders: ['vtexus.fedex-shipping'],
+    },
+    fedexIndiaDock: {
+      id: 'IND00112233',
+      name: 'Fedex India Dock',
       shippingRatesProviders: ['vtexus.fedex-shipping'],
     },
   },
