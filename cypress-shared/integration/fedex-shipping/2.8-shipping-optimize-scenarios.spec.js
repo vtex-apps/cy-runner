@@ -1,5 +1,6 @@
 /* eslint-disable jest/valid-expect */
 /* eslint-disable jest/valid-expect-in-promise */
+/* eslint-disable jest/expect-expect */
 import { loginViaCookies, updateRetry } from '../../support/common/support.js'
 import {
   graphql,
@@ -59,7 +60,7 @@ describe(`${prefix} Scenarios`, () => {
           validateSaveAppSettingResponse
         )
       })
-      cy.addDelayBetweenRetries(3000)
+      cy.addDelayBetweenRetries(4000)
       loadCalculateShippingAPI(data).then((response) => {
         validateCalculateShipping(response)
         const filtershippingMethod = response.body.filter(
@@ -87,7 +88,7 @@ describe(`${prefix} Scenarios`, () => {
           validateSaveAppSettingResponse
         )
       })
-      cy.addDelayBetweenRetries(3000)
+      cy.addDelayBetweenRetries(4000)
       loadCalculateShippingAPI(data).then((response) => {
         validateCalculateShipping(response)
         const filtershippingMethod = response.body.filter(

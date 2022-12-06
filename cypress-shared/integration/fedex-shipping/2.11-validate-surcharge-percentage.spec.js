@@ -1,4 +1,5 @@
 /* eslint-disable jest/valid-expect */
+/* eslint-disable jest/expect-expect */
 /* eslint-disable jest/valid-expect-in-promise */
 import { updateRetry, loginViaCookies } from '../../support/common/support'
 import { appSetting } from '../../support/fedex-shipping/outputvalidation'
@@ -41,6 +42,7 @@ describe('Modify SLA - Validate Surcharge Percentage in checkout', () => {
     `${prefix} - Validate Surcharge Percentage Changes`,
     updateRetry(3),
     () => {
+      // eslint-disable-next-line jest/valid-expect-in-promise
       loadCalculateShippingAPI(data).then((response) => {
         validateCalculateShipping(response)
         const filtershippingMethod = response.body.filter(

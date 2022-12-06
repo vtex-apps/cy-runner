@@ -1,3 +1,4 @@
+/* eslint-disable jest/expect-expect */
 /* eslint-disable jest/valid-expect */
 import { updateRetry, loginViaCookies } from '../../support/common/support.js'
 import { appSetting } from '../../support/fedex-shipping/outputvalidation.js'
