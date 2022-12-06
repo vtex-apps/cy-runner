@@ -126,16 +126,22 @@ export function validateWareHouseIsActiveAndLinkedWithDocks(
   const { isActive, warehouseDocks } = response.body.data.warehouse
 
   expect(isActive).to.equal(true)
-  const [actualDockId1, actualDockId2] = [
+  const [actualDockId1, actualDockId2, actualDockId3, actualDockId4] = [
     warehouseDocks[0].dockId,
     warehouseDocks[1].dockId,
+    warehouseDocks[2].dockId,
+    warehouseDocks[3].dockId,
   ]
 
-  const [expectedDockId1, expectedDockId2] = [
+  const [expectedDockId1, expectedDockId2, expectedDockId3, expectedDockId4] = [
     dockValues[0].id,
     dockValues[1].id,
+    dockValues[2].id,
+    dockValues[3].id,
   ]
 
   expect(actualDockId1).to.equal(expectedDockId1)
   expect(actualDockId2).to.equal(expectedDockId2)
+  expect(actualDockId3).to.equal(expectedDockId3)
+  expect(actualDockId4).to.equal(expectedDockId4)
 }
