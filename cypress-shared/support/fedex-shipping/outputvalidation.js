@@ -15,6 +15,18 @@ export default {
     packingAccessKey: '',
     defaultDeliveryEstimateInDays: '0',
   },
+  packingOptimizationSettings: {
+    accessKey: 'fedexdev',
+    containerList: [
+      {
+        id: 1,
+        length: 20,
+        width: 20,
+        height: 20,
+        description: 'cypress test',
+      },
+    ],
+  },
   smartPackingAccessKey: 'fedexdev',
   docks: {
     fedexUSDock: {

@@ -42,6 +42,19 @@ export function saveAppSetting(appDatas, allSla) {
   }
 }
 
+export function savePackingOptimizationAppSetting(settings) {
+  const query =
+    'mutation' +
+    '($accessKey: String, $containerList: [ContainerInput])' +
+    '{saveAppSetting(appSetting: {accessKey:$accessKey,containerList:$containerList})' +
+    '@context(provider: "vtex.packing-optimization")}'
+
+  return {
+    query,
+    queryVariables: settings,
+  }
+}
+
 export function updateDockConnection(id, remove = false) {
   const query =
     'mutation' +

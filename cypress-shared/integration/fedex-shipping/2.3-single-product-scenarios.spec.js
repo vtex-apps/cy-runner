@@ -40,9 +40,7 @@ describe(`${prefix} Scenarios`, () => {
     loadCalculateShippingAPI(data).then((response) => {
       validateCalculateShipping(response)
       const filtershippingMethod = response.body.filter(
-        (b) =>
-          b.shippingMethod === sla.FirstOvernight ||
-          b.shippingMethod === sla.StandardOvernight
+        (b) => b.shippingMethod === sla.FirstOvernight
       )
 
       amount = filtershippingMethod[0].price
@@ -57,9 +55,7 @@ describe(`${prefix} Scenarios`, () => {
       loadCalculateShippingAPI(data).then((response) => {
         validateCalculateShipping(response)
         const filtershippingMethod = response.body.filter(
-          (b) =>
-            b.shippingMethod === sla.FirstOvernight ||
-            b.shippingMethod === sla.StandardOvernight
+          (b) => b.shippingMethod === sla.FirstOvernight
         )
 
         expect(filtershippingMethod[0].price).to.equal(amount * 2)

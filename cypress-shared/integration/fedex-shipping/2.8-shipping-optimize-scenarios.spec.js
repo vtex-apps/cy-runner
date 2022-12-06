@@ -4,19 +4,23 @@
 import { loginViaCookies, updateRetry } from '../../support/common/support.js'
 import {
   saveAppSetting,
+  savePackingOptimizationAppSetting,
   validateSaveAppSettingResponse,
 } from '../../support/fedex-shipping/graphql_testcase.js'
 import {
   appSetting,
   smartPackingAccessKey,
+  packingOptimizationSettings,
 } from '../../support/fedex-shipping/outputvalidation.js'
 import { data } from '../../fixtures/fedex-shipping-fixtures/shippingOptimizePayload.json'
 import {
   loadCalculateShippingAPI,
   validateCalculateShipping,
 } from '../../support/fedex-shipping/api_testcase.js'
-import { FEDEX_SHIPPING_APP } from '../../support/fedex-shipping/graphql_apps.js'
-import fedexSelectors from '../../support/common/selectors.js'
+import {
+  FEDEX_SHIPPING_APP,
+  PACKING_OPTIMIZATION,
+} from '../../support/fedex-shipping/graphql_apps.js'
 import sla from '../../support/fedex-shipping/sla.js'
 import { graphql } from '../../support/common/graphql_utils.js'
 
@@ -29,30 +33,11 @@ describe(`${prefix} Scenarios`, () => {
   loginViaCookies()
 
   it(`${prefix} - Generate access key`, updateRetry(2), () => {
-    cy.getVtexItems().then((vtex) => {
-      cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
-        if (req.body.operationName === 'GetAppSettings') {
-          req.continue()
-        }
-      }).as('GetAppSettings')
-      cy.visit('/admin/app/packing-optimization')
-      cy.wait('@GetAppSettings', { timeout: 10000 })
-      cy.get(fedexSelectors.SmartPackingAccessKey)
-        .should('be.visible')
-        .clear()
-        .type(smartPackingAccessKey)
-      cy.contains('Save').click()
-      cy.get(fedexSelectors.PickingOptimizeAlert).should(
-        'have.text',
-        'Successfully Saved'
-      )
-      cy.get(fedexSelectors.PackingBoxLength).clear().type(30)
-      cy.get(fedexSelectors.PackingBoxHeight).clear().type(30)
-      cy.get(fedexSelectors.PackingBoxWidth).clear().type(30)
-      // cy.get('#description').type('test')
-      cy.contains('Add To Table').click()
-      cy.get(fedexSelectors.PackingBoxTable).should('be.exist')
-    })
+    graphql(
+      PACKING_OPTIMIZATION,
+      savePackingOptimizationAppSetting(packingOptimizationSettings),
+      validateSaveAppSettingResponse
+    )
   })
 
   it(
