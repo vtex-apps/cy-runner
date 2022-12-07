@@ -78,9 +78,13 @@ export function validateToastMsg(msg) {
     .contains(msg)
 }
 
-export function validateToolTipMsg() {
-  cy.get('span[class*=danger]').should('be.visible').trigger('mouseover')
-  cy.get('div[role=tooltip]')
-    .contains('Max quantity is 50')
+export function validateToolTipMsg(message, position = 0) {
+  cy.get('span[class*=danger]', { timeout: 15000 })
     .should('be.visible')
+    .eq(position)
+    .trigger('mouseover')
+  cy.get('div[role=tooltip]', { timeout: 5000 })
+    .should('be.visible')
+    .eq(position)
+    .contains(message)
 }
