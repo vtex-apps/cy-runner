@@ -43,6 +43,8 @@ describe('Verify fedex shipping price for Kuwait and verify custom delivery time
   )
 
   it(`Verify custom delivery time`, updateRetry(4), () => {
+    data.destination.state = null
+    data.destination.city = null
     data.destination.zipCode = '00010002'
     data.destination.country = 'USA'
     loadCalculateShippingAPI(data, validateCustomDeliveryTime)

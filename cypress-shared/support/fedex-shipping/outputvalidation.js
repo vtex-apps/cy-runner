@@ -15,6 +15,18 @@ export default {
     packingAccessKey: '',
     defaultDeliveryEstimateInDays: '0',
   },
+  packingOptimizationSettings: {
+    accessKey: 'fedexdev',
+    containerList: [
+      {
+        id: 1,
+        length: 20,
+        width: 20,
+        height: 20,
+        description: 'cypress test',
+      },
+    ],
+  },
   smartPackingAccessKey: 'fedexdev',
   docks: {
     fedexUSDock: {
@@ -27,14 +39,14 @@ export default {
       name: 'Fedex Italy Dock',
       shippingRatesProviders: ['vtexus.fedex-shipping'],
     },
-    fedexKuwaitDock: {
-      id: 'KUWA0112233',
-      name: 'Fedex Kuwait Dock',
-      shippingRatesProviders: ['vtexus.fedex-shipping'],
-    },
     fedexIndiaDock: {
       id: 'IND00112233',
       name: 'Fedex India Dock',
+      shippingRatesProviders: ['vtexus.fedex-shipping'],
+    },
+    fedexKuwaitDock: {
+      id: 'KUWA0112233',
+      name: 'Fedex Kuwait Dock',
       shippingRatesProviders: ['vtexus.fedex-shipping'],
     },
   },

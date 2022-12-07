@@ -1,9 +1,9 @@
 import {
-  graphql,
   saveAppSetting,
   validateSaveAppSettingResponse,
 } from './graphql_testcase'
 import { FEDEX_SHIPPING_APP } from './graphql_apps.js'
+import { graphql } from '../common/graphql_utils'
 
 export function updateSLASettings(appSetting, rate = 0, percentage = 0) {
   cy.getAppSettingstoJSON().then((items) => {
@@ -20,4 +20,12 @@ export function updateSLASettings(appSetting, rate = 0, percentage = 0) {
       validateSaveAppSettingResponse
     )
   })
+}
+
+export function filterByShippingMethod(response, sla) {
+  return response.body.filter(
+    (r) =>
+      r.shippingMethod === sla.FirstOvernight ||
+      r.shippingMethod === sla.StandardOvernight
+  )
 }

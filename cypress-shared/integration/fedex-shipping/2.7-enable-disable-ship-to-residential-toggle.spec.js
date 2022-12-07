@@ -2,10 +2,10 @@
 /* eslint-disable jest/valid-expect-in-promise */
 import { loginViaCookies, updateRetry } from '../../support/common/support.js'
 import {
-  graphql,
   saveAppSetting,
   validateSaveAppSettingResponse,
 } from '../../support/fedex-shipping/graphql_testcase.js'
+import { graphql } from '../../support/common/graphql_utils'
 import { appSetting } from '../../support/fedex-shipping/outputvalidation.js'
 import { data } from '../../fixtures/fedex-shipping-fixtures/shippingRatePayload.json'
 import {

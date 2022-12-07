@@ -4,10 +4,10 @@ import { updateRetry, loginViaCookies } from '../../support/common/support.js'
 import { appSetting } from '../../support/fedex-shipping/outputvalidation.js'
 import { FEDEX_SHIPPING_APP } from '../../support/fedex-shipping/graphql_apps.js'
 import {
-  graphql,
   saveAppSetting,
   validateSaveAppSettingResponse,
 } from '../../support/fedex-shipping/graphql_testcase.js'
+import { graphql } from '../../support/common/graphql_utils'
 import { data } from '../../fixtures/fedex-shipping-fixtures/shippingRatePayload.json'
 import {
   loadCalculateShippingAPI,

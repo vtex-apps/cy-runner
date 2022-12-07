@@ -12,7 +12,12 @@ export function commonGraphlValidation(response) {
   expect(response.body).to.not.have.own.property('errors')
 }
 
-export function graphql(app, getQuery, validateResponseFn = null) {
+export function graphql(
+  app,
+  getQuery,
+  validateResponseFn = null,
+  params = null
+) {
   const { query, queryVariables } = getQuery
 
   // Define constants
@@ -31,7 +36,7 @@ export function graphql(app, getQuery, validateResponseFn = null) {
   if (validateResponseFn) {
     cy.get('@RESPONSE').then((response) => {
       commonGraphlValidation(response)
-      validateResponseFn(response)
+      validateResponseFn(response, params)
     })
   } else {
     return cy.get('@RESPONSE')
