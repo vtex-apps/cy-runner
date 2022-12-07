@@ -4,7 +4,10 @@
 import { updateRetry, loginViaCookies } from '../../support/common/support'
 import { appSetting } from '../../support/fedex-shipping/outputvalidation'
 import { data } from '../../fixtures/fedex-shipping-fixtures/shippingRatePayload.json'
-import { updateSLASettings } from '../../support/fedex-shipping/common.js'
+import {
+  filterByShippingMethod,
+  updateSLASettings,
+} from '../../support/fedex-shipping/common.js'
 import {
   loadCalculateShippingAPI,
   validateCalculateShipping,
@@ -26,13 +29,9 @@ describe('Modify SLA - Validate Surcharge Flat Rate in checkout', () => {
   it(`${prefix} - Verify shipping price`, updateRetry(3), () => {
     loadCalculateShippingAPI(data).then((response) => {
       validateCalculateShipping(response)
-      const filtershippingMethod = response.body.filter(
-        (b) =>
-          b.shippingMethod === sla.FirstOvernight ||
-          b.shippingMethod === sla.StandardOvernight
-      )
+      const shippingMethods = filterByShippingMethod(response, sla)
 
-      amount = filtershippingMethod[0].price
+      amount = shippingMethods[0].price
     })
   })
 
@@ -43,15 +42,11 @@ describe('Modify SLA - Validate Surcharge Flat Rate in checkout', () => {
   it(`${prefix} - Validate Surcharge Flat Rate Changes`, updateRetry(3), () => {
     loadCalculateShippingAPI(data).then((response) => {
       validateCalculateShipping(response)
-      const filtershippingMethod = response.body.filter(
-        (b) =>
-          b.shippingMethod === sla.FirstOvernight ||
-          b.shippingMethod === sla.StandardOvernight
-      )
+      const shippingMethods = filterByShippingMethod(response, sla)
 
       const calculateFlatRate = amount + surchargeFlatRate
 
-      expect(filtershippingMethod[0].price).to.equal(calculateFlatRate)
+      expect(shippingMethods[0].price).to.equal(calculateFlatRate)
     })
   })
 })

@@ -21,3 +21,11 @@ export function updateSLASettings(appSetting, rate = 0, percentage = 0) {
     )
   })
 }
+
+export function filterByShippingMethod(response, sla) {
+  return response.body.filter(
+    (r) =>
+      r.shippingMethod === sla.FirstOvernight ||
+      r.shippingMethod === sla.StandardOvernight
+  )
+}
