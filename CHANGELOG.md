@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 ### Added
+- Improved 2.2 ,2.3 location availability testcases.
+
+### Added
 - Added wipe testcase & improved 2.3 ,2.4 shopper location testcases.
 
 ### Added
