@@ -5,14 +5,15 @@ import {
 } from '../../support/common/support'
 import {
   UsDetails,
+  UsDetails4,
   location,
 } from '../../support/shopper-location/outputvalidation'
 import selectors from '../../support/common/selectors'
 import { verifyUpdatedAddress } from '../../support/location-availability/support'
 import { addAddress } from '../../support/shopper-location/common'
 
+const { postalCode, address, city } = UsDetails4
 const prefix = 'Enable location'
-const postalCode = '90290'
 const product = 'coconuts'
 
 describe('Enable location validation', () => {
@@ -30,7 +31,7 @@ describe('Enable location validation', () => {
     cy.openProduct(product, true)
   })
 
-  verifyUpdatedAddress(postalCode)
+  verifyUpdatedAddress(postalCode, address, city)
 
   // eslint-disable-next-line jest/expect-expect
   it('Ordering the product', updateRetry(2), () => {

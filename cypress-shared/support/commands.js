@@ -52,11 +52,11 @@ Cypress.Commands.add(
 
       if (selector && contains) {
         cy.scrollTo('top')
-        cy.contains(selector).click()
+        cy.contains(selector).should('be.visible').click()
       } else if (selector) {
-        cy.get(selector).last().click()
+        cy.get(selector).last().should('be.visible').click()
       } else if (contains) {
-        cy.contains(contains).click()
+        cy.contains(contains).should('be.visible').click()
       }
 
       cy.wait(`@${operationName}`, { timeout })
