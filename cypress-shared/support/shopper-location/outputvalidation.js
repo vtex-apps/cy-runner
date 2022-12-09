@@ -45,5 +45,6 @@ export default {
     postalCode: '90290',
     city: 'Toppanga',
     address: 'USA Kerry Ln Topanga',
+    state: 'California',
   },
 }

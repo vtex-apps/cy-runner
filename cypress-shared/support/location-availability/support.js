@@ -3,7 +3,7 @@ import selectors from '../common/selectors'
 import { updateRetry } from '../common/support'
 import { getPickupPoints, deletePickupPoint } from './pickup-points.api'
 
-export function verifyUpdatedAddress(postalCode, address, city) {
+export function verifyUpdatedAddress(postalCode, address, city, state) {
   it('Verify on click to postal code it opens the location popup', () => {
     cy.get(selectors.AvailabilityHeader).click()
     cy.get(selectors.AddressModelLayout).should('be.visible')
@@ -27,6 +27,9 @@ export function verifyUpdatedAddress(postalCode, address, city) {
         .within(() => {
           cy.get(selectors.InputText).clear().type(address, { delay: 50 })
         })
+    }
+    if (state) {
+      cy.get(selectors.ProvinceField).should('exist').select(state)
     }
     cy.waitForGraphql('setRegionId', selectors.SaveButton)
     cy.once('uncaught:exception', () => false)
