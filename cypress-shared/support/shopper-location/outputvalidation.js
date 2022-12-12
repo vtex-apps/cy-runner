@@ -42,10 +42,10 @@ export default {
   },
   UsDetails4: {
     country: 'United States',
-    postalCode: '90290',
-    city: 'Toppanga',
-    address: 'USA Kerry Ln Topanga',
-    state: 'California',
+    postalCode: '23223',
+    city: 'Richmond',
+    address: '1291 Worley Avenue',
+    state: 'Virginia',
   },
   UsDetails5: {
     country: 'United States',
