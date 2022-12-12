@@ -55,7 +55,9 @@ export function quickOrderBySkuAndQuantityTestCase1(
   totalPrice = '$180.00'
 ) {
   const title = `Verify ${role} is able to ${
-    quoteEnv ? 'create quote by quick order' : 'add product to checkout'
+    quoteEnv
+      ? 'create quote by quick order'
+      : 'add product to cart & perform checkout'
   } - [Sku's Code],[Quantity]`
 
   it(title, updateRetry(2), () => {
