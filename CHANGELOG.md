@@ -10,7 +10,8 @@
 - Prepend empty characters in address line
 - In refund, workflow delay from 4s to 5s
 
-c
+### Added
+- Added defaultDeliveryEstimateInDays new field in fedex app settings
 
 ### Added
 - Added wipe testcase & improved 2.3 ,2.4 shopper location testcases.
