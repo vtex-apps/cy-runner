@@ -5,14 +5,14 @@ import {
 } from '../../support/common/support'
 import {
   UsDetails,
-  UsDetails4,
+  UsDetails5,
   location,
 } from '../../support/shopper-location/outputvalidation'
 import selectors from '../../support/common/selectors'
 import { verifyUpdatedAddress } from '../../support/location-availability/support'
 import { addAddress } from '../../support/shopper-location/common'
 
-const { postalCode, address, city, state } = UsDetails4
+const { postalCode, address, city, state } = UsDetails5
 const prefix = 'Enable location'
 const product = 'coconuts'
 

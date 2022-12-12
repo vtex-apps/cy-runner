@@ -47,4 +47,11 @@ export default {
     address: 'USA Kerry Ln Topanga',
     state: 'California',
   },
+  UsDetails5: {
+    country: 'United States',
+    postalCode: '10014',
+    city: 'New York',
+    address: 'Christopher Street',
+    state: 'New York',
+  },
 }
