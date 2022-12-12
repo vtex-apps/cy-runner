@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Added
+- Affirm payments cancellation testcase 
+
 ### Changed
 - Fedex Shipping improvements
 

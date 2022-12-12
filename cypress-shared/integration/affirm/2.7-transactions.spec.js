@@ -27,7 +27,7 @@ describe(`Transaction Scenarios`, () => {
 
   verifyTransactionInAffirm(singleProduct, singleProductEnvs)
   verifyTransactionInAffirm(multiProduct, multiProductEnvs)
-  verifyTransactionInAffirm(discountProduct, discountProductEnvs)
+  verifyTransactionInAffirm(discountProduct, discountProductEnvs, true) // Verify cancelled order amount is refunded
   verifyTransactionInAffirm(discountShipping, discountShippingEnvs)
 
   /* 
