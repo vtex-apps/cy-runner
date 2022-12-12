@@ -46,7 +46,7 @@ describe(`${prefix} Scenarios`, () => {
   verifyOrderStatus({
     product: discountProduct,
     env: discountProductEnvs.orderIdEnv,
-    status: 'ready-for-handling',
+    status: /handling/,
     timeout: 20000,
   })
 
