@@ -5,7 +5,10 @@ import {
   updateRetry,
 } from '../../support/common/support.js'
 import { discountProduct } from '../../support/affirm/outputvalidation'
-import { getTestVariables } from '../../support/common/testcase.js'
+import {
+  cancelTheOrder,
+  getTestVariables,
+} from '../../support/common/testcase.js'
 import { completeThePayment } from '../../support/affirm/testcase.js'
 
 const { prefix, productName, postalCode, productQuantity } = discountProduct
@@ -14,6 +17,8 @@ describe(`${prefix} Scenarios`, () => {
   loginViaCookies()
 
   const discountProductEnvs = getTestVariables(prefix)
+
+  discountProductEnvs.sendInvoice = false
 
   it(`In ${prefix} - Adding Product to Cart`, updateRetry(1), () => {
     // Search the product
@@ -36,6 +41,8 @@ describe(`${prefix} Scenarios`, () => {
   })
 
   completeThePayment(discountProduct, discountProductEnvs)
+
+  cancelTheOrder(discountProductEnvs.orderIdEnv)
 
   preserveCookie()
 })

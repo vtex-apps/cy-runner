@@ -119,12 +119,12 @@ export function completeThePayment(
 
   if (sendInvoice) {
     sendInvoiceTestCase({ product, orderIdEnv })
-
-    // Get transactionId from invoiceAPI and store in .orders.json
-    invoiceAPITestCase({
-      product,
-      env: orderIdEnv,
-      transactionIdEnv,
-    })
   }
+
+  // Get transactionId from invoiceAPI and store in .orders.json
+  invoiceAPITestCase({
+    product,
+    env: orderIdEnv,
+    transactionIdEnv,
+  })
 }
