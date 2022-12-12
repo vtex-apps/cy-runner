@@ -202,48 +202,6 @@ export function startE2E(app, workspace) {
   })
 }
 
-function verifyEnvs(paymentEnvs = false) {
-  if (apiKey && apiToken) {
-    if (paymentEnvs) {
-      if (appKey && appToken && affiliationId) {
-        cy.log('All envs are available in VTEX_QE.json')
-      } else {
-        cy.log('Some envs are missing in VTEX_QE.json')
-      }
-    }
-  } else {
-    cy.log('Some envs are missing in VTEX_QE.json')
-  }
-}
-
-export function startPaymentE2ETests() {
-  // If you are using this function in your testcase
-  // then ensure, you are having affiliationId, apiKey and apiToken in .VTEX_QE.json
-  it(`Start ${prefix} E2E tests with this workspace ${WORKSPACE}`, () => {
-    verifyEnvs(true)
-    cy.request({
-      url: affiliationAPI(affiliationId),
-      headers: VTEX_AUTH_HEADER(apiKey, apiToken),
-      ...FAIL_ON_STATUS_CODE,
-    }).then((response) => {
-      const workspaceIndex = response.body.configuration.findIndex(
-        (obj) => obj.name === 'workspace'
-      )
-
-      const workspaceInGatewayAffialitions =
-        response.body.configuration[workspaceIndex].value
-
-      if (!['', WORKSPACE].includes(workspaceInGatewayAffialitions)) {
-        throw new Error(
-          `Another test is running with workspace ${workspaceInGatewayAffialitions}. Please, try again later.\n`
-        )
-      } else {
-        cy.log('Starting E2E configuration')
-      }
-    })
-  })
-}
-
 export const AUTO_SETTLEMENT_OPTIONS = {
   enable: 'after_antifraud',
   disable: 'disabled',
