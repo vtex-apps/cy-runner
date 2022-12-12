@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Added
+- [ENGINEERS-875] & [ENGINEERS-876] - Added more quickorder cypress tests
+
 ### Changed
 - Fedex Shipping improvements
 
@@ -7,8 +10,7 @@
 - Prepend empty characters in address line
 - In refund, workflow delay from 4s to 5s
 
-### Added
-- Added defaultDeliveryEstimateInDays new field in fedex app settings
+c
 
 ### Added
 - Added wipe testcase & improved 2.3 ,2.4 shopper location testcases.
