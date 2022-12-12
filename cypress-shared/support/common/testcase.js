@@ -202,6 +202,28 @@ export function startE2E(app, workspace) {
   })
 }
 
+function verifyEnvs(paymentEnvs = false) {
+  if (apiKey && apiToken) {
+    if (paymentEnvs) {
+      if (appKey && appToken && affiliationId) {
+        cy.log('All envs are available in VTEX_QE.json')
+      } else {
+        cy.log('Some envs are missing in VTEX_QE.json')
+      }
+    }
+  } else {
+    cy.log('Some envs are missing in VTEX_QE.json')
+  }
+}
+
+export function startPaymentE2ETests() {
+  // If you are using this function in your testcase
+  // then ensure, you are having affiliationId, apiKey and apiToken in .VTEX_QE.json
+  it(`Start ${prefix} E2E tests with this workspace ${WORKSPACE}`, () => {
+    verifyEnvs(true)
+  })
+}
+
 export const AUTO_SETTLEMENT_OPTIONS = {
   enable: 'after_antifraud',
   disable: 'disabled',
