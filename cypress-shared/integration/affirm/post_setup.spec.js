@@ -1,7 +1,7 @@
 import { loginViaCookies } from '../../support/common/support.js'
 import {
-  startPaymentE2ETests,
   setWorkspaceAndGatewayAffiliations,
+  startPaymentE2ETests,
   syncCheckoutUICustom,
 } from '../../support/common/testcase.js'
 

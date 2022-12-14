@@ -30,6 +30,8 @@ export default {
     productQuantity: '1',
     totalProductPrice: '95.00',
     totalAmount: '$ 95.00',
+    refundedAmount: 9500,
+    refundType: 'refunded',
   },
   discountShipping: {
     prefix: 'discountShipping',
