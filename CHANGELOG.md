@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 ### Added
+- [ENGINEERS-875] & [ENGINEERS-876] - Added more quickorder cypress tests
+
+### Added
 - Affirm payments cancellation testcase 
 
 ### Changed

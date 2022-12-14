@@ -138,9 +138,9 @@ Cypress.Commands.add('gotoQuickOrder', (b2b = false) => {
 
     if (loc.pathname.includes('quickorder')) closeMenu = true
     if (b2b) {
+      closeMenu && cy.closeMenuIfOpened()
       cy.get(selectors.Menu).should('be.visible').click()
       cy.get(selectors.QuickOrder).should('be.visible').click()
-      closeMenu && cy.closeMenuIfOpened()
     } else {
       cy.visit('/quickorder')
       cy.get(selectors.ProfileLabel, { timeout: 20000 })
