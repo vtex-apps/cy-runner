@@ -38,7 +38,7 @@ describe('External Seller Testcase', () => {
     }
   )
 
-  it(`In ${prefix} - Updating Shipping Information`, updateRetry(3), () => {
+  it(`In ${prefix} - Updating Shipping Information`, updateRetry(4), () => {
     // Update Shipping Section
     cy.updateShippingInformation({ postalCode })
   })
