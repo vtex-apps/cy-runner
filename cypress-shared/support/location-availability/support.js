@@ -20,6 +20,7 @@ export function verifyUpdatedAddress(postalCode, address, city, state) {
             .type(city)
         })
     }
+
     if (address) {
       cy.get(selectors.Address)
         .contains('Address Line 1')
@@ -28,10 +29,12 @@ export function verifyUpdatedAddress(postalCode, address, city, state) {
           cy.get(selectors.InputText).clear().type(address, { delay: 50 })
         })
     }
+
     if (state) {
       cy.get(selectors.ProvinceField).should('exist').select(state)
     }
-    cy.waitForGraphql('setRegionId', selectors.SaveButton)
+
+    cy.waitForGraphql('setRegionId', selectors.SaveButtonInChangeLocationPopUp)
     cy.once('uncaught:exception', () => false)
   })
   it('Verify updated address is shown in the screen', updateRetry(2), () => {

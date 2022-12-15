@@ -5,8 +5,11 @@ import { mockLocation } from './geolocation'
 export function verifyShopperLocation() {
   cy.get(selectors.verifyLocationInHome).should('be.visible')
   // eslint-disable-next-line cypress/no-force
-  cy.get(selectors.AddToCart).contains('Add to cart').click({ force: true })
-  cy.get(selectors.ProceedToCheckOut).click()
+  cy.get(selectors.AddToCart)
+    .contains('Add to cart')
+    .should('be.visible')
+    .click({ force: true })
+  cy.get(selectors.ProceedToCheckOut).should('be.visible').click()
   cy.get(selectors.orderButton).should('be.visible').click()
 }
 
@@ -34,7 +37,9 @@ export function addLocation(data) {
     cy.once('uncaught:exception', () => {
       return false
     })
-    cy.get(selectors.SaveButton).should('be.visible').click()
+    cy.get(selectors.SaveButtonInChangeLocationPopUp)
+      .should('be.visible')
+      .click()
     cy.wait('@setRegionId', { timeout: 10000 })
   })
 }
@@ -78,7 +83,7 @@ export function addAddress(prefix, { address, lat, long }) {
         .clear()
         .type(address.postalCode, { delay: 100 })
       autocomplete(address.city, address.state)
-      cy.get(selectors.saveButton)
+      cy.get(selectors.SaveButtonInChangeLocationPopUp)
         .find('button')
         .click()
         .should(() => {
