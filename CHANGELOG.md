@@ -18,6 +18,9 @@
 - Improved Shopper location and location availability testcase
 
 ### Added
+- [ENGINEERS-954] - Added graphQL common function & improved postsetup ,adyenLogin function
+
+### Added
 - [ENGINEERS-875] & [ENGINEERS-876] - Added more quickorder cypress tests
 
 ### Added
