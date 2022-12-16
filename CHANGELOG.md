@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Fixed
+- [ENGINEERS-962] Proper identification when a PR is from Fork
+
 ### Added
 - Improved Shopper location and location availability testcase
 
