@@ -370,8 +370,8 @@ export default {
 
   province: 'div[class*=dropdown__container] > select',
   addressInputContainer: 'div[class*=addressInputContainer] input',
-  saveButton: '.vtex-shopper-location-1-x-changeLocationSubmitContainer',
   countryDropdown: 'div[class*=address-form] > select',
+  AddressContainerForProduct: 'div[class*=location-availability]',
   ChangeLocationButton:
     'section[class*=changeLocationGeoContainer] .vtex-button',
   addressContainer: 'div[class*=userAddressContainer]',
@@ -386,7 +386,8 @@ export default {
   ProceedToCheckOut: '#proceed-to-checkout > .vtex-button__label',
   verifyLocationInCheckOut: '.srp-address-title',
   orderButton: 'a[id=cart-to-orderform]',
-  SaveButton: 'section[class*=changeLocationSubmitContainer] button',
+  SaveButtonInChangeLocationPopUp:
+    'section[class*=changeLocationSubmitContainer] > button[class*=pointer]',
   PaymentBtn: '#btn-go-to-payment',
   PickUpBtn: '.srp-toggle__pickup',
   SelectState: '.vtex-styleguide-9-x-container > .o-0',

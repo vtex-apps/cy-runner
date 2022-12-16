@@ -52,11 +52,11 @@ Cypress.Commands.add(
 
       if (selector && contains) {
         cy.scrollTo('top')
-        cy.contains(selector).click()
+        cy.contains(selector).should('be.visible').click()
       } else if (selector) {
-        cy.get(selector).last().click()
+        cy.get(selector).last().should('be.visible').click()
       } else if (contains) {
-        cy.contains(contains).click()
+        cy.contains(contains).should('be.visible').click()
       }
 
       cy.wait(`@${operationName}`, { timeout })
@@ -205,8 +205,8 @@ Cypress.Commands.add('orderProduct', () => {
       fillContactInfo()
     }
   })
-  cy.get(selectors.PromissoryPayment).click()
-  cy.get(selectors.BuyNowBtn).last().click()
+  cy.get(selectors.PromissoryPayment).should('be.visible').click()
+  cy.get(selectors.BuyNowBtn).last().should('be.visible').click()
   cy.get(selectors.Search, { timeout: 30000 }).should('be.visible')
 })
 
@@ -231,20 +231,21 @@ Cypress.Commands.add('addNewLocation', (country, postalCode, street, city) => {
     .first()
     .clear()
     .should('be.visible')
-    .type(postalCode)
+    .type(postalCode, { delay: 10 })
+  cy.get(selectors.SaveButtonInChangeLocationPopUp).should('be.visible')
   cy.get(selectors.Address)
     .contains('Address Line 1')
     .parent()
     .within(() => {
-      cy.get(selectors.InputText).clear().type(street)
+      cy.get(selectors.InputText).should('be.visible').clear().type(street)
     })
   cy.get(selectors.Address)
     .contains('City')
     .parent()
     .within(() => {
-      cy.get(selectors.InputText).clear().type(city)
+      cy.get(selectors.InputText).should('be.visible').clear().type(city)
     })
-  cy.waitForGraphql('setRegionId', selectors.SaveButton)
+  cy.waitForGraphql('setRegionId', selectors.SaveButtonInChangeLocationPopUp)
   cy.once('uncaught:exception', () => false)
 })
 

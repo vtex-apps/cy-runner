@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 ### Added
+- Improved Shopper location and location availability testcase
+
+### Added
 - [ENGINEERS-875] & [ENGINEERS-876] - Added more quickorder cypress tests
 
 ### Added
