@@ -4,6 +4,9 @@
 - [ENGINEERS-962] Proper identification when a PR is from Fork
 
 ### Added
+- Improved Shopper location and location availability testcase
+
+### Added
 - [ENGINEERS-875] & [ENGINEERS-876] - Added more quickorder cypress tests
 
 ### Added
