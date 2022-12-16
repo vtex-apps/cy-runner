@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Fixed
+- [ENGINEERS-962] Proper identification when a PR is from Fork
+
 ### Added
 - [ENGINEERS-875] & [ENGINEERS-876] - Added more quickorder cypress tests
 
