@@ -3,6 +3,7 @@ import { scroll, updateRetry } from '../common/support'
 import { mockLocation } from './geolocation'
 
 export function verifyShopperLocation() {
+  cy.get(selectors.SaveButtonInChangeLocationPopUp).should('not.exist')
   cy.get(selectors.verifyLocationInHome).should('be.visible')
   // eslint-disable-next-line cypress/no-force
   cy.get(selectors.AddToCart)
@@ -84,7 +85,7 @@ export function addAddress(prefix, { address, lat, long }) {
         .type(address.postalCode, { delay: 100 })
       autocomplete(address.city, address.state)
       cy.get(selectors.SaveButtonInChangeLocationPopUp)
-        .find('button')
+        .should('be.visible')
         .click()
         .should(() => {
           expect(localStorage.getItem('orderform')).not.to.be.empty
