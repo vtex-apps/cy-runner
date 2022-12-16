@@ -164,15 +164,21 @@ export function createOnBoardingLink(create) {
 export function loginToAdyen() {
   it('Login to adyen dashboard', updateRetry(2), () => {
     cy.visit(adyenLoginUrl)
-    cy.get(selectors.AdyenLoginUsername).type(adyenLoginUsername, {
-      log: false,
+    cy.get('body').then(($body) => {
+      if ($body.find(selectors.AdyenLoginUsername).length) {
+        cy.get(selectors.AdyenLoginUsername).type(adyenLoginUsername, {
+          log: false,
+        })
+        cy.contains('Next').click()
+        cy.get(selectors.AdyenLoginAccount).type(adyenLoginAccount, {
+          log: false,
+        })
+        cy.get(selectors.AdyenLoginPassword).type(adyenLoginPassword, {
+          log: false,
+        })
+        cy.get(selectors.AdyenLoginSubmit).click()
+      }
     })
-    cy.contains('Next').click()
-    cy.get(selectors.AdyenLoginAccount).type(adyenLoginAccount, { log: false })
-    cy.get(selectors.AdyenLoginPassword).type(adyenLoginPassword, {
-      log: false,
-    })
-    cy.get(selectors.AdyenLoginSubmit).click()
   })
 }
 
