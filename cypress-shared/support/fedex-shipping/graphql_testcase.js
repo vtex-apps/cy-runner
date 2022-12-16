@@ -1,47 +1,3 @@
-import { FAIL_ON_STATUS_CODE } from '../common/constants'
-
-const config = Cypress.env()
-
-// Constants
-const { vtex } = config.base
-
-export function graphql(
-  appName,
-  getQuery,
-  validateResponseFn = null,
-  params = null
-) {
-  const { query, queryVariables } = getQuery
-
-  // Define constants
-  const APP_VERSION = '*.x'
-  const APP_NAME = appName
-  const APP = `${APP_NAME}@${APP_VERSION}`
-  const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${APP}`
-
-  cy.request({
-    method: 'POST',
-    url: CUSTOM_URL,
-    ...FAIL_ON_STATUS_CODE,
-    body: {
-      query,
-      variables: queryVariables,
-    },
-  }).as('RESPONSE')
-
-  if (validateResponseFn) {
-    cy.get('@RESPONSE').then((response) => {
-      expect(response.status).to.equal(200)
-      expect(response.body.data).to.not.equal(null)
-      expect(response.body).to.not.have.own.property('errors')
-      expect(response.body).to.not.equal('OK')
-      validateResponseFn(response, params)
-    })
-  } else {
-    return cy.get('@RESPONSE')
-  }
-}
-
 /* 
 vtexus.fedex-shipping and vtex.packing-optimization uses same graphql name
 eg: getAppSettings(), saveAppSetting()
@@ -59,7 +15,7 @@ export function getAppSettings() {
     query:
       'query' +
       '{ getAppSettings @context(provider: "vtexus.fedex-shipping")' +
-      '{userCredentialKey,userCredentialPassword,parentCredentialKey,parentCredentialPassword,clientDetailAccountNumber,clientDetailMeterNumber,isLive,residential,optimizeShippingType,unitWeight,unitDimension,packingAccessKey,slaSettings{sla,hidden,surchargePercent,surchargeFlatRate}}}',
+      '{defaultDeliveryEstimateInDays,userCredentialKey,userCredentialPassword,parentCredentialKey,parentCredentialPassword,clientDetailAccountNumber,clientDetailMeterNumber,isLive,residential,optimizeShippingType,unitWeight,unitDimension,packingAccessKey,slaSettings{sla,hidden,surchargePercent,surchargeFlatRate}}}',
   }
 }
 
@@ -76,13 +32,26 @@ export function saveAppSetting(appDatas, allSla) {
 
   const query =
     'mutation' +
-    '($userCredentialKey: String, $userCredentialPassword: String, $parentCredentialKey: String, $parentCredentialPassword: String, $clientDetailMeterNumber: String, $clientDetailAccountNumber: String, $isLive: Boolean, $residential: Boolean,$optimizeShippingType: Int,$unitWeight: String,$unitDimension: String,$packingAccessKey: String,$slaSettings:[SlaSettingsInput])' +
-    '{saveAppSetting(appSetting: {userCredentialKey:$userCredentialKey,userCredentialPassword:$userCredentialPassword,parentCredentialKey:$parentCredentialKey,parentCredentialPassword:$parentCredentialPassword,clientDetailMeterNumber:$clientDetailMeterNumber,clientDetailAccountNumber:$clientDetailAccountNumber,isLive:$isLive,residential:$residential,optimizeShippingType:$optimizeShippingType,unitWeight:$unitWeight,unitDimension:$unitDimension,packingAccessKey:$packingAccessKey,slaSettings:$slaSettings})' +
+    '($userCredentialKey: String, $userCredentialPassword: String, $defaultDeliveryEstimateInDays: String, $parentCredentialKey: String, $parentCredentialPassword: String, $clientDetailMeterNumber: String, $clientDetailAccountNumber: String, $isLive: Boolean, $residential: Boolean,$optimizeShippingType: Int,$unitWeight: String,$unitDimension: String,$packingAccessKey: String,$slaSettings:[SlaSettingsInput])' +
+    '{saveAppSetting(appSetting: {userCredentialKey:$userCredentialKey,userCredentialPassword:$userCredentialPassword,defaultDeliveryEstimateInDays:$defaultDeliveryEstimateInDays,parentCredentialKey:$parentCredentialKey,parentCredentialPassword:$parentCredentialPassword,clientDetailMeterNumber:$clientDetailMeterNumber,clientDetailAccountNumber:$clientDetailAccountNumber,isLive:$isLive,residential:$residential,optimizeShippingType:$optimizeShippingType,unitWeight:$unitWeight,unitDimension:$unitDimension,packingAccessKey:$packingAccessKey,slaSettings:$slaSettings})' +
     '@context(provider: "vtexus.fedex-shipping")}'
 
   return {
     query,
     queryVariables: appDatas,
+  }
+}
+
+export function savePackingOptimizationAppSetting(settings) {
+  const query =
+    'mutation' +
+    '($accessKey: String, $containerList: [ContainerInput])' +
+    '{saveAppSetting(appSetting: {accessKey:$accessKey,containerList:$containerList})' +
+    '@context(provider: "vtex.packing-optimization")}'
+
+  return {
+    query,
+    queryVariables: settings,
   }
 }
 
@@ -120,7 +89,7 @@ export function validateGetDockConnectionResponse(response) {
       shippingRatesProviders.length > 1 && name.includes('Fedex')
   )
 
-  expect(results.length).to.equal(2)
+  expect(results.length).to.equal(4)
 }
 
 export function validateSaveAppSettingResponse(response) {
@@ -170,16 +139,22 @@ export function validateWareHouseIsActiveAndLinkedWithDocks(
   const { isActive, warehouseDocks } = response.body.data.warehouse
 
   expect(isActive).to.equal(true)
-  const [actualDockId1, actualDockId2] = [
+  const [actualDockId1, actualDockId2, actualDockId3, actualDockId4] = [
     warehouseDocks[0].dockId,
     warehouseDocks[1].dockId,
+    warehouseDocks[2].dockId,
+    warehouseDocks[3].dockId,
   ]
 
-  const [expectedDockId1, expectedDockId2] = [
+  const [expectedDockId1, expectedDockId2, expectedDockId3, expectedDockId4] = [
     dockValues[0].id,
     dockValues[1].id,
+    dockValues[2].id,
+    dockValues[3].id,
   ]
 
   expect(actualDockId1).to.equal(expectedDockId1)
   expect(actualDockId2).to.equal(expectedDockId2)
+  expect(actualDockId3).to.equal(expectedDockId3)
+  expect(actualDockId4).to.equal(expectedDockId4)
 }

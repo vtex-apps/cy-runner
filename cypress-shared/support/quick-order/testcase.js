@@ -6,6 +6,10 @@ import { validateToastMsg, validateToolTipMsg } from '../b2b/utils.js'
 import { updateRetry } from '../common/support.js'
 
 export const POPUP_MSG = "You can't have more than 50 items"
+export const TOOLTIP_MSG = {
+  skuNotFound: /SKU Not Found/i,
+  maxQuantity: /Max quantity is 50(.*)/i,
+}
 
 function ProceedToCheckOut() {
   cy.get(selectors.ProceedToCheckOut).should('be.visible').click()
@@ -51,7 +55,9 @@ export function quickOrderBySkuAndQuantityTestCase1(
   totalPrice = '$180.00'
 ) {
   const title = `Verify ${role} is able to ${
-    quoteEnv ? 'create quote by quick order' : 'add product to checkout'
+    quoteEnv
+      ? 'create quote by quick order'
+      : 'add product to cart & perform checkout'
   } - [Sku's Code],[Quantity]`
 
   it(title, updateRetry(2), () => {
@@ -78,15 +84,33 @@ export function quickOrderBySkuAnd51QuantityTestCase(role, b2b = true) {
     `Verify ${role} is able to add 50 products to cart with 51 quantity by quick order - [Sku's Code],[Quantity]`,
     updateRetry(2),
     () => {
-      const { textArea, validate } = selectors.QuickOrderPage().skus
+      const { textArea, validate, addtoCart } = selectors.QuickOrderPage().skus
 
       cy.gotoQuickOrder(b2b)
       checkBackButtonIsVisible()
       fillSkuAndQuantity(textArea, validate, '880270a,51{enter}')
-      // TODO: https://vtex-dev.atlassian.net/browse/QUICKORDER-37
-      // Once above ticket gets fixed then disable below code
-      // cy.get(addtoCart).should('not.exist')
-      validateToolTipMsg(POPUP_MSG)
+      cy.get(addtoCart).should('not.exist')
+      validateToolTipMsg(TOOLTIP_MSG.maxQuantity)
+    }
+  )
+}
+
+export function quickOrderBySkuAndQuantityWithValidAndInValidSkuTestCase(
+  role,
+  b2b = true
+) {
+  it(
+    `Verify ${role} is not able to use one invalid & valid skus  - [Sku's Code],[Quantity]`,
+    updateRetry(2),
+    () => {
+      const { textArea, validate, addtoCart } = selectors.QuickOrderPage().skus
+
+      cy.gotoQuickOrder(b2b)
+      checkBackButtonIsVisible()
+      fillSkuAndQuantity(textArea, validate, '880270a,51{enter}1,2{enter}')
+      cy.get(addtoCart).should('not.exist')
+      validateToolTipMsg(TOOLTIP_MSG.maxQuantity, 0)
+      validateToolTipMsg(TOOLTIP_MSG.skuNotFound, 1)
     }
   )
 }
@@ -258,22 +282,17 @@ export function quickOrderByXLS(quoteEnv = false) {
   })
 }
 
-function validateNegativeTestCase(vtex) {
-  cy.intercept('POST', `${vtex.baseUrl}/**`).as('validateForm')
-  cy.contains(BUTTON_LABEL.AddToCart).should('be.visible').click()
-  cy.wait('@validateForm')
-  // if we use product with greater than max quantity then addtoCart should not be visible
+function validateNegativeTestCase() {
   cy.contains(BUTTON_LABEL.AddToCart).should('not.exist')
 }
 
 export function quickOrderByXLSNegativeTestCase2(quoteEnv = false) {
   it(`Create quick order with above max quantity`, updateRetry(3), () => {
-    cy.getVtexItems().then((vtex) => {
-      const filePath = 'quickorder_with_max_quantity.xls'
+    const filePath = 'quickorder_with_max_quantity.xls'
 
-      uploadXLS(filePath, quoteEnv)
-      validateNegativeTestCase(vtex)
-    })
+    uploadXLS(filePath, quoteEnv)
+    validateNegativeTestCase()
+    validateToolTipMsg(TOOLTIP_MSG.maxQuantity)
   })
 }
 
@@ -282,13 +301,14 @@ export function quickOrderByXLSNegativeTestCase(quoteEnv) {
     `Create quick order by uploading xls with one valid and one invalid sku line item`,
     updateRetry(3),
     () => {
-      cy.getVtexItems().then((vtex) => {
-        const filePath = 'model-quickorder1.xls'
+      const filePath = 'model-quickorder1.xls'
 
-        uploadXLS(filePath, quoteEnv)
-        cy.get('svg[class*=vtex__icon-delete]:nth-child(1)').last().click()
-        validateForm(quoteEnv, vtex, 1)
-      })
+      uploadXLS(filePath, quoteEnv)
+      validateToolTipMsg(TOOLTIP_MSG.maxQuantity)
+      validateToolTipMsg(TOOLTIP_MSG.skuNotFound, 1)
+      cy.get('svg[class*=vtex__icon-delete]:nth-child(1)').last().click()
+      validateNegativeTestCase()
+      validateToolTipMsg(TOOLTIP_MSG.maxQuantity)
     }
   )
 }

@@ -1,7 +1,23 @@
 ## [Unreleased]
 
 ### Added
-- Improved 2.2 ,2.3 location availability testcases.
+- Improved Shopper location and location availability testcase
+
+### Added
+- [ENGINEERS-875] & [ENGINEERS-876] - Added more quickorder cypress tests
+
+### Added
+- Affirm payments cancellation testcase 
+
+### Changed
+- Fedex Shipping improvements
+
+### Changed
+- Prepend empty characters in address line
+- In refund, workflow delay from 4s to 5s
+
+### Added
+- Added defaultDeliveryEstimateInDays new field in fedex app settings
 
 ### Added
 - Added wipe testcase & improved 2.3 ,2.4 shopper location testcases.

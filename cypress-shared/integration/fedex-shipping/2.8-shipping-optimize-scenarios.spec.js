@@ -1,23 +1,28 @@
 /* eslint-disable jest/valid-expect */
 /* eslint-disable jest/valid-expect-in-promise */
+/* eslint-disable jest/expect-expect */
 import { loginViaCookies, updateRetry } from '../../support/common/support.js'
 import {
-  graphql,
   saveAppSetting,
+  savePackingOptimizationAppSetting,
   validateSaveAppSettingResponse,
 } from '../../support/fedex-shipping/graphql_testcase.js'
 import {
   appSetting,
   smartPackingAccessKey,
+  packingOptimizationSettings,
 } from '../../support/fedex-shipping/outputvalidation.js'
 import { data } from '../../fixtures/fedex-shipping-fixtures/shippingOptimizePayload.json'
 import {
   loadCalculateShippingAPI,
   validateCalculateShipping,
 } from '../../support/fedex-shipping/api_testcase.js'
-import { FEDEX_SHIPPING_APP } from '../../support/fedex-shipping/graphql_apps.js'
-import fedexSelectors from '../../support/common/selectors.js'
+import {
+  FEDEX_SHIPPING_APP,
+  PACKING_OPTIMIZATION,
+} from '../../support/fedex-shipping/graphql_apps.js'
 import sla from '../../support/fedex-shipping/sla.js'
+import { graphql } from '../../support/common/graphql_utils.js'
 
 const prefix = 'Shipping Optimize'
 let NonePackingShippingPrice = ''
@@ -28,22 +33,11 @@ describe(`${prefix} Scenarios`, () => {
   loginViaCookies()
 
   it(`${prefix} - Generate access key`, updateRetry(2), () => {
-    cy.visit('/admin/app/packing-optimization')
-    cy.get(fedexSelectors.SmartPackingAccessKey)
-      .should('be.visible')
-      .clear()
-      .type(smartPackingAccessKey)
-    cy.contains('Save').click()
-    cy.get(fedexSelectors.PickingOptimizeAlert).should(
-      'have.text',
-      'Successfully Saved'
+    graphql(
+      PACKING_OPTIMIZATION,
+      savePackingOptimizationAppSetting(packingOptimizationSettings),
+      validateSaveAppSettingResponse
     )
-    cy.get(fedexSelectors.PackingBoxLength).clear().type(30)
-    cy.get(fedexSelectors.PackingBoxHeight).clear().type(30)
-    cy.get(fedexSelectors.PackingBoxWidth).clear().type(30)
-    // cy.get('#description').type('test')
-    cy.contains('Add To Table').click()
-    cy.get(fedexSelectors.PackingBoxTable).should('be.exist')
   })
 
   it(
@@ -59,11 +53,13 @@ describe(`${prefix} Scenarios`, () => {
           validateSaveAppSettingResponse
         )
       })
-      cy.addDelayBetweenRetries(3000)
+      cy.addDelayBetweenRetries(4000)
       loadCalculateShippingAPI(data).then((response) => {
         validateCalculateShipping(response)
         const filtershippingMethod = response.body.filter(
-          (b) => b.shippingMethod === sla.FirstOvernight
+          (b) =>
+            b.shippingMethod === sla.FirstOvernight ||
+            b.shippingMethod === sla.StandardOvernight
         )
 
         expect(filtershippingMethod)
@@ -87,11 +83,13 @@ describe(`${prefix} Scenarios`, () => {
           validateSaveAppSettingResponse
         )
       })
-      cy.addDelayBetweenRetries(3000)
+      cy.addDelayBetweenRetries(4000)
       loadCalculateShippingAPI(data).then((response) => {
         validateCalculateShipping(response)
         const filtershippingMethod = response.body.filter(
-          (b) => b.shippingMethod === sla.FirstOvernight
+          (b) =>
+            b.shippingMethod === sla.FirstOvernight ||
+            b.shippingMethod === sla.StandardOvernight
         )
 
         expect(filtershippingMethod)
@@ -121,7 +119,9 @@ describe(`${prefix} Scenarios`, () => {
       loadCalculateShippingAPI(data).then((response) => {
         validateCalculateShipping(response)
         const filtershippingMethod = response.body.filter(
-          (b) => b.shippingMethod === sla.FirstOvernight
+          (b) =>
+            b.shippingMethod === sla.FirstOvernight ||
+            b.shippingMethod === sla.StandardOvernight
         )
 
         expect(filtershippingMethod)

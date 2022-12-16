@@ -1,10 +1,10 @@
+/* eslint-disable jest/expect-expect */
 import {
   updateRetry,
   loginViaCookies,
   preserveCookie,
 } from '../../support/common/support'
 import {
-  graphql,
   getAppSettings,
   validateGetAppSettingsResponse,
   getDocks,
@@ -32,6 +32,7 @@ import {
   INVENTORY_GRAPHQL_APP,
   LOGISTICS_CARRIER_GRAPHQL_APP,
 } from '../../support/fedex-shipping/graphql_apps'
+import { graphql } from '../../support/common/graphql_utils'
 
 const prefix = 'Graphql testcase'
 

@@ -1,15 +1,16 @@
 /* eslint-disable jest/valid-expect */
 /* eslint-disable jest/valid-expect-in-promise */
+/* eslint-disable jest/expect-expect */
 import { updateRetry, loginViaCookies } from '../../support/common/support'
 import { appSetting } from '../../support/fedex-shipping/outputvalidation'
 import { FEDEX_SHIPPING_APP } from '../../support/fedex-shipping/graphql_apps.js'
 import {
-  graphql,
   saveAppSetting,
   validateSaveAppSettingResponse,
 } from '../../support/fedex-shipping/graphql_testcase.js'
 import { data } from '../../fixtures/fedex-shipping-fixtures/shippingRatePayload.json'
 import { loadCalculateShippingAPI } from '../../support/fedex-shipping/api_testcase.js'
+import { graphql } from '../../support/common/graphql_utils'
 
 const prefix = 'Hide Sla'
 

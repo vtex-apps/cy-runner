@@ -1,3 +1,5 @@
+export const APP = 'vtex.quickorder@*.x'
+
 export function getSellers() {
   return {
     query:
@@ -32,8 +34,8 @@ export function getSkuFromRefIds(orderFormId) {
     queryVariables: {
       refids: ['880320a'],
       orderFormId,
-      refIdSellerMap: '{"880320a": 1}',
-      refIdQuantityMap: {},
+      refIdSellerMap: { '880320a': 100 },
+      refIdQuantityMap: { '880320a': 100 },
     },
   }
 }
@@ -46,11 +48,11 @@ export function validateSkuFromRefIdsResponse(response) {
       refid: '880320a',
       sellers: [
         {
+          availability: 'partiallyAvailable',
+          availableQuantity: 50,
           id: '1',
           name: 'VTEX',
-          availability: 'available',
           unitMultiplier: 1,
-          availableQuantity: 1,
         },
       ],
     },

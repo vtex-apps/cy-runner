@@ -143,7 +143,7 @@ export function fillAddress(postalCode, timeout = 5000) {
 
         cy.get(selectors.ShipAddressQuery) // eslint-disable-line cypress/no-unnecessary-waiting
           .click()
-          .type(`${fullAddress}`, { delay: 100 })
+          .type(`   ${fullAddress}`, { delay: 100 })
           .wait(1000)
           .type('{downarrow}{enter}')
       } else {
@@ -252,7 +252,8 @@ export function updateShippingInformation({
 }) {
   const { deliveryScreenAddress } = addressList[postalCode]
 
-  if (cy.state('runnable')._currentRetry > 1) cy.reload()
+  cy.addDelayBetweenRetries(3000)
+  if (cy.state('runnable')._currentRetry > 2) cy.reload()
   cy.setorderFormDebugItem()
   cy.get(selectors.CartTimeline).should('be.visible').click({ force: true })
   cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()

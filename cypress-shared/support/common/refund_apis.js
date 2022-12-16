@@ -30,7 +30,7 @@ export function refund(
     'Workflow API should have order status has invoiced',
     updateRetry(5),
     () => {
-      cy.addDelayBetweenRetries(4000)
+      cy.addDelayBetweenRetries(5000)
       cy.getVtexItems().then((vtex) => {
         cy.getOrderItems().then((order) => {
           cy.getAPI(

@@ -1,9 +1,13 @@
 /* eslint-disable jest/valid-expect */
+/* eslint-disable jest/expect-expect */
 /* eslint-disable jest/valid-expect-in-promise */
 import { updateRetry, loginViaCookies } from '../../support/common/support'
 import { appSetting } from '../../support/fedex-shipping/outputvalidation'
 import { data } from '../../fixtures/fedex-shipping-fixtures/shippingRatePayload.json'
-import { updateSLASettings } from '../../support/fedex-shipping/common.js'
+import {
+  filterByShippingMethod,
+  updateSLASettings,
+} from '../../support/fedex-shipping/common.js'
 import {
   loadCalculateShippingAPI,
   validateCalculateShipping,
@@ -25,11 +29,9 @@ describe('Modify SLA - Validate Surcharge Percentage in checkout', () => {
   it(`${prefix} - Verify shipping price`, updateRetry(3), () => {
     loadCalculateShippingAPI(data).then((response) => {
       validateCalculateShipping(response)
-      const filtershippingMethod = response.body.filter(
-        (b) => b.shippingMethod === sla.FirstOvernight
-      )
+      const shippingMethods = filterByShippingMethod(response, sla)
 
-      amount = filtershippingMethod[0].price
+      amount = shippingMethods[0].price
     })
   })
 
@@ -41,16 +43,15 @@ describe('Modify SLA - Validate Surcharge Percentage in checkout', () => {
     `${prefix} - Validate Surcharge Percentage Changes`,
     updateRetry(3),
     () => {
+      // eslint-disable-next-line jest/valid-expect-in-promise
       loadCalculateShippingAPI(data).then((response) => {
         validateCalculateShipping(response)
-        const filtershippingMethod = response.body.filter(
-          (b) => b.shippingMethod === sla.FirstOvernight
-        )
+        const shippingMethods = filterByShippingMethod(response, sla)
 
         const calculatePercentage = (amount * surchargePercent) / 100
         const calculateFlatRate = amount + surchargeFlatRate
 
-        expect(filtershippingMethod[0].price.toFixed(2)).to.equal(
+        expect(shippingMethods[0].price.toFixed(2)).to.equal(
           (calculatePercentage + calculateFlatRate).toFixed(2)
         )
       })
