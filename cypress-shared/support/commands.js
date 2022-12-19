@@ -152,7 +152,7 @@ Cypress.Commands.add('gotoQuickOrder', (b2b = false) => {
   })
 })
 
-Cypress.Commands.add('searchProductinB2B', (product) => {
+Cypress.Commands.add('searchProductinB2B', (product, available = true) => {
   cy.url().then((url) => {
     if (url.includes('checkout')) {
       cy.visit('/')
@@ -167,11 +167,13 @@ Cypress.Commands.add('searchProductinB2B', (product) => {
       .clear()
       .type(product, { force: true })
       .type('{enter}', { force: true })
-    cy.get(selectors.searchResult).should('be.visible')
-    cy.get('article div[class*=storefront-permissions-ui]')
-      .should('be.visible')
-      .first()
-      .scrollIntoView()
+    if (available) {
+      cy.get(selectors.searchResult).should('be.visible')
+      cy.get('article div[class*=storefront-permissions-ui]')
+        .should('be.visible')
+        .first()
+        .scrollIntoView()
+    }
   })
 })
 
