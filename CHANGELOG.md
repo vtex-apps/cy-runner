@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Changed
+- Fedex Shipping tests run time improvements
+
 ## [1.0.3] - 2022-12-19
 
 ### Fixed
