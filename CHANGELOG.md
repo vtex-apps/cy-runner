@@ -3,8 +3,14 @@
 ### Changed
 - Fedex Shipping tests run time improvements
 
+## [1.0.3] - 2022-12-19
+
+### Fixed
+- [ENGINEERS-962] Fix on label for PR from forks (created vs authorized)
+
 ### Fixed
 - [ENGINEERS-975] Improve b2b checkout tests
+
 ### Fixed
 - [ENGINEERS-962] Proper identification when a PR is from Fork
 
