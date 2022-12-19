@@ -54,7 +54,7 @@ Cypress.Commands.add(
         cy.scrollTo('top')
         cy.contains(selector).should('be.visible').click()
       } else if (selector) {
-        cy.get(selector).last().should('be.visible').click()
+        cy.get(selector).should('be.visible').last().click()
       } else if (contains) {
         cy.contains(contains).should('be.visible').click()
       }
@@ -167,6 +167,11 @@ Cypress.Commands.add('searchProductinB2B', (product) => {
       .clear()
       .type(product, { force: true })
       .type('{enter}', { force: true })
+    cy.get(selectors.searchResult).should('be.visible')
+    cy.get('article div[class*=storefront-permissions-ui]')
+      .should('be.visible')
+      .first()
+      .scrollIntoView()
   })
 })
 
