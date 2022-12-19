@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [1.0.3] - 2022-12-19
+
 ### Fixed
 - [ENGINEERS-962] Fix on label for PR from forks (created vs authorized)
 
