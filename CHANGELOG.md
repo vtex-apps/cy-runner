@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 ### Fixed
+- [ENGINEERS-962] Fix on label for PR from forks (created vs authorized)
+
+### Fixed
 - [ENGINEERS-962] Proper identification when a PR is from Fork
 
 ### Added
