@@ -165,7 +165,7 @@ export function loginToAdyen() {
   it('Login to adyen dashboard', updateRetry(2), () => {
     cy.visit(adyenLoginUrl)
     cy.get('body').then(($body) => {
-      if ($body.find(selectors.AdyenLoginUsername).length) {
+      if (!$body.find('div.app').length) {
         cy.get(selectors.AdyenLoginUsername).type(adyenLoginUsername, {
           log: false,
         })

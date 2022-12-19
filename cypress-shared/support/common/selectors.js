@@ -457,7 +457,7 @@ export default {
   AdyenPlatformApiKey: 'input[id="apiKey"]',
   AdyenPlatformProductionURI: 'input[id="liveEndpoint"]',
   AdyenLoginUsername: 'input[name="userName"]',
-  AdyenLoginPassword: 'input[name="password"]',
+  AdyenLoginPassword: 'input[type="password"]',
   AdyenLoginAccount: 'input[name="account"]',
   AdyenLoginSubmit: 'button[type="submit"]',
   // End here
