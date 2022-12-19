@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Changed
+- Fedex Shipping tests run time improvements
+
 ### Fixed
 - [ENGINEERS-962] Proper identification when a PR is from Fork
 
