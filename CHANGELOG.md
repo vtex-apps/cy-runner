@@ -4,7 +4,13 @@
 - [ENGINEERS-962] Fix on label for PR from forks (created vs authorized)
 
 ### Fixed
+- [ENGINEERS-975] Improve b2b checkout tests
+
+### Fixed
 - [ENGINEERS-962] Proper identification when a PR is from Fork
+
+### Added
+- Improved Shopper location and location availability testcase
 
 ### Added
 - [ENGINEERS-875] & [ENGINEERS-876] - Added more quickorder cypress tests
