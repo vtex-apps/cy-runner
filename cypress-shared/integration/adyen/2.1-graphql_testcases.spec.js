@@ -19,7 +19,6 @@ import {
   validateUpdateAccount,
 } from '../../support/adyen/graphql_testcase'
 import { graphql } from '../../support/common/graphql_utils'
-import { APP } from '../../support/adyen/constants'
 import { updateRetry, loginViaCookies } from '../../support/common/support'
 import { createAccount, schedule } from '../../support/adyen/outputvalidation'
 import { getAllAccount, getOnBoarding } from '../../support/adyen/api_testcase'
@@ -31,6 +30,7 @@ const accountHolderJson = '.accountholder.json'
 const accountTokenJson = '.accounttoken.json'
 const accountHolderCodeJson = '.accountholderCode.json'
 
+const APP = 'vtex.adyen-platforms'
 const { sellerId } = createAccount
 const prefix = 'Graphql testcase'
 
