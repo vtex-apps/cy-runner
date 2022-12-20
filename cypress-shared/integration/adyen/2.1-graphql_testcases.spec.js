@@ -1,7 +1,6 @@
 /* eslint-disable padding-line-between-statements */
 /* eslint-disable jest/expect-expect */
 import {
-  graphql,
   createAccountHolder,
   validateCreateAccountHolderResponse,
   refreshOnboarding,
@@ -19,6 +18,7 @@ import {
   validateAdyenAccountHolderResponse,
   validateUpdateAccount,
 } from '../../support/adyen/graphql_testcase'
+import { graphql } from '../../support/common/graphql_utils'
 import { updateRetry, loginViaCookies } from '../../support/common/support'
 import { createAccount, schedule } from '../../support/adyen/outputvalidation'
 import { getAllAccount, getOnBoarding } from '../../support/adyen/api_testcase'
@@ -30,6 +30,7 @@ const accountHolderJson = '.accountholder.json'
 const accountTokenJson = '.accounttoken.json'
 const accountHolderCodeJson = '.accountholderCode.json'
 
+const APP = 'vtex.adyen-platforms'
 const { sellerId } = createAccount
 const prefix = 'Graphql testcase'
 
@@ -40,7 +41,7 @@ describe('Adyen GraphQL Validation', () => {
   deleteAccountHoldersFromMasterData()
 
   it(`${prefix} - Create Account Holder`, updateRetry(2), () => {
-    graphql(createAccountHolder(createAccount), (response) => {
+    graphql(APP, createAccountHolder(createAccount), (response) => {
       validateCreateAccountHolderResponse(response)
       cy.writeFile(accountJson, {
         newAccount: response.body.data.createAccountHolder.adyenAccountHolder,
@@ -49,20 +50,25 @@ describe('Adyen GraphQL Validation', () => {
   })
 
   it(`${prefix} - Get Sellers`, updateRetry(2), () => {
-    graphql(sellers(), validateSellersResponse)
+    graphql(APP, sellers(), validateSellersResponse)
   })
 
   it(`${prefix} - Get Adyen Account`, updateRetry(2), () => {
-    graphql(getAdyenAccount(), validateGetAdyenAccountResponse)
+    graphql(APP, getAdyenAccount(), validateGetAdyenAccountResponse)
   })
 
   it(`${prefix} - Adyen Account Holder`, updateRetry(2), () => {
-    graphql(adyenAccountHolder(sellerId), validateAdyenAccountHolderResponse)
+    graphql(
+      APP,
+      adyenAccountHolder(sellerId),
+      validateAdyenAccountHolderResponse
+    )
   })
 
   it(`${prefix} - Refresh On Boarding`, updateRetry(2), () => {
     cy.readFile(accountJson).then((items) => {
       graphql(
+        APP,
         refreshOnboarding(items.newAccount.accountHolderCode),
         (response) => {
           validateRefreshOnboardingResponse(response)
@@ -89,6 +95,7 @@ describe('Adyen GraphQL Validation', () => {
         }
       }
       graphql(
+        APP,
         updateAccount(accountCode[0].accountCode, schedule),
         validateUpdateAccount
       )
@@ -98,7 +105,11 @@ describe('Adyen GraphQL Validation', () => {
   it(`${prefix} - onboardingComplete`, updateRetry(2), () => {
     cy.readFile(accountHolderCodeJson).then((items) => {
       const { accountHolderCode } = items
-      graphql(onboardingComplete(accountHolderCode), validateonboardingComplete)
+      graphql(
+        APP,
+        onboardingComplete(accountHolderCode),
+        validateonboardingComplete
+      )
     })
   })
 
@@ -107,6 +118,7 @@ describe('Adyen GraphQL Validation', () => {
   it(`${prefix} - Close Account Holder`, updateRetry(2), () => {
     cy.readFile(accountJson).then((items) => {
       graphql(
+        APP,
         closeAccountHolder(items.newAccount.accountHolderCode),
         validateCloseAccountHolderResponse
       )
