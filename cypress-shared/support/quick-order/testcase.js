@@ -147,7 +147,9 @@ export function quickOrderByOneByOneTestCase(
       searchOneByOneProduct(search, { product, quantity }, 1)
       cy.get(add).should('be.visible').click()
       cy.get(selectors.QuickOrderPage().popupMsgSelector).should('be.visible')
-      cy.get(selectors.ToastMsgInB2B).contains('added to the cart')
+      cy.get(selectors.ToastMsgInB2B)
+        .should('be.visible')
+        .contains('added to the cart')
       cy.get(selectors.OpenCart).first().click()
       cy.get(selectors.MiniCartProductName).should('contain', product)
       cy.get(selectors.TotalPrice).should('have.text', totalPrice)
@@ -198,9 +200,9 @@ function quickOrderCategory(quoteEnv, number, totalPrice) {
     .clear({ timeout: 8000 })
     .type(number, { force: true })
   cy.get(addtoCart).should('be.visible').click()
-  cy.get(selectors.ToastMsgInB2B, { timeout: 10000 }).contains(
-    number > 50 ? POPUP_MSG : TOAST_MSG.addedToTheCart
-  )
+  cy.get(selectors.ToastMsgInB2B, { timeout: 10000 })
+    .should('be.visible')
+    .contains(number > 50 ? POPUP_MSG : TOAST_MSG.addedToTheCart)
   cy.get(selectors.OpenCart).first().should('be.visible').click()
   cy.get(selectors.MiniCartProductName).should('contain', 'Golf Shoes')
   cy.get(selectors.TotalPrice).should('have.text', totalPrice)

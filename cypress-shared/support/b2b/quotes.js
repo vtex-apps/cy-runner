@@ -23,7 +23,7 @@ export function fillQuoteInformation({
 
       const price = $div.text()
 
-      cy.get(selectors.CreateQuote).last().should('be.visible').click()
+      cy.waitForGraphql('GetOrderForm', selectors.CreateQuote)
 
       cy.get(selectors.QuoteName).should('be.visible').clear().type(quoteEnv)
       if (notes) {
@@ -387,6 +387,7 @@ export function useQuoteForPlacingTheOrder(quote, role) {
 
 export function verifySubTotal(quote) {
   it(`Verify SubTotal in checkoutPage`, updateRetry(2), () => {
+    cy.addDelayBetweenRetries(5000)
     cy.getQuotesItems().then((quotes) => {
       const price = quotes[`${quote}-price`]
 
