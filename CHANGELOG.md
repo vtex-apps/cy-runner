@@ -1,9 +1,6 @@
 ## [Unreleased]
 
 ### Changed
-- [ENGINEERS-985] & [ENGINEERS-986] Affirm selectors improvement
-
-### Changed
 - Fedex Shipping tests run time improvements
 
 ## [1.0.3] - 2022-12-19
