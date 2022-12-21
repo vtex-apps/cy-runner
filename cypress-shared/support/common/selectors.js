@@ -448,7 +448,7 @@ export default {
   AffirmInstallmentOption: 'span[data-test="installment-length"]',
   AffirmIndicatorOption:
     'label[for="autopay-toggle"] div[data-testid="indicator"]', // Auto payment & Privacy policy option selector
-  AffirmDisClosureCheckbox: 'div[data-testid="disclosure-checkbox-indicator"]',
+  AffirmDisClosureCheckbox: 'input[id="confirm-disclosure-checkbox"]',
 
   // Adyen selectors starts
   AdyenAdminIframe: 'iframe[data-testid="admin-iframe-container"]',
