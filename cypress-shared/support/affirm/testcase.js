@@ -79,6 +79,7 @@ export function initiatePayment({
 
         cy.getIframeBody('#checkout-application')
           .find(selectors.AffirmDisClosureCheckbox)
+          .scrollIntoView()
           .click()
 
         cy.getIframeBody('#checkout-application')
