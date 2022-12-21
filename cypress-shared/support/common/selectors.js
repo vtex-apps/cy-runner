@@ -446,8 +446,9 @@ export default {
   AffirmSubmit: 'button[data-testid="submit-button"]',
   AffirmPhonePin: 'input[data-testid="phone-pin-field"]',
   AffirmInstallmentOption: 'span[data-test="installment-length"]',
-  AffirmIndicatorOption: 'div[data-testid="indicator"]', // Auto payment & Privacy policy option selector
-  AffirmDisClosureCheckbox: 'div[data-testid="disclosure-checkbox-indicator"]',
+  AffirmIndicatorOption:
+    'label[for="autopay-toggle"] div[data-testid="indicator"]', // Auto payment & Privacy policy option selector
+  AffirmDisClosureCheckbox: 'label[for="confirm-disclosure-checkbox"]',
 
   // Adyen selectors starts
   AdyenAdminIframe: 'iframe[data-testid="admin-iframe-container"]',
