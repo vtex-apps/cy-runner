@@ -67,7 +67,6 @@ export function verifyAddress(address) {
       cy.get(selectors.PostalCodeText, { timeout: 5000 })
         .contains(postalCode)
         .click()
-      cy.get(selectors.GotoPaymentBtn, { timeout: 5000 }).should('be.visible')
     }
 
     cy.get('body').then(($body) => {
