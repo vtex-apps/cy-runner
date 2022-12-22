@@ -14,7 +14,7 @@ import {
 } from '../../support/b2b/common.js'
 import { searchQuote, filterQuoteByStatus } from '../../support/b2b/quotes.js'
 
-describe('Organization A - Cost Center A1 - Sales Manager Quote Access Scenario', () => {
+describe('Organization A - Cost Center A1 - Sales Manager Basic Scenario', () => {
   loginViaCookies({ storeFrontCookie: false })
 
   const { nonAvailableProduct, users, costCenter1, quotes, gmailCreds } =

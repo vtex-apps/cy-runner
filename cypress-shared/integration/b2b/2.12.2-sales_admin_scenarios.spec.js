@@ -44,7 +44,7 @@ function QuotesAccess(
   )
 }
 
-describe('Organization A - Cost Center A1 - Sales Admin Scenario', () => {
+describe('Organization A - Cost Center A1 - Sales Admin Impersonation Scenario', () => {
   loginViaCookies({ storeFrontCookie: false })
 
   const { product, costCenter1, users, quotes, gmailCreds } = b2b.OrganizationA

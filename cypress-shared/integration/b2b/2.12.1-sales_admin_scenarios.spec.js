@@ -20,7 +20,7 @@ import {
   // filterQuote,
 } from '../../support/b2b/quotes.js'
 
-describe('Organization A - Cost Center A1 - Sales Admin Scenario', () => {
+describe('Organization A - Cost Center A1 - Sales Admin Basic Scenario', () => {
   loginViaCookies({ storeFrontCookie: false })
 
   const { nonAvailableProduct, costCenter1, users, quotes, gmailCreds } =
