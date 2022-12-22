@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Added
+- Added verify excel data testcase 
+
 ### Changed
 - [ENGINEERS-985] & [ENGINEERS-986] Affirm selectors improvement
 
