@@ -56,9 +56,7 @@ export function verifyAddress(address) {
     cy.get('body').then(($shipping) => {
       if ($shipping.find(selectors.OpenShipping).length) {
         cy.get(selectors.OpenShipping, { timeout: 5000 }).click()
-      }
-
-      if ($shipping.find(selectors.EditShipping).length) {
+      } else if ($shipping.find(selectors.EditShipping).length) {
         cy.get(selectors.EditShipping).should('be.visible').click()
       }
     })
