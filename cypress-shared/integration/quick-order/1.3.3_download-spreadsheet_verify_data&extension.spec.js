@@ -11,14 +11,10 @@ const fileName = 'cypress/downloads/model-quickorder.xls'
 describe('Quickorder - Verify the data and extension in the spreadsheet', () => {
   loginViaCookies()
 
-  it(
-    'Download the quickOrder spreadsheet and verify the data & extension',
-    updateRetry(3),
-    () => {
-      cy.gotoQuickOrder()
-      cy.contains('Click here to download a spreadsheet model').click()
-    }
-  )
+  it('Download the quickOrder spreadsheet', updateRetry(3), () => {
+    cy.gotoQuickOrder()
+    cy.contains('Click here to download a spreadsheet model').click()
+  })
 
   verifyExcelFile(fileName, products)
 
