@@ -38,7 +38,7 @@ export function refund(
             VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken)
           ).then((response) => {
             expect(response.status).to.equal(200)
-            expect(response.body.currentState).to.equal('invoiced')
+            expect(response.body.currentState).to.equal('invoice')
           })
         })
       })
