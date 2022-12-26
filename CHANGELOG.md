@@ -18,6 +18,9 @@
 - [ENGINEERS-962] Proper identification when a PR is from Fork
 
 ### Added
+- [ENGINEERS-990] [ENGINEERS-991] - Added graphQL validation to be not null
+
+### Added
 - Improved Shopper location and location availability testcase
 
 ### Added
