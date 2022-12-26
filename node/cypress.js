@@ -95,6 +95,7 @@ exports.open = async () => {
       integrationFolder: `${CY_FOLDER}/integration`,
       supportFile: `${CY_FOLDER}/support`,
       fixturesFolder: `${CY_FOLDER}/fixtures`,
+      pluginsFile: `${CY_FOLDER}/plugins/index.js`,
     },
   }
 
@@ -125,6 +126,7 @@ exports.run = async (test, config, addOptions = {}) => {
       integrationFolder: SPEC_PATH,
       supportFile: `${SPEC_PATH.split(path.sep)[0]}/support`,
       fixturesFolder: `${CY_FOLDER}/fixtures`,
+      pluginsFile: `${CY_FOLDER}/plugins/index.js`,
     },
     spec: test.specs,
     headed: config.base.cypress.runHeaded,
