@@ -1,5 +1,19 @@
 ## [Unreleased]
 
+### Changed
+- [ENGINEERS-985] & [ENGINEERS-986] Affirm selectors improvement
+
+### Changed
+- Fedex Shipping tests run time improvements
+
+## [1.0.3] - 2022-12-19
+
+### Fixed
+- [ENGINEERS-962] Fix on label for PR from forks (created vs authorized)
+
+### Fixed
+- [ENGINEERS-975] Improve b2b checkout tests
+
 ### Fixed
 - [ENGINEERS-975] Improve b2b checkout tests
 ### Fixed
@@ -7,6 +21,9 @@
 
 ### Added
 - Improved Shopper location and location availability testcase
+
+### Added
+- [ENGINEERS-954] - Added graphQL common function & improved postsetup ,adyenLogin function
 
 ### Added
 - [ENGINEERS-875] & [ENGINEERS-876] - Added more quickorder cypress tests

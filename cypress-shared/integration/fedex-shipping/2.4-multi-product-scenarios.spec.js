@@ -1,3 +1,4 @@
+/* eslint-disable jest/no-conditional-expect */
 /* eslint-disable jest/expect-expect */
 /* eslint-disable jest/valid-expect */
 /* eslint-disable jest/valid-expect-in-promise */
@@ -8,10 +9,9 @@ import {
   loadCalculateShippingAPI,
   validateCalculateShipping,
 } from '../../support/fedex-shipping/api_testcase.js'
-import sla from '../../support/fedex-shipping/sla.js'
 
 const { prefix } = multiProduct
-let amount = ''
+let shippingMethods = []
 
 describe(`${prefix} Scenarios`, () => {
   loginViaCookies()
@@ -19,13 +19,7 @@ describe(`${prefix} Scenarios`, () => {
   it(`${prefix} - Verify multi product shipping price`, updateRetry(3), () => {
     loadCalculateShippingAPI(data).then((response) => {
       validateCalculateShipping(response)
-      const filtershippingMethod = response.body.filter(
-        (b) =>
-          b.shippingMethod === sla.FirstOvernight ||
-          b.shippingMethod === sla.StandardOvernight
-      )
-
-      amount = filtershippingMethod[1].price
+      shippingMethods = response.body
     })
   })
 
@@ -36,15 +30,20 @@ describe(`${prefix} Scenarios`, () => {
       data.items[1].quantity = 2
       loadCalculateShippingAPI(data).then((response) => {
         validateCalculateShipping(response)
-        const filtershippingMethod = response.body.filter(
-          (b) =>
-            b.shippingMethod === sla.FirstOvernight ||
-            b.shippingMethod === sla.StandardOvernight
-        )
+        shippingMethods.forEach((shippingMethod) => {
+          response.body.forEach((res) => {
+            if (
+              res.shippingMethod === shippingMethod.shippingMethod &&
+              res.numberOfPackages === 2
+            ) {
+              expect(shippingMethod.shippingMethod).to.equal(res.shippingMethod)
 
-        expect(parseFloat(filtershippingMethod[1].price.toFixed(2))).to.equal(
-          parseFloat(amount) * 2
-        )
+              expect(parseFloat(res.price.toFixed(2))).to.equal(
+                shippingMethod.price * 2
+              )
+            }
+          })
+        })
       })
     }
   )

@@ -53,7 +53,7 @@ describe(`${prefix} Scenarios`, () => {
           validateSaveAppSettingResponse
         )
       })
-      cy.addDelayBetweenRetries(4000)
+      cy.addDelayBetweenRetries(10000)
       loadCalculateShippingAPI(data).then((response) => {
         validateCalculateShipping(response)
         const filtershippingMethod = response.body.filter(
@@ -83,7 +83,7 @@ describe(`${prefix} Scenarios`, () => {
           validateSaveAppSettingResponse
         )
       })
-      cy.addDelayBetweenRetries(4000)
+      cy.addDelayBetweenRetries(10000)
       loadCalculateShippingAPI(data).then((response) => {
         validateCalculateShipping(response)
         const filtershippingMethod = response.body.filter(
@@ -115,7 +115,7 @@ describe(`${prefix} Scenarios`, () => {
           validateSaveAppSettingResponse
         )
       })
-      cy.addDelayBetweenRetries(6000)
+      cy.addDelayBetweenRetries(10000)
       loadCalculateShippingAPI(data).then((response) => {
         validateCalculateShipping(response)
         const filtershippingMethod = response.body.filter(

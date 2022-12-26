@@ -1,3 +1,4 @@
+/* eslint-disable jest/no-conditional-expect */
 /* eslint-disable jest/expect-expect */
 /* eslint-disable jest/valid-expect */
 /* eslint-disable jest/valid-expect-in-promise */
@@ -16,11 +17,10 @@ import {
   validateInventory,
 } from '../../support/fedex-shipping/graphql_testcase.js'
 import { INVENTORY_GRAPHQL_APP } from '../../support/fedex-shipping/graphql_apps.js'
-import sla from '../../support/fedex-shipping/sla.js'
 import { graphql } from '../../support/common/graphql_utils'
 
 const { prefix } = singleProduct
-let shippingMethod = {}
+let shippingMethods = []
 
 describe(`${prefix} Scenarios`, () => {
   loginViaCookies()
@@ -39,13 +39,7 @@ describe(`${prefix} Scenarios`, () => {
   it(`${prefix} - Verify single product shipping price`, updateRetry(3), () => {
     loadCalculateShippingAPI(data).then((response) => {
       validateCalculateShipping(response)
-      const filtershippingMethod = response.body.filter(
-        (b) =>
-          b.shippingMethod === sla.FirstOvernight ||
-          b.shippingMethod === sla.StandardOvernight
-      )
-
-      shippingMethod = filtershippingMethod[0]
+      shippingMethods = response.body
     })
   })
 
@@ -56,16 +50,15 @@ describe(`${prefix} Scenarios`, () => {
       data.items[0].quantity = 2
       loadCalculateShippingAPI(data).then((response) => {
         validateCalculateShipping(response)
-        const filtershippingMethod = response.body.filter(
-          (b) =>
-            b.shippingMethod === sla.FirstOvernight ||
-            b.shippingMethod === sla.StandardOvernight
-        )
+        shippingMethods.forEach((shippingMethod) => {
+          response.body.forEach((res) => {
+            if (res.shippingMethod === shippingMethod.shippingMethod) {
+              expect(shippingMethod.shippingMethod).to.equal(res.shippingMethod)
 
-        expect(shippingMethod.shippingMethod).to.equal(
-          filtershippingMethod[0].shippingMethod
-        )
-        expect(filtershippingMethod[0].price).to.equal(shippingMethod.price * 2)
+              expect(res.price).to.equal(shippingMethod.price * 2)
+            }
+          })
+        })
       })
     }
   )
