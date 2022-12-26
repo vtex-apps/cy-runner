@@ -21,7 +21,7 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
   const RUN_URL = `${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}`
   const IS_SCH = process.env.GITHUB_EVENT_NAME === 'schedule' ?? false
   const IS_DIS = process.env.GITHUB_EVENT_NAME === 'workflow_dispatch' ?? false
-  const IS_FRK = typeof GH_REF !== 'number'
+  const IS_PRN = /^-?[0-9]+$/.test(`${GH_REF}`)
 
   // If DISPATCH, avoid any ticket creation
   if (IS_DIS) {
@@ -40,7 +40,7 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
   // Jira - You can set config.base.jira.testing as true for tests
   // JIRA.board = JIRA.testing || IS_SCH ? 'ENGINEERS' : JIRA.board
   JIRA.board = 'ENGINEERS'
-  const PR = IS_FRK ? 'FORK' : `PR #${GH_REF}`
+  const PR = IS_PRN ? `PR #${GH_REF}` : 'FORK'
   const SUMMARY = IS_SCH ? `SCHEDULE ${GITHUB_REPOSITORY}:` : `${PR}:`
   const JQL = `summary ~ '${SUMMARY}' AND project = '${JIRA.board}' AND statusCategory IN ('undefined', 'In Progress', 'To Do')`
   const PRIORITY = JIRA.priority ?? 'High'
@@ -102,7 +102,7 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
               {
                 type: 'text',
                 text: ` ${
-                  IS_FRK ? 'authorized' : 'created'
+                  IS_PRN ? 'created' : 'authorized'
                 } by ${GITHUB_ACTOR}; failed on\n`,
               },
               ...FAILURES,
