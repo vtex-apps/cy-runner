@@ -1,3 +1,4 @@
+/* eslint-disable jest/no-conditional-expect */
 /* eslint-disable jest/valid-expect */
 /* eslint-disable jest/valid-expect-in-promise */
 /* eslint-disable jest/expect-expect */
@@ -9,10 +10,9 @@ import {
   loadCalculateShippingAPI,
   validateCalculateShipping,
 } from '../../support/fedex-shipping/api_testcase.js'
-import sla from '../../support/fedex-shipping/sla.js'
 
 const prefix = 'Update SLA - Surcharge Flat Rate & Surcharge Percentage'
-let amount = 0
+let shippingMethods = []
 const surchargeFlatRate = 10
 const surchargePercent = 15
 
@@ -30,11 +30,7 @@ describe(`${prefix} Scenarios`, () => {
   it(`${prefix} - Verify single product shipping price`, updateRetry(3), () => {
     loadCalculateShippingAPI(data).then((response) => {
       validateCalculateShipping(response)
-      const filtershippingMethod = response.body.filter(
-        (b) => b.shippingMethod === sla.FedexHomeDelivery
-      )
-
-      amount = filtershippingMethod[0].price
+      shippingMethods = response.body
     })
   })
 
@@ -49,17 +45,21 @@ describe(`${prefix} Scenarios`, () => {
   it(`${prefix} - Validate Surcharge Changes`, updateRetry(3), () => {
     loadCalculateShippingAPI(data).then((response) => {
       validateCalculateShipping(response)
-      const filtershippingMethod = response.body.filter(
-        (b) => b.shippingMethod === sla.FedexHomeDelivery
-      )
 
-      const percentage = (amount * surchargePercent) / 100
-      const rate = amount + surchargeFlatRate
-      const total = percentage + rate
+      shippingMethods.forEach((shippingMethod) => {
+        response.body.forEach((res) => {
+          // eslint-disable-next-line vtex/prefer-early-return
+          if (res.shippingMethod === shippingMethod.shippingMethod) {
+            const percentage = (shippingMethod.price * surchargePercent) / 100
+            const rate = shippingMethod.price + surchargeFlatRate
+            const total = percentage + rate
 
-      expect(filtershippingMethod[0].price.toFixed(2)).to.equal(
-        total.toFixed(2)
-      )
+            expect(parseFloat(res.price.toFixed(2))).to.equal(
+              parseFloat(total.toFixed(2))
+            )
+          }
+        })
+      })
     })
   })
 })

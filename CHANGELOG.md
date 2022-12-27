@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+
+### Changed
+- Verify Fedex Shipping prices code improvements
+
 ### Changed
 - Fedex Shipping tests run time improvements
 
