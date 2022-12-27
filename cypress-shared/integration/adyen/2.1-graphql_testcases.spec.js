@@ -80,8 +80,6 @@ describe('Adyen GraphQL Validation', () => {
     })
   })
 
-  getOnBoarding()
-
   getAllAccount(sellerId)
 
   it(`${prefix} - updateAccount`, updateRetry(2), () => {
@@ -114,6 +112,8 @@ describe('Adyen GraphQL Validation', () => {
   })
 
   createOnBoardingLink(false)
+
+  getOnBoarding()
 
   it(`${prefix} - Close Account Holder`, updateRetry(2), () => {
     cy.readFile(accountJson).then((items) => {

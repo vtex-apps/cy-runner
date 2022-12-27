@@ -3,6 +3,11 @@
 ### Added
 - Added verify excel data testcase 
 
+## [1.0.4] - 2022-12-27
+
+### Fixed
+- [ENGINEERS-987] Fix fork message for PRN
+
 ### Changed
 - [ENGINEERS-985] & [ENGINEERS-986] Affirm selectors improvement
 
@@ -19,6 +24,9 @@
 
 ### Fixed
 - [ENGINEERS-962] Proper identification when a PR is from Fork
+
+### Added
+- [ENGINEERS-990] [ENGINEERS-991] - Added graphQL validation to be not null
 
 ### Added
 - Improved Shopper location and location availability testcase
