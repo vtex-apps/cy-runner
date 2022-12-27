@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [1.0.4] - 2022-12-27
+
 ### Fixed
 - [ENGINEERS-987] Fix fork message for PRN
 
