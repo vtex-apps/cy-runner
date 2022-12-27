@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [2.0.0] - 2022-12-27
+
 ### Added
 - Added verify excel data testcase 
 
