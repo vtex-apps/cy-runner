@@ -6,6 +6,13 @@ const system = require('./system')
 module.exports.issue = async (config, specsFailed, runUrl) => {
   logger.msgSection('Jira ticket automation', true)
 
+  // If LOCAL, avoid any ticket creation
+  if (!system.isCI()) {
+    logger.msgWarn('Not on CI, skipping ticket creation')
+
+    return
+  }
+
   const {
     GITHUB_REPOSITORY,
     GITHUB_REF,
@@ -26,13 +33,6 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
   // If DISPATCH, avoid any ticket creation
   if (IS_DIS) {
     logger.msgWarn('It was triggered by dispatch, skipping ticket creation')
-
-    return
-  }
-
-  // If LOCAL, avoid any ticket creation
-  if (!system.isCI()) {
-    logger.msgWarn('Not on CI, skipping ticket creation')
 
     return
   }
