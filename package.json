@@ -39,7 +39,7 @@
   },
   "homepage": "https://github.com/vtex-apps/cy-runner#readme",
   "dependencies": {
-    "axios": "^0.26.0",
+    "axios": "^1.2.1",
     "cypress": "^9.6.0",
     "cypress-file-upload": "^5.0.8",
     "js-yaml": "^4.1.0",
