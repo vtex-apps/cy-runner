@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Fixed
+- [ENGINEERS-987] Fix fork message for PRN
+
 ### Changed
 - [ENGINEERS-985] & [ENGINEERS-986] Affirm selectors improvement
 
