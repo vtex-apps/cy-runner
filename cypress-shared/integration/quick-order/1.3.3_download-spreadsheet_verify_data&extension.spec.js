@@ -6,7 +6,7 @@ import {
 import { verifyExcelFile } from '../../support/quick-order/testcase'
 import { products } from '../../support/quick-order/product.js'
 
-const fileName = 'cypress/downloads/model-quickorder.xls'
+const fileName = 'cypress-shared/downloads/model-quickorder.xls'
 
 describe('Quickorder - Verify the data and extension in the spreadsheet', () => {
   loginViaCookies()

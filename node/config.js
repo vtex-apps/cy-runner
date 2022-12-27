@@ -109,12 +109,12 @@ exports.getConfig = async (configFile) => {
     logger.msgOk('Linking local Cypress code on Cy-Runner')
 
     // Create common links inside cypress
-    const com = path.join(dst, 'common')
+    const common = path.join(dst, 'common')
     const clean = path.join(__dirname, '..', '..')
 
-    logger.msgPad(`${src.replace(clean, '.')} -> ${com.replace(clean, '.')}`)
-    if (storage.exists(com)) storage.unLink(com)
-    storage.link(src, com)
+    logger.msgPad(`${src.replace(clean, '.')} -> ${common.replace(clean, '.')}`)
+    if (storage.exists(common)) storage.unLink(common)
+    storage.link(src, common)
 
     // Create cypress link inside cy-runner
     logger.msgPad(`${cyp.replace(clean, '.')} -> ${lnk.replace(clean, '.')}`)
