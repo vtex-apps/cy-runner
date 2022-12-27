@@ -21,7 +21,7 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
   const RUN_URL = `${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}`
   const IS_SCH = process.env.GITHUB_EVENT_NAME === 'schedule' ?? false
   const IS_DIS = process.env.GITHUB_EVENT_NAME === 'workflow_dispatch' ?? false
-  const IS_PRN = /^-?[0-9]+$/.test(`${GH_REF}`)
+  const IS_PRN = /^-?\d+$/.test(`${GH_REF}`)
 
   // If DISPATCH, avoid any ticket creation
   if (IS_DIS) {
