@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Fixed
+- Bump decode-uri-component to 0.2.2
+
 ## [2.0.0] - 2022-12-27
 
 ### Added
