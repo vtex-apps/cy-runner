@@ -314,3 +314,15 @@ export function quickOrderByXLSNegativeTestCase(quoteEnv) {
     }
   )
 }
+
+export function verifyExcelFile(fileName, products) {
+  it('verify the data and extension', updateRetry(3), () => {
+    cy.task('readXlsx', {
+      file: fileName,
+      sheet: 'SheetJS',
+    }).then((rows) => {
+      expect(rows.length).to.be.greaterThan(1)
+      expect(JSON.stringify(rows)).to.be.equal(JSON.stringify(products))
+    })
+  })
+}

@@ -1,5 +1,20 @@
 ## [Unreleased]
 
+## [2.0.1] - 2022-12-27
+
+### Fixed
+- Bump decode-uri-component to 0.2.2
+
+## [2.0.0] - 2022-12-27
+
+### Added
+- Added verify excel data testcase 
+
+## [1.0.4] - 2022-12-27
+
+### Fixed
+- [ENGINEERS-987] Fix fork message for PRN
+
 ### Changed
 - [ENGINEERS-985] & [ENGINEERS-986] Affirm selectors improvement
 
@@ -18,6 +33,9 @@
 - [ENGINEERS-975] Improve b2b checkout tests
 ### Fixed
 - [ENGINEERS-962] Proper identification when a PR is from Fork
+
+### Added
+- [ENGINEERS-990] [ENGINEERS-991] - Added graphQL validation to be not null
 
 ### Added
 - Improved Shopper location and location availability testcase

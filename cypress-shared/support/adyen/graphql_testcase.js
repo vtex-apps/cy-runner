@@ -106,7 +106,9 @@ export function validateGetAdyenAccountResponse(response) {
 }
 
 export function validateCreateAccountHolderResponse(response) {
-  expect(response.body.data).to.not.equal(null)
+  expect(
+    response.body.data.createAccountHolder.adyenAccountHolder
+  ).to.not.equal(null)
 }
 
 export function validateAdyenAccountHolderResponse(response) {
@@ -118,7 +120,7 @@ export function validateCloseAccountHolderResponse(response) {
 }
 
 export function validateRefreshOnboardingResponse(response) {
-  expect(response.body.data).to.not.equal(null)
+  expect(response.body.data.refreshOnboarding).to.not.equal(null)
 }
 
 export function validateUpdateAccount(response) {

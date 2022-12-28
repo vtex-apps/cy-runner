@@ -53,6 +53,7 @@
     "husky": "^4.2.5",
     "lint-staged": "^10.2.11",
     "prettier": "^2.4.0",
-    "vtex": "3.0.0-beta-ci.3"
+    "vtex": "3.0.0-beta-ci.3",
+    "xlsx": "^0.18.5"
   }
 }
