@@ -55,7 +55,9 @@ describe(`${prefix} Scenarios`, () => {
             if (res.shippingMethod === shippingMethod.shippingMethod) {
               expect(shippingMethod.shippingMethod).to.equal(res.shippingMethod)
 
-              expect(res.price).to.equal(shippingMethod.price * 2)
+              expect(parseFloat(res.price.toFixed(2))).to.equal(
+                shippingMethod.price * 2
+              )
             }
           })
         })
