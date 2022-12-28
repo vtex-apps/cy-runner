@@ -126,7 +126,7 @@ export function productShouldNotbeAvailableTestCase(product) {
     'Products from outside collection should not be visible to the user',
     updateRetry(2),
     () => {
-      cy.searchProductinB2B(product)
+      cy.searchProductinB2B(product, false)
       cy.get(selectors.PageNotFound).should('be.visible')
     }
   )

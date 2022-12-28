@@ -276,9 +276,8 @@ export function setWorkspaceAndGatewayAffiliations({
 
         response.body.configuration[workspaceIndex].value = workspace
         response.body.configuration[autoSettleIndex].value = autoSellementValue
-        response.body.configuration[appKeyIndex].value = appKey
-        response.body.configuration[appTokenIndex].value = appToken
-
+        response.body.configuration[appKeyIndex].value = appKey || ''
+        response.body.configuration[appTokenIndex].value = appToken || ''
         cy.request({
           method: 'PUT',
           url: affiliationAPI(affiliationId),

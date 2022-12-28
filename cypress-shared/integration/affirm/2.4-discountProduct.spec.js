@@ -8,6 +8,7 @@ import { discountProduct } from '../../support/affirm/outputvalidation'
 import {
   cancelTheOrder,
   getTestVariables,
+  verifyOrderStatus,
 } from '../../support/common/testcase.js'
 import { completeThePayment } from '../../support/affirm/testcase.js'
 
@@ -41,6 +42,13 @@ describe(`${prefix} Scenarios`, () => {
   })
 
   completeThePayment(discountProduct, discountProductEnvs)
+
+  verifyOrderStatus({
+    product: discountProduct,
+    env: discountProductEnvs.orderIdEnv,
+    status: /handling/,
+    timeout: 30000,
+  })
 
   cancelTheOrder(discountProductEnvs.orderIdEnv)
 

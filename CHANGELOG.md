@@ -1,17 +1,48 @@
 ## [Unreleased]
 
-
 ### Changed
 - Verify Fedex Shipping prices code improvements
 
+## [2.0.1] - 2022-12-27
+
+### Fixed
+- Bump decode-uri-component to 0.2.2
+
+## [2.0.0] - 2022-12-27
+
+### Added
+- Added verify excel data testcase 
+
+## [1.0.4] - 2022-12-27
+
+### Fixed
+- [ENGINEERS-987] Fix fork message for PRN
+
+### Changed
+- [ENGINEERS-985] & [ENGINEERS-986] Affirm selectors improvement
+
 ### Changed
 - Fedex Shipping tests run time improvements
+
+## [1.0.3] - 2022-12-19
+
+### Fixed
+- [ENGINEERS-962] Fix on label for PR from forks (created vs authorized)
+
+### Fixed
+- [ENGINEERS-975] Improve b2b checkout tests
 
 ### Fixed
 - [ENGINEERS-962] Proper identification when a PR is from Fork
 
 ### Added
+- [ENGINEERS-990] [ENGINEERS-991] - Added graphQL validation to be not null
+
+### Added
 - Improved Shopper location and location availability testcase
+
+### Added
+- [ENGINEERS-954] - Added graphQL common function & improved postsetup ,adyenLogin function
 
 ### Added
 - [ENGINEERS-875] & [ENGINEERS-876] - Added more quickorder cypress tests

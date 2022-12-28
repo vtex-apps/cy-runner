@@ -10,6 +10,7 @@ const {
   adyenWebhookUsername,
   adyenWebhookPassword,
 } = config.base.vtex
+
 const webhookJson = '.webhook.json'
 
 export function createAdyenWebhook() {

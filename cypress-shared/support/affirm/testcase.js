@@ -70,13 +70,16 @@ export function initiatePayment({
           .find(selectors.AffirmInstallmentOption)
           .first()
           .click()
-
+        cy.getIframeBody('#checkout-application')
+          .contains('AutoPay')
+          .scrollIntoView()
         cy.getIframeBody('#checkout-application')
           .find(selectors.AffirmIndicatorOption)
           .click()
 
         cy.getIframeBody('#checkout-application')
           .find(selectors.AffirmDisClosureCheckbox)
+          .scrollIntoView()
           .click()
 
         cy.getIframeBody('#checkout-application')

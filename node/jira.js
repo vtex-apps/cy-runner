@@ -6,19 +6,29 @@ const system = require('./system')
 module.exports.issue = async (config, specsFailed, runUrl) => {
   logger.msgSection('Jira ticket automation', true)
 
-  // GitHub and Cypress
+  // If LOCAL, avoid any ticket creation
+  if (!system.isCI()) {
+    logger.msgWarn('Not on CI, skipping ticket creation')
+
+    return
+  }
+
+  const {
+    GITHUB_REPOSITORY,
+    GITHUB_REF,
+    GITHUB_RUN_ID,
+    GITHUB_SERVER_URL,
+    GITHUB_ACTOR,
+  } = process.env
+
   const JIRA = config.base.jira
-  const GH_REPO = process.env.GITHUB_REPOSITORY ?? 'example/app-example'
-  const GITHUB_REF = process.env.GITHUB_REF ?? 'refs/pull/77/merge'
   const [, , GH_REF] = GITHUB_REF.split('/')
-  const GH_RUN = process.env.GITHUB_RUN_ID ?? 7777777777
-  const GH_URL = process.env.GITHUB_SERVER_URL ?? 'https://github.com'
-  const GH_ACTOR = process.env.GITHUB_ACTOR ?? 'cy-runner'
-  const PR_URL = `${GH_URL}/${GH_REPO}/pull/${GH_REF}`
+  const PR_URL = `${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/pull/${GH_REF}`
   const CY_URL = `https://dashboard.cypress.io/projects/${config.base.cypress.projectId}/runs`
-  const RUN_URL = `${GH_URL}/${GH_REPO}/actions/runs/${GH_RUN}`
+  const RUN_URL = `${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}`
   const IS_SCH = process.env.GITHUB_EVENT_NAME === 'schedule' ?? false
   const IS_DIS = process.env.GITHUB_EVENT_NAME === 'workflow_dispatch' ?? false
+  const IS_PRN = /^-?\d+$/.test(`${GH_REF}`)
 
   // If DISPATCH, avoid any ticket creation
   if (IS_DIS) {
@@ -27,18 +37,11 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
     return
   }
 
-  // If LOCAL, avoid any ticket creation
-  if (!system.isCI()) {
-    logger.msgWarn('Not on CI, skipping ticket creation')
-
-    return
-  }
-
   // Jira - You can set config.base.jira.testing as true for tests
   // JIRA.board = JIRA.testing || IS_SCH ? 'ENGINEERS' : JIRA.board
   JIRA.board = 'ENGINEERS'
-  const PR = typeof GH_REF === 'number' ? `PR #${GH_REF}` : `FORK ${GH_REPO}`
-  const SUMMARY = IS_SCH ? `SCHEDULE ${GH_REPO}:` : `${PR}:`
+  const PR = IS_PRN ? `PR #${GH_REF}` : 'FORK'
+  const SUMMARY = IS_SCH ? `SCHEDULE ${GITHUB_REPOSITORY}:` : `${PR}:`
   const JQL = `summary ~ '${SUMMARY}' AND project = '${JIRA.board}' AND statusCategory IN ('undefined', 'In Progress', 'To Do')`
   const PRIORITY = JIRA.priority ?? 'High'
   const JIRA_KEY = await searchIssue(JIRA.account, JIRA.authorization, JQL)
@@ -72,7 +75,7 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
       project: {
         key: JIRA.board,
       },
-      summary: `${SUMMARY} E2E test failed for ${GH_REPO}`,
+      summary: `${SUMMARY} E2E test failed for ${GITHUB_REPOSITORY}`,
       description: {
         type: 'doc',
         version: 1,
@@ -98,7 +101,9 @@ module.exports.issue = async (config, specsFailed, runUrl) => {
               },
               {
                 type: 'text',
-                text: ` created by ${GH_ACTOR}; failed on\n`,
+                text: ` ${
+                  IS_PRN ? 'created' : 'authorized'
+                } by ${GITHUB_ACTOR}; failed on\n`,
               },
               ...FAILURES,
             ],

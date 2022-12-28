@@ -9,7 +9,7 @@ export function checkoutProduct(product) {
     cy.get(selectors.searchResult)
       .first()
       .should('have.text', product.toLowerCase())
-    cy.get('span[class*=add-to-cart]').first().click()
+    cy.get('span[class*=add-to-cart]').should('be.visible').first().click()
     cy.intercept('**/checkout/**').as('checkout')
     cy.get(selectors.ProceedtoCheckout).click()
     cy.wait('@checkout')
