@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+### Changed
+- Paypal cypress improvement
+
+### Changed
+- Verify Fedex Shipping prices code improvements
+
 ## [2.0.1] - 2022-12-27
 
 ### Fixed

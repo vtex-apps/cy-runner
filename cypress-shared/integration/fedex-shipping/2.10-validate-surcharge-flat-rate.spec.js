@@ -4,18 +4,14 @@
 import { updateRetry, loginViaCookies } from '../../support/common/support'
 import { appSetting } from '../../support/fedex-shipping/outputvalidation'
 import { data } from '../../fixtures/fedex-shipping-fixtures/shippingRatePayload.json'
-import {
-  filterByShippingMethod,
-  updateSLASettings,
-} from '../../support/fedex-shipping/common.js'
+import { updateSLASettings } from '../../support/fedex-shipping/common.js'
 import {
   loadCalculateShippingAPI,
   validateCalculateShipping,
 } from '../../support/fedex-shipping/api_testcase'
-import sla from '../../support/fedex-shipping/sla'
 
 const prefix = 'Shipping Optimize'
-let amount = ''
+let shippingMethods = []
 const surchargeFlatRate = 20
 const surchargePercent = 0
 
@@ -29,9 +25,7 @@ describe('Modify SLA - Validate Surcharge Flat Rate in checkout', () => {
   it(`${prefix} - Verify shipping price`, updateRetry(3), () => {
     loadCalculateShippingAPI(data).then((response) => {
       validateCalculateShipping(response)
-      const shippingMethods = filterByShippingMethod(response, sla)
-
-      amount = shippingMethods[0].price
+      shippingMethods = response.body
     })
   })
 
@@ -42,11 +36,18 @@ describe('Modify SLA - Validate Surcharge Flat Rate in checkout', () => {
   it(`${prefix} - Validate Surcharge Flat Rate Changes`, updateRetry(3), () => {
     loadCalculateShippingAPI(data).then((response) => {
       validateCalculateShipping(response)
-      const shippingMethods = filterByShippingMethod(response, sla)
 
-      const calculateFlatRate = amount + surchargeFlatRate
+      shippingMethods.forEach((shippingMethod) => {
+        response.body.forEach((res) => {
+          // eslint-disable-next-line vtex/prefer-early-return
+          if (res.shippingMethod === shippingMethod.shippingMethod) {
+            const calculateFlatRate = shippingMethod.price + surchargeFlatRate
 
-      expect(shippingMethods[0].price).to.equal(calculateFlatRate)
+            // eslint-disable-next-line jest/no-conditional-expect
+            expect(parseFloat(res.price.toFixed(2))).to.equal(calculateFlatRate)
+          }
+        })
+      })
     })
   })
 })
