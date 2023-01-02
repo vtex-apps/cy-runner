@@ -243,7 +243,7 @@ export function quickOrderByCategoryNegativeTestCase(
 function validateForm(quoteEnv, vtex, productCount) {
   cy.intercept('POST', `${vtex.baseUrl}/**`).as('validateForm')
   // eslint-disable-next-line cypress/no-unnecessary-waiting
-  cy.wait(3000)
+  cy.wait(5000)
   cy.contains(BUTTON_LABEL.AddToCart).should('be.visible').click()
   cy.wait('@validateForm')
   cy.get(selectors.QuantityBadgeInCart).should('have.text', productCount)

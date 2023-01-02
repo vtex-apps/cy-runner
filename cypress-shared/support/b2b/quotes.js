@@ -391,6 +391,11 @@ export function verifySubTotal(quote) {
     cy.getQuotesItems().then((quotes) => {
       const price = quotes[`${quote}-price`]
 
+      cy.get('h1').contains('Quote')
+      cy.get('div').contains('Checkout').should('be.visible').click()
+      cy.get('div').contains('promo').should('be.visible')
+      cy.get('div').contains('Checkout').should('be.visible').click()
+      cy.get(selectors.CartTimeline).should('be.visible').click()
       cy.get(selectors.ProceedtoPaymentBtn).should('be.visible')
       cy.get(selectors.SubTotalLabel, { timeout: 10000 })
         .should('be.visible')
