@@ -399,12 +399,15 @@ export function verifyTotal(quote) {
             cy.get('h1').contains('Quote')
             cy.get('div').contains('Checkout').should('be.visible').click()
             cy.get('div').contains('promo').should('be.visible')
-            cy.get('div').contains('Checkout').should('be.visible').click()
+            cy.get('div').contains('Checkout').click()
           } else {
             cy.log('Already in checkout page')
           }
         })
-        cy.get(selectors.CartTimeline).should('be.visible').click()
+
+        cy.get(selectors.CartTimeline)
+          .should('be.visible')
+          .click({ force: true })
         cy.get(selectors.ProceedtoPaymentBtn).should('be.visible')
         cy.get(selectors.TotalLabel, { timeout: 10000 })
           .should('be.visible')
