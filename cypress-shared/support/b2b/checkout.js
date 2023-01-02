@@ -52,7 +52,11 @@ export function fillContactInfo() {
 export function verifyAddress(address) {
   it('Verify Auto fill Address in checkout', updateRetry(3), () => {
     cy.setorderFormDebugItem()
-    if (cy.state('runnable')._currentRetry > 1) cy.reload()
+    if (cy.state('runnable')._currentRetry > 1) {
+      cy.reload()
+      cy.get(selectors.EditShipping).should('be.visible').click()
+    }
+
     cy.get('body').then(($shipping) => {
       if ($shipping.find(selectors.EditShipping).length) {
         cy.get(selectors.EditShipping).should('be.visible').click()
@@ -66,11 +70,7 @@ export function verifyAddress(address) {
         .contains(postalCode)
         .click()
     }
-  })
-}
 
-export function verifyPayment(promissory = true) {
-  it('Verify enabled payments is shown in the checkout', updateRetry(3), () => {
     cy.get('body').then(($body) => {
       if ($body.find(selectors.GotoPaymentBtn).length) {
         cy.get(selectors.GotoPaymentBtn, { timeout: 5000 })
@@ -78,6 +78,11 @@ export function verifyPayment(promissory = true) {
           .click()
       }
     })
+  })
+}
+
+export function verifyPayment(promissory = true) {
+  it('Verify enabled payments is shown in the checkout', updateRetry(3), () => {
     if (cy.state('runnable')._currentRetry > 0) cy.reload()
     if (promissory) {
       cy.get(`[data-name='${PAYMENT_TERMS.Promissory}']`).should('be.visible')
