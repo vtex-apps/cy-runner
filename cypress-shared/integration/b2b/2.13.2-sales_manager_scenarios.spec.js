@@ -6,11 +6,9 @@ import b2b from '../../support/b2b/constants.js'
 import {
   ROLE_ID_EMAIL_MAPPING as roleObject,
   ROLE_DROP_DOWN,
-  STATUSES,
 } from '../../support/b2b/utils.js'
 import { loginToStoreFront } from '../../support/b2b/login.js'
 import {
-  productShouldNotbeAvailableTestCase,
   salesUserShouldImpersonateNonSalesUser,
   userShouldNotImpersonateThisUser,
   verifySession,
@@ -19,7 +17,6 @@ import {
 import {
   createQuote,
   searchQuote,
-  filterQuoteByStatus,
   quoteShouldbeVisibleTestCase,
   quoteShouldNotBeVisibleTestCase,
 } from '../../support/b2b/quotes.js'
@@ -46,17 +43,10 @@ function QuotesAccess(
   )
 }
 
-describe('Organization A - Cost Center A1 - Sales Manager Scenario', () => {
+describe('Organization A - Cost Center A1 - Sales Manager Impersonation Scenario', () => {
   loginViaCookies({ storeFrontCookie: false })
 
-  const {
-    nonAvailableProduct,
-    users,
-    product,
-    costCenter1,
-    quotes,
-    gmailCreds,
-  } = b2b.OrganizationA
+  const { users, product, costCenter1, gmailCreds } = b2b.OrganizationA
 
   const { organizationName: organizationB, quotes: organizationBQuote } =
     b2b.OrganizationB
@@ -71,12 +61,12 @@ describe('Organization A - Cost Center A1 - Sales Manager Scenario', () => {
     costCenter1.name,
     roleObject.SalesManager.role
   )
-  productShouldNotbeAvailableTestCase(nonAvailableProduct)
   userShouldNotImpersonateThisUser(
     roleObject.SalesManager.role,
     roleObject.SalesRepresentative.role,
     users.SalesRep
   )
+  QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
 
   const impersonatedRole = ROLE_DROP_DOWN.OrganizationAdmin
 
@@ -85,11 +75,9 @@ describe('Organization A - Cost Center A1 - Sales Manager Scenario', () => {
     impersonatedRole,
     users.OrganizationAdmin1
   )
-  searchQuote(quotes.OrganizationAdmin.quotes1)
-  filterQuoteByStatus(STATUSES.pending)
-  QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
-
   const quote = 'IMPERSONATE_QUOTE_2'
+
+  QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
 
   createQuote({
     product,

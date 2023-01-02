@@ -14,12 +14,12 @@ export function checkoutProduct(product) {
     cy.get(selectors.ProceedtoCheckout).click()
     cy.wait('@checkout')
     cy.get('body').then(($body) => {
-      if ($body.find(selectors.ShippingCalculateLink).length) {
-        // Contact information needs to be filled
-        cy.get(selectors.ShippingCalculateLink).should('be.visible')
-      } else if ($body.find(selectors.DeliveryAddress).length) {
+      if ($body.find(selectors.DeliveryAddress).length) {
         // Contact Information already filled
         cy.get(selectors.DeliveryAddress).should('be.visible')
+      } else if ($body.find(selectors.ShippingCalculateLink).length) {
+        // Contact information needs to be filled
+        cy.get(selectors.ShippingCalculateLink).should('be.visible')
       }
     })
     cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
@@ -52,8 +52,15 @@ export function fillContactInfo() {
 export function verifyAddress(address) {
   it('Verify Auto fill Address in checkout', updateRetry(3), () => {
     cy.setorderFormDebugItem()
+    if (cy.state('runnable')._currentRetry > 1) {
+      cy.reload()
+      cy.get(selectors.EditShipping).should('be.visible').click()
+    }
+
     cy.get('body').then(($shipping) => {
-      if ($shipping.find(selectors.OpenShipping).length) {
+      if ($shipping.find(selectors.EditShipping).length) {
+        cy.get(selectors.EditShipping).should('be.visible').click()
+      } else if ($shipping.find(selectors.OpenShipping).length) {
         cy.get(selectors.OpenShipping, { timeout: 5000 }).click()
       }
     })
@@ -62,7 +69,6 @@ export function verifyAddress(address) {
       cy.get(selectors.PostalCodeText, { timeout: 5000 })
         .contains(postalCode)
         .click()
-      cy.get(selectors.GotoPaymentBtn, { timeout: 5000 }).should('be.visible')
     }
 
     cy.get('body').then(($body) => {

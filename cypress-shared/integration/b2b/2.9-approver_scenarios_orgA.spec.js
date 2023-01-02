@@ -20,7 +20,7 @@ import {
   filterQuoteByStatus,
   quoteShouldbeVisibleTestCase,
   quoteShouldNotBeVisibleTestCase,
-  verifySubTotal,
+  verifyTotal,
 } from '../../support/b2b/quotes.js'
 import {
   quickOrderByXLS,
@@ -72,7 +72,7 @@ describe('Organization A - Cost Center A1 - Approver Scenario', () => {
   filterQuoteByStatus(STATUSES.declined)
 
   useQuoteForPlacingTheOrder(quotes.Buyer.quotes1, role.Approver1.dropDownText)
-  verifySubTotal(quotes.Buyer.quotes1)
+  verifyTotal(quotes.Buyer.quotes1)
   fillContactInfo()
   verifyAddress(costCenter1.addresses)
   verifyPayment()

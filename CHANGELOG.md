@@ -36,6 +36,8 @@
 - [ENGINEERS-975] Improve b2b checkout tests
 
 ### Fixed
+- [ENGINEERS-975] Improve b2b checkout tests
+### Fixed
 - [ENGINEERS-962] Proper identification when a PR is from Fork
 
 ### Added
