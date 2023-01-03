@@ -410,6 +410,7 @@ export function verifyTotal(quote) {
           .click({ force: true })
         cy.get(selectors.ProceedtoPaymentBtn).should('be.visible')
         cy.get(selectors.TotalLabel, { timeout: 10000 })
+          .first()
           .should('be.visible')
           .should('have.contain', `$ ${price.toFixed(2)}`)
         cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
