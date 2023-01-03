@@ -49,6 +49,16 @@ export function fillContactInfo() {
   })
 }
 
+function clickGotoPayment() {
+  cy.get('body').then(($body) => {
+    if ($body.find(selectors.GotoPaymentBtn).length) {
+      cy.get(selectors.GotoPaymentBtn, { timeout: 5000 })
+        .should('be.visible')
+        .click()
+    }
+  })
+}
+
 export function verifyAddress(address) {
   it('Verify Auto fill Address in checkout', updateRetry(3), () => {
     cy.setorderFormDebugItem()
@@ -71,19 +81,14 @@ export function verifyAddress(address) {
         .click()
     }
 
-    cy.get('body').then(($body) => {
-      if ($body.find(selectors.GotoPaymentBtn).length) {
-        cy.get(selectors.GotoPaymentBtn, { timeout: 5000 })
-          .should('be.visible')
-          .click()
-      }
-    })
+    clickGotoPayment()
   })
 }
 
 export function verifyPayment(promissory = true) {
   it('Verify enabled payments is shown in the checkout', updateRetry(3), () => {
     if (cy.state('runnable')._currentRetry > 0) cy.reload()
+    clickGotoPayment()
     if (promissory) {
       cy.get(`[data-name='${PAYMENT_TERMS.Promissory}']`).should('be.visible')
     } else {

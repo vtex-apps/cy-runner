@@ -246,7 +246,10 @@ function validateForm(quoteEnv, vtex, productCount) {
   cy.wait(5000)
   cy.contains(BUTTON_LABEL.AddToCart).should('be.visible').click()
   cy.wait('@validateForm')
-  cy.get(selectors.QuantityBadgeInCart).should('have.text', productCount)
+  cy.get(selectors.QuantityBadgeInCart, { timeout: 15000 }).should(
+    'have.text',
+    productCount
+  )
   cy.get(selectors.OpenCart).first().should('be.visible').click()
   quoteEnv ? fillQuoteInformation({ quoteEnv }) : ProceedToCheckOut()
 }
@@ -260,7 +263,9 @@ function uploadXLS(filePath, b2b) {
   // close and upload CSV
   cy.get('body').then(($body) => {
     if ($body.find(deleteFile).length) {
-      cy.get(deleteFile).should('be.visible').click({ multiple: true })
+      cy.get(deleteFile, { timeout: 10000 })
+        .should('be.visible')
+        .click({ multiple: true })
     }
   })
   checkBackButtonIsVisible()

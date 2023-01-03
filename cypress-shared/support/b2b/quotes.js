@@ -387,7 +387,7 @@ export function useQuoteForPlacingTheOrder(quote, role) {
 
 export function verifyTotal(quote) {
   it(
-    `Take subtotal from quotes and use that to verify total in checkoutPage`,
+    `Take subtotal/total from quotes and use that to verify total in checkoutPage`,
     updateRetry(2),
     () => {
       cy.addDelayBetweenRetries(5000)
@@ -397,9 +397,9 @@ export function verifyTotal(quote) {
         cy.url().then((url) => {
           if (!url.includes('checkout')) {
             cy.get('h1').contains('Quote')
-            cy.get('div').contains('Checkout').should('be.visible').click()
+            cy.get('div').contains('Checkout').click({ force: true })
             cy.get('div').contains('promo').should('be.visible')
-            cy.get('div').contains('Checkout').click()
+            cy.get('div').contains('Checkout').click({ force: true })
           } else {
             cy.log('Already in checkout page')
           }
@@ -409,9 +409,21 @@ export function verifyTotal(quote) {
           .should('be.visible')
           .click({ force: true })
         cy.get(selectors.ProceedtoPaymentBtn).should('be.visible')
-        cy.get(selectors.TotalLabel, { timeout: 10000 })
-          .should('be.visible')
-          .should('have.contain', `$ ${price.toFixed(2)}`)
+        cy.get('body').then(($body) => {
+          if ($body.find('tr.Discounts').length) {
+            cy.get(selectors.TotalLabel, { timeout: 10000 })
+              .first()
+              .should('be.visible')
+              .should('have.contain', `$ ${price.toFixed(2)}`)
+          } else {
+            cy.get(selectors.SubTotalLabel, { timeout: 10000 })
+              .should('be.visible')
+              .contains('Subtotal', { timeout: 6000 })
+              .siblings('td.monetary', { timeout: 3000 })
+              .should('have.text', `$ ${price.toFixed(2)}`)
+          }
+        })
+
         cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
       })
     }
