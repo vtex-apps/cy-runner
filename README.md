@@ -6,6 +6,10 @@
 
 Tool to orchestrate Cypress tests at VTEX
 
+## About this release
+
+It will focus on Cypress 10+.
+
 ## Features
 * Automate authentication on VTEX Toolbelt (using [VTEX Toolbelt Action](https://github.com/vtex/action-toolbelt))
 * Manage workspace: installing, uninstalling, creation, and deletion
