@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [2.1.0] - 2023-01-06
+
 ### Removed
 - [ENGINEERS-1033] - Drop duplicate organization request testcase
 
