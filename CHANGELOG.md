@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Removed
+- [ENGINEERS-1033] - Drop duplicate organization request testcase
+
 ### Changed
 - Paypal cypress improvement
 

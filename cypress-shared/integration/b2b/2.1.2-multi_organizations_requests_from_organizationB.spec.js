@@ -45,13 +45,6 @@ describe('Create, Decline OrganizationB', () => {
     // Create Organization B request
     createOrganizationTestCase(organization, costCenter)
 
-    // Verify organization B in pending state
-    requestOrganizationAndVerifyPopup(
-      organization,
-      costCenter,
-      OrganizationRequestStatus.pending
-    )
-
     // Approve Organization B
     approveOrganization(b2b.OrganizationB.organizationName)
 
