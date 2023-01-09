@@ -42,7 +42,7 @@ Cypress.Commands.add('waitForSession', (selector = null) => {
 
 Cypress.Commands.add(
   'waitForGraphql',
-  (operationName, selector = null, contains = null) => {
+  (operationName, selector = null, contains = null, timeout = 30000) => {
     cy.getVtexItems().then((vtex) => {
       cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
         if (req.body.operationName === operationName) {
@@ -52,12 +52,14 @@ Cypress.Commands.add(
 
       if (selector && contains) {
         cy.scrollTo('top')
-        cy.contains(selector).click()
+        cy.contains(selector).should('be.visible').click()
       } else if (selector) {
-        cy.get(selector).last().click()
+        cy.get(selector).should('be.visible').last().click()
+      } else if (contains) {
+        cy.contains(contains).should('be.visible').click()
       }
 
-      cy.wait(`@${operationName}`, { timeout: 30000 })
+      cy.wait(`@${operationName}`, { timeout })
     })
   }
 )
@@ -130,18 +132,27 @@ Cypress.Commands.add('gotoMyQuotes', () => {
   cy.get(selectors.QuotesToolBar, { timeout: 20000 }).should('be.visible')
 })
 
-Cypress.Commands.add('gotoQuickOrder', () => {
+Cypress.Commands.add('gotoQuickOrder', (b2b = false) => {
   cy.location().then((loc) => {
     let closeMenu = false
 
     if (loc.pathname.includes('quickorder')) closeMenu = true
-    cy.get(selectors.Menu).should('be.visible').click()
-    cy.get(selectors.QuickOrder).should('be.visible').click()
-    closeMenu && cy.closeMenuIfOpened()
+    if (b2b) {
+      closeMenu && cy.closeMenuIfOpened()
+      cy.get(selectors.Menu).should('be.visible').click()
+      cy.get(selectors.QuickOrder).should('be.visible').click()
+    } else {
+      cy.visit('/quickorder')
+      cy.get(selectors.ProfileLabel, { timeout: 20000 })
+        .should('be.visible')
+        .should('have.contain', `Hello,`)
+    }
+
+    cy.url().should('include', 'quickorder')
   })
 })
 
-Cypress.Commands.add('searchProductinB2B', (product) => {
+Cypress.Commands.add('searchProductinB2B', (product, available = true) => {
   cy.url().then((url) => {
     if (url.includes('checkout')) {
       cy.visit('/')
@@ -156,6 +167,13 @@ Cypress.Commands.add('searchProductinB2B', (product) => {
       .clear()
       .type(product, { force: true })
       .type('{enter}', { force: true })
+    if (available) {
+      cy.get(selectors.searchResult).should('be.visible')
+      cy.get('article div[class*=storefront-permissions-ui]')
+        .should('be.visible')
+        .first()
+        .scrollIntoView()
+    }
   })
 })
 
@@ -194,8 +212,9 @@ Cypress.Commands.add('orderProduct', () => {
       fillContactInfo()
     }
   })
-  cy.get(selectors.PromissoryPayment).click()
-  cy.get(selectors.BuyNowBtn).last().click()
+  cy.get(selectors.PromissoryPayment).should('be.visible').click()
+  cy.get(selectors.BuyNowBtn).last().should('be.visible').click()
+  cy.get(selectors.Search, { timeout: 30000 }).should('be.visible')
 })
 
 Cypress.Commands.add('openStoreFront', (login = false) => {
@@ -211,7 +230,7 @@ Cypress.Commands.add('openStoreFront', (login = false) => {
   scroll()
 })
 
-Cypress.Commands.add('addNewLocation', (country, postalCode, street) => {
+Cypress.Commands.add('addNewLocation', (country, postalCode, street, city) => {
   cy.openStoreFront()
   cy.get(selectors.addressContainer).should('be.visible').click()
   cy.get(selectors.countryDropdown).select(country)
@@ -219,20 +238,21 @@ Cypress.Commands.add('addNewLocation', (country, postalCode, street) => {
     .first()
     .clear()
     .should('be.visible')
-    .type(postalCode)
+    .type(postalCode, { delay: 10 })
+  cy.get(selectors.SaveButtonInChangeLocationPopUp).should('be.visible')
   cy.get(selectors.Address)
     .contains('Address Line 1')
     .parent()
     .within(() => {
-      cy.get(selectors.InputText).clear().type(street)
+      cy.get(selectors.InputText).should('be.visible').clear().type(street)
     })
   cy.get(selectors.Address)
     .contains('City')
     .parent()
     .within(() => {
-      cy.get(selectors.InputText).clear().type('Aventura')
+      cy.get(selectors.InputText).should('be.visible').clear().type(city)
     })
-  cy.waitForGraphql('setRegionId', selectors.SaveButton)
+  cy.waitForGraphql('setRegionId', selectors.SaveButtonInChangeLocationPopUp)
   cy.once('uncaught:exception', () => false)
 })
 
@@ -289,4 +309,39 @@ Cypress.Commands.add('organizationShouldNotShowInProfile', () => {
 Cypress.Commands.add('organizationShouldShowInProfile', () => {
   visitOrganizationPage()
   cy.get(selectors.MyOrganization, { timeout: 25000 }).should('be.visible')
+})
+
+const fedexJson = 'fedexPayload.json'
+
+Cypress.Commands.add('setAppSettingstoJSON', (key, value) => {
+  cy.readFile(fedexJson).then((items) => {
+    items[key] = value
+    cy.writeFile(fedexJson, items)
+  })
+})
+
+Cypress.Commands.add('getAppSettingstoJSON', () => {
+  cy.readFile(fedexJson).then((items) => {
+    return items
+  })
+})
+
+Cypress.Commands.add('hideSla', (hide) => {
+  cy.readFile(fedexJson).then((items) => {
+    const { slaSettings } = items.config.data.getAppSettings
+
+    for (const ship in slaSettings) {
+      slaSettings[ship].hidden = hide
+    }
+
+    return slaSettings
+  })
+})
+
+Cypress.Commands.add('readSlaSettings', () => {
+  cy.readFile(fedexJson).then((items) => {
+    const { slaSettings } = items.config.data.getAppSettings
+
+    return slaSettings
+  })
 })

@@ -4,13 +4,13 @@ import {
 } from '../../support/common/support.js'
 import b2b from '../../support/b2b/constants.js'
 import {
-  ROLE_DROP_DOWN,
   ROLE_ID_EMAIL_MAPPING as roleObject,
+  ROLE_DROP_DOWN,
+  // ROLE_DROP_DOWN_EMAIL_MAPPING as role,
   STATUSES,
 } from '../../support/b2b/utils.js'
 import { loginToStoreFront } from '../../support/b2b/login.js'
 import {
-  productShouldNotbeAvailableTestCase,
   salesUserShouldImpersonateNonSalesUser,
   userShouldNotImpersonateThisUser,
   verifySession,
@@ -19,10 +19,12 @@ import {
 import {
   searchQuote,
   createQuote,
+  // discountSliderShouldNotExist,
   updateQuote,
+  // rejectQuote,
+  // filterQuote,
   filterQuoteByStatus,
   quoteShouldbeVisibleTestCase,
-  quoteShouldNotBeVisibleTestCase,
 } from '../../support/b2b/quotes.js'
 
 function QuotesAccess(
@@ -30,86 +32,69 @@ function QuotesAccess(
   organizationB,
   organizationBQuote
 ) {
-  quoteShouldNotBeVisibleTestCase(
+  quoteShouldbeVisibleTestCase(
     organizationName,
     quotes.Buyer2.quotes1,
     organizationName
   )
-  quoteShouldNotBeVisibleTestCase(
+  quoteShouldbeVisibleTestCase(
     organizationName,
     organizationBQuote.OrganizationAdmin.quotes1,
     organizationB
   )
-  quoteShouldbeVisibleTestCase(
-    organizationName,
-    quotes.OrganizationAdmin.quotes1,
-    organizationName
-  )
 }
 
-describe('Organization A - Cost Center A1 - Sales Rep Scenario', () => {
+describe('Organization A - Cost Center A1 - Sales Admin Impersonation Scenario', () => {
   loginViaCookies({ storeFrontCookie: false })
 
-  const {
-    nonAvailableProduct,
-    users,
-    product,
-    costCenter1,
-    quotes,
-    gmailCreds,
-  } = b2b.OrganizationA
+  const { product, costCenter1, users, quotes, gmailCreds } = b2b.OrganizationA
 
   const { organizationName: organizationB, quotes: organizationBQuote } =
     b2b.OrganizationB
 
-  const impersonatedRole = ROLE_DROP_DOWN.Buyer
+  const impersonatedRole = ROLE_DROP_DOWN.Approver
 
-  loginToStoreFront(
-    users.SalesRep,
-    roleObject.SalesRepresentative.role,
-    gmailCreds
-  )
-  verifySession(
-    b2b.OrganizationA,
-    costCenter1.name,
-    roleObject.SalesRepresentative.role
-  )
+  loginToStoreFront(users.SalesAdmin, roleObject.SalesAdmin.role, gmailCreds)
+  verifySession(b2b.OrganizationA, costCenter1.name, roleObject.SalesAdmin.role)
 
-  productShouldNotbeAvailableTestCase(nonAvailableProduct)
-  QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
+  // Impersonate users
   userShouldNotImpersonateThisUser(
-    roleObject.SalesRepresentative.role,
+    roleObject.SalesAdmin.role,
     roleObject.SalesManager.role,
     users.SalesManager
   )
 
   salesUserShouldImpersonateNonSalesUser(
-    roleObject.SalesRepresentative.role,
+    roleObject.SalesAdmin.role,
     impersonatedRole,
-    users.Buyer1
+    users.Approver1
   )
 
-  searchQuote(quotes.SalesRep.updateQuote)
-  const price = '30.00'
-
-  updateQuote(quotes.SalesRep.updateQuote, { price })
-  filterQuoteByStatus(STATUSES.revised)
   QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
 
-  const quote = 'IMPERSONATE_QUOTE_3'
+  updateQuote(quotes.Buyer.quotes1, { discount: '20' })
+  updateQuote(quotes.Buyer.quotes2, { notes: 'Notes' })
+  const price = '250.00'
+  const quantity = '10'
+
+  updateQuote(quotes.Buyer.quotes6, { price, quantity })
+  filterQuoteByStatus(STATUSES.ready, STATUSES.declined)
+
+  QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
+
+  const quote = 'IMPERSONATE_QUOTE_1'
 
   createQuote({
     product,
     quoteEnv: quote,
-    role: roleObject.SalesRepresentative.role,
+    role: roleObject.SalesManager.role,
     impersonatedRole,
   })
-  searchQuote(quote, users.Buyer1)
+  searchQuote(quote, users.Approver1)
   stopImpersonation(
     b2b.OrganizationA,
     costCenter1.name,
-    roleObject.SalesRepresentative.role
+    roleObject.SalesAdmin.role
   )
-
   preserveCookie()
 })

@@ -20,7 +20,7 @@ export default {
   PayPaliframe: 'iframe[name*=paypal]',
   PayPalImg: "button[aria-label*='PayPal Pay Later Message']",
   AddtoCart: 'span[class*=vtex-add-to-cart-button]',
-  TotalPrice: '#total-price > .vtex-checkout-summary-0-x-price',
+  TotalPrice: '#total-price > div[class*=price]',
   RemoveProduct: 'div[class*="removeButton"]',
   PickupInStore: '.srp-toggle__pickup',
   PickupItems: '.srp-items',
@@ -263,6 +263,9 @@ export default {
   // *************B2B Product Constants end here************ //
 
   QuickOrder: 'a[href*=quick]',
+  MiniCartQuantityForMaxOrder:
+    'div[class*=quantityInputContainer] input[id*=quantity-input]',
+  MiniCartProductName: 'a[class*=productName]',
   QuickOrderPage: () => {
     return {
       popupMsgSelector: 'div[class*=toast-container] div[class*=copy]',
@@ -281,7 +284,7 @@ export default {
       uploadXLS: {
         deleteFile: 'svg[class*=icon-delete]',
         file: 'input[type=file]',
-        validate: 'div[class*=validate i]:nth-of-type(2) > button',
+        validate: 'div[class*=validate i] > button',
       },
       oneByOne: {
         search: 'input[placeholder*=product]',
@@ -367,8 +370,8 @@ export default {
 
   province: 'div[class*=dropdown__container] > select',
   addressInputContainer: 'div[class*=addressInputContainer] input',
-  saveButton: '.vtex-shopper-location-1-x-changeLocationSubmitContainer',
   countryDropdown: 'div[class*=address-form] > select',
+  AddressContainerForProduct: 'div[class*=location-availability]',
   ChangeLocationButton:
     'section[class*=changeLocationGeoContainer] .vtex-button',
   addressContainer: 'div[class*=userAddressContainer]',
@@ -383,7 +386,8 @@ export default {
   ProceedToCheckOut: '#proceed-to-checkout > .vtex-button__label',
   verifyLocationInCheckOut: '.srp-address-title',
   orderButton: 'a[id=cart-to-orderform]',
-  SaveButton: 'section[class*=changeLocationSubmitContainer] button',
+  SaveButtonInChangeLocationPopUp:
+    'section[class*=changeLocationSubmitContainer] > button[class*=pointer]',
   PaymentBtn: '#btn-go-to-payment',
   PickUpBtn: '.srp-toggle__pickup',
   SelectState: '.vtex-styleguide-9-x-container > .o-0',
@@ -442,8 +446,9 @@ export default {
   AffirmSubmit: 'button[data-testid="submit-button"]',
   AffirmPhonePin: 'input[data-testid="phone-pin-field"]',
   AffirmInstallmentOption: 'span[data-test="installment-length"]',
-  AffirmIndicatorOption: 'div[data-testid="indicator"]', // Auto payment & Privacy policy option selector
-  AffirmDisClosureCheckbox: 'div[data-testid="disclosure-checkbox-indicator"]',
+  AffirmIndicatorOption:
+    'label[for="autopay-toggle"] div[data-testid="indicator"]', // Auto payment & Privacy policy option selector
+  AffirmDisClosureCheckbox: 'label[for="confirm-disclosure-checkbox"]',
 
   // Adyen selectors starts
   AdyenAdminIframe: 'iframe[data-testid="admin-iframe-container"]',
@@ -453,8 +458,17 @@ export default {
   AdyenPlatformApiKey: 'input[id="apiKey"]',
   AdyenPlatformProductionURI: 'input[id="liveEndpoint"]',
   AdyenLoginUsername: 'input[name="userName"]',
-  AdyenLoginPassword: 'input[name="password"]',
+  AdyenLoginPassword: 'input[type="password"]',
   AdyenLoginAccount: 'input[name="account"]',
   AdyenLoginSubmit: 'button[type="submit"]',
+  // End here
+
+  // Fedex-Shipping selectors
+  SmartPackingAccessKey: '#accessKey', // Fedex Smart Packing Access key field
+  PickingOptimizeAlert: 'div[role="alert"] p', // Fedex alert
+  PackingBoxLength: '#length', // Packing optimization Box Length
+  PackingBoxHeight: '#height', // Packing optimization Box Height
+  PackingBoxWidth: '#width', // Packing optimization Box Width
+  PackingBoxTable: 'table[class*=packing-optimization] > tbody > tr', // Packing optimization Box Table
   // End here
 }

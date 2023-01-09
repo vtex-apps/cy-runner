@@ -1,5 +1,104 @@
 ## [Unreleased]
 
+## [2.1.0] - 2023-01-06
+
+### Removed
+- [ENGINEERS-1033] - Drop duplicate organization request testcase
+
+### Changed
+- Paypal cypress improvement
+
+### Changed
+- Verify Fedex Shipping prices code improvements
+
+## [2.0.1] - 2022-12-27
+
+### Fixed
+- Bump decode-uri-component to 0.2.2
+
+## [2.0.0] - 2022-12-27
+
+### Added
+- Added verify excel data testcase 
+
+## [1.0.4] - 2022-12-27
+
+### Fixed
+- [ENGINEERS-987] Fix fork message for PRN
+
+### Changed
+- [ENGINEERS-985] & [ENGINEERS-986] Affirm selectors improvement
+
+### Changed
+- Fedex Shipping tests run time improvements
+
+## [1.0.3] - 2022-12-19
+
+### Fixed
+- [ENGINEERS-962] Fix on label for PR from forks (created vs authorized)
+
+### Fixed
+- [ENGINEERS-975] Improve b2b checkout tests
+
+### Fixed
+- [ENGINEERS-975] Improve b2b checkout tests
+### Fixed
+- [ENGINEERS-962] Proper identification when a PR is from Fork
+
+### Added
+- [ENGINEERS-990] [ENGINEERS-991] - Added graphQL validation to be not null
+
+### Added
+- Improved Shopper location and location availability testcase
+
+### Added
+- [ENGINEERS-954] - Added graphQL common function & improved postsetup ,adyenLogin function
+
+### Added
+- [ENGINEERS-875] & [ENGINEERS-876] - Added more quickorder cypress tests
+
+### Added
+- Affirm payments cancellation testcase 
+
+### Changed
+- Fedex Shipping improvements
+
+### Changed
+- Prepend empty characters in address line
+- In refund, workflow delay from 4s to 5s
+
+### Added
+- Added defaultDeliveryEstimateInDays new field in fedex app settings
+
+### Added
+- Added wipe testcase & improved 2.3 ,2.4 shopper location testcases.
+
+### Added
+- Added checkout ui custom configuration in checkout_ui_custom.js
+
+### Changed
+- Moved gmail to common folder
+- In, commonGraphlValidation() added expect(response.body).to.not.equal('OK')
+- Rename graphql_utils.js to graphql_operations.js
+
+### Added
+- Removed delayBetweenRetries + Added reload then fillContact info first then shipping info
+
+### Added
+- Added package optimization tests inside cy-runner
+
+### Added
+- Added quickorder tests inside cy-runner
+
+### Added
+- Move fedex shipping cypress tests inside cy-runner
+
+### Added
+- Changes in addNewLocation function in commands.js
+
+### Removed
+- [ENGINEERS-886] - Removed cartTimeline click in one of the place of updateShippingInformation
+
 ### Added
 - Store orderForm information in _orderFormDebug.json
 

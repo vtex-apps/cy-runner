@@ -3,16 +3,39 @@ import selectors from '../common/selectors'
 import { updateRetry } from '../common/support'
 import { getPickupPoints, deletePickupPoint } from './pickup-points.api'
 
-export function verifyUpdatedAddress(postalCode) {
+export function verifyUpdatedAddress(postalCode, address, city, state) {
   it('Verify on click to postal code it opens the location popup', () => {
     cy.get(selectors.AvailabilityHeader).click()
     cy.get(selectors.AddressModelLayout).should('be.visible')
     cy.get(selectors.countryDropdown).select('USA')
     cy.get(selectors.addressInputContainer).eq(0).clear().type(postalCode)
-    cy.waitForGraphql('address', selectors.SaveButton)
-    cy.once('uncaught:exception', () => {
-      return false
-    })
+    if (city) {
+      cy.get(selectors.Address)
+        .contains('City')
+        .parent()
+        .within(() => {
+          cy.get(selectors.InputText)
+            .should('not.have.value', '')
+            .clear()
+            .type(city)
+        })
+    }
+
+    if (address) {
+      cy.get(selectors.Address)
+        .contains('Address Line 1')
+        .parent()
+        .within(() => {
+          cy.get(selectors.InputText).clear().type(address, { delay: 50 })
+        })
+    }
+
+    if (state) {
+      cy.get(selectors.ProvinceField).should('exist').select(state)
+    }
+
+    cy.waitForGraphql('setRegionId', selectors.SaveButtonInChangeLocationPopUp)
+    cy.once('uncaught:exception', () => false)
   })
   it('Verify updated address is shown in the screen', updateRetry(2), () => {
     cy.get(selectors.AvailabilityHeader).should('have.text', postalCode)
@@ -23,7 +46,7 @@ export function verifyUpdatedAddress(postalCode) {
 }
 
 export function addPickUpPoint(pickPointName, pickUpId) {
-  cy.contains('Add pickup point').click()
+  cy.contains(/Add Pickup Point/i).click()
   cy.get(selectors.PickUpPointName).clear().type(pickPointName)
   cy.get(selectors.PickUpPointId).should('be.visible').type(pickUpId)
   cy.get('select')

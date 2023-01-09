@@ -1,6 +1,6 @@
 import selectors from '../common/selectors.js'
 import { OTHER_ROLES } from './utils.js'
-import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
+import { GRAPHL_OPERATIONS } from '../graphql_operations.js'
 import { BUTTON_LABEL } from '../validation_text.js'
 import { FAIL_ON_STATUS_CODE } from '../common/constants.js'
 import { OrganizationRequestStatus } from './constants.js'
@@ -95,7 +95,7 @@ function submitOrganization(org) {
     GRAPHL_OPERATIONS.CreateOrganizationRequest,
     selectors.SubmitOrganization
   ).then((req) => {
-    cy.get(selectors.PopupMsg).contains('pending approval')
+    cy.get(selectors.PopupMsg).should('be.visible').contains('pending approval')
     const { id } = req.response.body.data.createOrganizationRequest
 
     cy.setOrganizationItem(org, id)

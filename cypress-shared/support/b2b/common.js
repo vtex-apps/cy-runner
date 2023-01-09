@@ -1,7 +1,7 @@
 import selectors from '../common/selectors.js'
 import { generateEmailWithSuffix, validateToastMsg } from './utils.js'
 import { BUTTON_LABEL, TOAST_MSG } from '../validation_text.js'
-import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
+import { GRAPHL_OPERATIONS } from '../graphql_operations.js'
 import { updateRetry } from '../common/support.js'
 
 // Define constants
@@ -126,7 +126,7 @@ export function productShouldNotbeAvailableTestCase(product) {
     'Products from outside collection should not be visible to the user',
     updateRetry(2),
     () => {
-      cy.searchProductinB2B(product)
+      cy.searchProductinB2B(product, false)
       cy.get(selectors.PageNotFound).should('be.visible')
     }
   )

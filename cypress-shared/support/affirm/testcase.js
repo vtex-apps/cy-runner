@@ -70,13 +70,16 @@ export function initiatePayment({
           .find(selectors.AffirmInstallmentOption)
           .first()
           .click()
-
+        cy.getIframeBody('#checkout-application')
+          .contains('AutoPay')
+          .scrollIntoView()
         cy.getIframeBody('#checkout-application')
           .find(selectors.AffirmIndicatorOption)
           .click()
 
         cy.getIframeBody('#checkout-application')
           .find(selectors.AffirmDisClosureCheckbox)
+          .scrollIntoView()
           .click()
 
         cy.getIframeBody('#checkout-application')
@@ -119,12 +122,12 @@ export function completeThePayment(
 
   if (sendInvoice) {
     sendInvoiceTestCase({ product, orderIdEnv })
-
-    // Get transactionId from invoiceAPI and store in .orders.json
-    invoiceAPITestCase({
-      product,
-      env: orderIdEnv,
-      transactionIdEnv,
-    })
   }
+
+  // Get transactionId from invoiceAPI and store in .orders.json
+  invoiceAPITestCase({
+    product,
+    env: orderIdEnv,
+    transactionIdEnv,
+  })
 }

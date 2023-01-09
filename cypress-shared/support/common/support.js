@@ -87,8 +87,8 @@ export function addProduct(
       cy.get(selectors.RemoveProduct).should('be.visible')
       cy.get('#items-price div[class*=price]').should('have.contain', '$')
       if (paypal) {
-        cy.get(selectors.ProceedtoCheckout).should('be.visible').click()
-        cy.get(selectors.ItemQuantity).should('be.visible')
+        // cy.get(selectors.ProceedtoCheckout).should('be.visible').click()
+        // cy.get(selectors.ItemQuantity).should('be.visible')
         if (proceedtoCheckout) {
           clickProceedtoCheckout()
         }
@@ -112,25 +112,27 @@ export function closeCart() {
 }
 
 export function fillAddress(postalCode, timeout = 5000) {
+  cy.get(selectors.CartTimeline).should('be.visible').click()
   const { fullAddress, country } = addressList[postalCode]
 
-  cy.get(selectors.FirstName).then(($el) => {
-    if (Cypress.dom.isVisible($el)) {
-      return cy.wrap(true)
+  cy.get('body').then(($body) => {
+    if ($body.find(selectors.ShippingPreview).length) {
+      // shipping preview should be visible
+      cy.get(selectors.ShippingPreview).should('be.visible')
+      if ($body.find(selectors.DeliveryAddress).length) {
+        cy.get(selectors.DeliveryAddress).should('be.visible').click()
+      } else if ($body.find(selectors.ShippingCalculateLink).length) {
+        cy.get(selectors.ShippingCalculateLink).should('be.visible').click()
+      }
     }
 
-    cy.get('body').then(($body) => {
-      if ($body.find(selectors.ShippingPreview).length) {
-        // shipping preview should be visible
-        cy.get(selectors.ShippingPreview).should('be.visible')
-      }
+    cy.get(selectors.ShipCountry, { timeout })
+      .should('not.be.disabled')
+      .select('USA')
+      .select(country)
 
-      cy.get(selectors.ShipCountry, { timeout })
-        .should('not.be.disabled')
-        .select('USA')
-        .select(country)
-
-      if ($body.find(selectors.ShipAddressQuery).length) {
+    cy.get('body').then(($shippingBody) => {
+      if ($shippingBody.find(selectors.ShipAddressQuery).length) {
         // Type shipping address query
         // Google autocompletion takes some seconds to show dropdown
         // So, we use 500 seconds wait before and after typing of address
@@ -141,19 +143,15 @@ export function fillAddress(postalCode, timeout = 5000) {
 
         cy.get(selectors.ShipAddressQuery) // eslint-disable-line cypress/no-unnecessary-waiting
           .click()
-          .type(`${fullAddress}`, { delay: 80 })
-          .wait(500)
+          .type(`   ${fullAddress}`, { delay: 100 })
+          .wait(1000)
           .type('{downarrow}{enter}')
-
-        return cy.wrap(false)
+      } else {
+        cy.get(selectors.PostalCodeInput, { timeout: 10000 })
+          .should('be.visible')
+          .clear()
+          .type(postalCode)
       }
-
-      cy.get(selectors.PostalCodeInput, { timeout: 10000 })
-        .should('be.visible')
-        .clear()
-        .type(postalCode)
-
-      return cy.wrap(true)
     })
   })
 }
@@ -163,22 +161,6 @@ function fillAddressLine1(deliveryScreenAddress) {
     if ($shippingBlock.find(selectors.ShipStreet).length) {
       cy.get(selectors.ShipStreet).clear().type(deliveryScreenAddress)
       cy.get(selectors.GotoPaymentBtn).should('be.visible').click()
-    }
-  })
-}
-
-function startShipping() {
-  cy.get('body').then(($body) => {
-    if ($body.find(selectors.ShippingCalculateLink).length) {
-      // Contact information needs to be filled
-      cy.get(selectors.ShippingCalculateLink).should('be.visible').click()
-    } else if ($body.find(selectors.DeliveryAddress).length) {
-      // Contact Information already filled
-      cy.get(selectors.DeliveryAddress).then(($el) => {
-        if (Cypress.dom.isVisible($el)) {
-          cy.get(selectors.DeliveryAddress).should('be.visible').click()
-        }
-      })
     }
   })
 }
@@ -270,11 +252,17 @@ export function updateShippingInformation({
 }) {
   const { deliveryScreenAddress } = addressList[postalCode]
 
-  cy.addDelayBetweenRetries(10000)
+  cy.addDelayBetweenRetries(3000)
+  if (cy.state('runnable')._currentRetry > 2) cy.reload()
   cy.setorderFormDebugItem()
   cy.get(selectors.CartTimeline).should('be.visible').click({ force: true })
-  startShipping()
-  cy.intercept('https://rc.vtex.com/v8').as('v8')
+  cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
+  cy.get(selectors.FirstName).then(($el) => {
+    if (Cypress.dom.isVisible($el)) {
+      fillContactInfo(shippingStrategySelector, phoneNumber, checkoutcustom)
+    }
+  })
+
   cy.intercept('**/shippingData').as('shippingData')
   cy.fillAddress(postalCode, timeout).then(() => {
     if (invalid) {
@@ -290,7 +278,6 @@ export function updateShippingInformation({
         .contains('Pickup')
       cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
     } else {
-      cy.get(selectors.CartTimeline).should('be.visible').click({ force: true })
       cy.get(selectors.DeliveryAddressText, { timeout: 15000 })
         .invoke('text')
         .should(
@@ -299,13 +286,6 @@ export function updateShippingInformation({
         )
       cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
     }
-
-    cy.get(selectors.FirstName).then(($el) => {
-      if (Cypress.dom.isVisible($el)) {
-        cy.wait('@v8')
-        fillContactInfo(shippingStrategySelector, phoneNumber, checkoutcustom)
-      }
-    })
 
     fillAddressLine1(deliveryScreenAddress)
   })

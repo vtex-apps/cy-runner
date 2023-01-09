@@ -17,6 +17,7 @@ export default {
     country: 'United States',
     postalCode: '21287',
     city: 'Baltimore',
+    address: '1800 ORLEANS ST , BALTIMORE, MD',
     state: 'Maryland',
   },
   location: {
@@ -41,8 +42,16 @@ export default {
   },
   UsDetails4: {
     country: 'United States',
-    postalCode: '90290',
-    city: 'Toppanga',
-    address: 'USA Kerry Ln Topanga',
+    postalCode: '23223',
+    city: 'Richmond',
+    address: '1291 Worley Avenue',
+    state: 'Virginia',
+  },
+  UsDetails5: {
+    country: 'United States',
+    postalCode: '10014',
+    city: 'New York',
+    address: 'Christopher Street',
+    state: 'New York',
   },
 }

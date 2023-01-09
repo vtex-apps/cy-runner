@@ -7,7 +7,7 @@ import {
   validateToastMsg,
 } from './utils.js'
 import b2b from './constants.js'
-import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
+import { GRAPHL_OPERATIONS } from '../graphql_operations.js'
 import { BUTTON_LABEL, TOAST_MSG } from '../validation_text.js'
 
 export function addUserFn(

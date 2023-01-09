@@ -1,6 +1,6 @@
 import selectors from '../common/selectors.js'
 import { STATUSES } from './utils.js'
-import { GRAPHL_OPERATIONS } from '../graphql_utils.js'
+import { GRAPHL_OPERATIONS } from '../graphql_operations.js'
 import { BUTTON_LABEL } from '../validation_text.js'
 import { updateRetry } from '../common/support.js'
 
@@ -23,7 +23,7 @@ export function fillQuoteInformation({
 
       const price = $div.text()
 
-      cy.get(selectors.CreateQuote).last().should('be.visible').click()
+      cy.waitForGraphql('GetOrderForm', selectors.CreateQuote)
 
       cy.get(selectors.QuoteName).should('be.visible').clear().type(quoteEnv)
       if (notes) {
@@ -385,20 +385,49 @@ export function useQuoteForPlacingTheOrder(quote, role) {
   })
 }
 
-export function verifySubTotal(quote) {
-  it(`Verify SubTotal in checkoutPage`, updateRetry(2), () => {
-    cy.getQuotesItems().then((quotes) => {
-      const price = quotes[`${quote}-price`]
+export function verifyTotal(quote) {
+  it(
+    `Take subtotal/total from quotes and use that to verify total in checkoutPage`,
+    updateRetry(2),
+    () => {
+      cy.addDelayBetweenRetries(5000)
+      cy.getQuotesItems().then((quotes) => {
+        const price = quotes[`${quote}-price`]
 
-      cy.get(selectors.ProceedtoPaymentBtn).should('be.visible')
-      cy.get(selectors.SubTotalLabel, { timeout: 10000 })
-        .should('be.visible')
-        .contains('Subtotal', { timeout: 6000 })
-        .siblings('td.monetary', { timeout: 3000 })
-        .should('have.text', `$ ${price.toFixed(2)}`)
-      cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
-    })
-  })
+        cy.url().then((url) => {
+          if (!url.includes('checkout')) {
+            cy.get('h1').contains('Quote')
+            cy.get('div').contains('Checkout').click({ force: true })
+            cy.get('div').contains('promo').should('be.visible')
+            cy.get('div').contains('Checkout').click({ force: true })
+          } else {
+            cy.log('Already in checkout page')
+          }
+        })
+
+        cy.get(selectors.CartTimeline)
+          .should('be.visible')
+          .click({ force: true })
+        cy.get(selectors.ProceedtoPaymentBtn).should('be.visible')
+        cy.get('body').then(($body) => {
+          if ($body.find('tr.Discounts').length) {
+            cy.get(selectors.TotalLabel, { timeout: 10000 })
+              .first()
+              .should('be.visible')
+              .should('have.contain', `$ ${price.toFixed(2)}`)
+          } else {
+            cy.get(selectors.SubTotalLabel, { timeout: 10000 })
+              .should('be.visible')
+              .contains('Subtotal', { timeout: 6000 })
+              .siblings('td.monetary', { timeout: 3000 })
+              .should('have.text', `$ ${price.toFixed(2)}`)
+          }
+        })
+
+        cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
+      })
+    }
+  )
 }
 
 export function searchQuote(quote, email = false) {
