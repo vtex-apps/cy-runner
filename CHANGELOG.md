@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Added
+- [ENGINEERS-1037] - Added affirm promo test
+
 ## [2.1.0] - 2023-01-06
 
 ### Removed

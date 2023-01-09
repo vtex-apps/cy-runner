@@ -45,8 +45,9 @@ describe('Setting up affirm in dynamic environment', () => {
     })
   })
 
-  it('Verify promotions get displayed in storefront', updateRetry(2), () => {
+  it('Verify promotions get displayed in storefront', updateRetry(1), () => {
     cy.visit('/')
+    cy.waitForSession()
     cy.get(selectors.ProfileLabel, { timeout: 20000 })
       .should('be.visible')
       .should('have.contain', `Hello,`)
