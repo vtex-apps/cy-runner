@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+### Removed
+
+- [ENGINEERS-1058] - Don't login with the user which we would be assigning to a b2b organization
+
 ## [2.2.0] - 2023-01-09
 
 ### Added
