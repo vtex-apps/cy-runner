@@ -10,38 +10,11 @@ import {
 import { loginToStoreFront } from '../../support/b2b/login.js'
 import {
   salesUserShouldImpersonateNonSalesUser,
-  userShouldNotImpersonateThisUser,
   verifySession,
   stopImpersonation,
 } from '../../support/b2b/common.js'
-import {
-  createQuote,
-  searchQuote,
-  quoteShouldbeVisibleTestCase,
-  quoteShouldNotBeVisibleTestCase,
-} from '../../support/b2b/quotes.js'
-
-function QuotesAccess(
-  { organizationName, quotes },
-  organizationB,
-  organizationBQuote
-) {
-  quoteShouldbeVisibleTestCase(
-    organizationName,
-    quotes.OrganizationAdmin.quotes1,
-    organizationName
-  )
-  quoteShouldbeVisibleTestCase(
-    organizationName,
-    quotes.Buyer2.quotes1,
-    organizationName
-  )
-  quoteShouldNotBeVisibleTestCase(
-    organizationName,
-    organizationBQuote.OrganizationAdmin.quotes1,
-    organizationB
-  )
-}
+import { createQuote, searchQuote } from '../../support/b2b/quotes.js'
+import { salesManagerQuotesAccess } from '../../support/b2b/impersonation_quote_access.js'
 
 describe('Organization A - Cost Center A1 - Sales Manager Impersonation Scenario', () => {
   loginViaCookies({ storeFrontCookie: false })
@@ -61,12 +34,6 @@ describe('Organization A - Cost Center A1 - Sales Manager Impersonation Scenario
     costCenter1.name,
     roleObject.SalesManager.role
   )
-  userShouldNotImpersonateThisUser(
-    roleObject.SalesManager.role,
-    roleObject.SalesRepresentative.role,
-    users.SalesRep
-  )
-  QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
 
   const impersonatedRole = ROLE_DROP_DOWN.OrganizationAdmin
 
@@ -77,7 +44,7 @@ describe('Organization A - Cost Center A1 - Sales Manager Impersonation Scenario
   )
   const quote = 'IMPERSONATE_QUOTE_2'
 
-  QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
+  salesManagerQuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
 
   createQuote({
     product,

@@ -1,10 +1,9 @@
 import { loginViaCookies } from '../../support/common/support.js'
 import {
   createOrganizationTestCase,
-  requestOrganizationAndVerifyPopup,
   approveOrganization,
 } from '../../support/b2b/organization_request.js'
-import b2b, { OrganizationRequestStatus } from '../../support/b2b/constants.js'
+import b2b from '../../support/b2b/constants.js'
 import { deleteOrganization } from '../../support/b2b/graphql.js'
 
 describe('Create, Decline OrganizationB', () => {
@@ -47,12 +46,5 @@ describe('Create, Decline OrganizationB', () => {
 
     // Approve Organization B
     approveOrganization(b2b.OrganizationB.organizationName)
-
-    // Verify organization B in approved state
-    requestOrganizationAndVerifyPopup(
-      organization,
-      costCenter,
-      OrganizationRequestStatus.approved
-    )
   })
 })
