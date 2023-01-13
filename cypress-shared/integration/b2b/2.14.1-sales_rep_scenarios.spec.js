@@ -11,18 +11,23 @@ import { loginToStoreFront } from '../../support/b2b/login.js'
 import {
   productShouldNotbeAvailableTestCase,
   verifySession,
+  userShouldNotImpersonateThisUser,
 } from '../../support/b2b/common.js'
 import {
   searchQuote,
   updateQuote,
   filterQuoteByStatus,
 } from '../../support/b2b/quotes.js'
+import { salesRepQuotesAccess } from '../../support/b2b/impersonation_quote_access.js'
 
 describe('Organization A - Cost Center A1 - Sales Rep Basic Scenario', () => {
   loginViaCookies({ storeFrontCookie: false })
 
   const { nonAvailableProduct, users, costCenter1, quotes, gmailCreds } =
     b2b.OrganizationA
+
+  const { organizationName: organizationB, quotes: organizationBQuote } =
+    b2b.OrganizationB
 
   loginToStoreFront(
     users.SalesRep,
@@ -36,6 +41,13 @@ describe('Organization A - Cost Center A1 - Sales Rep Basic Scenario', () => {
   )
 
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
+  salesRepQuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
+
+  userShouldNotImpersonateThisUser(
+    roleObject.SalesRepresentative.role,
+    roleObject.SalesManager.role,
+    users.SalesManager
+  )
   searchQuote(quotes.SalesRep.updateQuote)
   const price = '30.00'
 

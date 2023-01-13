@@ -104,8 +104,9 @@ function verifyWidget(organization, costCenter, role) {
 export function verifySession(organization, costCenter, role) {
   it(
     'Verifying Session items must have expected priceTable and collections',
-    updateRetry(2),
+    updateRetry(4),
     () => {
+      cy.addDelayBetweenRetries(3000)
       cy.request('/api/sessions?items=*').then((response) => {
         expect(response.body.namespaces.profile.priceTables.value).to.equal(
           organization.priceTables

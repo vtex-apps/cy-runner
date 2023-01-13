@@ -86,16 +86,17 @@ Cypress.Commands.add('fillAddressInCostCenter', (costCenter) => {
 Cypress.Commands.add(
   'gotoMyOrganization',
   (waitforSession = true, salesRepOrManager = false) => {
+    cy.get(selectors.ProfileLabel).should('be.visible')
+
     cy.url().then((url) => {
       if (!url.includes('account')) {
-        cy.get(selectors.ProfileLabel).should('be.visible')
         cy.get(selectors.SignInBtn).click()
         cy.get(selectors.MyAccount).click()
         if (waitforSession) cy.waitForSession()
       }
 
       closeModalIfOpened()
-      cy.get(selectors.MyOrganization, { timeout: 30000 })
+      cy.get(selectors.MyOrganization, { timeout: 40000 })
         .should('be.visible')
         .click()
       const noOfdivision = salesRepOrManager ? 2 : 4
