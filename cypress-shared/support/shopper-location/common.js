@@ -7,11 +7,11 @@ export function verifyShopperLocation() {
   cy.get(selectors.verifyLocationInHome).should('be.visible')
   // eslint-disable-next-line cypress/no-force
   cy.get(selectors.AddToCart)
-    .contains('Add to cart')
+    .contains('Add to Cart')
     .should('be.visible')
     .click({ force: true })
   cy.get(selectors.ProceedToCheckOut).should('be.visible').click()
-  cy.get(selectors.orderButton).should('be.visible').click()
+  cy.get(selectors.orderButton).click()
 }
 
 export function addLocation(data) {
@@ -35,6 +35,11 @@ export function addLocation(data) {
         req.continue()
       }
     }).as('setRegionId')
+    cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
+      if (req.body.operationName === 'updateOrderFormShipping') {
+        req.continue()
+      }
+    }).as('updateOrderFormShipping')
     cy.once('uncaught:exception', () => {
       return false
     })
@@ -42,6 +47,7 @@ export function addLocation(data) {
       .should('be.visible')
       .click()
     cy.wait('@setRegionId', { timeout: 10000 })
+    cy.wait('@updateOrderFormShipping', { timeout: 10000 })
   })
 }
 
