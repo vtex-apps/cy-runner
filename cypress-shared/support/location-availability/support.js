@@ -39,7 +39,9 @@ export function verifyUpdatedAddress(postalCode, address, city, state) {
   })
   it('Verify updated address is shown in the screen', updateRetry(2), () => {
     cy.get(selectors.AvailabilityHeader).should('have.text', postalCode)
-    cy.get(selectors.AddtoCart).contains(/Add to Cart/i).click({ force: true })
+    cy.get(selectors.AddtoCart)
+      .contains(/Add to Cart/i)
+      .click({ force: true })
     cy.get(selectors.ProceedtoCheckout).click()
     cy.get(selectors.orderButton).should('be.visible').click()
   })
