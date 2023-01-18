@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [2.2.1] - 2023-01-18
+
 ### Changed
 - Improvement of shopper location & location availability
 
