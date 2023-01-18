@@ -11,6 +11,7 @@ import { loginToStoreFront } from '../../support/b2b/login.js'
 import {
   productShouldNotbeAvailableTestCase,
   verifySession,
+  userShouldNotImpersonateThisUser,
 } from '../../support/b2b/common.js'
 import {
   searchQuote,
@@ -19,6 +20,7 @@ import {
   // rejectQuote,
   // filterQuote,
 } from '../../support/b2b/quotes.js'
+import { salesAdminQuotesAccess } from '../../support/b2b/impersonation_quote_access.js'
 
 describe('Organization A - Cost Center A1 - Sales Admin Basic Scenario', () => {
   loginViaCookies({ storeFrontCookie: false })
@@ -26,9 +28,20 @@ describe('Organization A - Cost Center A1 - Sales Admin Basic Scenario', () => {
   const { nonAvailableProduct, costCenter1, users, quotes, gmailCreds } =
     b2b.OrganizationA
 
+  const { organizationName: organizationB, quotes: organizationBQuote } =
+    b2b.OrganizationB
+
   loginToStoreFront(users.SalesAdmin, roleObject.SalesAdmin.role, gmailCreds)
   verifySession(b2b.OrganizationA, costCenter1.name, roleObject.SalesAdmin.role)
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
+
+  // Impersonate users
+  userShouldNotImpersonateThisUser(
+    roleObject.SalesAdmin.role,
+    roleObject.SalesManager.role,
+    users.SalesManager
+  )
+  salesAdminQuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
 
   verifyQuotesAndSavedCarts()
   searchQuote(quotes.Buyer.quotes1)

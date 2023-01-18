@@ -12,7 +12,6 @@ import {
 import { loginToStoreFront } from '../../support/b2b/login.js'
 import {
   salesUserShouldImpersonateNonSalesUser,
-  userShouldNotImpersonateThisUser,
   verifySession,
   stopImpersonation,
 } from '../../support/b2b/common.js'
@@ -24,25 +23,8 @@ import {
   // rejectQuote,
   // filterQuote,
   filterQuoteByStatus,
-  quoteShouldbeVisibleTestCase,
 } from '../../support/b2b/quotes.js'
-
-function QuotesAccess(
-  { organizationName, quotes },
-  organizationB,
-  organizationBQuote
-) {
-  quoteShouldbeVisibleTestCase(
-    organizationName,
-    quotes.Buyer2.quotes1,
-    organizationName
-  )
-  quoteShouldbeVisibleTestCase(
-    organizationName,
-    organizationBQuote.OrganizationAdmin.quotes1,
-    organizationB
-  )
-}
+import { salesAdminQuotesAccess } from '../../support/b2b/impersonation_quote_access.js'
 
 describe('Organization A - Cost Center A1 - Sales Admin Impersonation Scenario', () => {
   loginViaCookies({ storeFrontCookie: false })
@@ -57,20 +39,11 @@ describe('Organization A - Cost Center A1 - Sales Admin Impersonation Scenario',
   loginToStoreFront(users.SalesAdmin, roleObject.SalesAdmin.role, gmailCreds)
   verifySession(b2b.OrganizationA, costCenter1.name, roleObject.SalesAdmin.role)
 
-  // Impersonate users
-  userShouldNotImpersonateThisUser(
-    roleObject.SalesAdmin.role,
-    roleObject.SalesManager.role,
-    users.SalesManager
-  )
-
   salesUserShouldImpersonateNonSalesUser(
     roleObject.SalesAdmin.role,
     impersonatedRole,
     users.Approver1
   )
-
-  QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
 
   updateQuote(quotes.Buyer.quotes1, { discount: '20' })
   updateQuote(quotes.Buyer.quotes2, { notes: 'Notes' })
@@ -80,7 +53,7 @@ describe('Organization A - Cost Center A1 - Sales Admin Impersonation Scenario',
   updateQuote(quotes.Buyer.quotes6, { price, quantity })
   filterQuoteByStatus(STATUSES.ready, STATUSES.declined)
 
-  QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
+  salesAdminQuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
 
   const quote = 'IMPERSONATE_QUOTE_1'
 

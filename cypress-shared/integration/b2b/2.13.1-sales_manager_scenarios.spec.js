@@ -11,14 +11,19 @@ import { loginToStoreFront } from '../../support/b2b/login.js'
 import {
   productShouldNotbeAvailableTestCase,
   verifySession,
+  userShouldNotImpersonateThisUser,
 } from '../../support/b2b/common.js'
 import { searchQuote, filterQuoteByStatus } from '../../support/b2b/quotes.js'
+import { salesManagerQuotesAccess } from '../../support/b2b/impersonation_quote_access.js'
 
 describe('Organization A - Cost Center A1 - Sales Manager Basic Scenario', () => {
   loginViaCookies({ storeFrontCookie: false })
 
   const { nonAvailableProduct, users, costCenter1, quotes, gmailCreds } =
     b2b.OrganizationA
+
+  const { organizationName: organizationB, quotes: organizationBQuote } =
+    b2b.OrganizationB
 
   loginToStoreFront(
     users.SalesManager,
@@ -30,7 +35,14 @@ describe('Organization A - Cost Center A1 - Sales Manager Basic Scenario', () =>
     costCenter1.name,
     roleObject.SalesManager.role
   )
+  userShouldNotImpersonateThisUser(
+    roleObject.SalesManager.role,
+    roleObject.SalesRepresentative.role,
+    users.SalesRep
+  )
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
+  salesManagerQuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
+
   searchQuote(quotes.OrganizationAdmin.quotes1)
   filterQuoteByStatus(STATUSES.pending)
 

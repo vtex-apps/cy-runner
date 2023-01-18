@@ -1,5 +1,16 @@
 ## [Unreleased]
 
+### Changed
+
+- [ENGINEERS-1062]
+   - Once organization request been approved from cypress tests we create same organization request again and verify the approved toast message
+   (Because of one2many feature tests are failing - Disable the tests)
+   - Improvements
+
+### Removed
+
+- [ENGINEERS-1058] - Don't login with the user which we would be assigning to a b2b organization
+
 ## [2.2.0] - 2023-01-09
 
 ### Added

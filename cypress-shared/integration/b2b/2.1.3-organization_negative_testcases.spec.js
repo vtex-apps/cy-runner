@@ -5,17 +5,10 @@ import {
   createOrganizationWithoutCostCenterNameAndAddress,
 } from '../../support/b2b/organization_request.js'
 import b2b from '../../support/b2b/constants.js'
-import { loginToStoreFront } from '../../support/b2b/login.js'
-import { ROLE_DROP_DOWN } from '../../support/b2b/utils.js'
 
 describe('Organization Negative TestCases', () => {
   loginViaCookies({ storeFrontCookie: false })
   const email = b2b.OrganizationA.users.OrganizationAdmin1
-
-  const { users, gmailCreds } = b2b.OrganizationA
-
-  // Here, If login got successful then in 2.5 we can use the cookies and login
-  loginToStoreFront(users.Buyer1, ROLE_DROP_DOWN.Buyer, gmailCreds)
 
   createOrganizationWithoutCostCenterNameAndAddress(
     b2b.OrganizationA.organizationName,
