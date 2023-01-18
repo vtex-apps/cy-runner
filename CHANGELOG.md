@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 ### Changed
+- Improvement of shopper location & location availability
+
+### Changed
 
 - [ENGINEERS-1062]
    - Once organization request been approved from cypress tests we create same organization request again and verify the approved toast message

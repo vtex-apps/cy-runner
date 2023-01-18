@@ -233,7 +233,9 @@ Cypress.Commands.add('openStoreFront', (login = false) => {
 
 Cypress.Commands.add('addNewLocation', (country, postalCode, street, city) => {
   cy.openStoreFront()
-  cy.get(selectors.addressContainer).should('be.visible').click()
+  cy.get(selectors.addressContainer, { timeout: 30000 })
+    .should('be.visible')
+    .click()
   cy.get(selectors.countryDropdown).select(country)
   cy.get(selectors.addressInputContainer)
     .first()
