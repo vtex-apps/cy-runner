@@ -7,7 +7,7 @@ export function verifyShopperLocation() {
   cy.get(selectors.verifyLocationInHome).should('be.visible')
   // eslint-disable-next-line cypress/no-force
   cy.get(selectors.AddToCart)
-    .contains('Add to Cart')
+    .contains(/Add to Cart/i)
     .should('be.visible')
     .click({ force: true })
   cy.get(selectors.ProceedToCheckOut).should('be.visible').click()
