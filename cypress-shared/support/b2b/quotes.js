@@ -20,10 +20,16 @@ export function fillQuoteInformation({
         .should('be.visible')
         .invoke('text')
         .should('match', /\d/)
+        .should('contain', '$')
 
       const price = $div.text()
 
       cy.waitForGraphql('GetOrderForm', selectors.CreateQuote)
+
+      cy.get(selectors.CurrencyContainer, { timeout: 20000 }).should(
+        'be.visible'
+      )
+      cy.get(selectors.QuoteTotal, { timeout: 20000 }).should('be.visible')
 
       cy.get(selectors.QuoteName).should('be.visible').clear().type(quoteEnv)
       if (notes) {

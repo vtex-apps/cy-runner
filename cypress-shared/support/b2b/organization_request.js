@@ -122,7 +122,7 @@ export function createOrganizationTestCase(
 
   it(
     `Creating ${organization.name} via storefront & verify ${msg}`,
-    updateRetry(2),
+    updateRetry(1),
     () => {
       cy.getVtexItems().then((vtex) => {
         const { name, b2bCustomerAdmin, defaultCostCenter } =

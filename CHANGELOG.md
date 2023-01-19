@@ -1,5 +1,10 @@
 ## [Unreleased]
 
+### Changed
+- Validate $ in minicart
+- In organization request, add delay in typing for postalcode and street
+- For create organization request update hardRetries from 2 to 1
+
 ## [2.2.1] - 2023-01-18
 
 ### Changed
