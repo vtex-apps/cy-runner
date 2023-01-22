@@ -98,6 +98,12 @@ exports.readYaml = (jsonFile) => {
 }
 
 exports.loadConfig = (yamlFile) => {
+  // Check if you are inside cy-runner
+  logger.msgOk('Checking base path')
+  if (this.exists(path.join(system.rootPath(), 'cy-runner'))) {
+    system.crash('You must be inside cy-runner folder')
+  }
+
   // Fill full path for yaml config
   yamlFile = path.join(system.basePath(), yamlFile)
   const parentYamlFile = path.join(system.rootPath(), yamlFile)
