@@ -100,7 +100,7 @@ exports.readYaml = (jsonFile) => {
 exports.loadConfig = (yamlFile) => {
   // Check if you are inside cy-runner
   logger.msgOk('Checking base path')
-  if (this.exists(path.join(system.rootPath(), 'cy-runner'))) {
+  if (this.exists('cy-runner')) {
     system.crash('Wrong start path', 'You must be inside cy-runner folder', {
       dump: false,
     })
