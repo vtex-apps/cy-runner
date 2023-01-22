@@ -449,6 +449,13 @@ export default {
   AffirmIndicatorOption:
     'label[for="autopay-toggle"] div[data-testid="indicator"]', // Auto payment & Privacy policy option selector
   AffirmDisClosureCheckbox: 'label[for="confirm-disclosure-checkbox"]',
+  AffirmAdminPublicKey: '#root_publicApiKey',
+  AdminConfigurationIFrame: '[data-testid=admin-iframe-container]',
+  AffirmSubmitConfiguration: 'button[type="submit"]',
+  AffirmPromoComponents: 'p[class*=affirm-components]',
+  AffirmModal: 'a[class*=affirm-modal]',
+  AffirmIFrame: 'iframe[class=affirm-sandbox-iframe]',
+  AffirmClosePopup: 'button[id=close-button]',
 
   // Adyen selectors starts
   AdyenAdminIframe: 'iframe[data-testid="admin-iframe-container"]',

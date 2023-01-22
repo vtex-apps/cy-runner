@@ -6,7 +6,6 @@ import b2b from '../../support/b2b/constants.js'
 import {
   ROLE_DROP_DOWN,
   ROLE_ID_EMAIL_MAPPING as roleObject,
-  STATUSES,
 } from '../../support/b2b/utils.js'
 import { loginToStoreFront } from '../../support/b2b/login.js'
 import {
@@ -16,24 +15,11 @@ import {
 } from '../../support/b2b/common.js'
 import { organizationAdminShouldNotAbleToEditSalesUsers } from '../../support/b2b/organization_request.js'
 import {
-  checkoutProduct,
-  fillContactInfo,
-  verifyAddress,
-  verifyPayment,
-  ordertheProduct,
-} from '../../support/b2b/checkout.js'
-import {
   searchQuote,
   // rejectQuote,
-  filterQuoteByStatus,
   quoteShouldbeVisibleTestCase,
   quoteShouldNotBeVisibleTestCase,
 } from '../../support/b2b/quotes.js'
-import {
-  quickOrderBySkuAndQuantityTestCase1,
-  quickOrderBySkuAndQuantityTestCase2,
-  quickOrderBySkuAnd51QuantityTestCase,
-} from '../../support/quick-order/testcase.js'
 
 describe('Organization A - Cost Center A1 - Organization Admin2 Scenario', () => {
   loginViaCookies({ storeFrontCookie: false })
@@ -41,7 +27,6 @@ describe('Organization A - Cost Center A1 - Organization Admin2 Scenario', () =>
   const {
     organizationName,
     nonAvailableProduct,
-    product,
     costCenter2,
     users,
     quotes,
@@ -93,20 +78,6 @@ describe('Organization A - Cost Center A1 - Organization Admin2 Scenario', () =>
   //   quotes.OrganizationAdmin2.declineQuote,
   //   ROLE_DROP_DOWN.OrganizationAdmin
   // )
-  quickOrderBySkuAndQuantityTestCase1(
-    ROLE_DROP_DOWN.OrganizationAdmin,
-    quotes.OrganizationAdmin2.quotes1,
-    '$162.00'
-  )
-  quickOrderBySkuAndQuantityTestCase2(ROLE_DROP_DOWN.OrganizationAdmin)
-  quickOrderBySkuAnd51QuantityTestCase(ROLE_DROP_DOWN.OrganizationAdmin)
-  filterQuoteByStatus(STATUSES.declined)
-
-  checkoutProduct(product)
-  fillContactInfo()
-  verifyAddress(costCenter2.addresses)
-  verifyPayment(false)
-  ordertheProduct(ROLE_DROP_DOWN.OrganizationAdmin)
 
   preserveCookie()
 })

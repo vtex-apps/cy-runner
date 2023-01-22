@@ -1,11 +1,7 @@
-/**
- * @type {Cypress.PluginConfig}
- */
-// eslint-disable-next-line no-unused-vars
-// module.exports = (on, config) => {}
+const readXlsx = require('./read-xlsx.js')
 
-Cypress.on('uncaught:exception', (_, __) => {
-  // returning false here prevents Cypress from
-  // failing the test
-  return false
-})
+module.exports = (on) => {
+  on('task', {
+    readXlsx: readXlsx.read,
+  })
+}

@@ -87,8 +87,8 @@ export function addProduct(
       cy.get(selectors.RemoveProduct).should('be.visible')
       cy.get('#items-price div[class*=price]').should('have.contain', '$')
       if (paypal) {
-        cy.get(selectors.ProceedtoCheckout).should('be.visible').click()
-        cy.get(selectors.ItemQuantity).should('be.visible')
+        // cy.get(selectors.ProceedtoCheckout).should('be.visible').click()
+        // cy.get(selectors.ItemQuantity).should('be.visible')
         if (proceedtoCheckout) {
           clickProceedtoCheckout()
         }

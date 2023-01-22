@@ -95,7 +95,7 @@ function submitOrganization(org) {
     GRAPHL_OPERATIONS.CreateOrganizationRequest,
     selectors.SubmitOrganization
   ).then((req) => {
-    cy.get(selectors.PopupMsg).contains('pending approval')
+    cy.get(selectors.PopupMsg).should('be.visible').contains('pending approval')
     const { id } = req.response.body.data.createOrganizationRequest
 
     cy.setOrganizationItem(org, id)
@@ -122,7 +122,7 @@ export function createOrganizationTestCase(
 
   it(
     `Creating ${organization.name} via storefront & verify ${msg}`,
-    updateRetry(2),
+    updateRetry(1),
     () => {
       cy.getVtexItems().then((vtex) => {
         const { name, b2bCustomerAdmin, defaultCostCenter } =

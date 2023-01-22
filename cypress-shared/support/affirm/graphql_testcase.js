@@ -82,6 +82,7 @@ export function validateGetVersionResponse(response) {
 
 export function validateAffirmSettingsResponse(response) {
   expect(response.body.data).to.not.equal(null)
+  expect(response.body.data.affirmSettings.publicApiKey).to.not.equal(null)
 }
 
 export function validateOrderDataResponse(response) {

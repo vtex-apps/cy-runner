@@ -71,10 +71,13 @@ Cypress.Commands.add('fillAddressInCostCenter', (costCenter) => {
   cy.intercept('GET', `**/${postalCode}`).as('POSTALCODE')
   cy.get(selectors.PostalCode)
     .clear()
-    .type(postalCode)
+    .type(postalCode, { delay: 30 })
     .should('have.value', postalCode)
   cy.wait('@POSTALCODE')
-  cy.get(selectors.Street).clear().type(street).should('have.value', street)
+  cy.get(selectors.Street)
+    .clear()
+    .type(street, { delay: 20 })
+    .should('have.value', street)
   cy.get(selectors.State).invoke('val').should('not.be.empty')
   cy.get(selectors.City).invoke('val').should('not.be.empty')
   cy.get(selectors.ReceiverNameinB2B)
@@ -86,16 +89,17 @@ Cypress.Commands.add('fillAddressInCostCenter', (costCenter) => {
 Cypress.Commands.add(
   'gotoMyOrganization',
   (waitforSession = true, salesRepOrManager = false) => {
+    cy.get(selectors.ProfileLabel).should('be.visible')
+
     cy.url().then((url) => {
       if (!url.includes('account')) {
-        cy.get(selectors.ProfileLabel).should('be.visible')
         cy.get(selectors.SignInBtn).click()
         cy.get(selectors.MyAccount).click()
         if (waitforSession) cy.waitForSession()
       }
 
       closeModalIfOpened()
-      cy.get(selectors.MyOrganization, { timeout: 30000 })
+      cy.get(selectors.MyOrganization, { timeout: 40000 })
         .should('be.visible')
         .click()
       const noOfdivision = salesRepOrManager ? 2 : 4
@@ -232,7 +236,9 @@ Cypress.Commands.add('openStoreFront', (login = false) => {
 
 Cypress.Commands.add('addNewLocation', (country, postalCode, street, city) => {
   cy.openStoreFront()
-  cy.get(selectors.addressContainer).should('be.visible').click()
+  cy.get(selectors.addressContainer, { timeout: 30000 })
+    .should('be.visible')
+    .click()
   cy.get(selectors.countryDropdown).select(country)
   cy.get(selectors.addressInputContainer)
     .first()

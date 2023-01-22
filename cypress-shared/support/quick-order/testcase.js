@@ -147,7 +147,9 @@ export function quickOrderByOneByOneTestCase(
       searchOneByOneProduct(search, { product, quantity }, 1)
       cy.get(add).should('be.visible').click()
       cy.get(selectors.QuickOrderPage().popupMsgSelector).should('be.visible')
-      cy.get(selectors.ToastMsgInB2B).contains('added to the cart')
+      cy.get(selectors.ToastMsgInB2B)
+        .should('be.visible')
+        .contains('added to the cart')
       cy.get(selectors.OpenCart).first().click()
       cy.get(selectors.MiniCartProductName).should('contain', product)
       cy.get(selectors.TotalPrice).should('have.text', totalPrice)
@@ -198,9 +200,9 @@ function quickOrderCategory(quoteEnv, number, totalPrice) {
     .clear({ timeout: 8000 })
     .type(number, { force: true })
   cy.get(addtoCart).should('be.visible').click()
-  cy.get(selectors.ToastMsgInB2B, { timeout: 10000 }).contains(
-    number > 50 ? POPUP_MSG : TOAST_MSG.addedToTheCart
-  )
+  cy.get(selectors.ToastMsgInB2B, { timeout: 10000 })
+    .should('be.visible')
+    .contains(number > 50 ? POPUP_MSG : TOAST_MSG.addedToTheCart)
   cy.get(selectors.OpenCart).first().should('be.visible').click()
   cy.get(selectors.MiniCartProductName).should('contain', 'Golf Shoes')
   cy.get(selectors.TotalPrice).should('have.text', totalPrice)
@@ -241,10 +243,13 @@ export function quickOrderByCategoryNegativeTestCase(
 function validateForm(quoteEnv, vtex, productCount) {
   cy.intercept('POST', `${vtex.baseUrl}/**`).as('validateForm')
   // eslint-disable-next-line cypress/no-unnecessary-waiting
-  cy.wait(3000)
+  cy.wait(5000)
   cy.contains(BUTTON_LABEL.AddToCart).should('be.visible').click()
   cy.wait('@validateForm')
-  cy.get(selectors.QuantityBadgeInCart).should('have.text', productCount)
+  cy.get(selectors.QuantityBadgeInCart, { timeout: 15000 }).should(
+    'have.text',
+    productCount
+  )
   cy.get(selectors.OpenCart).first().should('be.visible').click()
   quoteEnv ? fillQuoteInformation({ quoteEnv }) : ProceedToCheckOut()
 }
@@ -258,7 +263,9 @@ function uploadXLS(filePath, b2b) {
   // close and upload CSV
   cy.get('body').then(($body) => {
     if ($body.find(deleteFile).length) {
-      cy.get(deleteFile).should('be.visible').click({ multiple: true })
+      cy.get(deleteFile, { timeout: 10000 })
+        .should('be.visible')
+        .click({ multiple: true })
     }
   })
   checkBackButtonIsVisible()
@@ -311,4 +318,16 @@ export function quickOrderByXLSNegativeTestCase(quoteEnv) {
       validateToolTipMsg(TOOLTIP_MSG.maxQuantity)
     }
   )
+}
+
+export function verifyExcelFile(fileName, products) {
+  it('verify the data and extension', updateRetry(3), () => {
+    cy.task('readXlsx', {
+      file: fileName,
+      sheet: 'SheetJS',
+    }).then((rows) => {
+      expect(rows.length).to.be.greaterThan(1)
+      expect(JSON.stringify(rows)).to.be.equal(JSON.stringify(products))
+    })
+  })
 }

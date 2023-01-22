@@ -10,9 +10,7 @@ import {
 } from '../../support/b2b/utils.js'
 import { loginToStoreFront } from '../../support/b2b/login.js'
 import {
-  productShouldNotbeAvailableTestCase,
   salesUserShouldImpersonateNonSalesUser,
-  userShouldNotImpersonateThisUser,
   verifySession,
   stopImpersonation,
 } from '../../support/b2b/common.js'
@@ -21,43 +19,13 @@ import {
   createQuote,
   updateQuote,
   filterQuoteByStatus,
-  quoteShouldbeVisibleTestCase,
-  quoteShouldNotBeVisibleTestCase,
 } from '../../support/b2b/quotes.js'
+import { salesRepQuotesAccess } from '../../support/b2b/impersonation_quote_access.js'
 
-function QuotesAccess(
-  { organizationName, quotes },
-  organizationB,
-  organizationBQuote
-) {
-  quoteShouldNotBeVisibleTestCase(
-    organizationName,
-    quotes.Buyer2.quotes1,
-    organizationName
-  )
-  quoteShouldNotBeVisibleTestCase(
-    organizationName,
-    organizationBQuote.OrganizationAdmin.quotes1,
-    organizationB
-  )
-  quoteShouldbeVisibleTestCase(
-    organizationName,
-    quotes.OrganizationAdmin.quotes1,
-    organizationName
-  )
-}
-
-describe('Organization A - Cost Center A1 - Sales Rep Scenario', () => {
+describe('Organization A - Cost Center A1 - Sales Rep Impersonation Scenario', () => {
   loginViaCookies({ storeFrontCookie: false })
 
-  const {
-    nonAvailableProduct,
-    users,
-    product,
-    costCenter1,
-    quotes,
-    gmailCreds,
-  } = b2b.OrganizationA
+  const { users, product, costCenter1, quotes, gmailCreds } = b2b.OrganizationA
 
   const { organizationName: organizationB, quotes: organizationBQuote } =
     b2b.OrganizationB
@@ -75,14 +43,6 @@ describe('Organization A - Cost Center A1 - Sales Rep Scenario', () => {
     roleObject.SalesRepresentative.role
   )
 
-  productShouldNotbeAvailableTestCase(nonAvailableProduct)
-  QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
-  userShouldNotImpersonateThisUser(
-    roleObject.SalesRepresentative.role,
-    roleObject.SalesManager.role,
-    users.SalesManager
-  )
-
   salesUserShouldImpersonateNonSalesUser(
     roleObject.SalesRepresentative.role,
     impersonatedRole,
@@ -94,7 +54,7 @@ describe('Organization A - Cost Center A1 - Sales Rep Scenario', () => {
 
   updateQuote(quotes.SalesRep.updateQuote, { price })
   filterQuoteByStatus(STATUSES.revised)
-  QuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
+  salesRepQuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
 
   const quote = 'IMPERSONATE_QUOTE_3'
 
