@@ -113,12 +113,6 @@ exports.run = async (test, config, addOptions = {}) => {
   const SPEC_PATH = path.parse(test.specs[0]).dir
   const CY_FOLDER = this.getCypressFolder()
 
-  test.specs.forEach((spec) => {
-    if (path.parse(spec).dir !== SPEC_PATH) {
-      system.crash('Paths mixed on the same strategy', spec)
-    }
-  })
-
   // Build options
   let options = {
     config: {

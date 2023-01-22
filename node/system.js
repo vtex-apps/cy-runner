@@ -130,6 +130,7 @@ exports.exec = (cmd, output = 'ignore', cwd = process.cwd()) => {
 }
 
 // Start a background process
+// eslint-disable-next-line max-params
 exports.spawn = (bin, cmd, logFile, cwd = process.cwd()) => {
   const out = fs.openSync(logFile, 'a')
   const err = fs.openSync(logFile, 'a')
@@ -204,4 +205,24 @@ exports.traverse = (result, obj, previousKey) => {
   }
 
   return result
+}
+
+// Check mixed paths
+exports.checkMixedPaths = async (config) => {
+  for (const strategy in config.strategy) {
+    const test = config.strategy[strategy]
+
+    if (test.enabled) {
+      const PATH = path.parse(test.specs[0]).dir
+
+      // eslint-disable-next-line no-loop-func
+      test.specs.forEach((spec) => {
+        if (path.parse(spec).dir !== PATH) {
+          this.crash('Paths mixed on the same strategy', spec, {
+            dump: false,
+          })
+        }
+      })
+    }
+  }
 }
