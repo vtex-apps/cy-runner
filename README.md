@@ -615,7 +615,7 @@ Secrets to store credentials. You can create a file named `.{base.secrets.name}.
     "vtex": {
       "apiKey": "",
       "apiToken": "",
-      "cookieName": "",
+      "authCookieName": "",
       "robotMail": "",
       "robotPassword": ""
     },
