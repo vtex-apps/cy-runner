@@ -15,9 +15,9 @@ exports.getConfig = async (configFile) => {
   logger.msgOk('Loading cy-runner configuration')
   let config = storage.loadConfig(configFile)
 
-  // Check mixed paths
+  // Check mixed paths and missing specs
   logger.msgOk('Checking mixed paths on specs')
-  await system.checkMixedPaths(config)
+  await system.checkSpecHealth(config)
 
   // Check toolbelt version
   logger.msgOk('Checking toolbelt version')

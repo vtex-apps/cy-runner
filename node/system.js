@@ -208,7 +208,7 @@ exports.traverse = (result, obj, previousKey) => {
 }
 
 // Check mixed paths
-exports.checkMixedPaths = async (config) => {
+exports.checkSpecHealth = async (config) => {
   for (const strategy in config.strategy) {
     const test = config.strategy[strategy]
 
@@ -219,6 +219,12 @@ exports.checkMixedPaths = async (config) => {
       test.specs.forEach((spec) => {
         if (path.parse(spec).dir !== PATH) {
           this.crash('Paths mixed on the same strategy', spec, {
+            dump: false,
+          })
+        }
+
+        if (!storage.exists(path.join(this.basePath(), spec))) {
+          this.crash('Spec does not exist', spec, {
             dump: false,
           })
         }
