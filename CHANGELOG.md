@@ -1,5 +1,10 @@
 ## [Unreleased]
 
+### Fixed
+- [ENGINEERS-1074] Detection of base folder to start the test
+- [ENGINEERS-1075] Detection of missing specs before start the test
+- [ENGINEERS-1076] Detection of mixed path specs before start the test
+
 ### Changed
 - [ENGINEERS-985] & [ENGINEERS-986] Affirm selectors improvement
 
