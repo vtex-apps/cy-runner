@@ -223,7 +223,7 @@ exports.checkSpecHealth = async (config) => {
           })
         }
 
-        if (!storage.exists(path.join(this.basePath(), spec))) {
+        if (!storage.exists(path.join(this.cyRunnerPath(), spec))) {
           this.crash('Spec does not exist', spec, {
             dump: false,
           })
@@ -236,7 +236,7 @@ exports.checkSpecHealth = async (config) => {
     const { specs } = config.workspace.wipe
 
     specs.forEach((spec) => {
-      if (!storage.exists(path.join(this.basePath(), spec))) {
+      if (!storage.exists(path.join(this.cyRunnerPath(), spec))) {
         this.crash('Wipe spec does not exist', spec, {
           dump: false,
         })
