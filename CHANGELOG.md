@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [2.3.0] - 2023-01-23
+
 ### Fixed
 - [ENGINEERS-1074] Detection of base folder to start the test
 - [ENGINEERS-1075] Detection of missing specs before start the test
