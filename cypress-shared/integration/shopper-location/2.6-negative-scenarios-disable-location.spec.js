@@ -14,6 +14,7 @@ describe('Location validation', () => {
 
   // eslint-disable-next-line jest/expect-expect
   it(`${prefix} - Test negative scenarios`, updateRetry(2), () => {
+    cy.log('Testing Negative scenarios by disabling mocklocation')
     verifyLocation()
     cy.get(selectors.AddressErrorContainer).should(
       'have.text',

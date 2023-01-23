@@ -298,15 +298,30 @@ export function syncCheckoutUICustom() {
     `In ${prefix} - Sync Checkout UI Custom via API`,
     { retries: 9, responseTimeout: 5000, requestTimeout: 5000 },
     () => {
-      // Define constants
-      const APP_NAME = 'vtex.checkout-ui-custom'
-      const APP_VERSION = '*.x'
-      const APP = `${APP_NAME}@${APP_VERSION}`
-      const CUSTOM_URL = `https://${vtex.account}.myvtex.com/_v/private/admin-graphql-ide/v0/${APP}`
-      const GRAPHQL_MUTATION =
-        'mutation' +
-        '($email: String, $workspace: String, $layout: CustomFields, $javascript: String, $css: String, $javascriptActive: Boolean, $cssActive: Boolean, $colors: CustomFields)' +
-        '{saveChanges (email: $email, workspace: $workspace, layout: $layout, javascript: $javascript, css: $css, javascriptActive: $javascriptActive, cssActive: $cssActive, colors: $colors) @context(provider: "vtex.checkout-ui-custom@*.x")}'
+      cy.getVtexItems().then((vtex) => {
+        // Define constants
+        const APP_NAME = 'vtex.checkout-ui-custom'
+        const APP_VERSION = '0.x'
+        const APP = `${APP_NAME}@${APP_VERSION}`
+        const CUSTOM_URL = `https://${vtex.account}.myvtex.com/_v/private/admin-graphql-ide/v0/${APP}`
+        const GRAPHQL_QUERY =
+          '{getLast(workspace: "master")' +
+          '{email workspace layout javascript css javascriptActive cssActive colors}}'
+        cy.log("Get last workspace used via getLast graphQl query")
+        const GRAPHQL_MUTATION =
+          'mutation' +
+          '($email: String, $workspace: String, $layout: CustomFields, $javascript: String, $css: String, $javascriptActive: Boolean, $cssActive: Boolean, $colors: CustomFields)' +
+          '{saveChanges(email: $email, workspace: $workspace, layout: $layout, javascript: $javascript, css: $css, javascriptActive: $javascriptActive, cssActive: $cssActive, colors: $colors)}'
+        cy.log("Save new workspace via saveChanges graphQl mutation")
+        // Getting master values
+        cy.request({
+          method: 'POST',
+          url: CUSTOM_URL,
+          body: { query: GRAPHQL_QUERY },
+        })
+          .as('GRAPHQL')
+          .its('status')
+          .should('equal', 200)
 
       cy.request({
         method: 'POST',

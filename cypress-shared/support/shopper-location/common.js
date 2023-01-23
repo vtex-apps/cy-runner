@@ -70,6 +70,7 @@ export function addAddress(prefix, { address, lat, long }) {
     `${prefix} - Go to store front and add shipping address`,
     updateRetry(1),
     () => {
+      cy.log('Add new location')
       cy.intercept('**/rc.vtex.com.br/api/events').as('events')
       cy.visit('/', mockLocation(lat, long))
       cy.wait('@events')
@@ -129,18 +130,21 @@ export function orderProductTestCase(
   { country, postalCode, address, city }
 ) {
   it(`${prefix} - Adding Location`, updateRetry(2), () => {
-    cy.addNewLocation(country, postalCode, address, city)
+    cy.log('Add a new location using addLocation function')
+    addLocation(data)
   })
 
   it(
     `${prefix} - Verifying Address in home page & checkout page`,
     updateRetry(2),
     () => {
+      cy.log('Verifying the address in HomePage')
       verifyShopperLocation()
     }
   )
 
   it(`${prefix} - Ordering the product`, updateRetry(2), () => {
+    cy.log('Ordering the product')
     cy.orderProduct()
   })
 }

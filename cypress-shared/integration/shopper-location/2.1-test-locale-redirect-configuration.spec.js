@@ -29,6 +29,7 @@ describe('Testing local redirect configuration', () => {
 
   // eslint-disable-next-line jest/expect-expect
   it(`${prefix} - Verify address`, updateRetry(2), () => {
+    cy.log('Verify the address in HomePage')
     scroll()
     cy.get(selectors.addressUpdation)
       .should('be.visible')
@@ -37,12 +38,14 @@ describe('Testing local redirect configuration', () => {
 
   // eslint-disable-next-line jest/expect-expect
   it(`${prefix} - Get popup with switch button`, updateRetry(2), () => {
+    cy.log('Get popup with switch button')
     cy.get(selectors.ToastMsgInB2B).should('be.visible', { timeout: 10000 })
     cy.get(selectors.switchButton).should('be.visible').click()
   })
 
   // eslint-disable-next-line jest/expect-expect
   it(`${prefix} - Page will be redirected to google page`, () => {
+    cy.log('Page will be redirected to google page')
     cy.url().should('eq', 'https://www.google.com/')
   })
 

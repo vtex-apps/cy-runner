@@ -25,7 +25,7 @@ export function updateSettings(
           'mutation' +
           '($app:String,$version:String,$settings:String)' +
           '{saveAppSettings(app:$app,version:$version,settings:$settings){message}}'
-
+        cy.log("save settings via saveAppSettings graphQl mutation")
         const QUERY_VARIABLES = {
           app,
           version,

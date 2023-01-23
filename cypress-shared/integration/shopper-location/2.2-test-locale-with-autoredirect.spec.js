@@ -19,6 +19,7 @@ describe('Test Locale with Auto redirect', () => {
 
   // eslint-disable-next-line jest/expect-expect
   it(`${prefix} - Now site should force redirect to google`, () => {
+    cy.log('Site is forcefully redirected to google')
     cy.url().should('eq', 'https://www.google.com/')
   })
 
