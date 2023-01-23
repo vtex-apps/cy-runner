@@ -15,6 +15,29 @@ exports.getConfig = async (configFile) => {
   logger.msgOk('Loading cy-runner configuration')
   let config = storage.loadConfig(configFile)
 
+  // Make link if base has Cypress folder
+  const lnk = path.join(__dirname, '..', 'cypress')
+  const src = path.join(__dirname, '..', 'cypress-shared', 'support', 'common')
+  const cyp = path.join(__dirname, '..', '..', 'cypress')
+  const dst = path.join(__dirname, '..', '..', 'cypress', 'support')
+
+  if (storage.exists(dst)) {
+    logger.msgOk('Linking local Cypress code on Cy-Runner')
+
+    // Create common links inside cypress
+    const common = path.join(dst, 'common')
+    const clean = path.join(__dirname, '..', '..')
+
+    logger.msgPad(`${src.replace(clean, '.')} -> ${common.replace(clean, '.')}`)
+    if (storage.exists(common)) storage.unLink(common)
+    storage.link(src, common)
+
+    // Create cypress link inside cy-runner
+    logger.msgPad(`${cyp.replace(clean, '.')} -> ${lnk.replace(clean, '.')}`)
+    if (storage.exists(lnk)) storage.unLink(lnk)
+    storage.link(cyp, lnk)
+  }
+
   // Check mixed paths and missing specs
   logger.msgOk('Checking for mixed paths and missing specs')
   await system.checkSpecHealth(config)
@@ -102,29 +125,6 @@ exports.getConfig = async (configFile) => {
 
   // Create state files
   storage.createStateFiles(config)
-
-  // Make link if base has Cypress folder
-  const lnk = path.join(__dirname, '..', 'cypress')
-  const src = path.join(__dirname, '..', 'cypress-shared', 'support', 'common')
-  const cyp = path.join(__dirname, '..', '..', 'cypress')
-  const dst = path.join(__dirname, '..', '..', 'cypress', 'support')
-
-  if (storage.exists(dst)) {
-    logger.msgOk('Linking local Cypress code on Cy-Runner')
-
-    // Create common links inside cypress
-    const common = path.join(dst, 'common')
-    const clean = path.join(__dirname, '..', '..')
-
-    logger.msgPad(`${src.replace(clean, '.')} -> ${common.replace(clean, '.')}`)
-    if (storage.exists(common)) storage.unLink(common)
-    storage.link(src, common)
-
-    // Create cypress link inside cy-runner
-    logger.msgPad(`${cyp.replace(clean, '.')} -> ${lnk.replace(clean, '.')}`)
-    if (storage.exists(lnk)) storage.unLink(lnk)
-    storage.link(cyp, lnk)
-  }
 
   // Export envs to make debug easier inside GitHub
   if (config.envs.length) logger.msgOk('Exporting envs variables')

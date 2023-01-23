@@ -231,4 +231,16 @@ exports.checkSpecHealth = async (config) => {
       })
     }
   }
+
+  if (config.workspace.wipe.enabled) {
+    const { specs } = config.workspace.wipe
+
+    specs.forEach((spec) => {
+      if (!storage.exists(path.join(this.basePath(), spec))) {
+        this.crash('Wipe spec does not exist', spec, {
+          dump: false,
+        })
+      }
+    })
+  }
 }
