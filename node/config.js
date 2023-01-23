@@ -16,7 +16,7 @@ exports.getConfig = async (configFile) => {
   let config = storage.loadConfig(configFile)
 
   // Check mixed paths and missing specs
-  logger.msgOk('Checking mixed paths on specs')
+  logger.msgOk('Checking for mixed paths and missing specs')
   await system.checkSpecHealth(config)
 
   // Check toolbelt version
