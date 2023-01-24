@@ -456,6 +456,7 @@ export function stopTestCaseOnFailure() {
 
 function logic(storeFrontCookie, stop) {
   before(() => {
+    cy.qe()
     // Inject cookies
     cy.getVtexItems().then((vtex) => {
       cy.setCookie(vtex.authCookieName, vtex.adminAuthCookieValue, {
@@ -486,6 +487,7 @@ export function loginViaCookies({ storeFrontCookie = true, stop = true } = {}) {
 
 export function loginViaAPI({ storeFrontCookie = true, stop = true } = {}) {
   before(() => {
+    cy.qe()
     // LoginAsAdmin
     loginAsAdmin()
     if (storeFrontCookie) {
