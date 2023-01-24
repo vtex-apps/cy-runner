@@ -10,12 +10,12 @@ import {
 } from './support.js'
 import { generateAddtoCartCardSelector } from './utils.js'
 
-Cypress.Commands.add('qe', (msg) => {
+Cypress.Commands.add('qe', (msg = '') => {
   const logFile = `${
     Cypress.spec.absolute.split('cy-runner')[0]
   }cy-runner/logs/${Cypress.spec.name.split('/').at(-1)}.log`
 
-  cy.writeFile(logFile, `${msg}\n`, { flag: 'a+' })
+  cy.writeFile(logFile, msg ? `${msg}\n` : msg, { flag: msg ? 'a+' : 'w' })
   cy.log(msg)
 })
 
