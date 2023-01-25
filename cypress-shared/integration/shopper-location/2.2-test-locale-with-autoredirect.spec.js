@@ -19,6 +19,9 @@ describe('Test Locale with Auto redirect', () => {
 
   // eslint-disable-next-line jest/expect-expect
   it(`${prefix} - Now site should force redirect to google`, () => {
+    cy.qe(
+      'Without any popup the site will be automatically redirected to Google'
+    )
     cy.url().should('eq', 'https://www.google.com/')
   })
 

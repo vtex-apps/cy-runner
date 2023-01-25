@@ -303,6 +303,9 @@ export function syncCheckoutUICustom() {
       const APP_VERSION = '*.x'
       const APP = `${APP_NAME}@${APP_VERSION}`
       const CUSTOM_URL = `https://${vtex.account}.myvtex.com/_v/private/admin-graphql-ide/v0/${APP}`
+      cy.qe(
+        'Save a new workspace via graphQl(As it gets delay response in checkout UI ,we save it through graphql).The graphQl mutation we use in UI,mutation{($email: String, $workspace: String, $layout: CustomFields, $javascript: String, $css: String, $javascriptActive: Boolean, $cssActive: Boolean, $colors: CustomFields) {saveChanges (email: $email, workspace: $workspace, layout: $layout, javascript: $javascript, css: $css, javascriptActive: $javascriptActive, cssActive: $cssActive, colors: $colors))}}'
+      )
       const GRAPHQL_MUTATION =
         'mutation' +
         '($email: String, $workspace: String, $layout: CustomFields, $javascript: String, $css: String, $javascriptActive: Boolean, $cssActive: Boolean, $colors: CustomFields)' +

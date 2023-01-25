@@ -15,6 +15,9 @@ describe('Location validation', () => {
 
   // eslint-disable-next-line jest/expect-expect
   it(`${prefix} - Test negative scenarios`, updateRetry(2), () => {
+    cy.qe(
+      "By enabling location here we give invalid postal code,so it shows an message as 'Sorry, shipping is not available for your location.'.And it shows Invalid postal code message also.Those two messages will be verified."
+    )
     verifyLocation(location.lat, location.long)
     cy.get(selectors.AddressErrorContainer).contains(
       shopperLocationConstants.locationNotAvailable

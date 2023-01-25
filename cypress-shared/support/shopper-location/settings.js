@@ -21,6 +21,9 @@ export function updateSettings(
         const APP_VERSION = '3.x'
         const APP = `${APP_NAME}@${APP_VERSION}`
         const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${APP}`
+        cy.qe(
+          'Update a app settings via graphQl.The graphQl mutation we use in UI,mutation{($app:String,$version:String,$settings:String) {saveAppSettings(app:$app,version:$version,settings:$settings){message}}'
+        )
         const GRAPHQL_MUTATION =
           'mutation' +
           '($app:String,$version:String,$settings:String)' +
