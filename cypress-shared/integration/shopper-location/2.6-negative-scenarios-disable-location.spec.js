@@ -14,11 +14,10 @@ describe('Location validation', () => {
 
   // eslint-disable-next-line jest/expect-expect
   it(`${prefix} - Test negative scenarios`, updateRetry(2), () => {
-    cy.qe(
-      "After disabling location here we click on Find location.It shows an message as 'Failed to find your location. Please check that you have granted permission for this site to use your location.'"
-    )
     verifyLocation()
-    cy.qe('The fail message will be verified')
+    cy.qe(
+      `Now we should see message as (${shopperLocationConstants.faildFindLocation}) in popup`
+    )
     cy.get(selectors.AddressErrorContainer).should(
       'have.text',
       shopperLocationConstants.faildFindLocation

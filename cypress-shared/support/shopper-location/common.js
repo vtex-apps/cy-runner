@@ -53,15 +53,20 @@ export function addLocation(data) {
 
 export function verifyLocation(lat, long) {
   cy.intercept('**/rc.vtex.com.br/api/events').as('events')
+  cy.qe(`${lat ? 'Enable' : 'Disable'} location permission in the browser`)
   cy.visit('/', mockLocation(lat, long))
+  cy.qe('Visit store front')
   cy.wait('@events')
   cy.get(selectors.ProfileLabel, { timeout: 10000 })
     .should('be.visible')
     .should('have.contain', `Hello,`)
   scroll()
+  cy.qe('Address container should be visible in the top left of the home page')
   cy.get(selectors.addressContainer).should('be.visible')
+  cy.qe('On click to address container should open a popup')
   cy.get(selectors.addressContainer).click()
   cy.get(selectors.AddressModelLayout).should('be.visible')
+  cy.qe('Now user should see change location button inside the popup')
   cy.get(selectors.ChangeLocationButton).click()
 }
 
@@ -80,7 +85,9 @@ export function addAddress(prefix, { address, lat, long }) {
         .should('be.visible')
         .should('have.contain', `Hello,`)
       scroll()
-      cy.qe('Verifying the address container in homepage')
+      cy.qe(
+        'Address container should be visible in the top left of the home page & on click to address container should open a popup'
+      )
       cy.get(selectors.addressContainer, { timeout: 20000 })
         .should('be.visible')
         .click()
