@@ -32,7 +32,10 @@ export function refund(
         cy.sendInvoiceAPI(
           {
             invoiceNumber: '54321',
-            invoiceValue: total,
+            invoiceValue: total
+              .replace('$ ', '')
+              .replace(/\./, '')
+              .replace(/,/, ''),
             invoiceUrl: null,
             issuanceDate: new Date(),
             invoiceKey: null,
