@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Added
+- [ENGINEERS-1087] Added send invoice test in refund
+
 ## [2.3.0] - 2023-01-23
 
 ### Fixed
