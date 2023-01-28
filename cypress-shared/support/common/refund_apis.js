@@ -3,9 +3,9 @@ import { workFlowAPI, startHandlingAPI } from './apis.js'
 import { FAIL_ON_STATUS_CODE, VTEX_AUTH_HEADER } from './constants.js'
 
 export function refund(
-  { total, title, env },
+  { total, externalSeller, title, env },
   payload,
-  { startHandling = true } = {}
+  { startHandling = true, sendInvoice = false } = {}
 ) {
   const refundInvoiceNumber = '84321'
 
@@ -21,6 +21,29 @@ export function refund(
           }).then((response) => {
             expect(response.status).to.match(/204|409/)
           })
+        })
+      })
+    })
+  }
+
+  if (sendInvoice && externalSeller) {
+    it('Send Invoice', () => {
+      cy.getOrderItems().then((order) => {
+        cy.sendInvoiceAPI(
+          {
+            invoiceNumber: '54321',
+            invoiceValue: total
+              .replace('$ ', '')
+              .replace(/\./, '')
+              .replace(/,/, ''),
+            invoiceUrl: null,
+            issuanceDate: new Date(),
+            invoiceKey: null,
+          },
+          order[env],
+          env === externalSeller.externalSaleEnv
+        ).then((response) => {
+          expect(response.status).to.equal(200)
         })
       })
     })
