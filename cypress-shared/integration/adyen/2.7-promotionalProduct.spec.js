@@ -4,7 +4,7 @@ import {
   preserveCookie,
   updateRetry,
 } from '../../support/common/support.js'
-import { promotionProduct } from '../../support/common/outputvalidation.js'
+import { promotionProduct } from '../../support/adyen/outputvalidation'
 import {
   getTestVariables,
   checkoutProduct,

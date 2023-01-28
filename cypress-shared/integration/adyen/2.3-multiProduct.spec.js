@@ -4,7 +4,7 @@ import {
   updateRetry,
   preserveCookie,
 } from '../../support/common/support.js'
-import { multiProduct } from '../../support/common/outputvalidation'
+import { multiProduct } from '../../support/adyen/outputvalidation'
 import { completePyamentWithDinersCard } from '../../support/adyen/testcase'
 import { getTestVariables } from '../../support/common/testcase'
 

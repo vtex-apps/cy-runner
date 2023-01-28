@@ -3,7 +3,7 @@ import {
   loginViaCookies,
   preserveCookie,
 } from '../../support/common/support.js'
-import { discountShipping } from '../../support/common/outputvalidation.js'
+import { discountShipping } from '../../support/adyen/outputvalidation'
 import { completePyamentWithDinersCard } from '../../support/adyen/testcase.js'
 import {
   getTestVariables,

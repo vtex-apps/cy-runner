@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Changed
+- [ENGINEERS-1097] - In adyen tests, for refunds testcase use lower rate products
+
 ### Added
 - [ENGINEERS-1087] Added send invoice test in refund
 

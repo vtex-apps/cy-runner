@@ -3,7 +3,7 @@ import {
   loginViaCookies,
   preserveCookie,
 } from '../../support/common/support.js'
-import { discountProduct } from '../../support/affirm/outputvalidation'
+import { discountProduct } from '../../support/adyen/outputvalidation'
 import {
   getTestVariables,
   checkoutProduct,
