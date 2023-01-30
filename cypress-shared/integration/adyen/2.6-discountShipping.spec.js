@@ -4,7 +4,7 @@ import {
   preserveCookie,
 } from '../../support/common/support.js'
 import { discountShipping } from '../../support/adyen/outputvalidation'
-import { completePyamentWithDinersCard } from '../../support/adyen/testcase.js'
+import { completePaymentWithDinersCard } from '../../support/adyen/testcase.js'
 import {
   getTestVariables,
   checkoutProduct,
@@ -19,7 +19,7 @@ describe(`${prefix} Scenarios`, () => {
 
   checkoutProduct(discountShipping)
 
-  completePyamentWithDinersCard(prefix, orderIdEnv)
+  completePaymentWithDinersCard(prefix, orderIdEnv)
 
   preserveCookie()
 })

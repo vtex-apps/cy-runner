@@ -21,7 +21,7 @@ const {
   adyenLoginPassword,
 } = config.base.vtex
 
-export function completePyamentWithDinersCard(
+export function completePaymentWithDinersCard(
   prefix,
   orderIdEnv,
   externalSeller = false

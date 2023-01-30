@@ -5,7 +5,7 @@ import {
   preserveCookie,
 } from '../../support/common/support.js'
 import { multiProduct } from '../../support/adyen/outputvalidation'
-import { completePyamentWithDinersCard } from '../../support/adyen/testcase'
+import { completePaymentWithDinersCard } from '../../support/adyen/testcase'
 import { getTestVariables } from '../../support/common/testcase'
 
 const { prefix, product1Name, product2Name, postalCode, productQuantity } =
@@ -46,7 +46,7 @@ describe('Multi Product Testcase', () => {
     cy.updateShippingInformation({ postalCode })
   })
 
-  completePyamentWithDinersCard(prefix, orderIdEnv)
+  completePaymentWithDinersCard(prefix, orderIdEnv)
 
   preserveCookie()
 })

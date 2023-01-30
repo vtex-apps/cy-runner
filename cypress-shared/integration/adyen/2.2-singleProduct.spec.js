@@ -1,5 +1,5 @@
 /* eslint-disable jest/expect-expect */
-import { completePyamentWithDinersCard } from '../../support/adyen/testcase'
+import { completePaymentWithDinersCard } from '../../support/adyen/testcase'
 import { singleProduct } from '../../support/adyen/outputvalidation'
 import {
   loginViaCookies,
@@ -41,7 +41,7 @@ describe(`${prefix} scenarios`, () => {
     })
   })
 
-  completePyamentWithDinersCard(prefix, orderIdEnv)
+  completePaymentWithDinersCard(prefix, orderIdEnv)
 
   preserveCookie()
 })

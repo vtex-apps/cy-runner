@@ -8,7 +8,7 @@ import {
   getTestVariables,
   checkoutProduct,
 } from '../../support/common/testcase.js'
-import { completePyamentWithDinersCard } from '../../support/adyen/testcase.js'
+import { completePaymentWithDinersCard } from '../../support/adyen/testcase.js'
 import selectors from '../../support/common/selectors.js'
 
 const { prefix, totalAmount } = discountProduct
@@ -27,7 +27,7 @@ describe(`${prefix} Scenarios`, () => {
     cy.get(selectors.Discounts).last().should('be.visible')
   })
 
-  completePyamentWithDinersCard(prefix, orderIdEnv)
+  completePaymentWithDinersCard(prefix, orderIdEnv)
 
   preserveCookie()
 })

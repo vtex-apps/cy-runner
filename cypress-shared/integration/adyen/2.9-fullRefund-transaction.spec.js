@@ -1,5 +1,5 @@
 /* eslint-disable jest/expect-expect */
-import { singleProduct } from '../../support/common/outputvalidation.js'
+import { singleProduct } from '../../support/adyen/outputvalidation.js'
 import { refund } from '../../support/common/refund_apis.js'
 import { getRefundPayload } from '../../support/common/refund.js'
 import { getTestVariables } from '../../support/common/testcase.js'
