@@ -11,7 +11,7 @@ import {
 import { completePaymentWithDinersCard } from '../../support/adyen/testcase.js'
 import selectors from '../../support/common/selectors.js'
 
-const { prefix, totalAmount } = discountProduct
+const { prefix, total } = discountProduct
 
 describe(`${prefix} Scenarios`, () => {
   loginViaCookies()
@@ -22,7 +22,7 @@ describe(`${prefix} Scenarios`, () => {
 
   it(`In ${prefix} - Verifying total amounts and discount for a discounted product`, () => {
     // Verify Total
-    cy.verifyTotal(totalAmount)
+    cy.verifyTotal(total)
     // Verify Discounts
     cy.get(selectors.Discounts).last().should('be.visible')
   })
