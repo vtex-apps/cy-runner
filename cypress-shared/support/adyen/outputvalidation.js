@@ -51,7 +51,7 @@ export default {
   discountProduct: {
     prefix: 'discountProduct',
     postalCode: '33180',
-    totalAmount: '$ 101.65',
+    totalAmount: '$ 95.00',
     productQuantity: '1',
     productName: PRODUCTS.cauliflower,
     env: 'discountProductEnv',
