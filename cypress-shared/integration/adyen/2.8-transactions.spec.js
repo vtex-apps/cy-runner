@@ -7,7 +7,7 @@ import {
   discountProduct,
   // externalSeller,
   promotionProduct,
-} from '../../support/common/outputvalidation'
+} from '../../support/adyen/outputvalidation'
 import { getTestVariables } from '../../support/common/testcase.js'
 import {
   loginToAdyen,

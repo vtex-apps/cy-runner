@@ -4,9 +4,9 @@ import {
   preserveCookie,
   updateRetry,
 } from '../../support/common/support.js'
-import { externalSeller } from '../../support/common/outputvalidation.js'
+import { externalSeller } from '../../support/adyen/outputvalidation'
 import { getTestVariables } from '../../support/common/testcase.js'
-import { completePyamentWithDinersCard } from '../../support/adyen/testcase.js'
+import { completePaymentWithDinersCard } from '../../support/adyen/testcase.js'
 
 describe('External Seller Testcase', () => {
   loginViaCookies()
@@ -43,7 +43,7 @@ describe('External Seller Testcase', () => {
     cy.updateShippingInformation({ postalCode })
   })
 
-  completePyamentWithDinersCard(prefix, orderIdEnv, externalSeller)
+  completePaymentWithDinersCard(prefix, orderIdEnv, externalSeller)
 
   preserveCookie()
 })

@@ -3,8 +3,8 @@ import {
   loginViaCookies,
   preserveCookie,
 } from '../../support/common/support.js'
-import { discountShipping } from '../../support/common/outputvalidation.js'
-import { completePyamentWithDinersCard } from '../../support/adyen/testcase.js'
+import { discountShipping } from '../../support/adyen/outputvalidation'
+import { completePaymentWithDinersCard } from '../../support/adyen/testcase.js'
 import {
   getTestVariables,
   checkoutProduct,
@@ -19,7 +19,7 @@ describe(`${prefix} Scenarios`, () => {
 
   checkoutProduct(discountShipping)
 
-  completePyamentWithDinersCard(prefix, orderIdEnv)
+  completePaymentWithDinersCard(prefix, orderIdEnv)
 
   preserveCookie()
 })

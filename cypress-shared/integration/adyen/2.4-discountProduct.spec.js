@@ -3,15 +3,15 @@ import {
   loginViaCookies,
   preserveCookie,
 } from '../../support/common/support.js'
-import { discountProduct } from '../../support/affirm/outputvalidation'
+import { discountProduct } from '../../support/adyen/outputvalidation'
 import {
   getTestVariables,
   checkoutProduct,
 } from '../../support/common/testcase.js'
-import { completePyamentWithDinersCard } from '../../support/adyen/testcase.js'
+import { completePaymentWithDinersCard } from '../../support/adyen/testcase.js'
 import selectors from '../../support/common/selectors.js'
 
-const { prefix, totalAmount } = discountProduct
+const { prefix, total } = discountProduct
 
 describe(`${prefix} Scenarios`, () => {
   loginViaCookies()
@@ -22,12 +22,12 @@ describe(`${prefix} Scenarios`, () => {
 
   it(`In ${prefix} - Verifying total amounts and discount for a discounted product`, () => {
     // Verify Total
-    cy.verifyTotal(totalAmount)
+    cy.verifyTotal(total)
     // Verify Discounts
     cy.get(selectors.Discounts).last().should('be.visible')
   })
 
-  completePyamentWithDinersCard(prefix, orderIdEnv)
+  completePaymentWithDinersCard(prefix, orderIdEnv)
 
   preserveCookie()
 })

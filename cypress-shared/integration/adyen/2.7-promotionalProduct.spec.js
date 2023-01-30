@@ -4,12 +4,12 @@ import {
   preserveCookie,
   updateRetry,
 } from '../../support/common/support.js'
-import { promotionProduct } from '../../support/common/outputvalidation.js'
+import { promotionProduct } from '../../support/adyen/outputvalidation'
 import {
   getTestVariables,
   checkoutProduct,
 } from '../../support/common/testcase'
-import { completePyamentWithDinersCard } from '../../support/adyen/testcase.js'
+import { completePaymentWithDinersCard } from '../../support/adyen/testcase.js'
 
 describe('Promotional Product scenarios', () => {
   loginViaCookies()
@@ -27,7 +27,7 @@ describe('Promotional Product scenarios', () => {
       .should('have.text', 'Free')
   })
 
-  completePyamentWithDinersCard(prefix, orderIdEnv)
+  completePaymentWithDinersCard(prefix, orderIdEnv)
 
   preserveCookie()
 })
