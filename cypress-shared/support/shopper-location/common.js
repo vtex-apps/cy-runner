@@ -16,13 +16,18 @@ export function verifyShopperLocation() {
 
 export function addLocation(data) {
   cy.intercept('**/rc.vtex.com.br/api/events').as('events')
+  cy.qe('Visit Store frontend')
   cy.visit('/', mockLocation(data.lat, data.long))
   cy.wait('@events')
   cy.get(selectors.ProfileLabel, { timeout: 10000 })
     .should('be.visible')
     .should('have.contain', `Hello,`)
   scroll()
+  cy.qe(
+    'Address container should be visible in the top left of the home page & click on it'
+  )
   cy.get(selectors.addressContainer).click()
+  cy.qe('Add shipping address')
   cy.get(selectors.countryDropdown).select(data.country)
   cy.get(selectors.addressInputContainer)
     .first()
@@ -93,7 +98,7 @@ export function addAddress(prefix, { address, lat, long }) {
         .click()
       cy.qe('Adding the shipping address')
       cy.get(selectors.findMyLocation).click()
-
+      cy.qe('Adding the shipping address')
       cy.get(selectors.countryDropdown).select(address.country)
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.get(selectors.addressInputContainer)
@@ -175,8 +180,11 @@ export function verifyHomePage(city, postalCode) {
         req.continue()
       }
     }).as('updateOrderFormShipping')
+    cy.qe('Verify address container is visible under product')
     cy.get(selectors.addressContainer).should('be.visible')
+    cy.qe('Verify city is visible under the product')
     cy.get(selectors.AddressCity).contains(city)
+    cy.qe('Verify postal code under the product')
     cy.get(selectors.AddressZip).contains(postalCode)
     cy.get(selectors.Distance).contains('Distance:')
     cy.wait('@updateOrderFormShipping', { timeout: 20000 })

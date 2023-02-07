@@ -469,6 +469,7 @@ export function saveOrderId(orderIdEnv = false, externalSeller = false) {
     // If we are ordering product
     // then store orderId in .orders.json
     if (orderIdEnv) {
+      cy.qe({msg:`save the order id`})
       cy.setOrderItem(orderIdEnv, orderId)
     }
 

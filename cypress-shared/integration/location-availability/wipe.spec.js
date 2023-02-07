@@ -18,6 +18,9 @@ describe('Wipe the pickup points', () => {
   // If we leave the shipping policy active then it is forcing us to use pickup points in checkout
   // So, make shipping policy as inactive
   it('Update shipping policy status to inactive', () => {
+    cy.qe(
+      'If we leave the shipping policy active then it is forcing us to use pickup points in checkout,So make shipping policy as inactive'
+    )
     graphql(
       updateShippingPolicy(data.ship1, { status: false, pickup: false }),
       (response) => {

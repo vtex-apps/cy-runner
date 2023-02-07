@@ -17,7 +17,9 @@ describe('Validate location non availability', () => {
 
   // eslint-disable-next-line jest/expect-expect
   it(`${prefix} - Verify shipping content`, updateRetry(2), () => {
+    cy.qe('Verify the product image is visible in homepage')
     cy.get(PRODUCTS_LINK_MAPPING.orange.link).should('be.visible')
+    cy.qe('For the given shipping address the shipping is unavailable')
     cy.get(selectors.locationUnavailable)
       .should('be.visible')
       .contains('Shipping: Unavailable for')
@@ -29,6 +31,9 @@ describe('Validate location non availability', () => {
     updateRetry(2),
     () => {
       cy.openProduct(PRODUCTS_LINK_MAPPING.orange.name, true, true)
+      cy.qe(
+        'Verifying the given shipping address in specification page is not available for pickup near your location'
+      )
       cy.get(selectors.storeUnavailabilityInformation)
         .should('be.visible')
         .contains(

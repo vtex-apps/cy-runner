@@ -27,6 +27,9 @@ describe('Enable location validation', () => {
 
   // eslint-disable-next-line jest/expect-expect
   it(`${prefix} - Open product`, updateRetry(1), () => {
+    cy.qe(
+      'Address container should be visible in the top left of the home page'
+    )
     cy.get(selectors.addressContainer).should('be.visible')
     cy.openProduct(product, true)
   })

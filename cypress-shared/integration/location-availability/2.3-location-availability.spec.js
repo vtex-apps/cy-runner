@@ -28,6 +28,7 @@ describe('Validate location availability', () => {
     updateRetry(1),
     () => {
       cy.openProduct(PRODUCTS_LINK_MAPPING.orange.name, true)
+      cy.qe('verify postal code is visible in specification page')
       cy.get(selectors.AvailabilityHeader)
         .should('be.visible')
         .contains('33180')

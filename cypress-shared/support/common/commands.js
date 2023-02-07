@@ -85,13 +85,8 @@ Cypress.Commands.add(
     orderIdEnv = null,
     externalSeller = null,
   } = {}) => {
-    cy.get('body').then($body => {
-      cy.qe(
-        `Select the payment option and order the product
-         Verify the product orderId is visible in the store front 
-         save the order Id
-        `
-      )
+    cy.get('body').then(($body) => {
+      cy.qe({msg:`Select the payment option and order the product`})
       if ($body.find(selectors.FillInvoiceAddress).length === 2) {
         cy.get(selectors.FillInvoiceAddress)
           .last()
