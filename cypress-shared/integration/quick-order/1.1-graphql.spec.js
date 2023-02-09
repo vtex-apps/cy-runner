@@ -13,6 +13,11 @@ describe('Graphql testcase', () => {
   loginViaCookies()
 
   it('seller query', () => {
+    cy.qe(`
+    seller query - 'query' +
+    '{sellers @context(provider: "vtex.quickorder")' +
+    '{items{id,name}}}',
+    `)
     graphql(APP, getSellers(), validateSellers)
   })
 

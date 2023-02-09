@@ -146,12 +146,16 @@ Cypress.Commands.add('gotoQuickOrder', (b2b = false) => {
       cy.get(selectors.Menu).should('be.visible').click()
       cy.get(selectors.QuickOrder).should('be.visible').click()
     } else {
+      cy.qe(
+        'Visit the quickorder Homapge and verify the profile lable is visible then the profile label should contain Hello'
+      )
       cy.visit('/quickorder')
       cy.get(selectors.ProfileLabel, { timeout: 20000 })
         .should('be.visible')
         .should('have.contain', `Hello,`)
     }
 
+    cy.qe(`The url should contain quickorder`)
     cy.url().should('include', 'quickorder')
   })
 })

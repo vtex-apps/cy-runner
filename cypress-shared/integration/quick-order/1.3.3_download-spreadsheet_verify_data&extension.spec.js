@@ -12,6 +12,8 @@ describe('Quickorder - Verify the data and extension in the spreadsheet', () => 
   loginViaCookies()
 
   it('Download the quickOrder spreadsheet', updateRetry(3), () => {
+    cy.qe(`Visit the Quickorder Homepage and verify the profile is visible`)
+    cy.qe('Verify the url should contain quickorder')
     cy.gotoQuickOrder()
     cy.contains('Click here to download a spreadsheet model').click()
   })

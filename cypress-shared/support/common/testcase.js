@@ -303,6 +303,7 @@ export function syncCheckoutUICustom() {
       const APP_VERSION = '*.x'
       const APP = `${APP_NAME}@${APP_VERSION}`
       const CUSTOM_URL = `https://${vtex.account}.myvtex.com/_v/private/admin-graphql-ide/v0/${APP}`
+
       cy.qe(
         'Save a new workspace via graphQl(As it gets delay response in checkout UI ,we save it through graphql).The graphQl mutation we use in UI,mutation{($email: String, $workspace: String, $layout: CustomFields, $javascript: String, $css: String, $javascriptActive: Boolean, $cssActive: Boolean, $colors: CustomFields) {saveChanges (email: $email, workspace: $workspace, layout: $layout, javascript: $javascript, css: $css, javascriptActive: $javascriptActive, cssActive: $cssActive, colors: $colors))}}'
       )
@@ -327,6 +328,12 @@ export function syncCheckoutUICustom() {
 
 export function deleteAddresses() {
   it('Getting user & then deleting addresses associated with that user', () => {
+    cy.qe(`
+    curl --location --request GET 'https://quickorder0204451--productusqa.myvtex.com/…ities/CL/search?email=robot.partnerhere@gmail.com' \
+--header 'X-VTEX-API-AppKey: AppKey' \
+--header 'X-VTEX-API-AppToken: AppToken' \
+--header 'VtexIdclientAutCookie:VtexIdclientAutCookie '
+    `)
     cy.searchInMasterData(ENTITIES.CLIENTS, robotMail).then((clients) => {
       cy.searchInMasterData(ENTITIES.ADDRESSES, clients[0].id).then(
         (addresses) => {
