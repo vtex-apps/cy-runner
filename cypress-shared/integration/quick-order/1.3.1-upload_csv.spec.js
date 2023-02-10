@@ -14,7 +14,7 @@ describe('Quickorder - Upload CSV testcase', () => {
     `In Upload CSV testcase - Verify quantity by price`,
     updateRetry(4),
     () => {
-      cy.eq(
+      cy.qe(
         'Verify the quantity in the quantity badge and the first item should contain 2 and last item should contain 50'
       )
       cy.get('.quantity.badge').first().should('have.text', '2')
