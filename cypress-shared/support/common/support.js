@@ -404,6 +404,12 @@ export function saveOrderId(orderIdEnv = false, externalSeller = false) {
         `${orderId.slice(0, -1)}2`
       )
     }
+
+    cy.getOrderItems().then((order) => {
+      expect(order[orderIdEnv || externalSeller.directSaleEnv]).to.not.equal(
+        undefined
+      )
+    })
   })
 }
 

@@ -457,6 +457,8 @@ export function verifyTransactionPaymentsAPITestCase(
         ).then((response) => {
           expect(response.status).to.equal(200)
           // Store payment tid in .orders.json
+          expect(response.body[0].tid).to.not.equal(undefined)
+          expect(response.body[0].tid).to.not.equal(null)
           cy.setOrderItem(paymentTidEnv, response.body[0].tid)
           fn && fn(response)
         })
