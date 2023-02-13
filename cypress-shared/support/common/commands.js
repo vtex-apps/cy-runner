@@ -30,7 +30,7 @@ Cypress.Commands.add('getVtexItems', () => {
   return cy.wrap(Cypress.env().base.vtex, { log: false })
 })
 
-Cypress.Commands.add('addDelayBetweenRetries', delay => {
+Cypress.Commands.add('addDelayBetweenRetries', (delay) => {
   if (cy.state('runnable')._currentRetry > 0) cy.wait(delay)
 })
 
@@ -39,9 +39,9 @@ Cypress.Commands.add('addReloadBetweenRetries', () => {
 })
 
 Cypress.Commands.add('closeCart', () => {
-  cy.get('body').then($body => {
+  cy.get('body').then(($body) => {
     if ($body.find(selectors.CloseCart).length) {
-      cy.get(selectors.CloseCart).then($el => {
+      cy.get(selectors.CloseCart).then(($el) => {
         if (Cypress.dom.isVisible($el)) {
           cy.get(selectors.CloseCart).click()
         }
@@ -50,7 +50,7 @@ Cypress.Commands.add('closeCart', () => {
   })
 })
 
-Cypress.Commands.add('getIframeBody', selector => {
+Cypress.Commands.add('getIframeBody', (selector) => {
   // get the iframe > document > body
   // and retry until the body element is not empty
   return (
@@ -71,10 +71,8 @@ Cypress.Commands.add('getIframeBody', selector => {
 Cypress.Commands.add('gotoProductDetailPage', () => {
   cy.get(selectors.ProductAnchorElement)
     .should('have.attr', 'href')
-    .then(href => {
-      cy.get(generateAddtoCartCardSelector(href))
-        .first()
-        .click()
+    .then((href) => {
+      cy.get(generateAddtoCartCardSelector(href)).first().click()
     })
 })
 
@@ -86,12 +84,9 @@ Cypress.Commands.add(
     externalSeller = null,
   } = {}) => {
     cy.get('body').then(($body) => {
-      cy.qe({msg:`Select the payment option and order the product`})
+      cy.qe({ msg: `Select the payment option and order the product` })
       if ($body.find(selectors.FillInvoiceAddress).length === 2) {
-        cy.get(selectors.FillInvoiceAddress)
-          .last()
-          .should('be.visible')
-          .click()
+        cy.get(selectors.FillInvoiceAddress).last().should('be.visible').click()
       }
 
       if ($body.find(selectors.ReceiverName).length) {
@@ -101,15 +96,13 @@ Cypress.Commands.add(
       }
     })
 
-    cy.get('body').then($body => {
+    cy.get('body').then(($body) => {
       if ($body.find(selectors.GotoPaymentBtn).length) {
         cy.get(selectors.GotoPaymentBtn).click()
       }
     })
 
-    cy.get(paymentSelector, { timeout: 5000 })
-      .should('be.visible')
-      .click()
+    cy.get(paymentSelector, { timeout: 5000 }).should('be.visible').click()
 
     cy.get(selectors.BuyNowBtn, {
       timeout: 10000,
@@ -128,8 +121,8 @@ const orderFormDebugJSON = '_orderFormDebug.json'
 
 // Set Debug items
 Cypress.Commands.add('setorderFormDebugItem', () => {
-  cy.window().then($win => {
-    cy.readFile(orderFormDebugJSON).then(items => {
+  cy.window().then(($win) => {
+    cy.readFile(orderFormDebugJSON).then((items) => {
       items[Cypress.currentTest.titlePath] = $win.vtexjs.checkout.orderForm
       cy.writeFile(orderFormDebugJSON, items)
     })
