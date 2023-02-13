@@ -51,7 +51,7 @@
     "eslint-config-vtex": "^12.7.0",
     "eslint-plugin-cypress": "^2.12.1",
     "husky": "^4.2.5",
-    "lint-staged": "^10.2.11",
+    "lint-staged": "^13.1.1",
     "prettier": "^2.4.0",
     "vtex": "3.0.0-beta-ci.3",
     "xlsx": "^0.18.5"
