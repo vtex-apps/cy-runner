@@ -49,9 +49,7 @@ function setProductQuantity({ position, quantity, timeout }, subTotal, check) {
 
 function clickProceedtoCheckout() {
   // Click Proceed to Checkout button
-  cy.get(selectors.ProceedtoCheckout)
-    .should('be.visible')
-    .click()
+  cy.get(selectors.ProceedtoCheckout).should('be.visible').click()
   cy.get(selectors.CartTimeline, { timeout: 30000 })
     .should('be.visible')
     .click({ force: true })
@@ -74,28 +72,19 @@ export function addProduct(
   cy.get(selectors.searchResult).should('have.text', searchKey.toLowerCase())
   cy.get(selectors.ProductAnchorElement)
     .should('have.attr', 'href')
-    .then(href => {
+    .then((href) => {
       cy.get(selectors.ProfileLabel)
         .should('be.visible')
         .should('have.contain', `Hello,`)
       cy.get(selectors.BrandFilter).should('not.be.disabled')
       if (productDetailPage) {
-        cy.get(generateAddtoCartCardSelector(href))
-          .first()
-          .click()
-        cy.get('[name=postalCode]')
-          .clear()
-          .type('33180')
-          .type('{enter}')
+        cy.get(generateAddtoCartCardSelector(href)).first().click()
+        cy.get('[name=postalCode]').clear().type('33180').type('{enter}')
         cy.get(selectors.ProductsQAShipping).click()
         // Make sure proceed to payment is visible
-        cy.get(selectors.AddtoCart)
-          .should('be.visible')
-          .click()
+        cy.get(selectors.AddtoCart).should('be.visible').click()
       } else {
-        cy.get(generateAddtoCartSelector(href))
-          .first()
-          .click()
+        cy.get(generateAddtoCartSelector(href)).first().click()
         // Make sure proceed to payment is visible
         cy.get(selectors.ProceedtoCheckout).should('be.visible')
       }
@@ -122,9 +111,7 @@ export function addProduct(
 // Buy Product
 export function buyProduct() {
   // Click Buy Product
-  cy.get(selectors.BuyNowBtn)
-    .last()
-    .click()
+  cy.get(selectors.BuyNowBtn).last().click()
 }
 
 // Close Cart
@@ -133,23 +120,17 @@ export function closeCart() {
 }
 
 export function fillAddress(postalCode, timeout = 5000) {
-  cy.get(selectors.CartTimeline)
-    .should('be.visible')
-    .click()
+  cy.get(selectors.CartTimeline).should('be.visible').click()
   const { fullAddress, country } = addressList[postalCode]
 
-  cy.get('body').then($body => {
+  cy.get('body').then(($body) => {
     if ($body.find(selectors.ShippingPreview).length) {
       // shipping preview should be visible
       cy.get(selectors.ShippingPreview).should('be.visible')
       if ($body.find(selectors.DeliveryAddress).length) {
-        cy.get(selectors.DeliveryAddress)
-          .should('be.visible')
-          .click()
+        cy.get(selectors.DeliveryAddress).should('be.visible').click()
       } else if ($body.find(selectors.ShippingCalculateLink).length) {
-        cy.get(selectors.ShippingCalculateLink)
-          .should('be.visible')
-          .click()
+        cy.get(selectors.ShippingCalculateLink).should('be.visible').click()
       }
     }
 
@@ -158,7 +139,7 @@ export function fillAddress(postalCode, timeout = 5000) {
       .select('USA')
       .select(country)
 
-    cy.get('body').then($shippingBody => {
+    cy.get('body').then(($shippingBody) => {
       if ($shippingBody.find(selectors.ShipAddressQuery).length) {
         // Type shipping address query
         // Google autocompletion takes some seconds to show dropdown
@@ -184,14 +165,10 @@ export function fillAddress(postalCode, timeout = 5000) {
 }
 
 function fillAddressLine1(deliveryScreenAddress) {
-  cy.get('body').then($shippingBlock => {
+  cy.get('body').then(($shippingBlock) => {
     if ($shippingBlock.find(selectors.ShipStreet).length) {
-      cy.get(selectors.ShipStreet)
-        .clear()
-        .type(deliveryScreenAddress)
-      cy.get(selectors.GotoPaymentBtn)
-        .should('be.visible')
-        .click()
+      cy.get(selectors.ShipStreet).clear().type(deliveryScreenAddress)
+      cy.get(selectors.GotoPaymentBtn).should('be.visible').click()
     }
   })
 }
@@ -207,30 +184,22 @@ export function fillContactInfo(
   cy.get(selectors.QuantityBadge).should('be.visible')
   cy.get(selectors.SummaryCart).should('be.visible')
   // Delay in ms
-  cy.get(selectors.FirstName)
-    .clear()
-    .type('Syed', {
-      delay: 50,
-    })
-  cy.get(selectors.LastName)
-    .clear()
-    .type('Mujeeb', {
-      delay: 50,
-    })
-  cy.get(selectors.Phone)
-    .clear()
-    .type(phoneNumber, {
-      delay: 50,
-    })
+  cy.get(selectors.FirstName).clear().type('Syed', {
+    delay: 50,
+  })
+  cy.get(selectors.LastName).clear().type('Mujeeb', {
+    delay: 50,
+  })
+  cy.get(selectors.Phone).clear().type(phoneNumber, {
+    delay: 50,
+  })
 
   if (checkoutcustom) {
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(5000)
   }
 
-  cy.get(selectors.ProceedtoShipping)
-    .should('be.visible')
-    .click()
+  cy.get(selectors.ProceedtoShipping).should('be.visible').click()
   cy.get(selectors.ProceedtoShipping, { timeout: 1000 }).should(
     'not.be.visible'
   )
@@ -244,19 +213,13 @@ export function fillContactInfo(
   // Screenshot: https://vtex-dev.atlassian.net/browse/ENGINEERS-549?focusedCommentId=69893
   // So, for now this block will work only for checkout ui custom
   if (checkoutcustom) {
-    cy.get('body').then($shippingBlockForCheckoutCustom => {
+    cy.get('body').then(($shippingBlockForCheckoutCustom) => {
       if (
         $shippingBlockForCheckoutCustom.find(selectors.ContinueShipping).length
       ) {
-        cy.get(selectors.StreetAddress)
-          .clear()
-          .type('19501 Biscayne Blvd')
-        cy.get(selectors.PostalCodeInput)
-          .clear()
-          .type('33301')
-        cy.get(selectors.ShipCity)
-          .clear()
-          .type('Aventura')
+        cy.get(selectors.StreetAddress).clear().type('19501 Biscayne Blvd')
+        cy.get(selectors.PostalCodeInput).clear().type('33301')
+        cy.get(selectors.ShipCity).clear().type('Aventura')
         cy.get(selectors.ShipState, { timeout: 5000 })
           .should('not.be.disabled')
           .select('CA')
@@ -264,7 +227,7 @@ export function fillContactInfo(
     })
   }
 
-  cy.get('body').then($shippingBlock => {
+  cy.get('body').then(($shippingBlock) => {
     if ($shippingBlock.find(selectors.ContinueShipping).length) {
       cy.get(selectors.ContinueShipping, { timeout: 15000 })
         .should('be.visible')
@@ -278,13 +241,8 @@ export function fillContactInfo(
           delay: 50,
         })
       shippingStrategySelector &&
-        cy
-          .get(shippingStrategySelector)
-          .should('be.visible')
-          .click()
-      cy.get(selectors.GotoPaymentBtn)
-        .should('be.visible')
-        .click()
+        cy.get(shippingStrategySelector).should('be.visible').click()
+      cy.get(selectors.GotoPaymentBtn).should('be.visible').click()
     } else {
       cy.log('Shipping block is not shown! May be ReceiverName already filled')
     }
@@ -315,13 +273,9 @@ export function updateShippingInformation({
   cy.addDelayBetweenRetries(3000)
   if (cy.state('runnable')._currentRetry > 2) cy.reload()
   cy.setorderFormDebugItem()
-  cy.get(selectors.CartTimeline)
-    .should('be.visible')
-    .click({ force: true })
-  cy.get(selectors.ProceedtoPaymentBtn)
-    .should('be.visible')
-    .click()
-  cy.get(selectors.FirstName).then($el => {
+  cy.get(selectors.CartTimeline).should('be.visible').click({ force: true })
+  cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
+  cy.get(selectors.FirstName).then(($el) => {
     if (Cypress.dom.isVisible($el)) {
       fillContactInfo(shippingStrategySelector, phoneNumber, checkoutcustom)
     }
@@ -336,15 +290,11 @@ export function updateShippingInformation({
       cy.get(selectors.DeliveryAddressText, { timeout }).click()
     } else if (pickup) {
       cy.wait('@shippingData')
-      cy.get(selectors.PickupInStore, { timeout })
-        .should('be.visible')
-        .click()
+      cy.get(selectors.PickupInStore, { timeout }).should('be.visible').click()
       cy.get(selectors.PickupItems, { timeout })
         .should('be.visible')
         .contains('Pickup')
-      cy.get(selectors.ProceedtoPaymentBtn)
-        .should('be.visible')
-        .click()
+      cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
     } else {
       cy.get(selectors.DeliveryAddressText, { timeout: 15000 })
         .invoke('text')
@@ -352,9 +302,7 @@ export function updateShippingInformation({
           'match',
           new RegExp(`^${deliveryScreenAddress}$|^${postalCode}$`, 'gi')
         )
-      cy.get(selectors.ProceedtoPaymentBtn)
-        .should('be.visible')
-        .click()
+      cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
     }
 
     fillAddressLine1(deliveryScreenAddress)
@@ -373,9 +321,7 @@ export function updateProductQuantity(
   cy.qe(`
   Updating the product quantity to ${quantity} 
   verify the subTotal in the right side of the cart items`)
-  cy.get(selectors.CartTimeline)
-    .should('be.visible')
-    .click({ force: true })
+  cy.get(selectors.CartTimeline).should('be.visible').click({ force: true })
   if (multiProduct) {
     // Set First product quantity and don't verify subtotal because we passed false
     setProductQuantity(
@@ -403,13 +349,13 @@ export function updateProductQuantity(
 // LoginAsAdmin via API
 export function loginAsAdmin() {
   // Get Vtex Iems
-  cy.getVtexItems().then(vtex => {
-    cy.request(`${vtex.authUrl}/start`).then(response => {
+  cy.getVtexItems().then((vtex) => {
+    cy.request(`${vtex.authUrl}/start`).then((response) => {
       expect(response.body).to.have.property('authenticationToken')
       cy.request({
         method: 'GET',
         url: AdminLogin(vtex.apiKey, vtex.apiToken),
-      }).then(authResponse => {
+      }).then((authResponse) => {
         setAuthCookie(authResponse)
       })
     })
@@ -419,7 +365,7 @@ export function loginAsAdmin() {
 // LoginAsUser via API
 export function loginAsUser(email, password) {
   // Get Vtex Iems
-  cy.getVtexItems().then(vtex => {
+  cy.getVtexItems().then((vtex) => {
     let authenticationToken = null
 
     cy.request({
@@ -433,7 +379,7 @@ export function loginAsUser(email, password) {
         callbackUrl: `${vtex.baseUrl}/api/vtexid/oauth/finish?popup=false`,
         user: email,
       },
-    }).then(response => {
+    }).then((response) => {
       authenticationToken = response.headers['set-cookie'][0]
         .split(';')[0]
         .split('=')
@@ -448,7 +394,7 @@ export function loginAsUser(email, password) {
           password,
           authenticationToken,
         },
-      }).then(authResponse => {
+      }).then((authResponse) => {
         setAuthCookie(authResponse)
       })
     })
@@ -463,13 +409,13 @@ export function net30Payment() {
 export function saveOrderId(orderIdEnv = false, externalSeller = false) {
   // This page take longer time to load. So, wait for profile icon to visible then get orderid from url
   cy.get(selectors.Search, { timeout: 30000 })
-  cy.url().then(url => {
+  cy.url().then((url) => {
     const orderId = `${url.split('=').pop()}-01`
 
     // If we are ordering product
     // then store orderId in .orders.json
     if (orderIdEnv) {
-      cy.qe({msg:`save the order id`})
+      cy.qe({ msg: `save the order id` })
       cy.setOrderItem(orderIdEnv, orderId)
     }
 
@@ -519,7 +465,7 @@ export function stopTestCaseOnFailure() {
   // Arrow function doesn't provide us a way to use this.currentTest
   // So, we are using normal function
   // eslint-disable-next-line func-names
-  afterEach(function() {
+  afterEach(function () {
     if (
       this.currentTest.currentRetry() === this.currentTest.retries() &&
       this.currentTest.state === 'failed'
@@ -542,7 +488,7 @@ function logic(storeFrontCookie, stop) {
   before(() => {
     cy.qe()
     // Inject cookies
-    cy.getVtexItems().then(vtex => {
+    cy.getVtexItems().then((vtex) => {
       cy.setCookie(vtex.authCookieName, vtex.adminAuthCookieValue, {
         log: false,
       })
@@ -576,7 +522,7 @@ export function loginViaAPI({ storeFrontCookie = true, stop = true } = {}) {
     loginAsAdmin()
     if (storeFrontCookie) {
       // LoginAsUser and visit home page
-      cy.getVtexItems().then(vtex => {
+      cy.getVtexItems().then((vtex) => {
         loginAsUser(vtex.robotMail, vtex.robotPassword)
       })
     }
@@ -588,8 +534,8 @@ export function preserveCookie() {
   afterEach(() => {
     // Code to Handle the Sesssions in cypress.
     // Keep the Session alive when you jump to another test
-    cy.getCookies().then(cookies => {
-      const namesOfCookies = cookies.map(c => c.name)
+    cy.getCookies().then((cookies) => {
+      const namesOfCookies = cookies.map((c) => c.name)
 
       Cypress.Cookies.preserveOnce(...namesOfCookies)
     })
@@ -604,7 +550,7 @@ export function updateRetry(retry) {
 export function verifyTotal(totalAmount) {
   cy.get(selectors.ShippingSummary)
     .invoke('text')
-    .then(costString => {
+    .then((costString) => {
       const costArray = costString.split('$').slice(1)
       const total = costArray.reduce((sum, number) => {
         return sum + parseFloat(number.replace(',', ''))
@@ -613,7 +559,7 @@ export function verifyTotal(totalAmount) {
       cy.get(selectors.TotalLabel)
         .first()
         .invoke('text')
-        .then(totalText => {
+        .then((totalText) => {
           expect(totalText.replace(',', '').replace('$ ', '')).to.equal(
             (total / 2).toFixed(2).replace(',', '')
           )
@@ -623,11 +569,9 @@ export function verifyTotal(totalAmount) {
 }
 
 export function clickBtnOnVisibility(selector) {
-  cy.get(selector).then($el => {
+  cy.get(selector).then(($el) => {
     if (Cypress.dom.isVisible($el)) {
-      cy.get(selector)
-        .should('be.visible')
-        .click()
+      cy.get(selector).should('be.visible').click()
     }
   })
 }

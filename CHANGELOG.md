@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+### Added
+- [ENGINEERS-1065] - Added cy.qe command for write logs
+- For shopper location, location availability, quickorder - Use cy.qe command to write logs
+
 ### Changed
 - [ENGINEERS-1097] - In adyen tests, for refunds testcase use lower rate products
 
