@@ -329,7 +329,7 @@ export function syncCheckoutUICustom() {
 export function deleteAddresses() {
   it('Getting user & then deleting addresses associated with that user', () => {
     cy.qe(`
-    curl --location --request GET 'https://quickorder0204451--productusqa.myvtex.com/…ities/CL/search?email=robot.partnerhere@gmail.com' \
+    curl --location --request GET ${vtex.baseUrl}/…ities/CL/search?email=robot.partnerhere@gmail.com \
 --header 'X-VTEX-API-AppKey: AppKey' \
 --header 'X-VTEX-API-AppToken: AppToken' \
 --header 'VtexIdclientAutCookie:VtexIdclientAutCookie '
