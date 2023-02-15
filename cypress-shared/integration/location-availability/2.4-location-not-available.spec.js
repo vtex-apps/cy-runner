@@ -17,7 +17,7 @@ describe('Validate location non availability', () => {
 
   // eslint-disable-next-line jest/expect-expect
   it(`${prefix} - Verify shipping content`, updateRetry(2), () => {
-    cy.qe('Verify the product image is visible in homepage')
+    cy.qe('Product image should be visible on the home page')
     cy.get(PRODUCTS_LINK_MAPPING.orange.link).should('be.visible')
     cy.qe('For the given shipping address the shipping is unavailable')
     cy.get(selectors.locationUnavailable)
