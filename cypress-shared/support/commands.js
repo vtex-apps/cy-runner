@@ -147,7 +147,7 @@ Cypress.Commands.add('gotoQuickOrder', (b2b = false) => {
       cy.get(selectors.QuickOrder).should('be.visible').click()
     } else {
       cy.qe(
-        'Visit the quickorder Homapge and verify the profile lable is visible then the profile label should contain Hello'
+        'Visit the QuickOrder home page: if the profile label is visible, then the profile label should contain Hello'
       )
       cy.visit('/quickorder')
       cy.get(selectors.ProfileLabel, { timeout: 20000 })
@@ -155,7 +155,7 @@ Cypress.Commands.add('gotoQuickOrder', (b2b = false) => {
         .should('have.contain', `Hello,`)
     }
 
-    cy.qe(`The url should contain quickorder`)
+    cy.qe(`The Url should contain quickorder`)
     cy.url().should('include', 'quickorder')
   })
 })
@@ -292,7 +292,7 @@ Cypress.Commands.add(
     cy.get(selectors.FilterHeading, { timeout: 30000 }).should('be.visible')
     if (searchPage) {
       cy.qe(
-        "If searchpage is true,it will show a message as 'Shipping: Unavailable for'"
+        "If the search page is true, then it should show the message 'Shipping: Unavailable for'"
       )
       cy.get(selectors.locationUnavailable)
         .should('be.visible')
@@ -300,7 +300,7 @@ Cypress.Commands.add(
     }
 
     if (detailPage) {
-      cy.qe('If detailPage is true,it will go to product detail page')
+      cy.qe('If detailPage is true,then it should go to product detail page')
       cy.gotoProductDetailPage()
     } else {
       cy.log('Visiting detail page is disabled')

@@ -29,14 +29,16 @@ export function fillQuoteInformation({
 
       cy.qe(`Waiting for the getorderform graphql`)
       cy.waitForGraphql('GetOrderForm', selectors.CreateQuote)
-      cy.qe('Verify the currenncy container is visible')
+      cy.qe('Currency container should be visible')
 
       cy.get(selectors.CurrencyContainer, { timeout: 20000 }).should(
         'be.visible'
       )
-      cy.qe('Verify QuoteTotal should be visible')
+      cy.qe('QuoteTotal should be visible')
       cy.get(selectors.QuoteTotal, { timeout: 20000 }).should('be.visible')
-      cy.qe(`Verify Quotename is visble and type the Quoteenv - ${quoteEnv}`)
+      cy.qe(
+        `Quotename should be visble and type Quoteenv - ${quoteEnv} should be possible`
+      )
       cy.get(selectors.QuoteName).should('be.visible').clear().type(quoteEnv)
       if (notes) {
         cy.get(selectors.Notes).should('be.visible').clear().type(notes)
@@ -71,7 +73,7 @@ export function fillQuoteInformation({
           .click()
       }
 
-      cy.qe('Verify the ToggleFields is visible')
+      cy.qe('ToggleFields should be visible')
       cy.get(selectors.ToggleFields).should('be.visible')
 
       cy.wait(`@${GRAPHL_OPERATIONS.CreateQuote}`).then((req) => {
@@ -80,7 +82,7 @@ export function fillQuoteInformation({
           ''
         )
 
-        cy.qe(`save the QuoteEnv - price, ${price} `)
+        cy.qe(`Save the QuoteEnv - price, ${price} `)
         cy.setQuoteItem(`${quoteEnv}-price`, price)
         cy.setQuoteItem(quoteEnv, quoteId)
       })
