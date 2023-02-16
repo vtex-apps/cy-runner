@@ -14,18 +14,33 @@ export function setOrganizationIdInJSON(organization, costCenter) {
     'Getting Organization,CostCenter Id from session and set this in organizations.json file',
     { retries: 3, responseTimeout: 5000 },
     () => {
+      cy.qe(
+        'Getting Organization,CostCenter Id from session and set this in organizations.json file'
+      )
+      cy.qe(
+        `curl 'https://b2b6867853--productusqa.myvtex.com/api/sessions?items=*'
+        This requires userAuthCookie`
+      )
       cy.request('/api/sessions?items=*').then((response) => {
+        cy.qe(`Namespaces, storefront-permission should exist in response`)
         expect(response.body.namespaces).to.be.exist
         expect(response.body.namespaces['storefront-permissions']).to.be.exist
+        cy.qe(
+          `Get organization and costcenter ids from storefront-permission property`
+        )
         const organizationId =
           response.body.namespaces['storefront-permissions'].organization.value
 
         const costCenterId =
           response.body.namespaces['storefront-permissions'].costcenter.value
 
+        cy.qe(`Expect organziationId & costCenterId has - `)
         expect(organizationId).to.contain('-')
         expect(costCenterId).to.contain('-')
 
+        cy.qe(
+          'Store organizationId & costCenterId in stateFile - .organization.json'
+        )
         // Saving organization & costcenter id in organization.json and this id will be deleted this wipe.spec.js
         cy.setOrganizationItem(organization, organizationId)
         cy.setOrganizationItem(costCenter, costCenterId)
@@ -64,10 +79,14 @@ export function addPaymentTermsCollectionPriceTablesTestCase(organization) {
             '{updateOrganization(id:$id,name:$name,status:$status,collections:$collections,paymentTerms:$paymentTerms,priceTables:$priceTables){' +
             'status}}'
 
+          cy.qe(`Query - ${GRAPHQL_UPDATE_ORGANISATION_MUTATION}`)
+
           const variables = addPaymentTermsCollectionPriceTables(
             organizationItems,
             organization
           )
+
+          cy.qe(`Variables - ${variables}`)
 
           cy.request({
             method: 'POST',
@@ -77,6 +96,9 @@ export function addPaymentTermsCollectionPriceTablesTestCase(organization) {
               variables,
             },
           }).then((resp) => {
+            cy.qe(
+              'response.body.data.updateOrganization.status should have success'
+            )
             expect(resp.body.data.updateOrganization.status).to.equal('success')
           })
         })

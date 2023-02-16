@@ -73,6 +73,9 @@ export const PAYMENT_TERMS = {
 }
 
 export function validateToastMsg(msg) {
+  cy.qe(
+    `Toast message ${msg} should be shown in this selector ${selectors.ToastMsgInB2B}`
+  )
   cy.get(selectors.ToastMsgInB2B, { timeout: 8000 })
     .should('be.visible')
     .contains(msg)

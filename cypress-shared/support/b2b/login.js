@@ -6,6 +6,9 @@ export function visitHomePage() {
     cy.url().then((url) => {
       if (url.includes('blank') || url !== vtex.baseUrl) {
         cy.intercept('POST', 'https://rc.vtex.com.br/api/events').as('EVENTS')
+        cy.qe(
+          'Visit home page/storefront and wait for EVENTS api to get called'
+        )
         cy.visit('/', {
           retryOnStatusCodeFailure: true,
           retryOnNetworkFailure: true,
@@ -32,6 +35,7 @@ export function loginWithCookiesStoredInJSON(cookieValue) {
 export function storeUserCookie(email) {
   cy.getVtexItems().then((vtex) => {
     cy.getCookie(`${vtex.authCookieName}_${vtex.account}`).then((cookie) => {
+      cy.qe('Store the userAuthCookie in organization.json')
       cy.setOrganizationItem(email, cookie.value)
     })
   })
@@ -42,10 +46,11 @@ export function loginToStoreFront(email, role, gmailCreds) {
     `Logging in to storefront as ${role}`,
     { defaultCommandTimeout: 60000, retries: 1 },
     () => {
+      cy.qe(`Logging in to storefront as ${role}`)
       cy.addDelayBetweenRetries(10000)
       cy.getOrganizationItems().then((organization) => {
         if (organization[email]) {
-          cy.log('Logging with saved cookies')
+          cy.qe(`For this email ${email}, Logging in with saved cookies`)
           cy.log(email)
           // If we already logged in to this user in previous testcase, then use that cookie to re-login
           loginWithCookiesStoredInJSON(organization[email])
@@ -57,21 +62,24 @@ export function loginToStoreFront(email, role, gmailCreds) {
 
               cy.intercept('POST', '**/startlogin').as('startlogin')
               cy.intercept('POST', '**/accesskey/send').as('send')
-
+              cy.qe('SignInBtn should be visible and click it')
               cy.get(selectors.SignInBtn).should('be.visible').click()
+              cy.qe('AccessCode Btn should be visible and click it')
               cy.get(selectors.AccessCode).should('be.visible').click()
+              cy.qe(`Type ${email} in Email field`)
               cy.get(selectors.Email)
                 .should('be.visible')
                 .focus()
                 .clear()
                 .type(email)
-
+              cy.qe(`Click submit btn`)
               cy.get(selectors.Submit)
                 .click()
                 .then(async () => {
                   cy.wait('@startlogin')
                     .its('response.statusCode')
                     .should('eq', 200)
+                  cy.qe('Wait for startLogin and send API')
                   cy.wait('@send').its('response.statusCode').should('eq', 200)
                   const newAccessToken = await getAccessToken(
                     email,
@@ -79,15 +87,19 @@ export function loginToStoreFront(email, role, gmailCreds) {
                     accessToken
                   )
 
+                  cy.qe(`Type ${newAccessToken} in token field`)
                   cy.get(selectors.Token).clear().type(newAccessToken)
+                  cy.qe(`Click Submit Btn`)
                   cy.get(selectors.Submit).click()
                   cy.waitForSession()
+                  cy.qe(`Wait for profileLabel to be visible in the page`)
                   cy.get(selectors.ProfileLabel).should('be.visible')
                   storeUserCookie(email)
                 })
             } else if ($body.find(selectors.ProfileLabel).length) {
-              cy.log('Already logged in')
+              cy.qe('Already logged in')
             } else {
+              cy.qe('SignInBtn is not found in the page')
               throw new Error('Selectors not loaded within time period')
             }
           })

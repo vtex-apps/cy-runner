@@ -31,11 +31,17 @@ Cypress.Commands.add('getVtexItems', () => {
 })
 
 Cypress.Commands.add('addDelayBetweenRetries', (delay) => {
-  if (cy.state('runnable')._currentRetry > 0) cy.wait(delay)
+  if (cy.state('runnable')._currentRetry > 0) {
+    cy.qe(`Wait for ${delay} seconds`)
+    cy.wait(delay)
+  }
 })
 
 Cypress.Commands.add('addReloadBetweenRetries', () => {
-  if (cy.state('runnable')._currentRetry > 0) cy.reload()
+  if (cy.state('runnable')._currentRetry > 0) {
+    cy.qe('Reload the page')
+    cy.reload()
+  }
 })
 
 Cypress.Commands.add('closeCart', () => {

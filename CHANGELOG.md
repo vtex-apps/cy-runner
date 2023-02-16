@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 ### Added
+- [ENGINEERS-1148] - Added logs for organization creation testcases
+
+### Added
 - [ENGINEERS-1065] - Added cy.qe command for write logs
 - For shopper location, location availability, quickorder - Use cy.qe command to write logs
 
