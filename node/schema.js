@@ -12,7 +12,6 @@
  ********************************************* */
 
 const { get } = require('lodash')
-const { mapValues } = require('lodash')
 
 const system = require('./system')
 
@@ -204,19 +203,24 @@ function checkSecret(key, value) {
 
 // Check dependencies
 function checkDependency(config) {
+  const dependencies = []
+  const specs = []
+  const missing = []
+
+  // Get dependencies and all specs
   system.traverse([], config.strategy).forEach((item) => {
-    // eslint-disable-next-line vtex/prefer-early-return
-    if (/dependency/.test(item.key)) {
-      const dep = mapValues(config.strategy, (o) => {
-        return o.specs
-      })
-
-      const checkRegex = new RegExp(item.type.split('*')[0])
-      const check = checkRegex.test(JSON.stringify(dep))
-
-      if (!check) {
-        system.crash(`Spec ${item.key} not found`, item.type)
-      }
-    }
+    if (/.dependency./.test(item.key)) dependencies.push(item.type)
+    else if (/.spec.js/.test(item.type)) specs.push(item.type)
   })
+
+  // Check if dependency is also a spec
+  dependencies.forEach((item) => {
+    if (!specs.includes(item)) missing.push(item)
+  })
+
+  if (missing.length) {
+    const text = missing.length > 1 ? 'Dependencies' : 'Dependency'
+
+    system.crash(`${text} missing on strategies`, JSON.stringify(missing))
+  }
 }
