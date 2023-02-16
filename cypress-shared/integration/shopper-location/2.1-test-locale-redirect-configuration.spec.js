@@ -41,7 +41,7 @@ describe('Testing local redirect configuration', () => {
   // eslint-disable-next-line jest/expect-expect
   it(`${prefix} - Get popup with switch button`, updateRetry(2), () => {
     cy.qe(
-      'Once the address is verified will get an popup,with visible of switch button.Have to click the button.'
+      'Once the address is verified, we will get an popup with visible of switch button. We should be able to click on the button.'
     )
     cy.get(selectors.ToastMsgInB2B).should('be.visible', { timeout: 10000 })
     cy.get(selectors.switchButton).should('be.visible').click()
@@ -50,7 +50,7 @@ describe('Testing local redirect configuration', () => {
   // eslint-disable-next-line jest/expect-expect
   it(`${prefix} - Page will be redirected to google page`, () => {
     cy.qe(
-      'Once manually switch button is clicked,it will be redirected to Google'
+      'Once manually switch popup link is clicked, it should redirect us to Google'
     )
     cy.url().should('eq', 'https://www.google.com/')
   })

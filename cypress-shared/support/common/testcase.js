@@ -328,11 +328,11 @@ export function syncCheckoutUICustom() {
 
 export function deleteAddresses() {
   it('Getting user & then deleting addresses associated with that user', () => {
+    cy.qe('Getting user & then deleting addresses associated with that user')
     cy.qe(`
-    curl --location --request GET ${vtex.baseUrl}/…ities/CL/search?email=robot.partnerhere@gmail.com \
+    curl --location --request GET '${baseUrl}/entities/CL/search?email=${robotMail}' \
 --header 'X-VTEX-API-AppKey: AppKey' \
 --header 'X-VTEX-API-AppToken: AppToken' \
---header 'VtexIdclientAutCookie:VtexIdclientAutCookie '
     `)
     cy.searchInMasterData(ENTITIES.CLIENTS, robotMail).then((clients) => {
       cy.searchInMasterData(ENTITIES.ADDRESSES, clients[0].id).then(

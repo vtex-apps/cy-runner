@@ -8,7 +8,7 @@ export function verifyUpdatedAddress(postalCode, address, city, state) {
     cy.qe('In specification page clicking on address container')
     cy.get(selectors.AvailabilityHeader).click()
     cy.qe(
-      'Once address container clicked,it will show an popup of layout to add shipping address'
+      'Once address container clicked, it will show an popup of layout to add shipping address'
     )
     cy.get(selectors.AddressModelLayout).should('be.visible')
     cy.get(selectors.countryDropdown).select('USA')
