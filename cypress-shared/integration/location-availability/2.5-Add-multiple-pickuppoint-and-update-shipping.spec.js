@@ -17,7 +17,9 @@ describe('Adding Multiple pickup point & Update Shipping', () => {
 
   // eslint-disable-next-line jest/expect-expect
   it(`${prefix} - Add Multiple PickUp Point`, updateRetry(1), () => {
+    cy.qe('Visit admin pickup points page')
     cy.visit('/admin/app/pickup-points')
+    cy.qe('Adding 4 new pickup points')
     for (let id = 1; id <= 4; id++) {
       addPickUpPoint(`Location availability pickup Point ${id}`, id)
     }
@@ -29,6 +31,7 @@ describe('Adding Multiple pickup point & Update Shipping', () => {
       '2',
       '3'
     )
+    cy.qe('Updating shipping policy via updateShippingPolicy graphql')
     graphql(
       updateShippingPolicy(data.ship1, { status: true, pickup: false }),
       (response) => {

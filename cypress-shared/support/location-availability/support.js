@@ -5,7 +5,11 @@ import { getPickupPoints, deletePickupPoint } from './pickup-points.api'
 
 export function verifyUpdatedAddress(postalCode, address, city, state) {
   it('Verify on click to postal code it opens the location popup', () => {
+    cy.qe('In specification page clicking on address container')
     cy.get(selectors.AvailabilityHeader).click()
+    cy.qe(
+      'Once address container clicked, it will show an popup of layout to add shipping address'
+    )
     cy.get(selectors.AddressModelLayout).should('be.visible')
     cy.get(selectors.countryDropdown).select('USA')
     cy.get(selectors.addressInputContainer).eq(0).clear().type(postalCode)
@@ -48,23 +52,30 @@ export function verifyUpdatedAddress(postalCode, address, city, state) {
 }
 
 export function addPickUpPoint(pickPointName, pickUpId) {
+  cy.qe('Clicking Add Pickup Point button in admin')
   cy.contains(/Add Pickup Point/i).click()
+  cy.qe('Type a new pickuppoint name')
   cy.get(selectors.PickUpPointName).clear().type(pickPointName)
+  cy.qe('Type a new pickuppoint id')
   cy.get(selectors.PickUpPointId).should('be.visible').type(pickUpId)
+  cy.qe('Select a USA country')
   cy.get('select')
     .select('United States of America')
     .should('have.value', 'USA')
   /* eslint-disable cypress/no-unnecessary-waiting */
   cy.wait(1000)
   /* eslint-disable cypress/no-unnecessary-waiting */
+  cy.qe('Type a street address')
   cy.get(selectors.PickUpAddress)
     .type('1481 Maple View Dr,Promona,CA,USA', { delay: 50 })
     .wait(500)
     .type('{downarrow}{enter}')
   cy.get(selectors.CheckBox).click()
+  cy.qe('Adding business hours')
   cy.get(selectors.WorkStartTime).eq(1).type('10:00')
   cy.get(selectors.WorkEndTime).eq(1).type('19:00')
   cy.get(selectors.SaveChanges).click()
+  cy.qe("Once save button clicked it show an popup as 'Changes saved'")
   cy.get(selectors.ChangesSaved).should('be.visible').contains('Changes saved')
   cy.contains('Back to pickup points').click()
 }
@@ -77,6 +88,8 @@ export function deleteAllPickupPoints() {
     updateRetry(5),
     () => {
       cy.getVtexItems().then((vtex) => {
+        cy.qe(`curl --location --request GET 'https://${vtex.baseUrl}/api/logistics/pvt/configuration/pickuppoints' \
+        --header 'VtexIdclientAutCookie:VtexIdclientAutCookie'`)
         cy.getAPI(getPickupPoints(vtex.baseUrl)).then((response) => {
           // Pickup points created in E2E tests should start with text "pickup example"
           // If we create other pickup points then it will not be deleted in wipe

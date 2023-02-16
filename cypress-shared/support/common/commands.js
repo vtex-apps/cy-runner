@@ -10,6 +10,15 @@ import {
 } from './support.js'
 import { generateAddtoCartCardSelector } from './utils.js'
 
+Cypress.Commands.add('qe', (msg = '') => {
+  const logFile = `${
+    Cypress.spec.absolute.split('cy-runner')[0]
+  }cy-runner/logs/${Cypress.spec.name.split('/').at(-1)}.log`
+
+  cy.writeFile(logFile, msg ? `${msg}\n` : msg, { flag: msg ? 'a+' : 'w' })
+  cy.log(msg)
+})
+
 Cypress.Commands.add('addProduct', addProduct)
 Cypress.Commands.add('fillAddress', fillAddress)
 Cypress.Commands.add('searchProduct', searchProduct)
@@ -75,6 +84,7 @@ Cypress.Commands.add(
     externalSeller = null,
   } = {}) => {
     cy.get('body').then(($body) => {
+      cy.qe({ msg: `Select the payment option and order the product` })
       if ($body.find(selectors.FillInvoiceAddress).length === 2) {
         cy.get(selectors.FillInvoiceAddress).last().should('be.visible').click()
       }

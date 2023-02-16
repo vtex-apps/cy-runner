@@ -79,6 +79,9 @@ export function validateToastMsg(msg) {
 }
 
 export function validateToolTipMsg(message, position = 0) {
+  cy.qe(
+    `Validating the tooltip message - ${message} and its position - ${position}`
+  )
   cy.get('span[class*=danger]', { timeout: 15000 })
     .should('be.visible')
     .eq(position)

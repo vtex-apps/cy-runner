@@ -61,6 +61,14 @@ export function addProduct(
   { proceedtoCheckout = true, paypal = false, productDetailPage = false } = {}
 ) {
   // Add product to cart
+  cy.qe(`
+  Verfiying the search result is visible and having the text ${searchKey} in lowercase
+  Verifying the ProfileLabel should be visible and contain the text Hello
+  Verifying the BrandFilter should not be disabled
+  Adding product - ${searchKey} to cart 
+  Verify the shipping and taxes in the mini cart
+  click on proceed to checkout
+  `)
   cy.get(selectors.searchResult).should('have.text', searchKey.toLowerCase())
   cy.get(selectors.ProductAnchorElement)
     .should('have.attr', 'href')
@@ -250,6 +258,16 @@ export function updateShippingInformation({
   phoneNumber = PHONE_NUMBER,
   checkoutcustom = false,
 }) {
+  cy.qe(
+    `Click on proceed to payment button
+    Fill the contact information by filling the firstname,lastName and phone number
+    Adding intercept for shipping data 
+    Select the country and fill the address in the shipping address
+    Click on DeliveryAddressText and wait for shippingdata intercept be completed
+    Select pickup in store option in shipping preview container 
+    Click on ProceedtoPaymentBtn
+    `
+  )
   const { deliveryScreenAddress } = addressList[postalCode]
 
   cy.addDelayBetweenRetries(3000)
@@ -300,6 +318,9 @@ export function updateProductQuantity(
     timeout = 5000,
   } = {}
 ) {
+  cy.qe(`
+  Updating the product quantity to ${quantity} 
+  verify the subTotal in the right side of the cart items`)
   cy.get(selectors.CartTimeline).should('be.visible').click({ force: true })
   if (multiProduct) {
     // Set First product quantity and don't verify subtotal because we passed false
@@ -394,6 +415,7 @@ export function saveOrderId(orderIdEnv = false, externalSeller = false) {
     // If we are ordering product
     // then store orderId in .orders.json
     if (orderIdEnv) {
+      cy.qe({ msg: `save the order id` })
       cy.setOrderItem(orderIdEnv, orderId)
     }
 
@@ -414,6 +436,14 @@ export function promissoryPayment() {
 
 // Search Product
 export function searchProduct(searchKey) {
+  cy.qe(`
+  Adding intercept to wait for the events API to be completed before visting home page
+  Verify the store front page should contain 'Hello'
+  Verifying the search bar should be visible in the store front
+  searching product - ${searchKey} in the store front search bar
+  Verfiying the search result is visible and having the text ${searchKey} in lowercase
+  Verifying the filterHeading should be visible
+   `)
   cy.intercept('**/rc.vtex.com.br/api/events').as('events')
   cy.visit('/')
   cy.wait('@events')
@@ -456,6 +486,7 @@ export function stopTestCaseOnFailure() {
 
 function logic(storeFrontCookie, stop) {
   before(() => {
+    cy.qe()
     // Inject cookies
     cy.getVtexItems().then((vtex) => {
       cy.setCookie(vtex.authCookieName, vtex.adminAuthCookieValue, {
@@ -486,6 +517,7 @@ export function loginViaCookies({ storeFrontCookie = true, stop = true } = {}) {
 
 export function loginViaAPI({ storeFrontCookie = true, stop = true } = {}) {
   before(() => {
+    cy.qe()
     // LoginAsAdmin
     loginAsAdmin()
     if (storeFrontCookie) {

@@ -12,15 +12,20 @@ export const TOOLTIP_MSG = {
 }
 
 function ProceedToCheckOut() {
+  cy.qe('Clicking on proceed to checkout')
   cy.get(selectors.ProceedToCheckOut).should('be.visible').click()
 }
 
 function fillSkuAndQuantity(textArea, validate, skuQuantity) {
+  cy.qe(
+    'Fill the skuquantity ,check the validate text visibility and click on it'
+  )
   cy.get(textArea).clear().type(skuQuantity, { force: true })
   cy.get(validate).should('be.visible').click()
 }
 
 function checkBackButtonIsVisible() {
+  cy.qe('Checking the back button visisbility in the page')
   cy.closeMenuIfOpened()
   const [buttonsBlock, button] = [
     'div[class*=buttonsBlock]',
@@ -70,10 +75,14 @@ export function quickOrderBySkuAndQuantityTestCase1(
     cy.get(invalid).should('be.visible')
     cy.get(content).clear().type('880270a,2{enter}').focus()
     cy.get(invalid).click()
+    cy.qe(`Click on Add to cart`)
     cy.waitForGraphql(GRAPHL_OPERATIONS.addToCart, addtoCart)
     validateToastMsg(TOAST_MSG.addedToTheCart)
+    cy.qe(`Open the cart and click on the first item`)
     cy.get(selectors.OpenCart).first().should('be.visible').click()
+    cy.qe(`The minicart should contain the product name Cauliflower`)
     cy.get(selectors.MiniCartProductName).should('contain', 'Cauliflower')
+    cy.qe(`Verifying the total price`)
     cy.get(selectors.TotalPrice).should('have.text', totalPrice)
     quoteEnv ? fillQuoteInformation({ quoteEnv }) : ProceedToCheckOut()
   })
@@ -89,6 +98,7 @@ export function quickOrderBySkuAnd51QuantityTestCase(role, b2b = true) {
       cy.gotoQuickOrder(b2b)
       checkBackButtonIsVisible()
       fillSkuAndQuantity(textArea, validate, '880270a,51{enter}')
+      cy.qe('The addtoCart button should not exist')
       cy.get(addtoCart).should('not.exist')
       validateToolTipMsg(TOOLTIP_MSG.maxQuantity)
     }
@@ -108,6 +118,7 @@ export function quickOrderBySkuAndQuantityWithValidAndInValidSkuTestCase(
       cy.gotoQuickOrder(b2b)
       checkBackButtonIsVisible()
       fillSkuAndQuantity(textArea, validate, '880270a,51{enter}1,2{enter}')
+      cy.qe('The addtoCart button should not exist')
       cy.get(addtoCart).should('not.exist')
       validateToolTipMsg(TOOLTIP_MSG.maxQuantity, 0)
       validateToolTipMsg(TOOLTIP_MSG.skuNotFound, 1)
@@ -116,6 +127,7 @@ export function quickOrderBySkuAndQuantityWithValidAndInValidSkuTestCase(
 }
 
 function searchOneByOneProduct(search, { product, quantity }, number) {
+  cy.qe(`Search for the product ${product}`)
   cy.get(search).should('be.visible').should('be.enabled').clear()
   cy.get(search).should('be.visible').type(product)
   // Product will be shown in results only after below selector gets visibled
@@ -175,12 +187,17 @@ export function quickOrderByOneByOneNegativeTestCase(
 
       searchOneByOneProduct(search, { product, quantity }, 51)
       cy.get(add).should('be.visible').click()
+      cy.qe(`Verify the ${POPUP_MSG} in the QuickorderPage`)
       cy.get(selectors.QuickOrderPage().popupMsgSelector).contains(POPUP_MSG)
+      cy.qe('Opening the cart and selecting the first item')
       cy.get(selectors.OpenCart).first().click()
+      cy.qe(`Verifying if the mininCartproductname contains ${product}`)
       cy.get(selectors.MiniCartProductName)
         .should('be.visible')
         .should('contain', product)
+      cy.qe(`Verifying the totalprice - ${totalPrice}`)
       cy.get(selectors.TotalPrice).should('have.text', totalPrice)
+      cy.qe('The minicartQuantity should have the value of 50')
       cy.get(selectors.MiniCartQuantityForMaxOrder).should('have.value', '50')
       // Use the product which is already added in cart
       quoteEnv && fillQuoteInformation({ quoteEnv })
@@ -192,19 +209,25 @@ function quickOrderCategory(quoteEnv, number, totalPrice) {
   cy.gotoQuickOrder(quoteEnv)
   const { product, addtoCart, quantity } = selectors.QuickOrderPage().categories
 
+  cy.qe('The addtoCart should be visible and it should contain the product')
   cy.get(addtoCart).should('be.visible')
+  cy.qe(`Click the product - ${product}`)
   cy.contains(product).should('be.visible').click()
   cy.get(quantity, { timeout: 15000 })
     .first()
     .scrollIntoView()
     .clear({ timeout: 8000 })
     .type(number, { force: true })
+  cy.qe('The addtoCart should be visible and we should click on the product')
   cy.get(addtoCart).should('be.visible').click()
   cy.get(selectors.ToastMsgInB2B, { timeout: 10000 })
     .should('be.visible')
     .contains(number > 50 ? POPUP_MSG : TOAST_MSG.addedToTheCart)
+  cy.qe(`The openCart is visible and clickable`)
   cy.get(selectors.OpenCart).first().should('be.visible').click()
+  cy.qe('The MiniCartProductname should contain Golf Shoes')
   cy.get(selectors.MiniCartProductName).should('contain', 'Golf Shoes')
+  cy.qe(`Verifying the totalPrice - ${totalPrice}`)
   cy.get(selectors.TotalPrice).should('have.text', totalPrice)
   if (number > 50) {
     cy.get(selectors.MiniCartQuantityForMaxOrder).should('have.value', '50')
@@ -241,15 +264,19 @@ export function quickOrderByCategoryNegativeTestCase(
 }
 
 function validateForm(quoteEnv, vtex, productCount) {
+  cy.qe('Adding intercept for validateForm')
   cy.intercept('POST', `${vtex.baseUrl}/**`).as('validateForm')
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(5000)
+  cy.qe('Verifying if AddToCart button is visible and clicking on it')
   cy.contains(BUTTON_LABEL.AddToCart).should('be.visible').click()
   cy.wait('@validateForm')
+  cy.qe('Validate the Quantity in QuantityBadgeCart')
   cy.get(selectors.QuantityBadgeInCart, { timeout: 15000 }).should(
     'have.text',
     productCount
   )
+  cy.qe('Verifying if openCart is visible and then click on it')
   cy.get(selectors.OpenCart).first().should('be.visible').click()
   quoteEnv ? fillQuoteInformation({ quoteEnv }) : ProceedToCheckOut()
 }
@@ -257,6 +284,7 @@ function validateForm(quoteEnv, vtex, productCount) {
 function uploadXLS(filePath, b2b) {
   const { deleteFile } = selectors.QuickOrderPage().uploadXLS
 
+  cy.qe(`The profile should be visible on the QuickOrder home page`)
   cy.gotoQuickOrder(b2b)
 
   // If deleteFile selector exist then, it means we are retrying this testcase
@@ -268,10 +296,13 @@ function uploadXLS(filePath, b2b) {
         .click({ multiple: true })
     }
   })
+  cy.qe(`Check the backbutton visibility in the page`)
   checkBackButtonIsVisible()
+  cy.qe(`Attaching the Xls file `)
   cy.get(selectors.QuickOrderPage().uploadXLS.file, {
     timeout: 10000,
   }).attachFile(filePath)
+  cy.qe(`The validate button should be enabled, and visible;  then click on it`)
   cy.get(selectors.QuickOrderPage().uploadXLS.validate)
     .should('be.visible')
     .should('be.enabled')
@@ -281,6 +312,7 @@ function uploadXLS(filePath, b2b) {
 export function quickOrderByXLS(quoteEnv = false) {
   it(`Create quick order by uploading excel`, updateRetry(3), () => {
     cy.getVtexItems().then((vtex) => {
+      cy.qe(`Pass the pathname to upload an XLS file`)
       const filePath = 'model-quickorder.xls'
 
       uploadXLS(filePath, quoteEnv)
@@ -297,8 +329,11 @@ export function quickOrderByXLSNegativeTestCase2(quoteEnv = false) {
   it(`Create quick order with above max quantity`, updateRetry(3), () => {
     const filePath = 'quickorder_with_max_quantity.xls'
 
+    cy.qe('Uploading the XLS file with one valid and one invalid sku')
     uploadXLS(filePath, quoteEnv)
+    cy.qe('The addToCart button should not exist')
     validateNegativeTestCase()
+    cy.qe(`Validate the ${TOOLTIP_MSG.maxQuantity}`)
     validateToolTipMsg(TOOLTIP_MSG.maxQuantity)
   })
 }
@@ -310,11 +345,16 @@ export function quickOrderByXLSNegativeTestCase(quoteEnv) {
     () => {
       const filePath = 'model-quickorder1.xls'
 
+      cy.qe('Uploading the XLS file with one valid and one invalid sku')
       uploadXLS(filePath, quoteEnv)
+      cy.qe(`Validate the ${TOOLTIP_MSG.maxQuantity}`)
       validateToolTipMsg(TOOLTIP_MSG.maxQuantity)
+      cy.qe(`Validate the ${TOOLTIP_MSG.skuNotFound}`)
       validateToolTipMsg(TOOLTIP_MSG.skuNotFound, 1)
       cy.get('svg[class*=vtex__icon-delete]:nth-child(1)').last().click()
+      cy.qe('Validate addToCart should not exist')
       validateNegativeTestCase()
+      cy.qe(`Validate the ${TOOLTIP_MSG.maxQuantity}`)
       validateToolTipMsg(TOOLTIP_MSG.maxQuantity)
     }
   )
@@ -322,6 +362,7 @@ export function quickOrderByXLSNegativeTestCase(quoteEnv) {
 
 export function verifyExcelFile(fileName, products) {
   it('verify the data and extension', updateRetry(3), () => {
+    cy.qe(`The XLS data should be equal and it should be greater than one`)
     cy.task('readXlsx', {
       file: fileName,
       sheet: 'SheetJS',

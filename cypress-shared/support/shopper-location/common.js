@@ -16,13 +16,18 @@ export function verifyShopperLocation() {
 
 export function addLocation(data) {
   cy.intercept('**/rc.vtex.com.br/api/events').as('events')
+  cy.qe('Visit Store frontend')
   cy.visit('/', mockLocation(data.lat, data.long))
   cy.wait('@events')
   cy.get(selectors.ProfileLabel, { timeout: 10000 })
     .should('be.visible')
     .should('have.contain', `Hello,`)
   scroll()
+  cy.qe(
+    'Address container should be visible in the top left of the home page & click on it'
+  )
   cy.get(selectors.addressContainer).click()
+  cy.qe('Add shipping address')
   cy.get(selectors.countryDropdown).select(data.country)
   cy.get(selectors.addressInputContainer)
     .first()
@@ -53,15 +58,20 @@ export function addLocation(data) {
 
 export function verifyLocation(lat, long) {
   cy.intercept('**/rc.vtex.com.br/api/events').as('events')
+  cy.qe(`${lat ? 'Enable' : 'Disable'} location permission in the browser`)
   cy.visit('/', mockLocation(lat, long))
+  cy.qe('Visit store front')
   cy.wait('@events')
   cy.get(selectors.ProfileLabel, { timeout: 10000 })
     .should('be.visible')
     .should('have.contain', `Hello,`)
   scroll()
+  cy.qe('Address container should be visible in the top left of the home page')
   cy.get(selectors.addressContainer).should('be.visible')
+  cy.qe('On click to address container should open a popup')
   cy.get(selectors.addressContainer).click()
   cy.get(selectors.AddressModelLayout).should('be.visible')
+  cy.qe('Now user should see change location button inside the popup')
   cy.get(selectors.ChangeLocationButton).click()
 }
 
@@ -71,17 +81,24 @@ export function addAddress(prefix, { address, lat, long }) {
     updateRetry(1),
     () => {
       cy.intercept('**/rc.vtex.com.br/api/events').as('events')
+      cy.qe(
+        'Visiting store front and using mocklocation function to setting the location'
+      )
       cy.visit('/', mockLocation(lat, long))
       cy.wait('@events')
       cy.get(selectors.ProfileLabel, { timeout: 10000 })
         .should('be.visible')
         .should('have.contain', `Hello,`)
       scroll()
+      cy.qe(
+        'Address container should be visible in the top left of the home page & on click to address container should open a popup'
+      )
       cy.get(selectors.addressContainer, { timeout: 20000 })
         .should('be.visible')
         .click()
+      cy.qe('Adding the shipping address')
       cy.get(selectors.findMyLocation).click()
-
+      cy.qe('Adding the shipping address')
       cy.get(selectors.countryDropdown).select(address.country)
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.get(selectors.addressInputContainer)
@@ -129,6 +146,9 @@ export function orderProductTestCase(
   { country, postalCode, address, city }
 ) {
   it(`${prefix} - Adding Location`, updateRetry(2), () => {
+    cy.qe(
+      `Here it shows the browser popup of location allow or disable.Have to click on ${prefix}.Add the shipping address`
+    )
     cy.addNewLocation(country, postalCode, address, city)
   })
 
@@ -136,11 +156,17 @@ export function orderProductTestCase(
     `${prefix} - Verifying Address in home page & checkout page`,
     updateRetry(2),
     () => {
+      cy.qe(
+        'Verifying the address container in homepage and in checkout page of the saved address is showing'
+      )
       verifyShopperLocation()
     }
   )
 
   it(`${prefix} - Ordering the product`, updateRetry(2), () => {
+    cy.qe(
+      'After veriying the address in checkout page,have to make promissory payment and ordering a product'
+    )
     cy.orderProduct()
   })
 }
@@ -154,8 +180,11 @@ export function verifyHomePage(city, postalCode) {
         req.continue()
       }
     }).as('updateOrderFormShipping')
+    cy.qe('Verify address container is visible under product')
     cy.get(selectors.addressContainer).should('be.visible')
+    cy.qe('Verify city is visible under the product')
     cy.get(selectors.AddressCity).contains(city)
+    cy.qe('Verify postal code under the product')
     cy.get(selectors.AddressZip).contains(postalCode)
     cy.get(selectors.Distance).contains('Distance:')
     cy.wait('@updateOrderFormShipping', { timeout: 20000 })

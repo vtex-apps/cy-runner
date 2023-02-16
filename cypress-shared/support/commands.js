@@ -146,12 +146,16 @@ Cypress.Commands.add('gotoQuickOrder', (b2b = false) => {
       cy.get(selectors.Menu).should('be.visible').click()
       cy.get(selectors.QuickOrder).should('be.visible').click()
     } else {
+      cy.qe(
+        'Visit the QuickOrder home page: if the profile label is visible, then the profile label should contain Hello'
+      )
       cy.visit('/quickorder')
       cy.get(selectors.ProfileLabel, { timeout: 20000 })
         .should('be.visible')
         .should('have.contain', `Hello,`)
     }
 
+    cy.qe(`The Url should contain quickorder`)
     cy.url().should('include', 'quickorder')
   })
 })
@@ -211,11 +215,13 @@ Cypress.Commands.add(
 )
 
 Cypress.Commands.add('orderProduct', () => {
+  cy.qe('Fill contact information in checkout page')
   cy.get(selectors.FirstName).then(($el) => {
     if (Cypress.dom.isVisible($el)) {
       fillContactInfo()
     }
   })
+  cy.qe('To make payment select Promissory payment')
   cy.get(selectors.PromissoryPayment).should('be.visible').click()
   cy.get(selectors.BuyNowBtn).last().should('be.visible').click()
   cy.get(selectors.Search, { timeout: 30000 }).should('be.visible')
@@ -223,6 +229,7 @@ Cypress.Commands.add('orderProduct', () => {
 
 Cypress.Commands.add('openStoreFront', (login = false) => {
   cy.intercept('**/rc.vtex.com.br/api/events').as('events')
+  cy.qe('Visit store front')
   cy.visit('/')
   cy.wait('@events')
   if (login === true) {
@@ -236,22 +243,27 @@ Cypress.Commands.add('openStoreFront', (login = false) => {
 
 Cypress.Commands.add('addNewLocation', (country, postalCode, street, city) => {
   cy.openStoreFront()
+  cy.qe('Address container should be visible in the top left of the home page')
   cy.get(selectors.addressContainer, { timeout: 30000 })
     .should('be.visible')
     .click()
+  cy.qe('Select a country')
   cy.get(selectors.countryDropdown).select(country)
+  cy.qe('Type a postalcode')
   cy.get(selectors.addressInputContainer)
     .first()
     .clear()
     .should('be.visible')
     .type(postalCode, { delay: 10 })
   cy.get(selectors.SaveButtonInChangeLocationPopUp).should('be.visible')
+  cy.qe('Type street address in address input')
   cy.get(selectors.Address)
     .contains('Address Line 1')
     .parent()
     .within(() => {
       cy.get(selectors.InputText).should('be.visible').clear().type(street)
     })
+  cy.qe('Type a city')
   cy.get(selectors.Address)
     .contains('City')
     .parent()
@@ -267,7 +279,7 @@ Cypress.Commands.add(
   (product, detailPage = false, searchPage = false) => {
     // Search product in search bar
     cy.get(selectors.Search).should('be.not.disabled').should('be.visible')
-
+    cy.qe('Search product in search bar')
     cy.get(selectors.Search)
       .should('be.visible')
       .should('be.enabled')
@@ -275,15 +287,20 @@ Cypress.Commands.add(
       .type(product)
       .type('{enter}')
     // Page should load successfully now Filter should be visible
+    cy.qe('Search result page should load successfully')
     cy.get(selectors.searchResult).should('have.text', product.toLowerCase())
     cy.get(selectors.FilterHeading, { timeout: 30000 }).should('be.visible')
     if (searchPage) {
+      cy.qe(
+        "If the search page is true, then it should show the message 'Shipping: Unavailable for'"
+      )
       cy.get(selectors.locationUnavailable)
         .should('be.visible')
         .contains('Shipping: Unavailable for')
     }
 
     if (detailPage) {
+      cy.qe('If detailPage is true,then it should go to product detail page')
       cy.gotoProductDetailPage()
     } else {
       cy.log('Visiting detail page is disabled')

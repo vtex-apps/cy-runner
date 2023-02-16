@@ -15,6 +15,9 @@ export function fillQuoteInformation({
   cy.getVtexItems().then((vtex) => {
     cy.get(selectors.ItemsPriceInCart, { timeout: 15000 }).then(($div) => {
       // Make sure remove button is visible
+      cy.qe(`
+      Remove product should be visible
+      `)
       cy.get(selectors.RemoveProduct).should('be.visible')
       cy.get('#total-price div[class*=checkout-summary]')
         .should('be.visible')
@@ -24,18 +27,24 @@ export function fillQuoteInformation({
 
       const price = $div.text()
 
+      cy.qe(`Waiting for the getorderform graphql`)
       cy.waitForGraphql('GetOrderForm', selectors.CreateQuote)
+      cy.qe('Currency container should be visible')
 
       cy.get(selectors.CurrencyContainer, { timeout: 20000 }).should(
         'be.visible'
       )
+      cy.qe('QuoteTotal should be visible')
       cy.get(selectors.QuoteTotal, { timeout: 20000 }).should('be.visible')
-
+      cy.qe(
+        `Quotename should be visble and type Quoteenv - ${quoteEnv} should be possible`
+      )
       cy.get(selectors.QuoteName).should('be.visible').clear().type(quoteEnv)
       if (notes) {
         cy.get(selectors.Notes).should('be.visible').clear().type(notes)
       }
 
+      cy.qe('Adding intercept for the createQuote')
       cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
         if (req.body.operationName === GRAPHL_OPERATIONS.CreateQuote) {
           req.continue()
@@ -64,6 +73,7 @@ export function fillQuoteInformation({
           .click()
       }
 
+      cy.qe('ToggleFields should be visible')
       cy.get(selectors.ToggleFields).should('be.visible')
 
       cy.wait(`@${GRAPHL_OPERATIONS.CreateQuote}`).then((req) => {
@@ -72,6 +82,7 @@ export function fillQuoteInformation({
           ''
         )
 
+        cy.qe(`Save the QuoteEnv - price, ${price} `)
         cy.setQuoteItem(`${quoteEnv}-price`, price)
         cy.setQuoteItem(quoteEnv, quoteId)
       })
