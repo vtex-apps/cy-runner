@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 ### Fixed
+- [ENGINEERS-1150] Fix output message status
+
+### Fixed
 - [ENGINEERS-1150] Fix resource reservation expected status
 
 ## [2.3.1] - 2023-02-17
