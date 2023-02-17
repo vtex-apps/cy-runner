@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [2.3.1] - 2023-02-17
+
 ### Fixed
 - [ENGINEERS-1088] Checking dependency specs over specs on strategy to fail fast
 
