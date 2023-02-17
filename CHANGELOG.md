@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [2.3.2] - 2023-02-17
+
 ### Fixed
 - [ENGINEERS-1150] Fix resource reservation expected status
 
