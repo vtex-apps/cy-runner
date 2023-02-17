@@ -132,7 +132,7 @@ async function setOrderFormConfig(config, secrets) {
   if (/10?|30?|40?|50?/.test(result?.status)) {
     system.crash(
       'Failed to set up orderForm configuration',
-      `HTTP status: result?.status`
+      `HTTP status: ${result?.status}`
     )
   }
 }

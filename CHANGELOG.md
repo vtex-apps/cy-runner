@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Fixed
+- [ENGINEERS-1150] Fix output message status
+
 ## [2.3.2] - 2023-02-17
 
 ### Fixed
