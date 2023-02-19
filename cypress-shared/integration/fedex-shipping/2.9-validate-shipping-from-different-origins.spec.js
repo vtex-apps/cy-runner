@@ -15,6 +15,7 @@ describe('Validate Ship Rates API from different origins', () => {
     'For Non Supported Country - eg: Poland should get response with status code 500',
     updateRetry(5),
     () => {
+      cy.qe('Validate invalid shipping address by giving poland address')
       cy.addDelayBetweenRetries(3000)
       data.destination = {
         zipCode: '00-005',
