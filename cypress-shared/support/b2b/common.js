@@ -18,7 +18,9 @@ export function setOrganizationIdInJSON(organization, costCenter) {
         'Getting Organization,CostCenter Id from session and set this in organizations.json file'
       )
       cy.qe(
-        `curl 'https://b2b6867853--productusqa.myvtex.com/api/sessions?items=*'
+        `https://${
+          Cypress.env('workspace').name
+        }--productusqa.myvtex.com/api/sessions?items=*'
         This requires userAuthCookie`
       )
       cy.request('/api/sessions?items=*').then((response) => {
