@@ -1,14 +1,29 @@
 ## [Unreleased]
 
 ### Added
-- [ENGINEERS-1148] - Added logs for organization creation testcases
+- [ENGINEERS-1148] Added logs for organization creation testcases
+
+## [2.3.3] - 2023-02-17
+
+### Fixed
+- [ENGINEERS-1150] Fix output message status
+
+## [2.3.2] - 2023-02-17
+
+### Fixed
+- [ENGINEERS-1150] Fix resource reservation expected status
+
+## [2.3.1] - 2023-02-17
+
+### Fixed
+- [ENGINEERS-1088] Checking dependency specs over specs on strategy to fail fast
 
 ### Added
-- [ENGINEERS-1065] - Added cy.qe command for write logs
+- [ENGINEERS-1065] Added cy.qe command for write logs
 - For shopper location, location availability, quickorder - Use cy.qe command to write logs
 
 ### Changed
-- [ENGINEERS-1097] - In adyen tests, for refunds testcase use lower rate products
+- [ENGINEERS-1097] In adyen tests, for refunds testcase use lower rate products
 
 ### Added
 - [ENGINEERS-1087] Added send invoice test in refund
@@ -39,17 +54,17 @@
 
 ### Removed
 
-- [ENGINEERS-1058] - Don't login with the user which we would be assigning to a b2b organization
+- [ENGINEERS-1058] Don't login with the user which we would be assigning to a b2b organization
 
 ## [2.2.0] - 2023-01-09
 
 ### Added
-- [ENGINEERS-1037] - Added affirm promo test
+- [ENGINEERS-1037] Added affirm promo test
 
 ## [2.1.0] - 2023-01-06
 
 ### Removed
-- [ENGINEERS-1033] - Drop duplicate organization request testcase
+- [ENGINEERS-1033] Drop duplicate organization request testcase
 
 ### Changed
 - Paypal cypress improvement
