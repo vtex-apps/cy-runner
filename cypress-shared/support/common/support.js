@@ -497,6 +497,13 @@ function logic(storeFrontCookie, stop) {
       }
     })
   })
+  beforeEach(() => {
+    cy.qe(
+      `Testcase title - ${
+        Cypress.mocha.getRunner().suite.ctx.currentTest.title
+      }`
+    )
+  })
   if (stop) stopTestCaseOnFailure()
 }
 
