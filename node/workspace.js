@@ -24,6 +24,8 @@ exports.init = async (config) => {
   if (!check) system.crash('Failed to change workspace')
 
   // Test HTTPS access
+  logger.msgOk('Testing access to login page')
+
   const LOGIN_PATH = '/_v/segment/admin-login/v1/login'
   const AXIOS_CFG = {
     url: `https://${NAME}--productusqa.myvtex.com${LOGIN_PATH}`,
