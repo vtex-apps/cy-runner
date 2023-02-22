@@ -24,8 +24,6 @@ exports.init = async (config) => {
   if (!check) system.crash('Failed to change workspace')
 
   // Test HTTPS access
-  logger.msgOk('Testing access to login page')
-
   const MAX_TRIES = 3
   let THIS_TRY = 1
   const LOGIN_PATH = '/_v/segment/admin-login/v1/login'
@@ -41,7 +39,7 @@ exports.init = async (config) => {
       continue
     }
 
-    logger.msgPad(`Try ${THIS_TRY} of ${MAX_TRIES}`)
+    logger.msgOk(`[try ${THIS_TRY}/${MAX_TRIES}] Access login page`)
     THIS_TRY++
 
     // eslint-disable-next-line no-await-in-loop
