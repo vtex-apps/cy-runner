@@ -129,7 +129,7 @@ async function setOrderFormConfig(config, secrets) {
   const axiosConfig = { url, method: 'post', headers, data: config.data }
   const result = await http.request(axiosConfig)
 
-  if (/10?|30?|40?|50?/.test(result?.status)) {
+  if (!/20./.test(result?.status)) {
     system.crash(
       'Failed to set up orderForm configuration',
       `HTTP status: ${result?.status}`

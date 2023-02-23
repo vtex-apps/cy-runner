@@ -1,8 +1,17 @@
 ## [Unreleased]
 
 ### Added
-
 - [ENGINEERS-1156] From beforeEach block, Write testcase title to log file
+
+## [2.3.5] - 2023-02-23
+
+### Added
+- [ENGINEERS-1126] Check status of login page after workspace creation
+
+## [2.3.4] - 2023-02-23
+
+### Fixed
+- [ENGINEERS-1162] Fix regex to check orderForm configuration status
 
 ## [2.3.3] - 2023-02-17
 
