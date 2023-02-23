@@ -32,7 +32,7 @@ exports.init = async (config) => {
   }
 
   check = false
-  while (thisTry <= MAX_RETRIES && !check) { {
+  while (thisTry <= MAX_RETRIES && !check) {
     logger.msgOk(`[try ${thisTry}/${MAX_RETRIES}] Access login page`)
     thisTry++
 
