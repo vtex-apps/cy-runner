@@ -39,7 +39,7 @@ exports.init = async (config) => {
     // eslint-disable-next-line no-await-in-loop
     const response = await http.request(AXIOS_CFG)
 
-    if (/2../.test(response.status)) check = true
+    if (/2../.test(response?.status)) check = true
   }
 
   if (!check) system.crash('Access the workspace over HTTPS failed')
