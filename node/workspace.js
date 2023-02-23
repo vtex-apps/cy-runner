@@ -24,8 +24,7 @@ exports.init = async (config) => {
   if (!check) system.crash('Failed to change workspace')
 
   // Test HTTPS access
-  let THIS_TRY = 1
-  const MAX_TRIES = 3
+  let thisTry = 1
   const LOGIN_PATH = '/_v/segment/admin-login/v1/login'
   const AXIOS_CFG = {
     url: `https://${NAME}--productusqa.myvtex.com${LOGIN_PATH}`,
@@ -33,14 +32,9 @@ exports.init = async (config) => {
   }
 
   check = false
-  while (MAX_TRIES + 1 - THIS_TRY) {
-    if (check) {
-      THIS_TRY = MAX_TRIES + 1
-      continue
-    }
-
-    logger.msgOk(`[try ${THIS_TRY}/${MAX_TRIES}] Access login page`)
-    THIS_TRY++
+  while (thisTry <= MAX_RETRIES && !check) { {
+    logger.msgOk(`[try ${thisTry}/${MAX_RETRIES}] Access login page`)
+    thisTry++
 
     // eslint-disable-next-line no-await-in-loop
     const response = await http.request(AXIOS_CFG)
