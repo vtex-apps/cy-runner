@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [2.3.5] - 2023-02-23
+
 ### Added
 - [ENGINEERS-1126] Check status of login page after workspace creation
 
