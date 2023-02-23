@@ -5,6 +5,7 @@ const system = require('./system')
 const logger = require('./logger')
 const toolbelt = require('./toolbelt')
 const storage = require('./storage')
+const http = require('./http')
 const { wipe } = require('./wipe')
 
 const MAX_RETRIES = 3
@@ -17,9 +18,31 @@ exports.init = async (config) => {
   logger.msgOk('Changing workspace')
   logger.msgPad(NAME)
 
-  const check = await toolbelt.changeWorkspace(NAME)
+  // Create namespace
+  let check = await toolbelt.changeWorkspace(NAME)
 
   if (!check) system.crash('Failed to change workspace')
+
+  // Test HTTPS access
+  let thisTry = 1
+  const LOGIN_PATH = '/_v/segment/admin-login/v1/login'
+  const AXIOS_CFG = {
+    url: `https://${NAME}--productusqa.myvtex.com${LOGIN_PATH}`,
+    method: 'get',
+  }
+
+  check = false
+  while (thisTry <= MAX_RETRIES && !check) {
+    logger.msgOk(`[try ${thisTry}/${MAX_RETRIES}] Access login page`)
+    thisTry++
+
+    // eslint-disable-next-line no-await-in-loop
+    const response = await http.request(AXIOS_CFG)
+
+    if (/2../.test(response?.status)) check = true
+  }
+
+  if (!check) system.crash('Access the workspace over HTTPS failed')
 
   return system.tack(START)
 }
