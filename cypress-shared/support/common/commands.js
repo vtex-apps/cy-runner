@@ -19,11 +19,6 @@ Cypress.Commands.add('qe', (msg = '') => {
   cy.log(msg)
 })
 
-Cypress.Commands.add('addGraphqlLogs', (query, variables) => {
-  cy.qe(`Query - ${query}`)
-  variables && cy.qe(`Variables - ${JSON.stringify(variables)}`)
-})
-
 Cypress.Commands.add('addProduct', addProduct)
 Cypress.Commands.add('fillAddress', fillAddress)
 Cypress.Commands.add('searchProduct', searchProduct)

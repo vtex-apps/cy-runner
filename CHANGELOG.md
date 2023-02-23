@@ -2,7 +2,6 @@
 
 ### Added
 
-- [ENGINEERS-1155] Created cypress custom command to add graphqlLogs
 - [ENGINEERS-1156] From beforeEach block, Write testcase title to log file
 
 ## [2.3.3] - 2023-02-17
