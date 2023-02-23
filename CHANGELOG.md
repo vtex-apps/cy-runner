@@ -3,6 +3,11 @@
 ### Added
 - [ENGINEERS-1126] Check status of login page after workspace creation
 
+## [2.3.4] - 2023-02-23
+
+### Fixed
+- [ENGINEERS-1162] Fix regex to check orderForm configuration status
+
 ## [2.3.3] - 2023-02-17
 
 ### Fixed
