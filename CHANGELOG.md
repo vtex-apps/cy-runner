@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [2.3.4] - 2023-02-23
+
 ### Fixed
 - [ENGINEERS-1162] Fix regex to check orderForm configuration status
 
