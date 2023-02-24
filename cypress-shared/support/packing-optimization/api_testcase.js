@@ -8,6 +8,9 @@ const { baseUrl, AccessKey } = config.base.vtex
 
 export function pack(data) {
   it('Pack All', updateRetry(3), () => {
+    cy.qe(
+      `curl --location --request POST "https://${baseUrl}/vtexid/pub/authentication/startlogin"`
+    )
     cy.request({
       method: 'POST',
       url: packAll(baseUrl),
