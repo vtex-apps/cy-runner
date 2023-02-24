@@ -1,6 +1,10 @@
 ## [Unreleased]
 
 ### Added
+- [ENGINEERS-1155] Created cypress custom command to add graphqlLogs
+- Added fedex shipping logs
+
+### Added
 - [ENGINEERS-1156] From beforeEach block, Write testcase title to log file
 
 ## [2.3.5] - 2023-02-23

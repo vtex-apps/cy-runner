@@ -11,23 +11,28 @@ To solve this error use @context(provider: "vtexus.fedex-shipping")
 */
 
 export function getAppSettings() {
-  cy.qe(
-    "Get app settings via graphql.The graphql query we use,query{ getAppSettings @context(provider: 'vtexus.fedex-shipping'){defaultDeliveryEstimateInDays,userCredentialKey,userCredentialPassword,parentCredentialKey,parentCredentialPassword,clientDetailAccountNumber,clientDetailMeterNumber,isLive,residential,optimizeShippingType,unitWeight,unitDimension,packingAccessKey,slaSettings{sla,hidden,surchargePercent,surchargeFlatRate}}}"
-  )
+  cy.qe('Get app settings via graphql')
+  const query =
+    'query' +
+    '{ getAppSettings @context(provider: "vtexus.fedex-shipping")' +
+    '{defaultDeliveryEstimateInDays,userCredentialKey,userCredentialPassword,parentCredentialKey,parentCredentialPassword,clientDetailAccountNumber,clientDetailMeterNumber,isLive,residential,optimizeShippingType,unitWeight,unitDimension,packingAccessKey,slaSettings{sla,hidden,surchargePercent,surchargeFlatRate}}}'
+
+  cy.addGraphqlLogs(query)
+
   return {
-    query:
-      'query' +
-      '{ getAppSettings @context(provider: "vtexus.fedex-shipping")' +
-      '{defaultDeliveryEstimateInDays,userCredentialKey,userCredentialPassword,parentCredentialKey,parentCredentialPassword,clientDetailAccountNumber,clientDetailMeterNumber,isLive,residential,optimizeShippingType,unitWeight,unitDimension,packingAccessKey,slaSettings{sla,hidden,surchargePercent,surchargeFlatRate}}}',
+    query,
   }
 }
 
 export function getDocks() {
-  cy.qe(
-    'Get Docks via graphQl.The graphQl query is,query{  getDocks{docksList{id,name,shippingRatesProviders}}}'
-  )
+  const query =
+    'query' + '{  getDocks{docksList{id,name,shippingRatesProviders}}}'
+
+  cy.qe('Get Docks via graphQl')
+  cy.addGraphqlLogs(query)
+
   return {
-    query: 'query' + '{  getDocks{docksList{id,name,shippingRatesProviders}}}',
+    query,
   }
 }
 
@@ -35,6 +40,7 @@ export function saveAppSetting(appDatas, allSla) {
   if (allSla) {
     appDatas.slaSettings = allSla
   }
+
   cy.qe('Save App setting via graphql.')
 
   const query =
@@ -43,8 +49,7 @@ export function saveAppSetting(appDatas, allSla) {
     '{saveAppSetting(appSetting: {userCredentialKey:$userCredentialKey,userCredentialPassword:$userCredentialPassword,defaultDeliveryEstimateInDays:$defaultDeliveryEstimateInDays,parentCredentialKey:$parentCredentialKey,parentCredentialPassword:$parentCredentialPassword,clientDetailMeterNumber:$clientDetailMeterNumber,clientDetailAccountNumber:$clientDetailAccountNumber,isLive:$isLive,residential:$residential,optimizeShippingType:$optimizeShippingType,unitWeight:$unitWeight,unitDimension:$unitDimension,packingAccessKey:$packingAccessKey,slaSettings:$slaSettings})' +
     '@context(provider: "vtexus.fedex-shipping")}'
 
-  cy.qe(`The graphQl mutation is,${query}`)
-  cy.qe(`Variables - ${appDatas}`)
+  cy.addGraphqlLogs(query, appDatas)
 
   return {
     query,
@@ -60,8 +65,8 @@ export function savePackingOptimizationAppSetting(settings) {
     '($accessKey: String, $containerList: [ContainerInput])' +
     '{saveAppSetting(appSetting: {accessKey:$accessKey,containerList:$containerList})' +
     '@context(provider: "vtex.packing-optimization")}'
-  cy.qe(`The graphql mutation is,${query}`)
-  cy.qe(`Variables - ${settings}`)
+
+  cy.addGraphqlLogs(query, settings)
 
   return {
     query,
@@ -71,14 +76,15 @@ export function savePackingOptimizationAppSetting(settings) {
 
 export function updateDockConnection(id, remove = false) {
   const queryVariables = { dockId: id, toRemove: remove }
+
   cy.qe('Update dock connection via graphQl.')
 
   const query =
     'mutation' +
     '($dockId: String, $toRemove: Boolean)' +
     '{updateDockConnection(updateDock: {dockId:$dockId,toRemove:$toRemove})}'
-  cy.qe(`The graphql query is,${query}`)
-  cy.qe(`Variables - ${queryVariables}`)
+
+  cy.addGraphqlLogs(query, queryVariables)
 
   return {
     query,
@@ -90,12 +96,13 @@ export function loadingDock(id) {
   cy.qe('Load a docks via graphql')
 
   const query = 'query' + '($id: ID!)' + '{loadingDock(id:$id){isActive}}'
-  cy.qe(`The graphQl query is,${query}`)
-  cy.qe(`Variables - {id: ${id}}`)
+  const queryVariables = { id }
+
+  cy.addGraphqlLogs(query, queryVariables)
 
   return {
     query,
-    queryVariables: { id },
+    queryVariables,
   }
 }
 
@@ -132,9 +139,13 @@ export function verifyInventoryIsUnlimitedForFedexWareHouse(warehouseId, sku) {
     '($sku: ID!, $warehouseId: ID!)' +
     '{inventoryProduct(sku:$sku,warehouseId:$warehouseId){unlimited}}'
 
+  const queryVariables = { sku, warehouseId }
+
+  cy.addGraphqlLogs(query, queryVariables)
+
   return {
     query,
-    queryVariables: { sku, warehouseId },
+    queryVariables,
   }
 }
 
@@ -154,13 +165,13 @@ export function warehouse(id) {
     '($id: ID!)' +
     '{warehouse(id:$id){isActive,warehouseDocks{dockId}}}'
 
-  const variables = `{id: ${id}}`
-  cy.qe(`The graphQl query is,${query}`)
-  cy.qe(`Variables - ${variables}`)
+  const queryVariables = { id }
+
+  cy.addGraphqlLogs(query, queryVariables)
 
   return {
     query,
-    queryVariables: { id },
+    queryVariables,
   }
 }
 

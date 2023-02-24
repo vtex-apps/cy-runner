@@ -17,7 +17,9 @@ export function loadDocks() {
 
 export function loadCalculateShippingAPI(data, validateResponseFn) {
   return cy.getVtexItems().then((vtex) => {
-    cy.qe(`curl --location --request POST 'https://app.io.vtex.com/vtexus.fedex-shipping/v1/${vtex.account}/fedexshipping6905585/shp-rates/calculate' \
+    cy.qe(`curl --location --request POST 'https://app.io.vtex.com/vtexus.fedex-shipping/v1/${
+      vtex.account
+    }/${Cypress.env('workspace').name}/shp-rates/calculate' \
     --header 'VtexIdclientAutCookie: VtexIdclientAutCookie' \
     --header 'Content-Type: application/json' \
     --data-raw '{
