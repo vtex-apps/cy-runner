@@ -5,10 +5,8 @@ import { FAIL_ON_STATUS_CODE } from '../common/constants'
 export function loadDocks() {
   it('Load all dock connection', updateRetry(3), () => {
     cy.getVtexItems().then((vtex) => {
-      cy.qe(
-        `curl --location --request GET 'https://${vtex.baseUrl}/admin/shipping-strategy/loading-docks/?VtexIdclientAutCookie=VtexIdclientAutCookie'`
-      )
       cy.getAPI(loadDocksAPI(vtex.baseUrl)).then((response) => {
+        cy.qe('Expect response status to be 200')
         expect(response.status).to.have.equal(200)
       })
     })
@@ -17,49 +15,18 @@ export function loadDocks() {
 
 export function loadCalculateShippingAPI(data, validateResponseFn) {
   return cy.getVtexItems().then((vtex) => {
-    cy.qe(`curl --location --request POST 'https://app.io.vtex.com/vtexus.fedex-shipping/v1/${
-      vtex.account
-    }/${Cypress.env('workspace').name}/shp-rates/calculate' \
-    --header 'VtexIdclientAutCookie: VtexIdclientAutCookie' \
-    --header 'Content-Type: application/json' \
-    --data-raw '{
-      "data": {
-        "items": [
-          {
-            "id": "880340",
-            "quantity": 1,
-            "groupId": null,
-            "unitPrice": 500.0,
-            "modal": "",
-            "unitDimension": {
-              "weight": 10.0,
-              "height": 10,
-              "width": 10,
-              "length": 10
-            }
-          }
-        ],
-        "origin": {
-          "zipCode": "33020",
-          "country": "USA",
-          "state": "FL",
-          "city": "Hollywood",
-          "coordinates": null,
-          "residential": false
+    cy.qe(`cy.request({
+        method: 'POST',
+        url: ${calculateShippingAPI(
+          vtex.account,
+          Cypress.env('workspace').name
+        )},
+        headers: {
+          VtexIdclientAutCookie: VtexIdclientAutCookie,
         },
-        "destination": {
-          "zipCode": "00010002",
-          "country": "USA",
-          "state": null,
-          "city": null,
-          "coordinates": null,
-          "residential": false
-        },
-        "shippingDateUTC": "2022-05-31T01:02:45.128577+00:00",
-        "currency": null
-      }
-    }
-    '`)
+        ${JSON.stringify(FAIL_ON_STATUS_CODE).replace('{', '').replace('}', '')}
+        body: ${JSON.stringify(data)}
+      })`)
     cy.getAppSettingstoJSON().then((items) => {
       cy.request({
         method: 'POST',
@@ -73,6 +40,7 @@ export function loadCalculateShippingAPI(data, validateResponseFn) {
 
       if (validateResponseFn) {
         cy.get('@RESPONSE').then((response) => {
+          cy.qe('Expect status to be 200')
           expect(response.status).to.have.equal(200)
           validateResponseFn(response)
         })
@@ -85,6 +53,7 @@ export function loadCalculateShippingAPI(data, validateResponseFn) {
 
 export function validateCalculateShipping(response) {
   expect(response.status).to.have.equal(200)
+  cy.qe('Expect response body to be an array and have length of above 0')
   // If we receive empty array with valid payload then we can assume that fedex shipping site is down
   expect(response.body).to.be.an('array').and.to.have.lengthOf.above(0)
 }

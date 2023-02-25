@@ -466,6 +466,7 @@ export function stopTestCaseOnFailure() {
   // So, we are using normal function
   // eslint-disable-next-line func-names
   afterEach(function () {
+    cy.qe('================================================')
     if (
       this.currentTest.currentRetry() === this.currentTest.retries() &&
       this.currentTest.state === 'failed'
