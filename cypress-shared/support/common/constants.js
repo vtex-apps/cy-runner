@@ -43,6 +43,8 @@ export const FAIL_ON_STATUS_CODE = {
   failOnStatusCode: false,
 }
 
+export const FAIL_ON_STATUS_CODE_STRING = 'failOnStatusCode: false'
+
 export const ENTITIES = {
   CLIENTS: { id: 'CL', searchKey: 'email' },
   ADDRESSES: { id: 'AD', searchKey: 'userId' },

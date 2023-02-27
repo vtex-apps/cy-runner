@@ -1,6 +1,9 @@
 import { loadDocksAPI, calculateShippingAPI } from '../common/apis'
 import { updateRetry } from '../common/support'
-import { FAIL_ON_STATUS_CODE } from '../common/constants'
+import {
+  FAIL_ON_STATUS_CODE,
+  FAIL_ON_STATUS_CODE_STRING,
+} from '../common/constants'
 
 export function loadDocks() {
   it('Load all dock connection', updateRetry(3), () => {
@@ -24,7 +27,7 @@ export function loadCalculateShippingAPI(data, validateResponseFn) {
         headers: {
           VtexIdclientAutCookie: VtexIdclientAutCookie,
         },
-        ${JSON.stringify(FAIL_ON_STATUS_CODE).replace('{', '').replace('}', '')}
+        ${FAIL_ON_STATUS_CODE_STRING}
         body: ${JSON.stringify(data)}
       })`)
     cy.getAppSettingstoJSON().then((items) => {

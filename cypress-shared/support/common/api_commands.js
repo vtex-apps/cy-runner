@@ -1,5 +1,9 @@
 import { searchInMasterData, deleteDocumentInMasterData } from './wipe.js'
-import { VTEX_AUTH_HEADER, FAIL_ON_STATUS_CODE } from './constants.js'
+import {
+  VTEX_AUTH_HEADER,
+  FAIL_ON_STATUS_CODE,
+  FAIL_ON_STATUS_CODE_STRING,
+} from './constants.js'
 import { invoiceAPI, cancelOrderAPI } from './apis.js'
 
 Cypress.Commands.add('searchInMasterData', searchInMasterData)
@@ -43,7 +47,7 @@ Cypress.Commands.add('getAPI', (url, headers) => {
     method: 'GET',
     url: ${url},
     ${headers ? `headers: ${headers}` : ''}
-    ${JSON.stringify(FAIL_ON_STATUS_CODE).replace('{', '').replace('}', '')}
+    ${FAIL_ON_STATUS_CODE_STRING} 
   })`)
   cy.request({
     method: 'GET',
