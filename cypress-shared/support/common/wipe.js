@@ -10,6 +10,11 @@ const generateDeleteURL = (baseUrl, entities, documentId) => {
 
 export function searchInMasterData(entities, searchQuery) {
   cy.getVtexItems().then((vtex) => {
+    cy.qe(`
+    curl --location --request GET '${vtex.baseUrl}/api/dataentities/CL/search?email=robot.partnerhere@gmail.com' \
+   --header 'X-VTEX-API-AppKey: AppKey' \
+  --header 'X-VTEX-API-AppToken: AppToken' \
+    `)
     cy.request({
       url: generateSearchURL(vtex.baseUrl, entities, searchQuery),
       headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),

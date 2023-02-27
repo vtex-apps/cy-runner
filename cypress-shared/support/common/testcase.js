@@ -80,6 +80,11 @@ export function configureTargetWorkspace(app, version, workspace = 'master') {
 }
 
 function callOrderFormConfiguration() {
+  cy.qe(`
+  curl --location --request GET 'https://productusqa.vtexcommercestable.com.br/api/checkout/pvt/configuration/orderForm' \
+--header 'X-VTEX-API-AppKey: AppKey' \
+--header 'X-VTEX-API-AppToken: AppToken'
+  `)
   cy.request({
     method: 'GET',
     url: ORDER_FORM_CONFIG,
@@ -127,6 +132,12 @@ export function configureTaxConfigurationInOrderForm(workspace = null) {
                 appId: new Date(),
               }
             : {}
+          cy.qe(`
+          curl --location --request POST 'https://productusqa.vtexcommercestable.com.br/api/checkout/pvt/configuration/orderForm' \
+--header 'X-VTEX-API-AppKey: AppKey' \
+--header 'X-VTEX-API-AppToken: AppToken'
+--data-raw '{data}'
+          `)
           cy.request({
             method: 'POST',
             url: ORDER_FORM_CONFIG,

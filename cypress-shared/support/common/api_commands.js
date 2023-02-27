@@ -10,6 +10,13 @@ Cypress.Commands.add('sendInvoiceAPI', (body, orderId) => {
   cy.getVtexItems().then((vtex) => {
     const url = `${invoiceAPI(vtex.baseUrl)}/${orderId}/invoice`
 
+    cy.qe(`
+    curl --location --request POST '${vtex.baseUrl}/api/oms/pvt/orders/${orderId}/invoice' \
+--header 'X-VTEX-API-AppKey: AppKey' \
+--header 'X-VTEX-API-AppToken: AppToken' \
+--data-raw 'req.body'
+    `)
+
     cy.request({
       method: 'POST',
       url,

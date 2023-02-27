@@ -13,6 +13,11 @@ export function refund(
     it('Start handling', () => {
       cy.getVtexItems().then((vtex) => {
         cy.getOrderItems().then((order) => {
+          cy.qe(`
+          curl --location --request POST '${vtex.baseUrl}/oms/pvt/orders/${order[env]}/start-handling' \
+--header 'X-VTEX-API-AppKey: AppKey' \
+--header 'X-VTEX-API-AppToken: AppToken' \
+          `)
           cy.request({
             method: 'POST',
             url: startHandlingAPI(vtex.baseUrl, order[env]),
