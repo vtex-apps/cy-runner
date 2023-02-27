@@ -20,6 +20,7 @@ describe('FedEx UnHide sla scenarios', () => {
   loginViaCookies()
 
   it(`${prefix} - Unhide all sla's`, updateRetry(3), () => {
+    cy.qe('Update sla to show using saveAppSetting graphql')
     cy.hideSla(false).then((sla) => {
       graphql(
         FEDEX_SHIPPING_APP,

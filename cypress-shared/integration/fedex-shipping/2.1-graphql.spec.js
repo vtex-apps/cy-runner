@@ -56,6 +56,7 @@ describe('FedEx GraphQL Validation', () => {
   })
 
   it('Get userAuthCookie and set cookie', updateRetry(2), () => {
+    cy.qe('Getting user auth cookie and setting cookie')
     cy.getVtexItems().then((vtex) => {
       const cookieName = vtex.userAuthCookieName
 
@@ -85,9 +86,12 @@ describe('FedEx GraphQL Validation', () => {
   })
 
   it(`Verify by UI - Test Credentials`, () => {
+    cy.qe('Visit admin fedex-shipping page')
     cy.visit('/admin/app/fedex-shipping')
     cy.get('#meter').should('be.visible').should('not.have.value', '')
+    cy.qe("To verify test credentials click on 'Test Credentials' button")
     cy.contains('Test Credentials').should('be.visible').click()
+    cy.qe("Once tested,it will show 'Success' popup")
     cy.contains('Success')
   })
 

@@ -466,6 +466,7 @@ export function stopTestCaseOnFailure() {
   // So, we are using normal function
   // eslint-disable-next-line func-names
   afterEach(function () {
+    cy.qe('================================================')
     if (
       this.currentTest.currentRetry() === this.currentTest.retries() &&
       this.currentTest.state === 'failed'
@@ -497,11 +498,11 @@ function logic(storeFrontCookie, stop) {
       }
     })
   })
-  beforeEach(() => {
+  beforeEach(function () {
     cy.qe(
       `Testcase title - ${
         Cypress.mocha.getRunner().suite.ctx.currentTest.title
-      }`
+      }, Attempt Number - ${this.currentTest.currentRetry() + 1}`
     )
   })
   if (stop) stopTestCaseOnFailure()
