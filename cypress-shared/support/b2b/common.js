@@ -12,16 +12,26 @@ const APP = `${APP_NAME}@${APP_VERSION}`
 export function setOrganizationIdInJSON(organization, costCenter) {
   it(
     'Getting Organization,CostCenter Id from session and set this in organizations.json file',
-    { retries: 3, responseTimeout: 5000 },
+    { retries: 5, responseTimeout: 10000 },
     () => {
+      cy.addDelayBetweenRetries(15000)
       cy.request('/api/sessions?items=*').then((response) => {
-        expect(response.body.namespaces).to.be.exist
-        expect(response.body.namespaces['storefront-permissions']).to.be.exist
-        const organizationId =
-          response.body.namespaces['storefront-permissions'].organization.value
+        expect(response.body).to.have.property('namespaces')
+        expect(response.body.namespaces).to.have.property(
+          'storefront-permissions'
+        )
+        const orgObject =
+          response.body.namespaces['storefront-permissions'].organization
 
-        const costCenterId =
-          response.body.namespaces['storefront-permissions'].costcenter.value
+        const costCenterObject =
+          response.body.namespaces['storefront-permissions'].costcenter
+
+        expect(orgObject).to.have.property('value')
+        expect(costCenterObject).to.have.property('value')
+
+        const organizationId = orgObject.value
+
+        const costCenterId = costCenterObject.value
 
         expect(organizationId).to.contain('-')
         expect(costCenterId).to.contain('-')

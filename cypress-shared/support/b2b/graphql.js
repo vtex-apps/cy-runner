@@ -107,6 +107,8 @@ export function verifyBindings(email, binding) {
       ...FAIL_ON_STATUS_CODE,
     }).then(({ status, body }) => {
       expect(status).to.equal(200)
+      expect(body).to.have.property('data')
+      expect(body.data).to.have.property('getBinding')
       expect(body.data.getBinding).equal(binding)
     })
   })
