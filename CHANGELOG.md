@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Changed
+- [ENGINEERS-1173] - Improve sessions validation & add delay between retries to handle slow responses
+
 ### Added
 - [ENGINEERS-1155] Created cypress custom command to add graphqlLogs
 - Added fedex shipping logs
