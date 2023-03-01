@@ -9,6 +9,26 @@ const APP_NAME = 'vtex.b2b-organizations-graphql'
 const APP_VERSION = '0.x'
 const APP = `${APP_NAME}@${APP_VERSION}`
 
+function verifyStoreFrontPermissionInSessions(response) {
+  expect(response.body)
+    .to.have.property('namespaces')
+    .to.have.property('storefront-permissions')
+    .to.have.property('organization')
+    .to.have.property('value')
+    .to.contain('-')
+  expect(response.body.namespaces['storefront-permissions'])
+    .to.have.property('costcenter')
+    .to.have.property('value')
+    .to.contain('-')
+
+  return {
+    organizationId:
+      response.body.namespaces['storefront-permissions'].organization.value,
+    costCenterId:
+      response.body.namespaces['storefront-permissions'].costcenter.value,
+  }
+}
+
 export function setOrganizationIdInJSON(organization, costCenter) {
   it(
     'Getting Organization,CostCenter Id from session and set this in organizations.json file',
@@ -16,25 +36,8 @@ export function setOrganizationIdInJSON(organization, costCenter) {
     () => {
       cy.addDelayBetweenRetries(15000)
       cy.request('/api/sessions?items=*').then((response) => {
-        expect(response.body).to.have.property('namespaces')
-        expect(response.body.namespaces).to.have.property(
-          'storefront-permissions'
-        )
-        const orgObject =
-          response.body.namespaces['storefront-permissions'].organization
-
-        const costCenterObject =
-          response.body.namespaces['storefront-permissions'].costcenter
-
-        expect(orgObject).to.have.property('value')
-        expect(costCenterObject).to.have.property('value')
-
-        const organizationId = orgObject.value
-
-        const costCenterId = costCenterObject.value
-
-        expect(organizationId).to.contain('-')
-        expect(costCenterId).to.contain('-')
+        const { organizationId, costCenterId } =
+          verifyStoreFrontPermissionInSessions(response)
 
         // Saving organization & costcenter id in organization.json and this id will be deleted this wipe.spec.js
         cy.setOrganizationItem(organization, organizationId)
@@ -114,9 +117,21 @@ function verifyWidget(organization, costCenter, role) {
 export function verifySession(organization, costCenter, role) {
   it(
     'Verifying Session items must have expected priceTable and collections',
-    updateRetry(2),
+    updateRetry(3),
     () => {
+      cy.reloadOnLastNAttempts(2)
+      cy.addDelayBetweenRetries(10000)
       cy.request('/api/sessions?items=*').then((response) => {
+        verifyStoreFrontPermissionInSessions(response)
+        expect(response.body.namespaces)
+          .to.have.property('profile')
+          .to.have.property('priceTables')
+          .to.have.property('value')
+        expect(response.body.namespaces)
+          .to.have.property('search')
+          .to.have.property('facets')
+          .to.have.property('value')
+
         expect(response.body.namespaces.profile.priceTables.value).to.equal(
           organization.priceTables
         )
