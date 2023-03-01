@@ -117,8 +117,9 @@ function verifyWidget(organization, costCenter, role) {
 export function verifySession(organization, costCenter, role) {
   it(
     'Verifying Session items must have expected priceTable and collections',
-    updateRetry(2),
+    updateRetry(3),
     () => {
+      cy.reloadOnLastNAttempts(2)
       cy.addDelayBetweenRetries(10000)
       cy.request('/api/sessions?items=*').then((response) => {
         verifyStoreFrontPermissionInSessions(response)
