@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 ### Changed
+- [ENGINEERS-1173] - Improve sessions validation in all places
+
+### Changed
 - [ENGINEERS-1173] - Improve sessions validation & add delay between retries to handle slow responses
 
 ### Added
