@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Fixed
+- [ENGINEERS-1066] Dependabot reported vulnerabilities
+
 ### Added
 - [ENGINEERS-1148] Added logs for organization creation testcases
 

@@ -112,10 +112,10 @@ cypress.json
 /cypress-shared/videos
 /cypress-shared/screenshots
 /cypress-shared/downloads
-.toolbelt.url
 /node/cypress/fixtures
 /node/cypress/plugins
 /cy-runner-logs
 # State/ENV files
 .*.json
 /cy-runner.yml
+_orderFormDebug.json
