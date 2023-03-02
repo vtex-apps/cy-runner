@@ -10,6 +10,9 @@ const APP_VERSION = '0.x'
 const APP = `${APP_NAME}@${APP_VERSION}`
 
 function verifyStoreFrontPermissionInSessions(response) {
+  cy.qe(
+    `Get organization and costcenter ids from storefront-permission property & Expect organziationId ,costCenterId has -`
+  )
   expect(response.body)
     .to.have.property('namespaces')
     .to.have.property('storefront-permissions')
@@ -35,10 +38,14 @@ export function setOrganizationIdInJSON(organization, costCenter) {
     { retries: 5, responseTimeout: 10000 },
     () => {
       cy.addDelayBetweenRetries(15000)
-      cy.request('/api/sessions?items=*').then((response) => {
+      cy.getAPI('/api/sessions?items=*').then((response) => {
+        cy.qe(`Namespaces, storefront-permission should exist in response`)
         const { organizationId, costCenterId } =
           verifyStoreFrontPermissionInSessions(response)
 
+        cy.qe(
+          'Store organizationId & costCenterId in stateFile - .organization.json'
+        )
         // Saving organization & costcenter id in organization.json and this id will be deleted this wipe.spec.js
         cy.setOrganizationItem(organization, organizationId)
         cy.setOrganizationItem(costCenter, costCenterId)
@@ -82,14 +89,18 @@ export function addPaymentTermsCollectionPriceTablesTestCase(organization) {
             organization
           )
 
-          cy.request({
-            method: 'POST',
+          cy.addGraphqlLogs(GRAPHQL_UPDATE_ORGANISATION_MUTATION, variables)
+
+          cy.addLogsForRestAPI({
             url: CUSTOM_URL,
             body: {
               query: GRAPHQL_UPDATE_ORGANISATION_MUTATION,
               variables,
             },
           }).then((resp) => {
+            cy.qe(
+              'response.body.data.updateOrganization.status should have success'
+            )
             expect(resp.body.data.updateOrganization.status).to.equal('success')
           })
         })

@@ -13,9 +13,11 @@ export function addCostCenter(organization, costCenter, costCenterAddress) {
       cy.get(selectors.AddCostCenter).should('be.visible')
       cy.get('body').then(($body) => {
         if ($body.text().includes(costCenter)) {
-          cy.log('CostCenter already added')
+          cy.qe('CostCenter already added')
         } else {
+          cy.qe('Click Add Cost Center')
           cy.get(selectors.AddCostCenter).click()
+          cy.qe(`Type ${costCenter} in costCenterName Field`)
           cy.get(selectors.CostCenterName)
             .clear()
             .type(costCenter)
@@ -29,6 +31,9 @@ export function addCostCenter(organization, costCenter, costCenterAddress) {
             GRAPHL_OPERATIONS.GetCostCentersByOrganizationIdStorefront,
             selectors.SubmitCostCenter
           ).then((req) => {
+            cy.qe(
+              `Store ${costCenter}:${req.response.body.data.createCostCenter.id} in organization.json`
+            )
             cy.setOrganizationItem(
               costCenter,
               req.response.body.data.createCostCenter.id
@@ -99,6 +104,7 @@ export function addAddressinCostCenter(
   updatedAddress = false
 ) {
   it(`Adding New Address for ${costCenter}`, updateRetry(2), () => {
+    cy.qe(`Adding New Address for ${costCenter}`)
     cy.gotoCostCenter(costCenter)
     const { postalCode } = costCenterAddress
 
@@ -109,7 +115,7 @@ export function addAddressinCostCenter(
         const updatedAddressLoc = postalCodes.indexOf(updatedAddress.postalCode)
 
         if (updatedAddressLoc !== -1) {
-          cy.log('Address already updated')
+          cy.qe('Address already updated')
         }
       } else {
         cy.get(selectors.PostalCodeInAddressList)
@@ -117,7 +123,7 @@ export function addAddressinCostCenter(
           .invoke('text')
           .then((code) => {
             if (code === postalCode) {
-              cy.log('Address already added in CostCenter')
+              cy.qe('Address already added in CostCenter')
             } else {
               cy.get(selectors.AddAddress).click()
               cy.fillAddressInCostCenter(costCenterAddress)
@@ -209,12 +215,16 @@ export function updatePaymentTermsinCostCenter(
     `Verify Organization Admin is able to disable ${costCenter} the payment terms ${paymentTerms} in ${organization}`,
     updateRetry(2),
     () => {
+      cy.qe(
+        `Verify Organization Admin is able to disable ${costCenter} the payment terms ${paymentTerms} in ${organization}`
+      )
       cy.addReloadBetweenRetries()
       cy.gotoCostCenter(costCenter)
       cy.get(selectors.PromissoryCheckbox)
         .invoke('prop', 'checked')
         .then((checked) => {
           if (checked) {
+            cy.qe(`Click PromissoryCheckbox`)
             cy.get(selectors.PromissoryCheckbox).click()
           }
         })

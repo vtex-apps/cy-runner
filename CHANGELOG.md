@@ -1,7 +1,10 @@
 ## [Unreleased]
 
 ### Fixed
-- Dependabot reported vulnerabilities
+- [ENGINEERS-1066] Dependabot reported vulnerabilities
+
+### Added
+- [ENGINEERS-1148] Added logs for organization creation testcases
 
 ### Changed
 - [ENGINEERS-1173] - Improve sessions validation in all places

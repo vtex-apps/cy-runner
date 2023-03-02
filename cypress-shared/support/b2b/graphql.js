@@ -17,6 +17,9 @@ export function deleteOrganization(search, organizationRequest = false) {
     `Deleting Organizations${func} which we created in this workspace ${search}`,
     updateRetry(2),
     () => {
+      cy.qe(
+        `Deleting Organizations${func} which we created in this workspace ${search}`
+      )
       const GRAPHQL_DELETE_MUTATION =
         'mutation' +
         '($id: ID!)' +
@@ -29,14 +32,15 @@ export function deleteOrganization(search, organizationRequest = false) {
         '($search: String!)' +
         `{${queryName}(search: $search){data{id,name}}}`
 
+      const SEARCH_QUERY_VARIABLES = { search }
+
+      cy.addGraphqlLogs(GRAPHQL_SEARCH_QUERY, SEARCH_QUERY_VARIABLES)
       cy.request({
         method: 'POST',
         url: CUSTOM_URL,
         body: {
           query: GRAPHQL_SEARCH_QUERY,
-          variables: {
-            search,
-          },
+          variables: SEARCH_QUERY_VARIABLES,
         },
         headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
         ...FAIL_ON_STATUS_CODE,
@@ -44,6 +48,14 @@ export function deleteOrganization(search, organizationRequest = false) {
         expect(response.status).to.equal(200)
         expect(response.body).to.not.have.own.property('errors')
         for (const { id } of response.body.data[queryName].data) {
+          cy.qe(
+            'If we are getting data property from response, then we already have an organization created '
+          )
+          cy.qe("Let's delete that organization request")
+          const DELETE_MUTATION_VARIABLES = { id }
+
+          cy.addGraphqlLogs(GRAPHQL_DELETE_MUTATION, DELETE_MUTATION_VARIABLES)
+
           cy.request({
             method: 'POST',
             url: CUSTOM_URL,
@@ -96,6 +108,9 @@ export function verifyBindings(email, binding) {
     const GRAPHQL_GET_SALES_CHANNEL_QUERY =
       'query($email:String!){' + `getBinding(email:$email)}`
 
+    cy.qe(`Verify Bindings with this emailId - ${email}`)
+    cy.addGraphqlLogs(GRAPHQL_GET_SALES_CHANNEL_QUERY, { email })
+
     cy.request({
       method: 'POST',
       url: CUSTOM_URL,
@@ -107,6 +122,9 @@ export function verifyBindings(email, binding) {
       ...FAIL_ON_STATUS_CODE,
     }).then(({ status, body }) => {
       expect(status).to.equal(200)
+      cy.qe(
+        `Verify we get status as 200 & we have getBinding property with value ${binding}`
+      )
       expect(body).to.have.property('data')
       expect(body.data).to.have.property('getBinding')
       expect(body.data.getBinding).equal(binding)
