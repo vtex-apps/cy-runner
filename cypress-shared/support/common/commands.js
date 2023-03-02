@@ -26,6 +26,17 @@ Cypress.Commands.add('addGraphqlLogs', (query, variables) => {
   }
 })
 
+Cypress.Commands.add(
+  'addLogsForRestAPI',
+  ({ method = 'POST', url, body = null } = {}) => {
+    cy.request({
+      url,
+      method,
+      body,
+    })
+  }
+)
+
 Cypress.Commands.add('addProduct', addProduct)
 Cypress.Commands.add('fillAddress', fillAddress)
 Cypress.Commands.add('searchProduct', searchProduct)

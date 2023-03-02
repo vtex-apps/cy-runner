@@ -34,9 +34,7 @@ export function deleteOrganization(search, organizationRequest = false) {
 
       const SEARCH_QUERY_VARIABLES = { search }
 
-      cy.qe(`Query: ${GRAPHQL_SEARCH_QUERY}`)
-      cy.qe(`Variables: ${JSON.stringify(SEARCH_QUERY_VARIABLES)}`)
-
+      cy.addGraphqlLogs(GRAPHQL_SEARCH_QUERY, SEARCH_QUERY_VARIABLES)
       cy.request({
         method: 'POST',
         url: CUSTOM_URL,
@@ -54,10 +52,10 @@ export function deleteOrganization(search, organizationRequest = false) {
             'If we are getting data property from response, then we already have an organization created '
           )
           cy.qe("Let's delete that organization request")
-          cy.qe(`Query: ${GRAPHQL_DELETE_MUTATION}`)
           const DELETE_MUTATION_VARIABLES = { id }
 
-          cy.qe(`Variables: ${JSON.stringify(DELETE_MUTATION_VARIABLES)}`)
+          cy.addGraphqlLogs(GRAPHQL_DELETE_MUTATION, DELETE_MUTATION_VARIABLES)
+
           cy.request({
             method: 'POST',
             url: CUSTOM_URL,
@@ -111,8 +109,7 @@ export function verifyBindings(email, binding) {
       'query($email:String!){' + `getBinding(email:$email)}`
 
     cy.qe(`Verify Bindings with this emailId - ${email}`)
-    cy.qe('Query: query($email:String!){getBinding(email:$email)}')
-    cy.qe(`Variables: ${JSON.stringify({ email })}`)
+    cy.addGraphqlLogs(GRAPHQL_GET_SALES_CHANNEL_QUERY, { email })
 
     cy.request({
       method: 'POST',

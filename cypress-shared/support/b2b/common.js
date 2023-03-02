@@ -37,7 +37,6 @@ export function setOrganizationIdInJSON(organization, costCenter) {
     'Getting Organization,CostCenter Id from session and set this in organizations.json file',
     { retries: 5, responseTimeout: 10000 },
     () => {
-      // here
       cy.addDelayBetweenRetries(15000)
       cy.getAPI('/api/sessions?items=*').then((response) => {
         cy.qe(`Namespaces, storefront-permission should exist in response`)
@@ -85,17 +84,14 @@ export function addPaymentTermsCollectionPriceTablesTestCase(organization) {
             '{updateOrganization(id:$id,name:$name,status:$status,collections:$collections,paymentTerms:$paymentTerms,priceTables:$priceTables){' +
             'status}}'
 
-          cy.qe(`Query - ${GRAPHQL_UPDATE_ORGANISATION_MUTATION}`)
-
           const variables = addPaymentTermsCollectionPriceTables(
             organizationItems,
             organization
           )
 
-          cy.qe(`Variables - ${variables}`)
+          cy.addGraphqlLogs(GRAPHQL_UPDATE_ORGANISATION_MUTATION, variables)
 
-          cy.request({
-            method: 'POST',
+          cy.addLogsForRestAPI({
             url: CUSTOM_URL,
             body: {
               query: GRAPHQL_UPDATE_ORGANISATION_MUTATION,
