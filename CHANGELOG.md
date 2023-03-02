@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Added
+- [ENGINEERS-1148] Added logs for organization creation testcases
+
 ### Changed
 - [ENGINEERS-1173] - Improve sessions validation in all places
 - Added reloadOnLastNAttempts cypress custom command

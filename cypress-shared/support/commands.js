@@ -10,6 +10,7 @@ import { fillContactInfo, scroll } from './common/support.js'
 function closeModalIfOpened() {
   cy.get('body').then(($body) => {
     if ($body.find('div[class*=vtex-modal__close]').length) {
+      cy.qe(`Some modal been opened in the page. Let's close it`)
       cy.get('div[class*=vtex-modal__close]').click()
     }
   })
@@ -29,13 +30,19 @@ Cypress.Commands.add('deleteDocumentInMasterData', deleteDocumentInMasterData)
 Cypress.Commands.add('performImpersonation', performImpersonation)
 
 Cypress.Commands.add('waitForSession', (selector = null) => {
+  cy.qe('Wait for the Session to be called in the page')
   cy.getVtexItems().then((vtex) => {
     cy.intercept('POST', `${vtex.baseUrl}/**`, (req) => {
       if (req.body.operationName === 'Session') {
         req.continue()
       }
     }).as('Session')
-    if (selector) cy.get(selector).last().click()
+
+    if (selector) {
+      cy.qe(`Click this ${selector}`)
+      cy.get(selector).last().click()
+    }
+
     cy.wait('@Session', { timeout: 20000 })
   })
 })
@@ -52,13 +59,19 @@ Cypress.Commands.add(
 
       if (selector && contains) {
         cy.scrollTo('top')
+        cy.qe(`Click the button which has content ${selector} in it`)
         cy.contains(selector).should('be.visible').click()
       } else if (selector) {
+        cy.qe(`Click the button which has selector ${selector} in it`)
         cy.get(selector).should('be.visible').last().click()
       } else if (contains) {
+        cy.qe(`Click the button which has content ${contains} in it`)
         cy.contains(contains).should('be.visible').click()
       }
 
+      cy.qe(
+        `Wait for this graphql operation  ${operationName} to be called in the page`
+      )
       cy.wait(`@${operationName}`, { timeout })
     })
   }
@@ -67,19 +80,25 @@ Cypress.Commands.add(
 Cypress.Commands.add('fillAddressInCostCenter', (costCenter) => {
   const { country, postalCode, street, receiverName } = costCenter
 
+  cy.qe(`For country dropdown, select ${country}`)
   cy.get(selectors.Country).should('not.be.disabled').select(country)
   cy.intercept('GET', `**/${postalCode}`).as('POSTALCODE')
+  cy.qe(`For postalCode field, type ${postalCode}`)
   cy.get(selectors.PostalCode)
     .clear()
     .type(postalCode, { delay: 30 })
     .should('have.value', postalCode)
   cy.wait('@POSTALCODE')
+  cy.qe(`For street field, type ${street}`)
   cy.get(selectors.Street)
     .clear()
     .type(street, { delay: 20 })
     .should('have.value', street)
+  cy.qe(`Check state field is autofilled and not empty`)
   cy.get(selectors.State).invoke('val').should('not.be.empty')
+  cy.qe(`Check city field is autofilled and not empty`)
   cy.get(selectors.City).invoke('val').should('not.be.empty')
+  cy.qe(`For receiverName field, clear and type ${receiverName}`)
   cy.get(selectors.ReceiverNameinB2B)
     .clear()
     .type(receiverName)
@@ -89,20 +108,29 @@ Cypress.Commands.add('fillAddressInCostCenter', (costCenter) => {
 Cypress.Commands.add(
   'gotoMyOrganization',
   (waitforSession = true, salesRepOrManager = false) => {
+    cy.qe('ProfileLabel should be visible')
     cy.get(selectors.ProfileLabel).should('be.visible')
 
     cy.url().then((url) => {
       if (!url.includes('account')) {
+        cy.qe('We are not in account page')
+        cy.qe('Click SignInBtn')
         cy.get(selectors.SignInBtn).click()
+        cy.qe('Click MyAccount')
         cy.get(selectors.MyAccount).click()
         if (waitforSession) cy.waitForSession()
       }
 
       closeModalIfOpened()
+      cy.qe('Click MyOrganization link')
       cy.get(selectors.MyOrganization, { timeout: 40000 })
         .should('be.visible')
         .click()
       const noOfdivision = salesRepOrManager ? 2 : 4
+
+      cy.qe(
+        `This selector ${selectors.MyOrganizationCostCenterUserDiv} should have length ${noOfdivision} in current page`
+      )
 
       cy.get(selectors.MyOrganizationCostCenterUserDiv).should(
         'have.length',
@@ -117,7 +145,13 @@ Cypress.Commands.add('gotoCostCenter', (costCenter) => {
       cy.get('div[class*=pageHeader__title]')
         .invoke('text')
         .then((text) => {
-          if (!text.includes('Cost Center')) cy.contains(costCenter).click()
+          if (!text.includes('Cost Center')) {
+            cy.qe('Cost Center text is not found in the page')
+            cy.qe("So, let's open the costCenter")
+            cy.contains(costCenter).click()
+          } else {
+            cy.qe('Already in costcenter page')
+          }
         })
     }
   })

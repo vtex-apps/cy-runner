@@ -59,45 +59,66 @@ function verifyOrganizationData(
     const { firstName, lastName } = b2bCustomerAdmin
     const email = invalidEmail || b2bCustomerAdmin.email
 
+    cy.qe('From Top Right Navbar - Click Organization Signup link')
     cy.get(selectors.OrganisationSignup, { timeout: 25000 })
       .should('be.visible')
       .click()
+    cy.qe(
+      'Verify on click to organization signup link not redirects us to 404 page'
+    )
     cy.get(selectors.PageNotFound, { timeout: 10000 }).should('not.exist')
-    name
-      ? cy
-          .get(selectors.OrganizationName)
-          .clear()
-          .type(name)
-          .should('have.value', name)
-      : cy.get(selectors.OrganizationName).clear()
+
+    if (name) {
+      cy.qe(`For OrganizationName field, type ${name}`)
+      cy.get(selectors.OrganizationName)
+        .clear()
+        .type(name)
+        .should('have.value', name)
+    } else {
+      cy.qe('Clear OrganizationName field')
+      cy.get(selectors.OrganizationName).clear()
+    }
+
+    cy.qe(`For firstName field, Type ${firstName}`)
     cy.get(selectors.FirstNameinB2B)
       .clear()
       .type(firstName)
       .should('have.value', firstName)
+    cy.qe(`For lastname field, Type ${lastName}`)
     cy.get(selectors.LastNameinB2B)
       .clear()
       .type(lastName)
       .should('have.value', lastName)
-
+    cy.qe(`For email field, clear and type ${email}`)
     cy.get(selectors.EmailinB2B).clear().type(email).should('have.value', email)
     if (defaultCostCenter) {
+      cy.qe(`For costcenter field, clear and type ${defaultCostCenter.name}`)
       cy.get(selectors.CostCenter)
         .clear()
         .type(defaultCostCenter.name)
         .should('have.value', defaultCostCenter.name)
       cy.fillAddressInCostCenter(defaultCostCenter)
+    } else {
+      cy.log(`Skip! defaultCostCenter - It is ${defaultCostCenter}`)
     }
   })
 }
 
 function submitOrganization(org) {
+  cy.qe(
+    `Click Submit btn and wait for this graphql ${GRAPHL_OPERATIONS.CreateOrganizationRequest} to be called`
+  )
   cy.waitForGraphql(
     GRAPHL_OPERATIONS.CreateOrganizationRequest,
     selectors.SubmitOrganization
   ).then((req) => {
+    cy.qe('Verify popup is shown with text pending approval')
     cy.get(selectors.PopupMsg).should('be.visible').contains('pending approval')
     const { id } = req.response.body.data.createOrganizationRequest
 
+    cy.qe(
+      `Get organizationRequest id from this graphql ${GRAPHL_OPERATIONS.CreateOrganizationRequest} and store in .organizations.json`
+    )
     cy.setOrganizationItem(org, id)
   })
 }
@@ -124,6 +145,7 @@ export function createOrganizationTestCase(
     `Creating ${organization.name} via storefront & verify ${msg}`,
     updateRetry(1),
     () => {
+      cy.qe(`Creating ${organization.name} via storefront & verify ${msg}`)
       cy.getVtexItems().then((vtex) => {
         const { name, b2bCustomerAdmin, defaultCostCenter } =
           getOrganisationPayload(
@@ -157,6 +179,7 @@ export function createOrganizationTestCase(
 
 export function approveOrganization(organization) {
   it(`Approving ${organization} request`, updateRetry(1), () => {
+    cy.qe(`Approving ${organization} request`)
     cy.getVtexItems().then((vtex) => {
       updateOrganizationRequestStatus(
         { vtex, verify: false },
@@ -272,6 +295,7 @@ export function createOrganizationWithInvalidEmail(
   email
 ) {
   it(`Creating ${organization} with invalid email`, updateRetry(1), () => {
+    cy.qe(`Creating ${organization} with invalid email`)
     const { name, b2bCustomerAdmin, defaultCostCenter } =
       getOrganisationPayload(
         organization,
@@ -304,6 +328,7 @@ export function createOrganizationWithoutCostCenterNameAndAddress(
     `Creating Organization without cost center name & address`,
     updateRetry(1),
     () => {
+      cy.qe(`Creating Organization without cost center name & address`)
       const { name, b2bCustomerAdmin } = getOrganisationPayload(
         organization,
         {
@@ -328,6 +353,7 @@ export function createOrganizationWithoutName(
   email
 ) {
   it(`Creating Organization without name`, updateRetry(1), () => {
+    cy.qe(`Creating Organization without name`)
     const { b2bCustomerAdmin, defaultCostCenter } = getOrganisationPayload(
       organization,
       { costCenterName, costCenterAddress },
