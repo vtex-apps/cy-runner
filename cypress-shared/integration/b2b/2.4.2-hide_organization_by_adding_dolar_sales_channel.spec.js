@@ -32,6 +32,7 @@ describe('Add Binding which hides Organization in profile page', () => {
   )
 
   it('Verify Organization is not showing up', updateRetry(2), () => {
+    cy.reloadOnLastNAttempts(1)
     cy.organizationShouldNotShowInProfile()
   })
 

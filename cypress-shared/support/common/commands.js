@@ -19,6 +19,13 @@ Cypress.Commands.add('qe', (msg = '') => {
   cy.log(msg)
 })
 
+Cypress.Commands.add('addGraphqlLogs', (query, variables) => {
+  cy.qe(`Query - ${query}`)
+  if (variables && !process.env.CI) {
+    cy.qe(`Variables - ${JSON.stringify(variables)}`)
+  }
+})
+
 Cypress.Commands.add('addProduct', addProduct)
 Cypress.Commands.add('fillAddress', fillAddress)
 Cypress.Commands.add('searchProduct', searchProduct)
@@ -42,6 +49,35 @@ Cypress.Commands.add('addReloadBetweenRetries', () => {
     cy.qe('Reload the page')
     cy.reload()
   }
+})
+
+Cypress.Commands.add('reloadOnLastNAttempts', (n = 1) => {
+  const retries = cy.state('runnable')._retries
+  const currentRetry = cy.state('runnable')._currentRetry
+
+  if (n > retries) {
+    cy.log('Reload will be happen on every attempts')
+  } else if (n === 0) {
+    cy.lod('n is 0, So, reload will not be happened on any of the attempts')
+  }
+
+  /*
+    Retries would be constant on all attempts
+    Say, we set retries as 3 for it block and n as 2
+    Then reload will happen on last 2 attempts
+
+    Formula ->> retries-currentRetry<n then reload
+
+    Iteration 1: retries=3,currentRetry=0,n=2
+    3-0 < 2 -> False -> Reload will not happen
+    Iteration 2: retries=3,currentRetry=1,n=2
+    3-1 < 2 -> False -> Reload will not happen
+    Iteration 3: retries=3,currentRetry=2,n=2
+    3-2 < 2 -> True -> Reload will happen
+    Iteration 4: retries=3,currentRetry=3,n=2
+    3-3 < 2 -> True -> Reload will happen
+  */
+  if (retries - currentRetry < n) cy.reload()
 })
 
 Cypress.Commands.add('closeCart', () => {

@@ -128,6 +128,8 @@ export function verifyBindings(email, binding) {
       cy.qe(
         `Verify we get status as 200 & we have getBinding property with value ${binding}`
       )
+      expect(body).to.have.property('data')
+      expect(body.data).to.have.property('getBinding')
       expect(body.data.getBinding).equal(binding)
     })
   })

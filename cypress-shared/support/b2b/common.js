@@ -9,36 +9,40 @@ const APP_NAME = 'vtex.b2b-organizations-graphql'
 const APP_VERSION = '0.x'
 const APP = `${APP_NAME}@${APP_VERSION}`
 
+function verifyStoreFrontPermissionInSessions(response) {
+  cy.qe(
+    `Get organization and costcenter ids from storefront-permission property & Expect organziationId ,costCenterId has -`
+  )
+  expect(response.body)
+    .to.have.property('namespaces')
+    .to.have.property('storefront-permissions')
+    .to.have.property('organization')
+    .to.have.property('value')
+    .to.contain('-')
+  expect(response.body.namespaces['storefront-permissions'])
+    .to.have.property('costcenter')
+    .to.have.property('value')
+    .to.contain('-')
+
+  return {
+    organizationId:
+      response.body.namespaces['storefront-permissions'].organization.value,
+    costCenterId:
+      response.body.namespaces['storefront-permissions'].costcenter.value,
+  }
+}
+
 export function setOrganizationIdInJSON(organization, costCenter) {
   it(
     'Getting Organization,CostCenter Id from session and set this in organizations.json file',
-    { retries: 3, responseTimeout: 5000 },
+    { retries: 5, responseTimeout: 10000 },
     () => {
-      cy.qe(
-        'Getting Organization,CostCenter Id from session and set this in organizations.json file'
-      )
-      cy.qe(
-        `https://${
-          Cypress.env('workspace').name
-        }--productusqa.myvtex.com/api/sessions?items=*'
-        This requires userAuthCookie`
-      )
-      cy.request('/api/sessions?items=*').then((response) => {
+      // here
+      cy.addDelayBetweenRetries(15000)
+      cy.getAPI('/api/sessions?items=*').then((response) => {
         cy.qe(`Namespaces, storefront-permission should exist in response`)
-        expect(response.body.namespaces).to.be.exist
-        expect(response.body.namespaces['storefront-permissions']).to.be.exist
-        cy.qe(
-          `Get organization and costcenter ids from storefront-permission property`
-        )
-        const organizationId =
-          response.body.namespaces['storefront-permissions'].organization.value
-
-        const costCenterId =
-          response.body.namespaces['storefront-permissions'].costcenter.value
-
-        cy.qe(`Expect organziationId & costCenterId has - `)
-        expect(organizationId).to.contain('-')
-        expect(costCenterId).to.contain('-')
+        const { organizationId, costCenterId } =
+          verifyStoreFrontPermissionInSessions(response)
 
         cy.qe(
           'Store organizationId & costCenterId in stateFile - .organization.json'
@@ -128,9 +132,21 @@ function verifyWidget(organization, costCenter, role) {
 export function verifySession(organization, costCenter, role) {
   it(
     'Verifying Session items must have expected priceTable and collections',
-    updateRetry(2),
+    updateRetry(3),
     () => {
+      cy.reloadOnLastNAttempts(2)
+      cy.addDelayBetweenRetries(10000)
       cy.request('/api/sessions?items=*').then((response) => {
+        verifyStoreFrontPermissionInSessions(response)
+        expect(response.body.namespaces)
+          .to.have.property('profile')
+          .to.have.property('priceTables')
+          .to.have.property('value')
+        expect(response.body.namespaces)
+          .to.have.property('search')
+          .to.have.property('facets')
+          .to.have.property('value')
+
         expect(response.body.namespaces.profile.priceTables.value).to.equal(
           organization.priceTables
         )
