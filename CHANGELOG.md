@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [2.4.0] - 2023-03-02
+
 ### Fixed
 - [ENGINEERS-1066] Dependabot reported vulnerabilities (eventsource)
 
