@@ -1,8 +1,17 @@
 ## [Unreleased]
 
+### Fixed
+- [ENGINEERS-1066] Dependabot reported vulnerabilities (eventsource)
+
 ## [2.3.8] - 2023-03-02
 
+### Fixed
+- [ENGINEERS-1066] Dependabot reported vulnerabilities (axios)
+
 ## [2.3.7] - 2023-03-02
+
+### Fixed
+- [ENGINEERS-1066] Dependabot reported vulnerabilities (json5)
 
 ## [2.3.6] - 2023-03-02
 
