@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Fixed
+- Dependabot reported vulnerabilities
+
 ### Changed
 - [ENGINEERS-1173] - Improve sessions validation in all places
 - Added reloadOnLastNAttempts cypress custom command
