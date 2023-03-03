@@ -38,10 +38,16 @@ Cypress.Commands.add(
     method = 'POST',
     url,
     body = null,
-    headers = {},
+    headers = null,
     auth = null,
     form = false,
   } = {}) => {
+    cy.qe(
+      `if we get any permission denied error on running below API in postman then use  VtexClientAuthCookie/ Vtex Api key,token \n cy.request({method: ${method},url: ${url},body:${JSON.stringify(
+        body
+      )},form:${form},${FAIL_ON_STATUS_CODE_STRING}})`
+    )
+
     cy.request({
       url,
       method,
@@ -51,10 +57,6 @@ Cypress.Commands.add(
       form,
       ...FAIL_ON_STATUS_CODE,
     })
-    cy.qe(`if we get any permission denied error on running below API in postman then use  VtexClientAuthCookie/ Vtex Api key,token
-    cy.request({method: ${method},url: ${url},body:${JSON.stringify(
-      body
-    )},form:${form},${FAIL_ON_STATUS_CODE_STRING}})`)
   }
 )
 
