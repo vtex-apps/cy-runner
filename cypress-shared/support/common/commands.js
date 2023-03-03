@@ -1,3 +1,4 @@
+import { FAIL_ON_STATUS_CODE_STRING, FAIL_ON_STATUS_CODE } from './constants.js'
 import selectors from './selectors.js'
 import {
   addProduct,
@@ -27,13 +28,28 @@ Cypress.Commands.add('addGraphqlLogs', (query, variables) => {
 })
 
 Cypress.Commands.add(
-  'addLogsForRestAPI',
-  ({ method = 'POST', url, body = null } = {}) => {
+  'callRestAPIAndAddLogs',
+  ({
+    method = 'POST',
+    url,
+    body = null,
+    headers = {},
+    auth = null,
+    form = false,
+  } = {}) => {
     cy.request({
       url,
       method,
       body,
+      headers,
+      auth,
+      form,
+      ...FAIL_ON_STATUS_CODE,
     })
+    cy.qe(`if we get any permission denied error on running below API in postman then use  VtexClientAuthCookie/ Vtex Api key,token
+    cy.request({method: ${method},url: ${url},body:${JSON.stringify(
+      body
+    )},form:${form},${FAIL_ON_STATUS_CODE_STRING}})`)
   }
 )
 

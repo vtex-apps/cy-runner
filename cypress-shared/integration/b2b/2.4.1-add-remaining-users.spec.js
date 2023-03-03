@@ -34,8 +34,7 @@ describe('Sync Checkout UI Custom & Add Sales Users via Graphql', () => {
       const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${APP}`
       const GRAPHQL_LIST_ROLE_QUERY = 'query' + '{listRoles{id,name}}'
 
-      cy.request({
-        method: 'POST',
+      cy.callRestAPIAndAddLogs({
         url: CUSTOM_URL,
         body: {
           query: GRAPHQL_LIST_ROLE_QUERY,

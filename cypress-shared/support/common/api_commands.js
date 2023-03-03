@@ -14,11 +14,9 @@ Cypress.Commands.add('sendInvoiceAPI', (body, orderId) => {
   cy.getVtexItems().then((vtex) => {
     const url = `${invoiceAPI(vtex.baseUrl)}/${orderId}/invoice`
 
-    cy.request({
-      method: 'POST',
+    cy.callRestAPIAndAddLogs({
       url,
       headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
-      ...FAIL_ON_STATUS_CODE,
       body,
     })
   })
@@ -29,11 +27,9 @@ Cypress.Commands.add('cancelOrder', (orderId) => {
     cy.getOrderItems().then((item) => {
       const url = cancelOrderAPI(vtex.baseUrl, item[orderId])
 
-      cy.request({
-        method: 'POST',
+      cy.callRestAPIAndAddLogs({
         url,
         headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
-        ...FAIL_ON_STATUS_CODE,
       }).then((response) => {
         expect(response.status).to.equal(200)
       })
@@ -42,16 +38,16 @@ Cypress.Commands.add('cancelOrder', (orderId) => {
 })
 
 // Get API Test Case
-Cypress.Commands.add('getAPI', (url, headers) => {
+Cypress.Commands.add('getAPI', (url, headers, auth = {}) => {
   cy.qe(`cy.request({
     method: 'GET',
     url: ${url},
-    ${headers ? `headers: ${headers}` : ''}
     ${FAIL_ON_STATUS_CODE_STRING} 
   })`)
   cy.request({
     method: 'GET',
     url,
+    auth,
     headers,
     ...FAIL_ON_STATUS_CODE,
   })
@@ -60,8 +56,7 @@ Cypress.Commands.add('getAPI', (url, headers) => {
 // Order Tax API Test Case
 Cypress.Commands.add('orderTaxApi', (requestPayload, tax) => {
   cy.getVtexItems().then((vtex) => {
-    cy.request({
-      method: 'POST',
+    cy.callRestAPIAndAddLogs({
       url: `${vtex.baseUrl}/${
         Cypress.env('workspace').prefix
       }/checkout/order-tax`,
@@ -69,7 +64,6 @@ Cypress.Commands.add('orderTaxApi', (requestPayload, tax) => {
         Authorization: vtex.authorizationHeader,
         ...VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
       },
-      ...FAIL_ON_STATUS_CODE,
       body: requestPayload,
     }).then((response) => {
       expect(response.status).to.equal(200)

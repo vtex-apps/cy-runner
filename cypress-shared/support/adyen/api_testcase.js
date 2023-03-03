@@ -1,6 +1,6 @@
 import { account, onboarding, hook } from './apis.js'
 import { updateRetry } from '../common/support'
-import { FAIL_ON_STATUS_CODE, VTEX_AUTH_HEADER } from '../common/constants'
+import { VTEX_AUTH_HEADER } from '../common/constants'
 
 const accountHolderJson = '.accountholder.json'
 const accountTokenJson = '.accounttoken.json'
@@ -42,8 +42,7 @@ export function getOnBoarding() {
 
 export function Adyenhook(data) {
   it('Adyen Hook', updateRetry(3), () => {
-    cy.request({
-      method: 'POST',
+    cy.callRestAPIAndAddLogs({
       url: hook(baseUrl),
       headers: {
         ...VTEX_AUTH_HEADER(apiKey, apiToken),
@@ -52,7 +51,6 @@ export function Adyenhook(data) {
         username: adyenWebhookUsername,
         password: adyenWebhookPassword,
       },
-      ...FAIL_ON_STATUS_CODE,
       body: data,
     }).then((response) => {
       expect(response.status).to.have.equal(200)

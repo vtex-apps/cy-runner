@@ -1,4 +1,4 @@
-import { FAIL_ON_STATUS_CODE, VTEX_AUTH_HEADER, ENTITIES } from './constants.js'
+import { VTEX_AUTH_HEADER, ENTITIES } from './constants.js'
 import { updateRetry } from './support.js'
 import {
   cancelOrderAPI,
@@ -60,10 +60,8 @@ export function configureTargetWorkspace(app, version, workspace = 'master') {
           }
 
           // Mutating it to the new workspace
-          cy.request({
-            method: 'POST',
+          cy.callRestAPIAndAddLogs({
             url: CUSTOM_URL,
-            ...FAIL_ON_STATUS_CODE,
             body: {
               query: GRAPHQL_MUTATION,
               variables: QUERY_VARIABLES,
@@ -80,11 +78,9 @@ export function configureTargetWorkspace(app, version, workspace = 'master') {
 }
 
 function callOrderFormConfiguration() {
-  cy.request({
-    method: 'GET',
+  cy.getAPI({
     url: ORDER_FORM_CONFIG,
     headers: VTEX_AUTH_HEADER(apiKey, apiToken),
-    ...FAIL_ON_STATUS_CODE,
   })
     .as('ORDERFORM')
     .its('status')
@@ -127,11 +123,9 @@ export function configureTaxConfigurationInOrderForm(workspace = null) {
                 appId: new Date(),
               }
             : {}
-          cy.request({
-            method: 'POST',
+          cy.callRestAPIAndAddLogs({
             url: ORDER_FORM_CONFIG,
             headers: VTEX_AUTH_HEADER(apiKey, apiToken),
-            ...FAIL_ON_STATUS_CODE,
             body: response.body,
           })
             .its('status')
@@ -148,11 +142,9 @@ export function configureTaxConfigurationInOrderForm(workspace = null) {
 export function cancelTheOrder(orderEnv) {
   it(`Cancel the Order`, () => {
     cy.getOrderItems().then((order) => {
-      cy.request({
-        method: 'POST',
+      cy.callRestAPIAndAddLogs({
         url: cancelOrderAPI(baseUrl, order[orderEnv]),
         headers: VTEX_AUTH_HEADER(apiKey, apiToken),
-        ...FAIL_ON_STATUS_CODE,
         body: {
           reason: 'Customer bought it by mistake',
         },
@@ -252,10 +244,9 @@ export function setWorkspaceAndGatewayAffiliations({
     `In ${prefix} - Setting workspace value as "${workspace}" with payment capture ${autoSellementValue}`,
     updateRetry(3),
     () => {
-      cy.request({
+      cy.getAPI({
         url: affiliationAPI(affiliationId),
         headers: VTEX_AUTH_HEADER(apiKey, apiToken),
-        ...FAIL_ON_STATUS_CODE,
       }).then((response) => {
         const { configuration } = response.body
         const workspaceIndex = configuration.findIndex(
@@ -278,12 +269,11 @@ export function setWorkspaceAndGatewayAffiliations({
         response.body.configuration[autoSettleIndex].value = autoSellementValue
         response.body.configuration[appKeyIndex].value = appKey || ''
         response.body.configuration[appTokenIndex].value = appToken || ''
-        cy.request({
+        cy.callRestAPIAndAddLogs({
           method: 'PUT',
           url: affiliationAPI(affiliationId),
           headers: VTEX_AUTH_HEADER(apiKey, apiToken),
           body: response.body,
-          ...FAIL_ON_STATUS_CODE,
         })
           .its('status')
           .should('equal', 201)
@@ -312,8 +302,7 @@ export function syncCheckoutUICustom() {
         '($email: String, $workspace: String, $layout: CustomFields, $javascript: String, $css: String, $javascriptActive: Boolean, $cssActive: Boolean, $colors: CustomFields)' +
         '{saveChanges (email: $email, workspace: $workspace, layout: $layout, javascript: $javascript, css: $css, javascriptActive: $javascriptActive, cssActive: $cssActive, colors: $colors) @context(provider: "vtex.checkout-ui-custom@*.x")}'
 
-      cy.request({
-        method: 'POST',
+      cy.callRestAPIAndAddLogs({
         url: CUSTOM_URL,
         body: {
           query: GRAPHQL_MUTATION,
@@ -479,11 +468,9 @@ export function startHandlingOrder(product, env) {
   it(`In ${product.prefix} - Start handling order`, updateRetry(3), () => {
     cy.addDelayBetweenRetries(5000)
     cy.getOrderItems().then((item) => {
-      cy.request({
-        method: 'POST',
+      cy.callRestAPIAndAddLogs({
         url: startHandlingAPI(baseUrl, item[env]),
         headers: VTEX_AUTH_HEADER(apiKey, apiToken),
-        ...FAIL_ON_STATUS_CODE,
       }).then((response) => {
         expect(response.status).to.match(/204|409/)
       })

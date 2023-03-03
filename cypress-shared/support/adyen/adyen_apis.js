@@ -1,4 +1,3 @@
-import { FAIL_ON_STATUS_CODE } from '../common/constants'
 import { updateRetry } from '../common/support'
 
 const config = Cypress.env()
@@ -16,8 +15,7 @@ const webhookJson = '.webhook.json'
 export function createAdyenWebhook() {
   it(`Create standard notification webhook in Adyen`, updateRetry(4), () => {
     cy.addDelayBetweenRetries(10000)
-    cy.request({
-      method: 'POST',
+    cy.callRestAPIAndAddLogs({
       url: `https://management-test.adyen.com/v1/companies/${adyenCompanyID}/webhooks`,
       headers: {
         'X-API-Key': adyenApiKey,
@@ -37,7 +35,6 @@ export function createAdyenWebhook() {
         filterMerchantAccountType: 'allAccounts',
         filterMerchantAccounts: [],
       },
-      ...FAIL_ON_STATUS_CODE,
     }).then((response) => {
       expect(response.status).to.equal(200)
       expect(response.body.active).to.equal(true)
@@ -52,13 +49,12 @@ export function deleteAdyenWebhook() {
   it(`Delete webhook in Adyen`, updateRetry(4), () => {
     cy.addDelayBetweenRetries(10000)
     cy.readFile(webhookJson).then((webhookid) => {
-      cy.request({
+      cy.callRestAPIAndAddLogs({
         method: 'DELETE',
         url: `https://management-test.adyen.com/v1/companies/${adyenCompanyID}/webhooks/${webhookid.adyenWebhookID}`,
         headers: {
           'X-API-Key': adyenApiKey,
         },
-        ...FAIL_ON_STATUS_CODE,
       }).then((response) => {
         expect(response.status).to.equal(204)
       })
@@ -70,10 +66,8 @@ export function verifyOrderInAdyen(product, { paymentTidEnv }, refund = false) {
   it(`In ${product.prefix} - Verify order in adyen`, updateRetry(4), () => {
     cy.addDelayBetweenRetries(10000)
     cy.getOrderItems().then((item) => {
-      cy.request({
-        method: 'GET',
+      cy.getAPI({
         url: `https://ca-test.adyen.com/ca/ca/ui-api/payments/v1/pspref/${item[paymentTidEnv]}/details`,
-        ...FAIL_ON_STATUS_CODE,
       }).then((response) => {
         expect(response.status).to.equal(200)
         expect(response.body.paymentOverview.pspReference).to.equal(
@@ -89,25 +83,20 @@ export function verifyOrderInAdyen(product, { paymentTidEnv }, refund = false) {
 
 export function deleteAccountHoldersFromMasterData() {
   it('Delete account holders from master data', () => {
-    cy.request({
-      method: 'GET',
+    cy.getAPI({
       url: `${baseUrl}/_v/api/adyen-platforms/v0/account?seller=productusqaseller`,
-      ...FAIL_ON_STATUS_CODE,
     }).then(({ status, body }) => {
       expect(status).to.equal(200)
       for (const { accountHolderCode } of body) {
-        cy.request({
-          method: 'GET',
+        cy.getAPI({
           url: `https://productusqa.myvtex.com/api/dataentities/account/search?accountHolderCode=${accountHolderCode}&_schema=account-dev@0.1`,
-          ...FAIL_ON_STATUS_CODE,
         }).then((entitySearchResponse) => {
           const [{ id }] = entitySearchResponse.body
 
           expect(entitySearchResponse.status).to.equal(200)
-          cy.request({
+          cy.callRestAPIAndAddLogs({
             method: 'DELETE',
             url: `https://productusqa.myvtex.com/api/dataentities/account/documents/${id}`,
-            ...FAIL_ON_STATUS_CODE,
           }).then((deleteDocumentResponse) => {
             expect(deleteDocumentResponse.status).to.equal(204)
           })

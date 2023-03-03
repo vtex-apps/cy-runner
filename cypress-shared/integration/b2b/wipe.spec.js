@@ -35,8 +35,7 @@ function deleteCostCenter(organization, costCenter) {
         const costCenterId = items[costCenter.name]
 
         if (costCenterId) {
-          cy.request({
-            method: 'POST',
+          cy.callRestAPIAndAddLogs({
             url: CUSTOM_URL,
             body: {
               query: GRAPHQL_DELETE_ORAGANIZATION_MUTATION,
@@ -78,8 +77,7 @@ function deleteUsers() {
         '($pageSize: Int,$search: String)' +
         '{getUsersPaginated(pageSize: $pageSize,search: $search){data{id,email,clId}}}'
 
-      cy.request({
-        method: 'POST',
+      cy.callRestAPIAndAddLogs({
         url: CUSTOM_URL,
         body: {
           query: GRAPHQL_GET_USERS_QUERY,
@@ -89,7 +87,6 @@ function deleteUsers() {
           },
         },
         headers: { VtexIdclientAutCookie: vtex.userAuthCookieValue },
-        ...FAIL_ON_STATUS_CODE,
       }).then((response) => {
         expect(response.status).to.equal(200)
         const clients = response.body.data.getUsersPaginated.data
@@ -97,8 +94,7 @@ function deleteUsers() {
         expect(clients).to.not.equal(null)
         if (clients.length > 0) {
           for (const { clId, id, email } of clients) {
-            cy.request({
-              method: 'POST',
+            cy.callRestAPIAndAddLogs({
               url: CUSTOM_URL,
               body: {
                 query: GRAPHQL_DELETE_ORAGANIZATION_MUTATION,
@@ -109,7 +105,6 @@ function deleteUsers() {
                 },
               },
               headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
-              ...FAIL_ON_STATUS_CODE,
             }).then((removeUserResponse) => {
               expect(removeUserResponse.status).to.equal(200)
               expect(removeUserResponse.body.data.removeUser.status).to.equal(
