@@ -1,3 +1,5 @@
+import { FAIL_ON_STATUS_CODE } from './constants'
+
 const config = Cypress.env()
 
 // Constants
@@ -21,13 +23,19 @@ export function graphql(
   // Define constants
   const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${app}`
 
-  cy.callRestAPIAndAddLogs({
+  // Note: Don't replace this cy.request with cy.callRestAPIAndAddLogs
+  // We already adding graphql here
+  cy.request({
+    method: 'POST',
     url: CUSTOM_URL,
     body: {
       query,
       variables: queryVariables,
     },
+    ...FAIL_ON_STATUS_CODE,
   }).as('RESPONSE')
+
+  cy.addGraphqlLogs(query, queryVariables)
 
   if (validateResponseFn) {
     cy.get('@RESPONSE').then((response) => {
