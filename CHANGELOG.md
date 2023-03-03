@@ -2,6 +2,11 @@
 
 ## [2.4.1] - 2023-03-03
 
+### Added
+- [ENGINEERS-1065] Updated logs for restAPI
+
+## [2.4.1] - 2023-03-03
+
 ### Fixed
 
 - [ENGINEERS-1184] Fixed TypeError: axios is not a function

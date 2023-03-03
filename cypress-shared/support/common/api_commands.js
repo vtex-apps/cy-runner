@@ -47,7 +47,7 @@ Cypress.Commands.add('getAPI', (url, headers) => {
     method: 'GET',
     url: ${url},
     ${headers ? `headers: ${headers}` : ''}
-    ${FAIL_ON_STATUS_CODE_STRING} 
+    ${FAIL_ON_STATUS_CODE_STRING}
   })`)
   cy.request({
     method: 'GET',
