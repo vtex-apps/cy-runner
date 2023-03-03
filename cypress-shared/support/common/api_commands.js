@@ -38,7 +38,7 @@ Cypress.Commands.add('cancelOrder', (orderId) => {
 })
 
 // Get API Test Case
-Cypress.Commands.add('getAPI', (url, headers, auth = {}) => {
+Cypress.Commands.add('getAPI', (url, headers, auth = null) => {
   cy.qe(`cy.request({
     method: 'GET',
     url: ${url},
