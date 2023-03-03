@@ -1,7 +1,8 @@
 /* eslint-disable func-names */
 /* eslint-disable no-console */
 
-const axios = require('axios')
+import axios from 'axios'
+
 const qs = require('qs')
 
 async function getHeaders(accessToken) {
