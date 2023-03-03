@@ -66,9 +66,9 @@ export function verifyOrderInAdyen(product, { paymentTidEnv }, refund = false) {
   it(`In ${product.prefix} - Verify order in adyen`, updateRetry(4), () => {
     cy.addDelayBetweenRetries(10000)
     cy.getOrderItems().then((item) => {
-      cy.getAPI({
-        url: `https://ca-test.adyen.com/ca/ca/ui-api/payments/v1/pspref/${item[paymentTidEnv]}/details`,
-      }).then((response) => {
+      cy.getAPI(
+        `https://ca-test.adyen.com/ca/ca/ui-api/payments/v1/pspref/${item[paymentTidEnv]}/details`
+      ).then((response) => {
         expect(response.status).to.equal(200)
         expect(response.body.paymentOverview.pspReference).to.equal(
           item[paymentTidEnv]
@@ -83,14 +83,14 @@ export function verifyOrderInAdyen(product, { paymentTidEnv }, refund = false) {
 
 export function deleteAccountHoldersFromMasterData() {
   it('Delete account holders from master data', () => {
-    cy.getAPI({
-      url: `${baseUrl}/_v/api/adyen-platforms/v0/account?seller=productusqaseller`,
-    }).then(({ status, body }) => {
+    cy.getAPI(
+      `${baseUrl}/_v/api/adyen-platforms/v0/account?seller=productusqaseller`
+    ).then(({ status, body }) => {
       expect(status).to.equal(200)
       for (const { accountHolderCode } of body) {
-        cy.getAPI({
-          url: `https://productusqa.myvtex.com/api/dataentities/account/search?accountHolderCode=${accountHolderCode}&_schema=account-dev@0.1`,
-        }).then((entitySearchResponse) => {
+        cy.getAPI(
+          `https://productusqa.myvtex.com/api/dataentities/account/search?accountHolderCode=${accountHolderCode}&_schema=account-dev@0.1`
+        ).then((entitySearchResponse) => {
           const [{ id }] = entitySearchResponse.body
 
           expect(entitySearchResponse.status).to.equal(200)

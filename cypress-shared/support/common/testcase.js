@@ -78,10 +78,7 @@ export function configureTargetWorkspace(app, version, workspace = 'master') {
 }
 
 function callOrderFormConfiguration() {
-  cy.getAPI({
-    url: ORDER_FORM_CONFIG,
-    headers: VTEX_AUTH_HEADER(apiKey, apiToken),
-  })
+  cy.getAPI(ORDER_FORM_CONFIG, VTEX_AUTH_HEADER(apiKey, apiToken))
     .as('ORDERFORM')
     .its('status')
     .should('equal', 200)
@@ -244,10 +241,10 @@ export function setWorkspaceAndGatewayAffiliations({
     `In ${prefix} - Setting workspace value as "${workspace}" with payment capture ${autoSellementValue}`,
     updateRetry(3),
     () => {
-      cy.getAPI({
-        url: affiliationAPI(affiliationId),
-        headers: VTEX_AUTH_HEADER(apiKey, apiToken),
-      }).then((response) => {
+      cy.getAPI(
+        affiliationAPI(affiliationId),
+        VTEX_AUTH_HEADER(apiKey, apiToken)
+      ).then((response) => {
         const { configuration } = response.body
         const workspaceIndex = configuration.findIndex(
           (obj) => obj.name === 'workspace'
