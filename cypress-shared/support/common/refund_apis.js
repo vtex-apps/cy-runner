@@ -1,6 +1,6 @@
 import { updateRetry } from './support.js'
 import { workFlowAPI, startHandlingAPI } from './apis.js'
-import { FAIL_ON_STATUS_CODE, VTEX_AUTH_HEADER } from './constants.js'
+import { VTEX_AUTH_HEADER } from './constants.js'
 
 export function refund(
   { total, externalSeller, title, env },
@@ -13,11 +13,9 @@ export function refund(
     it('Start handling', () => {
       cy.getVtexItems().then((vtex) => {
         cy.getOrderItems().then((order) => {
-          cy.request({
-            method: 'POST',
+          cy.callRestAPIAndAddLogs({
             url: startHandlingAPI(vtex.baseUrl, order[env]),
             headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
-            ...FAIL_ON_STATUS_CODE,
           }).then((response) => {
             expect(response.status).to.match(/204|409/)
           })

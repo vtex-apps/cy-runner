@@ -1,4 +1,4 @@
-import { FAIL_ON_STATUS_CODE, VTEX_AUTH_HEADER } from '../common/constants.js'
+import { VTEX_AUTH_HEADER } from '../common/constants.js'
 import { updateRetry } from '../common/support.js'
 
 // Define constants
@@ -35,15 +35,13 @@ export function deleteOrganization(search, organizationRequest = false) {
       const SEARCH_QUERY_VARIABLES = { search }
 
       cy.addGraphqlLogs(GRAPHQL_SEARCH_QUERY, SEARCH_QUERY_VARIABLES)
-      cy.request({
-        method: 'POST',
+      cy.callRestAPIAndAddLogs({
         url: CUSTOM_URL,
         body: {
           query: GRAPHQL_SEARCH_QUERY,
           variables: SEARCH_QUERY_VARIABLES,
         },
         headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
-        ...FAIL_ON_STATUS_CODE,
       }).then((response) => {
         expect(response.status).to.equal(200)
         expect(response.body).to.not.have.own.property('errors')
@@ -56,8 +54,7 @@ export function deleteOrganization(search, organizationRequest = false) {
 
           cy.addGraphqlLogs(GRAPHQL_DELETE_MUTATION, DELETE_MUTATION_VARIABLES)
 
-          cy.request({
-            method: 'POST',
+          cy.callRestAPIAndAddLogs({
             url: CUSTOM_URL,
             body: {
               query: GRAPHQL_DELETE_MUTATION,
@@ -66,7 +63,6 @@ export function deleteOrganization(search, organizationRequest = false) {
               },
             },
             headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
-            ...FAIL_ON_STATUS_CODE,
           }).then((response2) => {
             expect(response2.status).to.equal(200)
             expect(
@@ -86,14 +82,12 @@ export function verifySalesChannel(binding = true) {
     cy.addDelayBetweenRetries(2000)
     const GRAPHQL_GET_SALES_CHANNEL_QUERY = 'query' + `{getSalesChannels{name}}`
 
-    cy.request({
-      method: 'POST',
+    cy.callRestAPIAndAddLogs({
       url: CUSTOM_URL,
       body: {
         query: GRAPHQL_GET_SALES_CHANNEL_QUERY,
       },
       headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
-      ...FAIL_ON_STATUS_CODE,
     }).then(({ status, body }) => {
       expect(status).to.equal(200)
       expect(body.data.getSalesChannels.length).equal(1)
@@ -111,15 +105,13 @@ export function verifyBindings(email, binding) {
     cy.qe(`Verify Bindings with this emailId - ${email}`)
     cy.addGraphqlLogs(GRAPHQL_GET_SALES_CHANNEL_QUERY, { email })
 
-    cy.request({
-      method: 'POST',
+    cy.callRestAPIAndAddLogs({
       url: CUSTOM_URL,
       body: {
         query: GRAPHQL_GET_SALES_CHANNEL_QUERY,
         variables: { email },
       },
       headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
-      ...FAIL_ON_STATUS_CODE,
     }).then(({ status, body }) => {
       expect(status).to.equal(200)
       cy.qe(
@@ -138,15 +130,13 @@ function bindingsMutation(payload) {
     `saveSalesChannels(channels: $channels){` +
     `id,status,message}}`
 
-  cy.request({
-    method: 'POST',
+  cy.callRestAPIAndAddLogs({
     url: CUSTOM_URL,
     body: {
       query: GRAPHQL_GET_SALES_CHANNEL_QUERY,
       variables: payload,
     },
     headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
-    ...FAIL_ON_STATUS_CODE,
   }).then(({ status, body }) => {
     expect(status).to.equal(200)
     expect(body.data.saveSalesChannels.status).equal('success')

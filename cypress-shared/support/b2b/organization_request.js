@@ -2,7 +2,6 @@ import selectors from '../common/selectors.js'
 import { OTHER_ROLES } from './utils.js'
 import { GRAPHL_OPERATIONS } from '../graphql_operations.js'
 import { BUTTON_LABEL } from '../validation_text.js'
-import { FAIL_ON_STATUS_CODE } from '../common/constants.js'
 import { OrganizationRequestStatus } from './constants.js'
 import { updateRetry } from '../common/support.js'
 
@@ -204,14 +203,12 @@ function updateOrganizationRequestStatus({ vtex, verify = true }, org, status) {
       status,
     }
 
-    cy.request({
-      method: 'POST',
+    cy.callRestAPIAndAddLogs({
       url: CUSTOM_URL,
       body: {
         query: GRAPHQL_ORAGANIZATION_UPDATE_MUTATION,
         variables,
       },
-      ...FAIL_ON_STATUS_CODE,
     }).then(() => {
       if (verify) {
         const statusInUI =

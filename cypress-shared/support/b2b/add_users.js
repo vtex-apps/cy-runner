@@ -275,8 +275,7 @@ export function addUserViaGraphql(gmailCreds, roleKey) {
           expect(variables.orgId).to.not.be.undefined
           expect(variables.costId).to.not.be.undefined
 
-          cy.request({
-            method: 'POST',
+          cy.callRestAPIAndAddLogs({
             url: CUSTOM_URL,
             body: {
               query: GRAPHQL_ADD_USER_MUTATION,
