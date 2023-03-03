@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+### Fixed
+
+- [ENGINEERS-1184] Fixed TypeError: axios is not a function
+
 ## [2.4.0] - 2023-03-02
 
 ### Fixed
