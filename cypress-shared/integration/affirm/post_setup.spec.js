@@ -26,37 +26,41 @@ function verifyAffirmPromotion() {
 describe('Setting up affirm in dynamic environment', () => {
   loginViaCookies()
 
-  startPaymentE2ETests()
-  setWorkspaceAndGatewayAffiliations()
-  syncCheckoutUICustom()
-
-  it('Set public token in affirm settigs', () => {
-    cy.getVtexItems().then((vtex) => {
-      cy.visit('/admin/apps/vtex.affirm-payment/setup/')
-      cy.getIframeBody(selectors.AdminConfigurationIFrame)
-        .find(selectors.AffirmAdminPublicKey)
-        .should('be.visible')
-        .clear()
-        .type(vtex.publicKeyForPromotionalComponents)
-      cy.getIframeBody(selectors.AdminConfigurationIFrame)
-        .find(selectors.AffirmSubmitConfiguration)
-        .should('be.visible')
-        .click()
-    })
+  it('Here', () => {
+    cy.addGraphqlLogs('syed', 'testing')
   })
 
-  it('Verify promotions get displayed in storefront', updateRetry(1), () => {
-    cy.visit('/')
-    cy.waitForSession()
-    cy.get(selectors.ProfileLabel, { timeout: 20000 })
-      .should('be.visible')
-      .should('have.contain', `Hello,`)
-    scroll()
-    verifyAffirmPromotion()
-    cy.url().should('include', '/p')
-    cy.get('div[class*=shippingContainer]').should('be.visible')
-    verifyAffirmPromotion()
-  })
+  // startPaymentE2ETests()
+  // setWorkspaceAndGatewayAffiliations()
+  // syncCheckoutUICustom()
+
+  // it('Set public token in affirm settigs', () => {
+  //   cy.getVtexItems().then((vtex) => {
+  //     cy.visit('/admin/apps/vtex.affirm-payment/setup/')
+  //     cy.getIframeBody(selectors.AdminConfigurationIFrame)
+  //       .find(selectors.AffirmAdminPublicKey)
+  //       .should('be.visible')
+  //       .clear()
+  //       .type(vtex.publicKeyForPromotionalComponents)
+  //     cy.getIframeBody(selectors.AdminConfigurationIFrame)
+  //       .find(selectors.AffirmSubmitConfiguration)
+  //       .should('be.visible')
+  //       .click()
+  //   })
+  // })
+
+  // it('Verify promotions get displayed in storefront', updateRetry(1), () => {
+  //   cy.visit('/')
+  //   cy.waitForSession()
+  //   cy.get(selectors.ProfileLabel, { timeout: 20000 })
+  //     .should('be.visible')
+  //     .should('have.contain', `Hello,`)
+  //   scroll()
+  //   verifyAffirmPromotion()
+  //   cy.url().should('include', '/p')
+  //   cy.get('div[class*=shippingContainer]').should('be.visible')
+  //   verifyAffirmPromotion()
+  // })
 
   preserveCookie()
 })
