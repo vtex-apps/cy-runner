@@ -10,10 +10,10 @@ const generateDeleteURL = (baseUrl, entities, documentId) => {
 
 export function searchInMasterData(entities, searchQuery) {
   cy.getVtexItems().then((vtex) => {
-    cy.getAPI({
-      url: generateSearchURL(vtex.baseUrl, entities, searchQuery),
-      headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
-    }).then((response) => {
+    cy.getAPI(
+      generateSearchURL(vtex.baseUrl, entities, searchQuery),
+      VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken)
+    ).then((response) => {
       expect(response.status).to.equal(200)
 
       return cy.wrap(response.body, { log: false })

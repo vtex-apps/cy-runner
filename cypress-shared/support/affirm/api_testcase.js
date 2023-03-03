@@ -9,13 +9,13 @@ export function verifyTransactionInAffirm(
     cy.addDelayBetweenRetries(4000)
     cy.getOrderItems().then((order) => {
       cy.getVtexItems().then((vtex) => {
-        cy.getAPI({
-          url: `https://sandbox.affirm.com/api/v1/transactions/${order[paymentTidEnv]}`,
-          auth: {
+        cy.getAPI(
+          `https://sandbox.affirm.com/api/v1/transactions/${order[paymentTidEnv]}`,
+          {
             username: vtex.appKey,
             password: vtex.appToken,
-          },
-        }).then((response) => {
+          }
+        ).then((response) => {
           expect(response.status).to.equal(200)
           expect(response.body.status).to.equal(
             refund ? refundType : 'captured'
