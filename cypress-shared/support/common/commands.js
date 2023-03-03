@@ -22,8 +22,13 @@ Cypress.Commands.add('qe', (msg = '') => {
 
 Cypress.Commands.add('addGraphqlLogs', (query, variables) => {
   cy.qe(`Query - ${query}`)
-  if (variables && !process.env.CI) {
-    cy.qe(`Variables - ${JSON.stringify(variables)}`)
+  if (variables) {
+    // eslint-disable-next-line no-extra-boolean-cast
+    if (!process.env.CI) {
+      cy.qe(`We are in CI mode, Skip writting variables inside logs`)
+    } else {
+      cy.qe(`Variables - ${JSON.stringify(variables)}`)
+    }
   }
 })
 
