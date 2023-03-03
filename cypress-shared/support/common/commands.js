@@ -9,6 +9,7 @@ import {
   saveOrderId,
 } from './support.js'
 import { generateAddtoCartCardSelector } from './utils.js'
+import { FAIL_ON_STATUS_CODE } from './constants.js'
 
 Cypress.Commands.add('qe', (msg = '') => {
   const logFile = `${
@@ -28,10 +29,12 @@ Cypress.Commands.add('addGraphqlLogs', (query, variables) => {
 
 Cypress.Commands.add(
   'addLogsForRestAPI',
-  ({ method = 'POST', url, body = null } = {}) => {
+  ({ method = 'POST', url, body = null, headers = null } = {}) => {
     cy.request({
       url,
       method,
+      headers,
+      ...FAIL_ON_STATUS_CODE,
       body,
     })
   }
