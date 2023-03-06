@@ -1,4 +1,3 @@
-import { VTEX_AUTH_HEADER } from '../common/constants'
 import selectors from '../common/selectors'
 import { updateRetry } from '../common/support'
 import { getPickupPoints, deletePickupPoint } from './pickup-points.api'
@@ -100,9 +99,6 @@ export function deleteAllPickupPoints() {
               cy.callRestAPIAndAddLogs({
                 method: 'DELETE',
                 url: deletePickupPoint(vtex.baseUrl, element.id),
-                headers: {
-                  ...VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
-                },
               }).then((deleteResponse) => {
                 expect(deleteResponse.status).to.equal(204)
               })

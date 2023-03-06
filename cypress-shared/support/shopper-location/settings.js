@@ -1,4 +1,3 @@
-import { FAIL_ON_STATUS_CODE } from '../common/constants'
 import { updateRetry } from '../common/support'
 
 const version = '*.x'
@@ -37,13 +36,10 @@ export function updateSettings(
         }
 
         // Mutating it to the new workspace
-        cy.callRestAPIAndAddLogs({
+        cy.callGraphqlAndAddLogs({
           url: CUSTOM_URL,
-          ...FAIL_ON_STATUS_CODE,
-          body: {
-            query: GRAPHQL_MUTATION,
-            variables: QUERY_VARIABLES,
-          },
+          query: GRAPHQL_MUTATION,
+          variables: QUERY_VARIABLES,
         }).its('body.data.saveAppSettings.message', { timeout: 10000 })
       })
     }

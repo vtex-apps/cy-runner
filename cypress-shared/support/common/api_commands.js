@@ -16,7 +16,6 @@ Cypress.Commands.add('sendInvoiceAPI', (body, orderId) => {
 
     cy.callRestAPIAndAddLogs({
       url,
-      headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
       body,
     })
   })
@@ -29,7 +28,6 @@ Cypress.Commands.add('cancelOrder', (orderId) => {
 
       cy.callRestAPIAndAddLogs({
         url,
-        headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
       }).then((response) => {
         expect(response.status).to.equal(200)
       })

@@ -350,9 +350,12 @@ export function updateProductQuantity(
 export function loginAsAdmin() {
   // Get Vtex Iems
   cy.getVtexItems().then((vtex) => {
-    cy.getAPI(`${vtex.authUrl}/start`).then((response) => {
+    cy.request(`${vtex.authUrl}/start`).then((response) => {
       expect(response.body).to.have.property('authenticationToken')
-      cy.getAPI(AdminLogin(vtex.apiKey, vtex.apiToken)).then((authResponse) => {
+      cy.request({
+        method: 'GET',
+        url: AdminLogin(vtex.apiKey, vtex.apiToken),
+      }).then((authResponse) => {
         setAuthCookie(authResponse)
       })
     })
@@ -365,7 +368,8 @@ export function loginAsUser(email, password) {
   cy.getVtexItems().then((vtex) => {
     let authenticationToken = null
 
-    cy.callRestAPIAndAddLogs({
+    cy.request({
+      method: 'POST',
       url: `${vtex.authUrl}/startlogin`,
       form: true,
       body: {
@@ -381,7 +385,8 @@ export function loginAsUser(email, password) {
         .split('=')
         .pop()
 
-      cy.callRestAPIAndAddLogs({
+      cy.request({
+        method: 'POST',
         url: `${vtex.authUrl}/classic/validate`,
         form: true,
         body: {
