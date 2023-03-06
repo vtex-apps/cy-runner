@@ -16,7 +16,7 @@ import {
 import { generateAddtoCartCardSelector } from './utils.js'
 
 const config = Cypress.env()
-const { apiKey, apiToken } = config.base.vtex
+const { apiKey, apiToken, isCI } = config.base.vtex
 
 Cypress.Commands.add('qe', (msg = '') => {
   const logFile = `${
@@ -31,7 +31,7 @@ Cypress.Commands.add('addGraphqlLogs', (query, variables) => {
   cy.qe(`Query - ${query}`)
   if (variables) {
     // eslint-disable-next-line no-extra-boolean-cast
-    if (!process.env.CI) {
+    if (isCI) {
       cy.qe(`We are in CI mode, Skip writting variables inside logs`)
     } else {
       cy.qe(`Variables - ${JSON.stringify(variables)}`)
@@ -66,16 +66,27 @@ Cypress.Commands.add(
     auth = null,
     form = false,
   } = {}) => {
-    cy.qe(
-      `if we get any permission denied error on running below API in postman then use  VtexClientAuthCookie/ Vtex Api key,token \n cy.request({method: ${method},url: ${url},body:${JSON.stringify(
-        body
-      )},form:${form},${FAIL_ON_STATUS_CODE_STRING}})`
-    )
+    headers = headers || VTEX_AUTH_HEADER(apiKey, apiToken)
+
+    if (isCI) {
+      cy.qe(
+        `For full request run in local: \n cy.request({method: ${method},url: ${url},${FAIL_ON_STATUS_CODE_STRING}})`
+      )
+    } else {
+      cy.qe(
+        `cy.request({method: ${method},url: ${url},body:${JSON.stringify(
+          body
+        )},form:${form},auth:${JSON.stringify(auth)},headers:${JSON.stringify(
+          headers
+        )},form:${form},${FAIL_ON_STATUS_CODE_STRING}})`
+      )
+    }
+
     cy.request({
       url,
       method,
       body,
-      headers: headers || VTEX_AUTH_HEADER(apiKey, apiToken),
+      headers,
       auth,
       form,
       ...FAIL_ON_STATUS_CODE,
