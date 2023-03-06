@@ -15,6 +15,9 @@ import {
 } from './support.js'
 import { generateAddtoCartCardSelector } from './utils.js'
 
+const config = Cypress.env()
+const { apiKey, apiToken } = config.base.vtex
+
 Cypress.Commands.add('qe', (msg = '') => {
   const logFile = `${
     Cypress.spec.absolute.split('cy-runner')[0]
@@ -39,18 +42,16 @@ Cypress.Commands.add('addGraphqlLogs', (query, variables) => {
 Cypress.Commands.add(
   'callGraphqlAndAddLogs',
   ({ url, query, variables, headers }) => {
-    cy.getVtexItems().then((vtex) => {
-      cy.addGraphqlLogs(query, variables)
-      cy.request({
-        method: 'POST',
-        url,
-        body: {
-          query,
-          variables,
-        },
-        headers: headers || VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
-        ...FAIL_ON_STATUS_CODE,
-      })
+    cy.addGraphqlLogs(query, variables)
+    cy.request({
+      method: 'POST',
+      url,
+      body: {
+        query,
+        variables,
+      },
+      headers: headers || VTEX_AUTH_HEADER(apiKey, apiToken),
+      ...FAIL_ON_STATUS_CODE,
     })
   }
 )
@@ -70,16 +71,14 @@ Cypress.Commands.add(
         body
       )},form:${form},${FAIL_ON_STATUS_CODE_STRING}})`
     )
-    cy.getVtexItems().then((vtex) => {
-      cy.request({
-        url,
-        method,
-        body,
-        headers: headers || VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
-        auth,
-        form,
-        ...FAIL_ON_STATUS_CODE,
-      })
+    cy.request({
+      url,
+      method,
+      body,
+      headers: headers || VTEX_AUTH_HEADER(apiKey, apiToken),
+      auth,
+      form,
+      ...FAIL_ON_STATUS_CODE,
     })
   }
 )
