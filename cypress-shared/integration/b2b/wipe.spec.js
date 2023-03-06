@@ -31,9 +31,6 @@ function deleteCostCenter(organization, costCenter) {
         const costCenterId = items[costCenter.name]
 
         if (costCenterId) {
-          cy.addGraphqlLogs(GRAPHQL_DELETE_ORAGANIZATION_MUTATION, {
-            id: costCenterId,
-          })
           cy.callGraphqlAndAddLogs({
             url: CUSTOM_URL,
             query: GRAPHQL_DELETE_ORAGANIZATION_MUTATION,
