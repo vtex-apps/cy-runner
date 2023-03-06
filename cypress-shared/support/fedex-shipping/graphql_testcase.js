@@ -17,8 +17,6 @@ export function getAppSettings() {
     '{ getAppSettings @context(provider: "vtexus.fedex-shipping")' +
     '{defaultDeliveryEstimateInDays,userCredentialKey,userCredentialPassword,parentCredentialKey,parentCredentialPassword,clientDetailAccountNumber,clientDetailMeterNumber,isLive,residential,optimizeShippingType,unitWeight,unitDimension,packingAccessKey,slaSettings{sla,hidden,surchargePercent,surchargeFlatRate}}}'
 
-  cy.addGraphqlLogs(query)
-
   return {
     query,
   }
@@ -29,10 +27,10 @@ export function getDocks() {
     'query' + '{  getDocks{docksList{id,name,shippingRatesProviders}}}'
 
   cy.qe('Get Docks via graphQl')
-  cy.addGraphqlLogs(query)
 
   return {
     query,
+    queryVariables: { id: 2 },
   }
 }
 
@@ -98,8 +96,6 @@ export function loadingDock(id) {
   const query = 'query' + '($id: ID!)' + '{loadingDock(id:$id){isActive}}'
   const queryVariables = { id }
 
-  cy.addGraphqlLogs(query, queryVariables)
-
   return {
     query,
     queryVariables,
@@ -141,8 +137,6 @@ export function verifyInventoryIsUnlimitedForFedexWareHouse(warehouseId, sku) {
 
   const queryVariables = { sku, warehouseId }
 
-  cy.addGraphqlLogs(query, queryVariables)
-
   return {
     query,
     queryVariables,
@@ -166,8 +160,6 @@ export function warehouse(id) {
     '{warehouse(id:$id){isActive,warehouseDocks{dockId}}}'
 
   const queryVariables = { id }
-
-  cy.addGraphqlLogs(query, queryVariables)
 
   return {
     query,

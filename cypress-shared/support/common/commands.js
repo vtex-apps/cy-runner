@@ -1,3 +1,8 @@
+import {
+  FAIL_ON_STATUS_CODE_STRING,
+  VTEX_AUTH_HEADER,
+  FAIL_ON_STATUS_CODE,
+} from './constants.js'
 import selectors from './selectors.js'
 import {
   addProduct,
@@ -10,6 +15,9 @@ import {
 } from './support.js'
 import { generateAddtoCartCardSelector } from './utils.js'
 
+const config = Cypress.env()
+const { apiKey, apiToken } = config.base.vtex
+
 Cypress.Commands.add('qe', (msg = '') => {
   const logFile = `${
     Cypress.spec.absolute.split('cy-runner')[0]
@@ -21,10 +29,59 @@ Cypress.Commands.add('qe', (msg = '') => {
 
 Cypress.Commands.add('addGraphqlLogs', (query, variables) => {
   cy.qe(`Query - ${query}`)
-  if (variables && !process.env.CI) {
-    cy.qe(`Variables - ${JSON.stringify(variables)}`)
+  if (variables) {
+    // eslint-disable-next-line no-extra-boolean-cast
+    if (!!process.env.CI) {
+      cy.qe(`We are in CI mode, Skip writting variables inside logs`)
+    } else {
+      cy.qe(`Variables - ${JSON.stringify(variables)}`)
+    }
   }
 })
+
+Cypress.Commands.add(
+  'callGraphqlAndAddLogs',
+  ({ url, query, variables, headers }) => {
+    cy.addGraphqlLogs(query, variables)
+    cy.request({
+      method: 'POST',
+      url,
+      body: {
+        query,
+        variables,
+      },
+      headers: headers || VTEX_AUTH_HEADER(apiKey, apiToken),
+      ...FAIL_ON_STATUS_CODE,
+    })
+  }
+)
+
+Cypress.Commands.add(
+  'callRestAPIAndAddLogs',
+  ({
+    method = 'POST',
+    url,
+    body = null,
+    headers = null,
+    auth = null,
+    form = false,
+  } = {}) => {
+    cy.qe(
+      `if we get any permission denied error on running below API in postman then use  VtexClientAuthCookie/ Vtex Api key,token \n cy.request({method: ${method},url: ${url},body:${JSON.stringify(
+        body
+      )},form:${form},${FAIL_ON_STATUS_CODE_STRING}})`
+    )
+    cy.request({
+      url,
+      method,
+      body,
+      headers: headers || VTEX_AUTH_HEADER(apiKey, apiToken),
+      auth,
+      form,
+      ...FAIL_ON_STATUS_CODE,
+    })
+  }
+)
 
 Cypress.Commands.add('addProduct', addProduct)
 Cypress.Commands.add('fillAddress', fillAddress)
@@ -38,11 +95,46 @@ Cypress.Commands.add('getVtexItems', () => {
 })
 
 Cypress.Commands.add('addDelayBetweenRetries', (delay) => {
-  if (cy.state('runnable')._currentRetry > 0) cy.wait(delay)
+  if (cy.state('runnable')._currentRetry > 0) {
+    cy.qe(`Wait for ${delay} seconds`)
+    cy.wait(delay)
+  }
 })
 
 Cypress.Commands.add('addReloadBetweenRetries', () => {
-  if (cy.state('runnable')._currentRetry > 0) cy.reload()
+  if (cy.state('runnable')._currentRetry > 0) {
+    cy.qe('Reload the page')
+    cy.reload()
+  }
+})
+
+Cypress.Commands.add('reloadOnLastNAttempts', (n = 1) => {
+  const retries = cy.state('runnable')._retries
+  const currentRetry = cy.state('runnable')._currentRetry
+
+  if (n > retries) {
+    cy.log('Reload will be happen on every attempts')
+  } else if (n === 0) {
+    cy.lod('n is 0, So, reload will not be happened on any of the attempts')
+  }
+
+  /*
+    Retries would be constant on all attempts
+    Say, we set retries as 3 for it block and n as 2
+    Then reload will happen on last 2 attempts
+
+    Formula ->> retries-currentRetry<n then reload
+
+    Iteration 1: retries=3,currentRetry=0,n=2
+    3-0 < 2 -> False -> Reload will not happen
+    Iteration 2: retries=3,currentRetry=1,n=2
+    3-1 < 2 -> False -> Reload will not happen
+    Iteration 3: retries=3,currentRetry=2,n=2
+    3-2 < 2 -> True -> Reload will happen
+    Iteration 4: retries=3,currentRetry=3,n=2
+    3-3 < 2 -> True -> Reload will happen
+  */
+  if (retries - currentRetry < n) cy.reload()
 })
 
 Cypress.Commands.add('closeCart', () => {
