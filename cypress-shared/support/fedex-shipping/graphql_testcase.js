@@ -30,6 +30,7 @@ export function getDocks() {
 
   return {
     query,
+    variables: { id: 2 },
   }
 }
 
