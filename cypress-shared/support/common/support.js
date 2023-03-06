@@ -180,14 +180,23 @@ export function fillContactInfo(
   phoneNumber,
   checkoutcustom
 ) {
+  cy.qe('Found customer with no order history')
   phoneNumber = phoneNumber || PHONE_NUMBER
   cy.get(selectors.QuantityBadge).should('be.visible')
   cy.get(selectors.SummaryCart).should('be.visible')
+  cy.qe('Verify quantityBadge and summarycart should be visible')
   // Delay in ms
-  cy.get(selectors.FirstName).clear().type('Syed', {
+  const firstName = 'Syed'
+  const lastName = 'Mujeeb'
+
+  cy.qe(`Type firstName ${firstName}`)
+  cy.qe(`Type lastName ${lastName}`)
+  cy.qe(`Type phone ${phoneNumber}`)
+
+  cy.get(selectors.FirstName).clear().type(firstName, {
     delay: 50,
   })
-  cy.get(selectors.LastName).clear().type('Mujeeb', {
+  cy.get(selectors.LastName).clear().type(lastName, {
     delay: 50,
   })
   cy.get(selectors.Phone).clear().type(phoneNumber, {
@@ -195,16 +204,21 @@ export function fillContactInfo(
   })
 
   if (checkoutcustom) {
+    cy.qe('Wait for 5s')
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(5000)
   }
 
+  cy.qe(
+    'Click proceedtoShipping button and verify that button gets hidden from ui'
+  )
   cy.get(selectors.ProceedtoShipping).should('be.visible').click()
   cy.get(selectors.ProceedtoShipping, { timeout: 1000 }).should(
     'not.be.visible'
   )
 
   if (checkoutcustom) {
+    cy.qe('Wait for 5s')
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(5000)
   }
@@ -217,24 +231,35 @@ export function fillContactInfo(
       if (
         $shippingBlockForCheckoutCustom.find(selectors.ContinueShipping).length
       ) {
-        cy.get(selectors.StreetAddress).clear().type('19501 Biscayne Blvd')
-        cy.get(selectors.PostalCodeInput).clear().type('33301')
-        cy.get(selectors.ShipCity).clear().type('Aventura')
+        const streetAddress = '19501 Biscayne Blvd'
+        const postalCode = '33301'
+        const city = 'Aventura'
+        const state = 'CA'
+
+        cy.qe(`Type Street address - ${streetAddress}`)
+        cy.get(selectors.StreetAddress).clear().type(streetAddress)
+        cy.qe(`Type postalCode - ${postalCode}`)
+        cy.get(selectors.PostalCodeInput).clear().type(postalCode)
+        cy.qe(`Type shipCity - ${city}`)
+        cy.get(selectors.ShipCity).clear().type(city)
+        cy.qe(`Select shipState - ${state}`)
         cy.get(selectors.ShipState, { timeout: 5000 })
           .should('not.be.disabled')
-          .select('CA')
+          .select(state)
       }
     })
   }
 
   cy.get('body').then(($shippingBlock) => {
     if ($shippingBlock.find(selectors.ContinueShipping).length) {
+      cy.qe('Click continue shipping btn')
       cy.get(selectors.ContinueShipping, { timeout: 15000 })
         .should('be.visible')
         .click({ force: true })
     }
 
     if ($shippingBlock.find(selectors.ReceiverName).length) {
+      cy.qe('Type ReceiverName - Syed')
       cy.get(selectors.ReceiverName, { timeout: 5000 })
         .should('be.visible')
         .type('Syed', {
@@ -242,6 +267,7 @@ export function fillContactInfo(
         })
       shippingStrategySelector &&
         cy.get(shippingStrategySelector).should('be.visible').click()
+      cy.qe('Click GotoPaymentBtn')
       cy.get(selectors.GotoPaymentBtn).should('be.visible').click()
     } else {
       cy.log('Shipping block is not shown! May be ReceiverName already filled')
@@ -415,11 +441,21 @@ export function saveOrderId(orderIdEnv = false, externalSeller = false) {
     // If we are ordering product
     // then store orderId in .orders.json
     if (orderIdEnv) {
-      cy.qe({ msg: `save the order id` })
+      cy.qe(`Set orderId ${orderIdEnv}:${orderId} in orders.json`)
       cy.setOrderItem(orderIdEnv, orderId)
     }
 
     if (externalSeller) {
+      cy.qe(
+        `Set orderId ${externalSeller.directSaleEnv}:${orderId} in orders.json`
+      )
+      cy.qe(
+        `Set orderId ${externalSeller.externalSaleEnv}:${orderId.slice(
+          0,
+          -1
+        )}2 in orders.json`
+      )
+
       cy.setOrderItem(externalSeller.directSaleEnv, orderId)
       cy.setOrderItem(
         externalSeller.externalSaleEnv,

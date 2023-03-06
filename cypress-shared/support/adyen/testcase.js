@@ -32,37 +32,54 @@ export function completePaymentWithDinersCard(
         fillContactInfo()
       }
     })
+    cy.qe('Click Credit Card option in checkout')
     cy.get(selectors.CreditCardLink).click()
 
     cy.getIframeBody(selectors.PaymentMethodIFrame).then(($body) => {
       if (!$body.find(selectors.CardExist).length) {
+        cy.qe('Card not found in the page')
+        cy.qe("Let's add new card ")
         // Credit cart not exist
         // https://docs.adyen.com/development-resources/testing/test-card-numbers#diners
+        const [cardNumber, cardHolderName, expirationMonth, expirationYear] = [
+          '3600 6666 3333 44',
+          'Testing',
+          '03',
+          '30',
+        ]
+
+        cy.qe(`Type cardNumber - ${cardNumber}`)
         cy.getIframeBody(selectors.PaymentMethodIFrame)
           .find(selectors.CreditCardNumber)
-          .type('3600 6666 3333 44')
+          .type(cardNumber)
+        cy.qe(`Type cardHolderName - ${cardHolderName}`)
         cy.getIframeBody(selectors.PaymentMethodIFrame)
           .find(selectors.CreditCardHolderName)
-          .type('Testing')
+          .type(cardHolderName)
+        cy.qe(`Select CreditCardExpirationMonth - ${expirationMonth}`)
         cy.getIframeBody(selectors.PaymentMethodIFrame)
           .find(selectors.CreditCardExpirationMonth)
-          .select('03')
+          .select(expirationMonth)
+        cy.qe(`Select CreditCardExpirationYear - ${expirationYear}`)
         cy.getIframeBody(selectors.PaymentMethodIFrame)
           .find(selectors.CreditCardExpirationYear)
-          .select('30')
+          .select(expirationYear)
       }
 
       cy.getIframeBody(selectors.PaymentMethodIFrame).then(($paymentBtn) => {
         if ($paymentBtn.find(selectors.PaymentMethodIFrame).length) {
+          cy.qe("Diners card found in page let's open it")
           cy.getIframeBody(selectors.PaymentMethodIFrame)
             .find('.SavedCard span[class*=Diners]')
             .click()
         }
       })
 
+      cy.qe('Type CreditCardCode as 737')
       cy.getIframeBody(selectors.PaymentMethodIFrame)
         .find(selectors.CreditCardCode)
         .type('737')
+      cy.qe('Click BuyNow button (available at top right side)')
       cy.get(selectors.BuyNowBtn).last().click()
       saveOrderId(orderIdEnv, externalSeller)
     })
@@ -132,11 +149,17 @@ export function verifyAdyenPlatformSettings() {
 
 export function createOnBoardingLink(create) {
   it('Create the onboarding link', () => {
+    const selector =
+      '.vtex-admin-ui-1o3wdue > .vtex-admin-ui-jdrpky > .vtex-admin-ui-79elbk'
+
+    cy.qe('Visit /admin/app/adyen-for-platforms')
     cy.visit('/admin/app/adyen-for-platforms')
+    cy.qe('Verify adyen for platforms and productusqa2 label is visible')
     cy.contains('Adyen for Platforms').should('be.visible')
     cy.contains('productusqa2').should('be.visible').click()
     if (create) {
       cy.intercept('POST', `${vtex.baseUrl}/**`).as('RefreshOnboarding')
+      cy.qe('Click on Create new link button')
       cy.contains('Create New Link').should('be.visible')
       cy.contains('Create New Link').click()
 
@@ -144,19 +167,24 @@ export function createOnBoardingLink(create) {
       cy.wait('@RefreshOnboarding')
         .its('response')
         .then((response) => {
+          cy.qe(
+            'Intercept RefreshOnboarding and get accountHolderCode from response'
+          )
+          expect(response)
+            .to.have.property('body')
+            .to.have.property('data')
+            .to.have.property('adyenAccountHolder')
+            .to.have.property('accountHolderCode')
           cy.writeFile(accountHolderCodeJson, {
             accountHolderCode:
               response.body.data.adyenAccountHolder.accountHolderCode,
           })
         })
-
-      cy.get(
-        '.vtex-admin-ui-1o3wdue > .vtex-admin-ui-jdrpky > .vtex-admin-ui-79elbk'
-      ).should('be.visible')
+      cy.qe(`Verify this selector ${selector} should be visible in the page`)
+      cy.get(selector).should('be.visible')
     } else {
-      cy.get(
-        '.vtex-admin-ui-1o3wdue > .vtex-admin-ui-jdrpky > .vtex-admin-ui-79elbk'
-      ).should('not.exist')
+      cy.qe(`Verify this selector ${selector} should not exist in the page`)
+      cy.get(selector).should('not.exist')
     }
   })
 }

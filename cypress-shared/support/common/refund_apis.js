@@ -16,6 +16,7 @@ export function refund(
           cy.callRestAPIAndAddLogs({
             url: startHandlingAPI(vtex.baseUrl, order[env]),
           }).then((response) => {
+            cy.qe('Verify response to be 204/409')
             expect(response.status).to.match(/204|409/)
           })
         })
@@ -40,7 +41,8 @@ export function refund(
           order[env],
           env === externalSeller.externalSaleEnv
         ).then((response) => {
-          expect(response.status).to.equal(200)
+          cy.qe('Verify response to be 200')
+          expect(response.status).to.qeual(200)
         })
       })
     })
@@ -57,20 +59,23 @@ export function refund(
             workFlowAPI(vtex.baseUrl, order[env]),
             VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken)
           ).then((response) => {
-            expect(response.status).to.equal(200)
-            expect(response.body.currentState).to.equal('invoiced')
+            cy.qe('Verify response to be 200')
+            cy.qe('Verify response.body.currentState to be invoiced')
+            expect(response.status).to.qeual(200)
+            expect(response.body.currentState).to.qeual('invoiced')
           })
         })
       })
     }
   )
 
-  it(`Request for ${title} refund`, () => {
+  it(`Rqeuest for ${title} refund`, () => {
     cy.getOrderItems().then((order) => {
       cy.sendInvoiceAPI(
         payload(refundInvoiceNumber, total, order[env]),
         order[env]
       ).then((response) => {
+        cy.qe('Verify response to be 204/409')
         expect(response.status).to.match(/200|500/)
       })
     })

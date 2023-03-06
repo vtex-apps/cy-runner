@@ -374,6 +374,7 @@ export function sendInvoiceTestCase({
         item[orderIdEnv],
         orderIdEnv === product.externalSaleEnv
       ).then((response) => {
+        cy.qe('Verify response status to be 200')
         expect(response.status).to.equal(200)
       })
     })
@@ -401,16 +402,34 @@ export function invoiceAPITestCase({
           generateInvoiceAPIURL(product, item, env),
           VTEX_AUTH_HEADER(apiKey, apiToken)
         ).then((response) => {
+          cy.qe('Verify response status to equal 200')
           expect(response.status).to.equal(200)
+          expect(response)
+            .to.have.property('body')
+            .to.have.property('shippingData')
+            .to.have.property('address')
+            .to.have.property('postalCode')
           const postalCode = pickup
             ? product.pickUpPostalCode
             : product.postalCode
+
+          cy.qe(
+            `Verify response should have postalCode ${postalCode} in response.body.shippingData.address.postalCode`
+          )
 
           expect(response.body.shippingData.address.postalCode).to.equal(
             postalCode
           )
           // Setting Transaction Id in .orders.json
           if (transactionIdEnv) {
+            expect(response.body)
+              .to.have.property('paymentData')
+              .to.have.property('transactions')
+
+            cy.qe(
+              `Set transactionId - ${transactionIdEnv}:${response.body.paymentData.transactions[0].transactionId} in orders.json`
+            )
+
             cy.setOrderItem(
               transactionIdEnv,
               response.body.paymentData.transactions[0].transactionId
@@ -461,6 +480,7 @@ export function startHandlingOrder(product, env) {
       cy.callRestAPIAndAddLogs({
         url: startHandlingAPI(baseUrl, item[env]),
       }).then((response) => {
+        cy.qe(`Verify response status should be 200 or 409`)
         expect(response.status).to.match(/204|409/)
       })
     })
@@ -478,6 +498,9 @@ export function verifyOrderStatus({ product, env, status, timeout = 10000 }) {
           getOrderAPI(vtex.baseUrl, order[env]),
           VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken)
         ).then((response) => {
+          cy.qe(
+            `Verify response status should be 200 and body status should be ${status}`
+          )
           expect(response.status).to.equal(200)
           expect(response.body.status).to.match(status)
         })
