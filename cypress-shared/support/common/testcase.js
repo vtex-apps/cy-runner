@@ -60,12 +60,10 @@ export function configureTargetWorkspace(app, version, workspace = 'master') {
           }
 
           // Mutating it to the new workspace
-          cy.callRestAPIAndAddLogs({
+          cy.callGraphqlAndAddLogs({
             url: CUSTOM_URL,
-            body: {
-              query: GRAPHQL_MUTATION,
-              variables: QUERY_VARIABLES,
-            },
+            query: GRAPHQL_MUTATION,
+            variables: QUERY_VARIABLES,
           })
             .its('body.data.saveAppSettings.message', { timeout: 10000 })
             .should('contain', workspace)
@@ -122,7 +120,6 @@ export function configureTaxConfigurationInOrderForm(workspace = null) {
             : {}
           cy.callRestAPIAndAddLogs({
             url: ORDER_FORM_CONFIG,
-            headers: VTEX_AUTH_HEADER(apiKey, apiToken),
             body: response.body,
           })
             .its('status')
@@ -141,7 +138,6 @@ export function cancelTheOrder(orderEnv) {
     cy.getOrderItems().then((order) => {
       cy.callRestAPIAndAddLogs({
         url: cancelOrderAPI(baseUrl, order[orderEnv]),
-        headers: VTEX_AUTH_HEADER(apiKey, apiToken),
         body: {
           reason: 'Customer bought it by mistake',
         },
@@ -269,7 +265,6 @@ export function setWorkspaceAndGatewayAffiliations({
         cy.callRestAPIAndAddLogs({
           method: 'PUT',
           url: affiliationAPI(affiliationId),
-          headers: VTEX_AUTH_HEADER(apiKey, apiToken),
           body: response.body,
         })
           .its('status')
@@ -299,12 +294,10 @@ export function syncCheckoutUICustom() {
         '($email: String, $workspace: String, $layout: CustomFields, $javascript: String, $css: String, $javascriptActive: Boolean, $cssActive: Boolean, $colors: CustomFields)' +
         '{saveChanges (email: $email, workspace: $workspace, layout: $layout, javascript: $javascript, css: $css, javascriptActive: $javascriptActive, cssActive: $cssActive, colors: $colors) @context(provider: "vtex.checkout-ui-custom@*.x")}'
 
-      cy.callRestAPIAndAddLogs({
+      cy.callGraphqlAndAddLogs({
         url: CUSTOM_URL,
-        body: {
-          query: GRAPHQL_MUTATION,
-          variables: getConfiguration(WORKSPACE),
-        },
+        query: GRAPHQL_MUTATION,
+        variables: getConfiguration(WORKSPACE),
       })
         .its('body.data.saveChanges', { timeout: 5000 })
         .should('contain', 'DocumentId')
@@ -467,7 +460,6 @@ export function startHandlingOrder(product, env) {
     cy.getOrderItems().then((item) => {
       cy.callRestAPIAndAddLogs({
         url: startHandlingAPI(baseUrl, item[env]),
-        headers: VTEX_AUTH_HEADER(apiKey, apiToken),
       }).then((response) => {
         expect(response.status).to.match(/204|409/)
       })

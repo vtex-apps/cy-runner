@@ -3,10 +3,6 @@
 /* eslint-disable jest/valid-expect */
 import b2b from '../../support/b2b/constants.js'
 import {
-  FAIL_ON_STATUS_CODE,
-  VTEX_AUTH_HEADER,
-} from '../../support/common/constants.js'
-import {
   loginViaCookies,
   updateRetry,
   preserveCookie,
@@ -35,16 +31,15 @@ function deleteCostCenter(organization, costCenter) {
         const costCenterId = items[costCenter.name]
 
         if (costCenterId) {
-          cy.callRestAPIAndAddLogs({
+          cy.addGraphqlLogs(GRAPHQL_DELETE_ORAGANIZATION_MUTATION, {
+            id: costCenterId,
+          })
+          cy.callGraphqlAndAddLogs({
             url: CUSTOM_URL,
-            body: {
-              query: GRAPHQL_DELETE_ORAGANIZATION_MUTATION,
-              variables: {
-                id: costCenterId,
-              },
+            query: GRAPHQL_DELETE_ORAGANIZATION_MUTATION,
+            variables: {
+              id: costCenterId,
             },
-            headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
-            ...FAIL_ON_STATUS_CODE,
           }).then((response) => {
             expect(response.status).to.equal(200)
             expect(response.body.data.deleteCostCenter.status).to.equal(
@@ -77,14 +72,12 @@ function deleteUsers() {
         '($pageSize: Int,$search: String)' +
         '{getUsersPaginated(pageSize: $pageSize,search: $search){data{id,email,clId}}}'
 
-      cy.callRestAPIAndAddLogs({
+      cy.callGraphqlAndAddLogs({
         url: CUSTOM_URL,
-        body: {
-          query: GRAPHQL_GET_USERS_QUERY,
-          variables: {
-            pageSize: 100,
-            search: name,
-          },
+        query: GRAPHQL_GET_USERS_QUERY,
+        variables: {
+          pageSize: 100,
+          search: name,
         },
         headers: { VtexIdclientAutCookie: vtex.userAuthCookieValue },
       }).then((response) => {
@@ -94,17 +87,14 @@ function deleteUsers() {
         expect(clients).to.not.equal(null)
         if (clients.length > 0) {
           for (const { clId, id, email } of clients) {
-            cy.callRestAPIAndAddLogs({
+            cy.callGraphqlAndAddLogs({
               url: CUSTOM_URL,
-              body: {
-                query: GRAPHQL_DELETE_ORAGANIZATION_MUTATION,
-                variables: {
-                  id,
-                  email,
-                  clId,
-                },
+              query: GRAPHQL_DELETE_ORAGANIZATION_MUTATION,
+              variables: {
+                id,
+                email,
+                clId,
               },
-              headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
             }).then((removeUserResponse) => {
               expect(removeUserResponse.status).to.equal(200)
               expect(removeUserResponse.body.data.removeUser.status).to.equal(

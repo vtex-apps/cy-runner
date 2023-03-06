@@ -26,7 +26,6 @@ export function deleteDocumentInMasterData(entities, documentId) {
     cy.callRestAPIAndAddLogs({
       method: 'DELETE',
       url: generateDeleteURL(vtex.baseUrl, entities, documentId),
-      headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
     })
       .its('status')
       .should('equal', 204)

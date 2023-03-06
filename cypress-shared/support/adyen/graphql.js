@@ -35,12 +35,10 @@ export function updateAdyenConnectorSettings() {
     }
 
     // Mutating it to the new workspace
-    cy.callRestAPIAndAddLogs({
+    cy.callGraphqlAndAddLogs({
       url: CUSTOM_URL,
-      body: {
-        query: GRAPHQL_MUTATION,
-        variables: QUERY_VARIABLES,
-      },
+      query: GRAPHQL_MUTATION,
+      variables: QUERY_VARIABLES,
     }).its('body.data.saveAppSettings.message', { timeout: 10000 })
   })
 }
@@ -69,12 +67,10 @@ export function updateAdyenPlatformSettings() {
     }
 
     // Mutating it to the new workspace
-    cy.callRestAPIAndAddLogs({
+    cy.callGraphqlAndAddLogs({
       url: CUSTOM_URL,
-      body: {
-        query: GRAPHQL_MUTATION,
-        variables: QUERY_VARIABLES,
-      },
+      query: GRAPHQL_MUTATION,
+      variables: QUERY_VARIABLES,
     }).its('body.data.saveAppSettings.message', { timeout: 10000 })
   })
 }

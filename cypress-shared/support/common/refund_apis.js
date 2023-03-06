@@ -15,7 +15,6 @@ export function refund(
         cy.getOrderItems().then((order) => {
           cy.callRestAPIAndAddLogs({
             url: startHandlingAPI(vtex.baseUrl, order[env]),
-            headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
           }).then((response) => {
             expect(response.status).to.match(/204|409/)
           })

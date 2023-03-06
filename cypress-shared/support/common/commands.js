@@ -1,4 +1,8 @@
-import { FAIL_ON_STATUS_CODE_STRING, FAIL_ON_STATUS_CODE } from './constants.js'
+import {
+  FAIL_ON_STATUS_CODE_STRING,
+  VTEX_AUTH_HEADER,
+  FAIL_ON_STATUS_CODE,
+} from './constants.js'
 import selectors from './selectors.js'
 import {
   addProduct,
@@ -33,6 +37,25 @@ Cypress.Commands.add('addGraphqlLogs', (query, variables) => {
 })
 
 Cypress.Commands.add(
+  'callGraphqlAndAddLogs',
+  ({ url, query, variables, headers }) => {
+    cy.getVtexItems().then((vtex) => {
+      cy.addGraphqlLogs(query, variables)
+      cy.request({
+        method: 'POST',
+        url,
+        body: {
+          query,
+          variables,
+        },
+        headers: headers || VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
+        ...FAIL_ON_STATUS_CODE,
+      })
+    })
+  }
+)
+
+Cypress.Commands.add(
   'callRestAPIAndAddLogs',
   ({
     method = 'POST',
@@ -47,15 +70,16 @@ Cypress.Commands.add(
         body
       )},form:${form},${FAIL_ON_STATUS_CODE_STRING}})`
     )
-
-    cy.request({
-      url,
-      method,
-      body,
-      headers,
-      auth,
-      form,
-      ...FAIL_ON_STATUS_CODE,
+    cy.getVtexItems().then((vtex) => {
+      cy.request({
+        url,
+        method,
+        body,
+        headers: headers || VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
+        auth,
+        form,
+        ...FAIL_ON_STATUS_CODE,
+      })
     })
   }
 )

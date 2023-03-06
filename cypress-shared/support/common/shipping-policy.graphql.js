@@ -16,12 +16,10 @@ export function graphql(getQuery, validateResponseFn = null) {
   const APP = 'vtex.logistics-carrier-graphql'
   const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${APP}`
 
-  cy.callRestAPIAndAddLogs({
+  cy.callGraphqlAndAddLogs({
     url: CUSTOM_URL,
-    body: {
-      query,
-      variables: queryVariables,
-    },
+    query,
+    variables: queryVariables,
   }).as('RESPONSE')
 
   if (validateResponseFn) {

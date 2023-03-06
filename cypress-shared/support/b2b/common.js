@@ -89,14 +89,10 @@ export function addPaymentTermsCollectionPriceTablesTestCase(organization) {
             organization
           )
 
-          cy.addGraphqlLogs(GRAPHQL_UPDATE_ORGANISATION_MUTATION, variables)
-
-          cy.callRestAPIAndAddLogs({
+          cy.callGraphqlAndAddLogs({
             url: CUSTOM_URL,
-            body: {
-              query: GRAPHQL_UPDATE_ORGANISATION_MUTATION,
-              variables,
-            },
+            query: GRAPHQL_UPDATE_ORGANISATION_MUTATION,
+            variables,
           }).then((resp) => {
             cy.qe(
               'response.body.data.updateOrganization.status should have success'

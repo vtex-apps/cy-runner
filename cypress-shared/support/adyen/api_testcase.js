@@ -1,18 +1,11 @@
 import { account, onboarding, hook } from './apis.js'
 import { updateRetry } from '../common/support'
-import { VTEX_AUTH_HEADER } from '../common/constants'
 
 const accountHolderJson = '.accountholder.json'
 const accountTokenJson = '.accounttoken.json'
 const config = Cypress.env()
 
-const {
-  baseUrl,
-  apiKey,
-  apiToken,
-  adyenWebhookUsername,
-  adyenWebhookPassword,
-} = config.base.vtex
+const { baseUrl, adyenWebhookUsername, adyenWebhookPassword } = config.base.vtex
 
 export function getAllAccount(seller) {
   it('Get All List of Account', updateRetry(3), () => {
@@ -44,9 +37,6 @@ export function Adyenhook(data) {
   it('Adyen Hook', updateRetry(3), () => {
     cy.callRestAPIAndAddLogs({
       url: hook(baseUrl),
-      headers: {
-        ...VTEX_AUTH_HEADER(apiKey, apiToken),
-      },
       auth: {
         username: adyenWebhookUsername,
         password: adyenWebhookPassword,

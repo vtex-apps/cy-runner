@@ -203,12 +203,10 @@ function updateOrganizationRequestStatus({ vtex, verify = true }, org, status) {
       status,
     }
 
-    cy.callRestAPIAndAddLogs({
+    cy.callGraphqlAndAddLogs({
       url: CUSTOM_URL,
-      body: {
-        query: GRAPHQL_ORAGANIZATION_UPDATE_MUTATION,
-        variables,
-      },
+      query: GRAPHQL_ORAGANIZATION_UPDATE_MUTATION,
+      variables,
     }).then(() => {
       if (verify) {
         const statusInUI =
