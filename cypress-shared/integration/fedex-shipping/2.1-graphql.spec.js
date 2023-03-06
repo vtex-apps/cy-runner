@@ -77,6 +77,7 @@ describe('FedEx GraphQL Validation', () => {
   // })
 
   it(`${prefix} - Get Docks`, updateRetry(2), () => {
+    cy.qe(process.env.CI)
     graphql(
       FEDEX_SHIPPING_APP,
       getDocks(),
