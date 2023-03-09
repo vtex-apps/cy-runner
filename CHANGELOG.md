@@ -1,5 +1,10 @@
 ## [Unreleased]
 
+### Added
+
+- Added CI in cypress vtex environment variables
+
+
 ### Changed
 
 - Increasse delay for address type

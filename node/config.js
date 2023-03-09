@@ -74,6 +74,7 @@ exports.getConfig = async (configFile) => {
   if (system.isCI()) {
     logger.msgWarn('Running in CI mode')
     // Enforce config to avoid misconfiguration
+    config.base.vtex.isCI = true
     config.base.cypress.devMode = false
     config.base.cypress.runHeaded = false
     config.base.cypress.quiet = true
@@ -89,6 +90,7 @@ exports.getConfig = async (configFile) => {
     config.envs.push('DISPLAY: :99')
     config.envs.push('NODE_NO_WARNINGS: 1')
   } else {
+    config.base.vtex.isCI = false
     // Clean debug
     logger.msgOk('Cleaning debug file')
     storage.delete(system.debugFile())
