@@ -88,42 +88,67 @@ export function completePaymentWithDinersCard(
 
 export function verifyAdyenConnectorSettings() {
   it(`Verify adyen connector settings in UI`, updateRetry(2), () => {
+    cy.qe('Visit /admin/adyen')
     cy.visit('/admin/adyen')
+    cy.localqe(
+      `Find Adyen Merchant Account input field and verify it has value ${vtex.merchantAccount}`
+    )
     cy.getIframeBody(selectors.AdyenAdminIframe)
       .find(selectors.AdyenAdminSectionPB4)
       .contains('Adyen Merchant Account')
       .find('input')
       .should('have.value', vtex.merchantAccount)
+    cy.localqe(
+      `Find Adyen API Key input field and verify it has value ${vtex.adyenApiKey}`
+    )
     cy.getIframeBody(selectors.AdyenAdminIframe)
       .find(selectors.AdyenAdminSectionPB4)
       .contains('Adyen API Key')
       .find('input')
       .should('have.value', vtex.adyenApiKey)
+    cy.localqe(
+      `Find Adyen Production API URI input field and verify it has value ${vtex.adyenProductionAPI}`
+    )
     cy.getIframeBody(selectors.AdyenAdminIframe)
       .find(selectors.AdyenAdminSectionPB4)
       .contains('Adyen Production API URI')
       .find('input')
       .should('have.value', vtex.adyenProductionAPI)
+    cy.localqe(
+      `Find Adyen Webhook Username input field and verify it has value ${vtex.adyenWebhookUsername}`
+    )
     cy.getIframeBody(selectors.AdyenAdminIframe)
       .find(selectors.AdyenAdminSectionPB4)
       .contains('Adyen Webhook Username')
       .find('input')
       .should('have.value', vtex.adyenWebhookUsername)
+    cy.localqe(
+      `Find Adyen Webhook Password input field and verify it has value ${vtex.adyenWebhookPassword}`
+    )
     cy.getIframeBody(selectors.AdyenAdminIframe)
       .find(selectors.AdyenAdminSectionPB4)
       .contains('Adyen Webhook Password')
       .find('input')
       .should('have.value', vtex.adyenWebhookPassword)
+    cy.localqe(
+      `Find VTEX App Key input field and verify it has value ${vtex.apiKey}`
+    )
     cy.getIframeBody(selectors.AdyenAdminIframe)
       .find(selectors.AdyenAdminSectionPB4)
       .contains('VTEX App Key')
       .find('input')
       .should('have.value', vtex.apiKey)
+    cy.localqe(
+      `Find VTEX App Token input field and verify it has value ${vtex.apiToken}`
+    )
     cy.getIframeBody(selectors.AdyenAdminIframe)
       .find(selectors.AdyenAdminSectionPB6)
       .contains('VTEX App Token')
       .find('input')
       .should('have.value', vtex.apiToken)
+    cy.localqe(
+      `Find AdyenAdminUsePlatformToggle and verify it has text Using Adyen for Platforms`
+    )
     cy.getIframeBody(selectors.AdyenAdminIframe)
       .find(selectors.AdyenAdminUsePlatformToggle)
       .contains('Using Adyen for Platforms')
@@ -133,12 +158,20 @@ export function verifyAdyenConnectorSettings() {
 
 export function verifyAdyenPlatformSettings() {
   it(`Verify adyen platform settings in UI`, updateRetry(2), () => {
+    cy.qe('Visit /admin/app/adyen-for-platforms')
     cy.visit('/admin/app/adyen-for-platforms')
     cy.contains('Settings').should('be.visible')
+    cy.qe('Settings section should be visible and click it')
     cy.contains('Settings').should('be.visible').click()
+    cy.localqe(
+      `Verify ${selectors.AdyenPlatformApiKey} should have value ${vtex.adyenPlatformApiKey}`
+    )
     cy.get(selectors.AdyenPlatformApiKey).should(
       'have.value',
       vtex.adyenPlatformApiKey
+    )
+    cy.localqe(
+      `Verify ${selectors.AdyenPlatformProductionURI} should have value ${vtex.adyenPlatformProductionAPI}`
     )
     cy.get(selectors.AdyenPlatformProductionURI).should(
       'have.value',
@@ -149,16 +182,18 @@ export function verifyAdyenPlatformSettings() {
 
 export function createOnBoardingLink(create) {
   it('Create the onboarding link', () => {
-    const selector =
-      '.vtex-admin-ui-1o3wdue > .vtex-admin-ui-jdrpky > .vtex-admin-ui-79elbk'
+    const onBoardingInputField = 'input[value*=onboarding]'
 
     cy.qe('Visit /admin/app/adyen-for-platforms')
     cy.visit('/admin/app/adyen-for-platforms')
-    cy.qe('Verify adyen for platforms and productusqa2 label is visible')
+    cy.qe('Adyen for platforms & productusqa2 should be visible')
     cy.contains('Adyen for Platforms').should('be.visible')
     cy.contains('productusqa2').should('be.visible').click()
     if (create) {
       cy.intercept('POST', `${vtex.baseUrl}/**`).as('RefreshOnboarding')
+      cy.qe(
+        'Intercept RefreshOnboarding and get accountHolderCode from response'
+      )
       cy.qe('Click on Create new link button')
       cy.contains('Create New Link').should('be.visible')
       cy.contains('Create New Link').click()
@@ -167,44 +202,54 @@ export function createOnBoardingLink(create) {
       cy.wait('@RefreshOnboarding')
         .its('response')
         .then((response) => {
-          cy.qe(
-            'Intercept RefreshOnboarding and get accountHolderCode from response'
-          )
           expect(response)
             .to.have.property('body')
             .to.have.property('data')
             .to.have.property('adyenAccountHolder')
             .to.have.property('accountHolderCode')
+          cy.qe('RefreshOnboarding should be called')
+          cy.qe(
+            `Write accountHolderCode - ${response.body.data.adyenAccountHolder.accountHolderCode} to ${accountHolderCodeJson}`
+          )
           cy.writeFile(accountHolderCodeJson, {
             accountHolderCode:
               response.body.data.adyenAccountHolder.accountHolderCode,
           })
         })
-      cy.qe(`Verify this selector ${selector} should be visible in the page`)
-      cy.get(selector).should('be.visible')
+      cy.qe('onBoardingInputField should be visible')
+      cy.get(onBoardingInputField).should('be.visible')
     } else {
-      cy.qe(`Verify this selector ${selector} should not exist in the page`)
-      cy.get(selector).should('not.exist')
+      cy.qe('onBoardingInputField should not exist')
+      cy.get(onBoardingInputField).should('not.exist')
     }
   })
 }
 
 export function loginToAdyen() {
   it('Login to adyen dashboard', updateRetry(2), () => {
+    cy.qe(`Visit ${adyenLoginUrl}`)
     cy.visit(adyenLoginUrl)
     cy.get('body').then(($body) => {
       if (!$body.find('div.app').length) {
+        cy.qe('We are not logged in')
+        cy.localqe(`Type username - ${adyenLoginUsername}`)
         cy.get(selectors.AdyenLoginUsername).type(adyenLoginUsername, {
           log: false,
         })
+        cy.localqe('Click Next')
         cy.contains('Next').click()
+        cy.localqe(`Type account name - ${adyenLoginAccount}`)
         cy.get(selectors.AdyenLoginAccount).type(adyenLoginAccount, {
           log: false,
         })
+        cy.localqe(`Type password - ${adyenLoginPassword}`)
         cy.get(selectors.AdyenLoginPassword).type(adyenLoginPassword, {
           log: false,
         })
+        cy.localqe('Submit the form for login')
         cy.get(selectors.AdyenLoginSubmit).click()
+      } else {
+        cy.qe('We are already logged in to adyen dashboard')
       }
     })
   })

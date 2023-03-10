@@ -260,8 +260,14 @@ export function setWorkspaceAndGatewayAffiliations({
 
         response.body.configuration[workspaceIndex].value = workspace
         response.body.configuration[autoSettleIndex].value = autoSellementValue
+        cy.qe(`Set workspace as ${workspace}`)
+        cy.qe(`Set autoSettle as ${autoSellementValue}`)
         response.body.configuration[appKeyIndex].value = appKey || ''
         response.body.configuration[appTokenIndex].value = appToken || ''
+        cy.localqe(`Set appKey as ${appKey}`)
+        cy.localqe(`Set appToken as ${appToken}`)
+        cy.qe('Now update affiliation using PUT method')
+        cy.qe('Verify the response status to equal 201')
         cy.callRestAPIAndAddLogs({
           method: 'PUT',
           url: affiliationAPI(affiliationId),
@@ -463,8 +469,11 @@ export function verifyTransactionPaymentsAPITestCase(
           `${transactionAPI(vtex.baseUrl)}/${order[transactionIdEnv]}/payments`,
           VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken)
         ).then((response) => {
+          cy.qe('Verify response status to equal 200')
           expect(response.status).to.equal(200)
+          expect(response.body[0].tid).to.not.equal(undefined)
           // Store payment tid in .orders.json
+          cy.qe(`Set paymentTid - ${response.body[0].tid} in orders.json `)
           cy.setOrderItem(paymentTidEnv, response.body[0].tid)
           fn && fn(response)
         })

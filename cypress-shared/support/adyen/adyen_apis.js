@@ -56,6 +56,7 @@ export function deleteAdyenWebhook() {
           'X-API-Key': adyenApiKey,
         },
       }).then((response) => {
+        cy.qe('Verify response staus to equal 204')
         expect(response.status).to.equal(204)
       })
     })
@@ -69,12 +70,19 @@ export function verifyOrderInAdyen(product, { paymentTidEnv }, refund = false) {
       cy.getAPI(
         `https://ca-test.adyen.com/ca/ca/ui-api/payments/v1/pspref/${item[paymentTidEnv]}/details`
       ).then((response) => {
+        cy.qe('Expect response status to equal 200')
         expect(response.status).to.equal(200)
+        cy.qe(
+          `Expect response.body.paymentOverview.pspReference to equal ${item[paymentTidEnv]}`
+        )
         expect(response.body.paymentOverview.pspReference).to.equal(
           item[paymentTidEnv]
         )
         if (refund) {
-          expect(response.body.paymentOverview.status).to.equal('SentForRefund')
+          cy.qe(
+            'Expect response.body.paymentOverview.status to equal SentForRefund'
+          )
+          expect(response.body.paymentOverview.status).to.equal('Refunded')
         }
       })
     })
@@ -83,6 +91,7 @@ export function verifyOrderInAdyen(product, { paymentTidEnv }, refund = false) {
 
 export function deleteAccountHoldersFromMasterData() {
   it('Delete account holders from master data', () => {
+    cy.qe('Get accountholder information for seller productusqaseller')
     cy.getAPI(
       `${baseUrl}/_v/api/adyen-platforms/v0/account?seller=productusqaseller`
     ).then(({ status, body }) => {
@@ -93,11 +102,16 @@ export function deleteAccountHoldersFromMasterData() {
         ).then((entitySearchResponse) => {
           const [{ id }] = entitySearchResponse.body
 
+          cy.qe(`Get id for ${accountHolderCode} - ${id} from response body`)
+          cy.qe(`Response status to equal 200`)
+
           expect(entitySearchResponse.status).to.equal(200)
           cy.callRestAPIAndAddLogs({
             method: 'DELETE',
             url: `https://productusqa.myvtex.com/api/dataentities/account/documents/${id}`,
           }).then((deleteDocumentResponse) => {
+            cy.qe(`Delete id - ${id}`)
+            cy.qe('Response status to equal 204')
             expect(deleteDocumentResponse.status).to.equal(204)
           })
         })

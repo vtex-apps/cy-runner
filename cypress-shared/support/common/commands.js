@@ -18,13 +18,27 @@ import { generateAddtoCartCardSelector } from './utils.js'
 const config = Cypress.env()
 const { apiKey, apiToken, isCI } = config.base.vtex
 
-Cypress.Commands.add('qe', (msg = '') => {
-  const logFile = `${
+function getLogFile() {
+  return `${
     Cypress.spec.absolute.split('cy-runner')[0]
   }cy-runner/logs/${Cypress.spec.name.split('/').at(-1)}.log`
+}
 
-  cy.writeFile(logFile, msg ? `${msg}\n` : msg, { flag: msg ? 'a+' : 'w' })
+Cypress.Commands.add('qe', (msg = '') => {
+  cy.writeFile(getLogFile(), msg ? `${msg}\n` : msg, {
+    flag: msg ? 'a+' : 'w',
+  })
   cy.log(msg)
+})
+
+Cypress.Commands.add('localqe', (msg = '') => {
+  if (!isCI) {
+    cy.qe('Running in non CI mode - writing full request information')
+    cy.writeFile(getLogFile(), msg ? `${msg}\n` : msg, {
+      flag: msg ? 'a+' : 'w',
+    })
+    cy.log(msg)
+  }
 })
 
 Cypress.Commands.add('addGraphqlLogs', (query, variables) => {
@@ -34,6 +48,7 @@ Cypress.Commands.add('addGraphqlLogs', (query, variables) => {
     if (isCI) {
       cy.qe(`We are in CI mode, Skip writting variables inside logs`)
     } else {
+      cy.qe('Running in non CI mode - writing full request information')
       cy.qe(`Variables - ${JSON.stringify(variables)}`)
     }
   }
@@ -73,6 +88,7 @@ Cypress.Commands.add(
         `For full request run in local: \n cy.request({method: ${method},url: ${url},${FAIL_ON_STATUS_CODE_STRING}})`
       )
     } else {
+      cy.qe('Running in non CI mode - writing full request information')
       cy.qe(
         `cy.request({method: ${method},url: ${url},body:${JSON.stringify(
           body

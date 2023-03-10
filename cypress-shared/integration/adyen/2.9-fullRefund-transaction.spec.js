@@ -21,7 +21,10 @@ describe('Testing Adyen transaction API for full refund', () => {
   it('Verify whether we have an order to request for full refund', () => {
     cy.getOrderItems().then((order) => {
       if (!order[orderIdEnv]) {
+        cy.qe('Order id missing in orders json')
         throw new Error('Order id is missing')
+      } else {
+        cy.qe('Order id found in orders json')
       }
     })
   })

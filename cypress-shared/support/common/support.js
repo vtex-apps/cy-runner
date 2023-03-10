@@ -28,7 +28,8 @@ function setAuthCookie(authResponse) {
 // Set Product Quantity
 function setProductQuantity({ position, quantity, timeout }, subTotal, check) {
   cy.intercept('**/update').as('update')
-
+  cy.qe('Intercept update API')
+  cy.qe(`Focus product quantity input field and update quantity as ${quantity}`)
   cy.get(selectors.ProductQuantityInCheckout(position), { timeout: 15000 })
     .should('be.visible')
     .should('not.be.disabled')
@@ -41,8 +42,11 @@ function setProductQuantity({ position, quantity, timeout }, subTotal, check) {
   )
 
   cy.wait('@update', { timeout })
+  cy.qe('Wait for update API to get called')
 
   if (check) {
+    cy.qe('verify the subTotal in the right side of the cart items')
+    cy.qe(`SubTotal should be ${subTotal}`)
     cy.get(selectors.SubTotal, { timeout }).should('have.text', subTotal)
   }
 }
@@ -344,9 +348,7 @@ export function updateProductQuantity(
     timeout = 5000,
   } = {}
 ) {
-  cy.qe(`
-  Updating the product quantity to ${quantity} 
-  verify the subTotal in the right side of the cart items`)
+  cy.qe(`Updating the product quantity to ${quantity} `)
   cy.get(selectors.CartTimeline).should('be.visible').click({ force: true })
   if (multiProduct) {
     // Set First product quantity and don't verify subtotal because we passed false
@@ -472,18 +474,16 @@ export function promissoryPayment() {
 
 // Search Product
 export function searchProduct(searchKey) {
-  cy.qe(`
-  Adding intercept to wait for the events API to be completed before visting home page
-  Verify the store front page should contain 'Hello'
-  Verifying the search bar should be visible in the store front
-  searching product - ${searchKey} in the store front search bar
-  Verfiying the search result is visible and having the text ${searchKey} in lowercase
-  Verifying the filterHeading should be visible
-   `)
+  cy.qe(
+    `Adding intercept to wait for the events API to be completed before visting home page`
+  )
   cy.intercept('**/rc.vtex.com.br/api/events').as('events')
   cy.visit('/')
   cy.wait('@events')
+  cy.qe("Verify the store front page should contain 'Hello'")
   cy.get('body').should('contain', 'Hello')
+  cy.qe('Verifying the search bar should be visible in the store front')
+  cy.qe(`searching product - ${searchKey} in the store front search bar`)
   // Search product in search bar
   cy.get(selectors.Search)
     .should('be.visible')
@@ -491,9 +491,13 @@ export function searchProduct(searchKey) {
     .type(searchKey)
     .type('{enter}')
   // Page should load successfully now searchResult & Filter should be visible
+  cy.qe(
+    `Verfiying the search result is visible and having the text ${searchKey} in lowercase`
+  )
   cy.get(selectors.searchResult)
     .should('be.visible')
     .should('have.text', searchKey.toLowerCase())
+  cy.qe(`Verifying the filterHeading should be visible`)
   cy.get(selectors.FilterHeading).should('be.visible')
 }
 
@@ -607,6 +611,8 @@ export function verifyTotal(totalAmount) {
           expect(totalText.replace(',', '').replace('$ ', '')).to.equal(
             (total / 2).toFixed(2).replace(',', '')
           )
+          cy.qe('Get total amount from TotalLabel')
+          cy.qe(`Verify ${totalText} should be equal to ${totalAmount}`)
           expect(totalText).to.equal(totalAmount)
         })
     })

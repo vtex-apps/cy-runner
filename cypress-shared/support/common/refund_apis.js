@@ -42,7 +42,7 @@ export function refund(
           env === externalSeller.externalSaleEnv
         ).then((response) => {
           cy.qe('Verify response to be 200')
-          expect(response.status).to.qeual(200)
+          expect(response.status).to.equal(200)
         })
       })
     })
@@ -61,8 +61,9 @@ export function refund(
           ).then((response) => {
             cy.qe('Verify response to be 200')
             cy.qe('Verify response.body.currentState to be invoiced')
-            expect(response.status).to.qeual(200)
-            expect(response.body.currentState).to.qeual('invoiced')
+            expect(response.status).to.equal(200)
+            cy.qe('Expect response.body.currentState to equal invoiced')
+            expect(response.body.currentState).to.equal('invoiced')
           })
         })
       })

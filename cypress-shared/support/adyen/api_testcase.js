@@ -11,7 +11,9 @@ export function getAllAccount(seller) {
   it('Get All List of Account', updateRetry(3), () => {
     cy.getVtexItems().then((vtex) => {
       cy.getAPI(account(vtex.baseUrl, seller)).then((response) => {
+        cy.qe('Verify response status to equal 200')
         expect(response.status).to.have.equal(200)
+        cy.qe('Get accountList information from response.body')
         cy.writeFile(accountHolderJson, { accountList: response.body })
       })
     })
@@ -25,6 +27,8 @@ export function getOnBoarding() {
       cy.readFile(accountTokenJson).then((items) => {
         cy.getAPI(onboarding(vtex.baseUrl, items.accountToken.urlToken)).then(
           (response) => {
+            cy.qe('Verify response status to equal 200')
+
             expect(response.status).to.have.equal(200)
           }
         )
@@ -43,6 +47,8 @@ export function Adyenhook(data) {
       },
       body: data,
     }).then((response) => {
+      cy.qe('Verify response status to equal 200')
+
       expect(response.status).to.have.equal(200)
     })
   })
