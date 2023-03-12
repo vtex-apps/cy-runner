@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [2.4.2] - 2023-03-12
+
 ### Changed
 
 - [ENGINEERS-119] Changed the order of login test to be after app link
