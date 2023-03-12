@@ -1,9 +1,12 @@
 ## [Unreleased]
 
+### Changed
+
+- [ENGINEERS-119] Changed the order of login test to be after app link
+
 ### Added
 
 - Added CI in cypress vtex environment variables
-
 
 ### Changed
 

@@ -19,30 +19,9 @@ exports.init = async (config) => {
   logger.msgPad(NAME)
 
   // Create namespace
-  let check = await toolbelt.changeWorkspace(NAME)
+  const check = await toolbelt.changeWorkspace(NAME)
 
   if (!check) system.crash('Failed to change workspace')
-
-  // Test HTTPS access
-  let thisTry = 1
-  const LOGIN_PATH = '/_v/segment/admin-login/v1/login'
-  const AXIOS_CFG = {
-    url: `https://${NAME}--productusqa.myvtex.com${LOGIN_PATH}`,
-    method: 'get',
-  }
-
-  check = false
-  while (thisTry <= MAX_RETRIES && !check) {
-    logger.msgOk(`[try ${thisTry}/${MAX_RETRIES}] Access login page`)
-    thisTry++
-
-    // eslint-disable-next-line no-await-in-loop
-    const response = await http.request(AXIOS_CFG)
-
-    if (/2../.test(response?.status)) check = true
-  }
-
-  if (!check) system.crash('Access the workspace over HTTPS failed')
 
   return system.tack(START)
 }
@@ -155,10 +134,36 @@ exports.linkApp = async (config) => {
 
     if (link.pid) storage.write(link.pid.toString(), APP_PID)
 
+    // Test login page after app link
+    this.checkLoginPage(config.workspace.name)
+
     return { success: check, time: system.tack(START), subprocess: link }
   }
 
   return { success: true, time: system.tack(START), subprocess: null }
+}
+
+exports.checkLoginPage = async (workspace) => {
+  const LOGIN_PATH = '/_v/segment/admin-login/v1/login'
+  const AXIOS_CFG = {
+    url: `https://${workspace}--productusqa.myvtex.com${LOGIN_PATH}`,
+    method: 'get',
+  }
+
+  let thisTry = 1
+  let check = false
+
+  while (thisTry <= MAX_RETRIES && !check) {
+    logger.msgOk(`[try ${thisTry}/${MAX_RETRIES}] Checking login page`)
+
+    // eslint-disable-next-line no-await-in-loop
+    const response = await http.request(AXIOS_CFG)
+
+    if (/2../.test(response?.status)) check = true
+    thisTry++
+  }
+
+  if (!check) system.crash('Access to login page failed')
 }
 
 exports.teardown = async (config, linkSucceed = true) => {
