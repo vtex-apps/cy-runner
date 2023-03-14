@@ -4,6 +4,7 @@ import { AdminLogin } from './apis.js'
 import {
   generateAddtoCartSelector,
   generateAddtoCartCardSelector,
+  getLogFile,
 } from './utils.js'
 
 export function scroll() {
@@ -507,6 +508,17 @@ export function stopTestCaseOnFailure() {
   // eslint-disable-next-line func-names
   afterEach(function () {
     cy.qe('================================================')
+
+    if (
+      this.currentTest.state === 'passed' ||
+      this.currentTest.currentRetry() === this.currentTest.retries()
+    ) {
+      cy.writeFile(getLogFile(), Cypress.env('logs'), { flag: 'a+' })
+      cy.clearLogs()
+    } else {
+      cy.clearLogs()
+    }
+
     if (
       this.currentTest.currentRetry() === this.currentTest.retries() &&
       this.currentTest.state === 'failed'
@@ -528,6 +540,7 @@ export function stopTestCaseOnFailure() {
 function logic(storeFrontCookie, stop) {
   before(() => {
     cy.qe()
+    cy.clearLogs()
     // Inject cookies
     cy.getVtexItems().then((vtex) => {
       cy.setCookie(vtex.authCookieName, vtex.adminAuthCookieValue, {

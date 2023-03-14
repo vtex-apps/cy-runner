@@ -13,21 +13,20 @@ import {
   updateShippingInformation,
   saveOrderId,
 } from './support.js'
-import { generateAddtoCartCardSelector } from './utils.js'
+import { generateAddtoCartCardSelector, getLogFile } from './utils.js'
 
 const config = Cypress.env()
 const { apiKey, apiToken, isCI } = config.base.vtex
 
-function getLogFile() {
-  return `${
-    Cypress.spec.absolute.split('cy-runner')[0]
-  }cy-runner/logs/${Cypress.spec.name.split('/').at(-1)}.log`
-}
-
 Cypress.Commands.add('qe', (msg = '') => {
-  cy.writeFile(getLogFile(), msg ? `${msg}\n` : msg, {
-    flag: msg ? 'a+' : 'w',
-  })
+  if (msg === '') {
+    cy.writeFile(getLogFile(), msg, { flag: 'w' })
+  }
+
+  const logs = Cypress.env('logs')
+
+  cy.setLogs(`${logs} ${msg}\n`)
+
   cy.log(msg)
 })
 
@@ -39,6 +38,14 @@ Cypress.Commands.add('localqe', (msg = '') => {
     })
     cy.log(msg)
   }
+})
+
+Cypress.Commands.add('clearLogs', () => {
+  Cypress.env('logs', '')
+})
+
+Cypress.Commands.add('setLogs', (msg) => {
+  Cypress.env('logs', msg)
 })
 
 Cypress.Commands.add('addGraphqlLogs', (query, variables) => {
