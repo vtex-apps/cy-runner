@@ -43,7 +43,7 @@ export function addUserFn(
   })
 }
 
-export function addUser({ organizationName, costCenter, role, gmailCreds }) {
+export function addUser({ organizationName, costCenter, role, email }) {
   const { suffixInEmail, dropDownText } = role
 
   it(
@@ -51,11 +51,6 @@ export function addUser({ organizationName, costCenter, role, gmailCreds }) {
     updateRetry(3),
     () => {
       const userName = generateName(suffixInEmail)
-      const email = generateEmailWithSuffix(
-        gmailCreds.email,
-        organizationName,
-        suffixInEmail
-      )
 
       addUserFn({ userName, email, costCenter }, dropDownText)
     }

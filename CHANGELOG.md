@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+### Changed
+
+- [ENGINEERS-1228] - Use multiple email addresses in B2B tests
+
 ## [2.4.2] - 2023-03-12
 
 ### Changed
