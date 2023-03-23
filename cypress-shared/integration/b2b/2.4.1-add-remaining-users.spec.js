@@ -56,7 +56,7 @@ describe('Sync Checkout UI Custom & Add Sales Users via Graphql', () => {
   const roles = Object.keys(ROLE_ID_EMAIL_MAPPING)
 
   roles.forEach((r) => {
-    addUserViaGraphql(gmailCreds, r)
+    addUserViaGraphql(users, r)
   })
 
   preserveCookie()

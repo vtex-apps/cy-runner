@@ -253,7 +253,7 @@ export default {
         ORGANIZATION_A,
         ROLE_DROP_DOWN_EMAIL_MAPPING.Approver3.suffixInEmail
       ),
-      SalesRep: generateEmailWithSuffix(
+      SalesRepresentative: generateEmailWithSuffix(
         ORG_A_GMAIL_CREDS.email,
         ORGANIZATION_A,
         ROLE_ID_EMAIL_MAPPING.SalesRepresentative.suffixInEmail
