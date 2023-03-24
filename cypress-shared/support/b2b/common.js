@@ -89,14 +89,10 @@ export function addPaymentTermsCollectionPriceTablesTestCase(organization) {
             organization
           )
 
-          cy.addGraphqlLogs(GRAPHQL_UPDATE_ORGANISATION_MUTATION, variables)
-
-          cy.addLogsForRestAPI({
+          cy.callGraphqlAndAddLogs({
             url: CUSTOM_URL,
-            body: {
-              query: GRAPHQL_UPDATE_ORGANISATION_MUTATION,
-              variables,
-            },
+            query: GRAPHQL_UPDATE_ORGANISATION_MUTATION,
+            variables,
           }).then((resp) => {
             cy.qe(
               'response.body.data.updateOrganization.status should have success'
@@ -132,7 +128,7 @@ export function verifySession(organization, costCenter, role) {
     () => {
       cy.reloadOnLastNAttempts(2)
       cy.addDelayBetweenRetries(10000)
-      cy.request('/api/sessions?items=*').then((response) => {
+      cy.getAPI('/api/sessions?items=*').then((response) => {
         verifyStoreFrontPermissionInSessions(response)
         expect(response.body.namespaces)
           .to.have.property('profile')

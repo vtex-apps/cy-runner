@@ -21,7 +21,7 @@ describe('Promotional Product scenarios', () => {
   checkoutProduct(promotionProduct)
 
   it(`In ${prefix} - Verify free product is added`, updateRetry(3), () => {
-    // Verify free product is added
+    cy.qe('Verify free product is added')
     cy.get('span[class="new-product-price"]')
       .first()
       .should('have.text', 'Free')

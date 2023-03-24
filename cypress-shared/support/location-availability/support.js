@@ -1,4 +1,3 @@
-import { FAIL_ON_STATUS_CODE, VTEX_AUTH_HEADER } from '../common/constants'
 import selectors from '../common/selectors'
 import { updateRetry } from '../common/support'
 import { getPickupPoints, deletePickupPoint } from './pickup-points.api'
@@ -88,8 +87,6 @@ export function deleteAllPickupPoints() {
     updateRetry(5),
     () => {
       cy.getVtexItems().then((vtex) => {
-        cy.qe(`curl --location --request GET 'https://${vtex.baseUrl}/api/logistics/pvt/configuration/pickuppoints' \
-        --header 'VtexIdclientAutCookie:VtexIdclientAutCookie'`)
         cy.getAPI(getPickupPoints(vtex.baseUrl)).then((response) => {
           // Pickup points created in E2E tests should start with text "pickup example"
           // If we create other pickup points then it will not be deleted in wipe
@@ -99,13 +96,9 @@ export function deleteAllPickupPoints() {
 
           if (filterPickUpPoints.length > 0) {
             for (const element of filterPickUpPoints) {
-              cy.request({
+              cy.callRestAPIAndAddLogs({
                 method: 'DELETE',
                 url: deletePickupPoint(vtex.baseUrl, element.id),
-                headers: {
-                  ...VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
-                },
-                ...FAIL_ON_STATUS_CODE,
               }).then((deleteResponse) => {
                 expect(deleteResponse.status).to.equal(204)
               })

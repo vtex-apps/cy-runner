@@ -1,5 +1,3 @@
-import { FAIL_ON_STATUS_CODE } from './constants'
-
 const config = Cypress.env()
 
 // Constants
@@ -18,14 +16,10 @@ export function graphql(getQuery, validateResponseFn = null) {
   const APP = 'vtex.logistics-carrier-graphql'
   const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${APP}`
 
-  cy.request({
-    method: 'POST',
+  cy.callGraphqlAndAddLogs({
     url: CUSTOM_URL,
-    ...FAIL_ON_STATUS_CODE,
-    body: {
-      query,
-      variables: queryVariables,
-    },
+    query,
+    variables: queryVariables,
   }).as('RESPONSE')
 
   if (validateResponseFn) {

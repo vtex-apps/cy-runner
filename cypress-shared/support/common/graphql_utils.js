@@ -23,15 +23,19 @@ export function graphql(
   // Define constants
   const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${app}`
 
+  // Note: Don't replace this cy.request with cy.callRestAPIAndAddLogs
+  // We already adding graphql here
   cy.request({
     method: 'POST',
     url: CUSTOM_URL,
-    ...FAIL_ON_STATUS_CODE,
     body: {
       query,
       variables: queryVariables,
     },
+    ...FAIL_ON_STATUS_CODE,
   }).as('RESPONSE')
+
+  cy.addGraphqlLogs(query, queryVariables)
 
   if (validateResponseFn) {
     cy.get('@RESPONSE').then((response) => {

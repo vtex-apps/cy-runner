@@ -43,6 +43,7 @@ describe('Adyen GraphQL Validation', () => {
   it(`${prefix} - Create Account Holder`, updateRetry(2), () => {
     graphql(APP, createAccountHolder(createAccount), (response) => {
       validateCreateAccountHolderResponse(response)
+      cy.qe('Write accountHolder information in accountJSON')
       cy.writeFile(accountJson, {
         newAccount: response.body.data.createAccountHolder.adyenAccountHolder,
       })
@@ -72,6 +73,9 @@ describe('Adyen GraphQL Validation', () => {
         refreshOnboarding(items.newAccount.accountHolderCode),
         (response) => {
           validateRefreshOnboardingResponse(response)
+          cy.qe(
+            'Get accountToken from response.body.data.refreshOnboarding and write to accountTokenJson'
+          )
           cy.writeFile(accountTokenJson, {
             accountToken: response.body.data.refreshOnboarding,
           })
@@ -89,6 +93,7 @@ describe('Adyen GraphQL Validation', () => {
         if (
           accountCode[account].accountHolderCode === items.accountHolderCode
         ) {
+          cy.qe('Make items.accountHolderCode as Active')
           accountCode[account].status = 'Active'
         }
       }

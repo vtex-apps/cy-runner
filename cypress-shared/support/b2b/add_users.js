@@ -266,13 +266,10 @@ export function addUserViaGraphql(users, roleKey) {
           expect(variables.orgId).to.not.be.undefined
           expect(variables.costId).to.not.be.undefined
 
-          cy.request({
-            method: 'POST',
+          cy.callGraphqlAndAddLogs({
             url: CUSTOM_URL,
-            body: {
-              query: GRAPHQL_ADD_USER_MUTATION,
-              variables,
-            },
+            query: GRAPHQL_ADD_USER_MUTATION,
+            variables,
           }).then((resp) => {
             expect(resp.body.data.saveUser.status).to.equal('success')
           })

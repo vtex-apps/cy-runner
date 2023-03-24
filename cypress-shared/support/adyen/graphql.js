@@ -1,4 +1,3 @@
-import { FAIL_ON_STATUS_CODE } from '../common/constants'
 import { updateRetry } from '../common/support'
 
 const config = Cypress.env()
@@ -36,14 +35,10 @@ export function updateAdyenConnectorSettings() {
     }
 
     // Mutating it to the new workspace
-    cy.request({
-      method: 'POST',
+    cy.callGraphqlAndAddLogs({
       url: CUSTOM_URL,
-      ...FAIL_ON_STATUS_CODE,
-      body: {
-        query: GRAPHQL_MUTATION,
-        variables: QUERY_VARIABLES,
-      },
+      query: GRAPHQL_MUTATION,
+      variables: QUERY_VARIABLES,
     }).its('body.data.saveAppSettings.message', { timeout: 10000 })
   })
 }
@@ -72,14 +67,10 @@ export function updateAdyenPlatformSettings() {
     }
 
     // Mutating it to the new workspace
-    cy.request({
-      method: 'POST',
+    cy.callGraphqlAndAddLogs({
       url: CUSTOM_URL,
-      ...FAIL_ON_STATUS_CODE,
-      body: {
-        query: GRAPHQL_MUTATION,
-        variables: QUERY_VARIABLES,
-      },
+      query: GRAPHQL_MUTATION,
+      variables: QUERY_VARIABLES,
     }).its('body.data.saveAppSettings.message', { timeout: 10000 })
   })
 }

@@ -4,6 +4,7 @@ import { AdminLogin } from './apis.js'
 import {
   generateAddtoCartSelector,
   generateAddtoCartCardSelector,
+  getLogFile,
 } from './utils.js'
 
 export function scroll() {
@@ -28,7 +29,8 @@ function setAuthCookie(authResponse) {
 // Set Product Quantity
 function setProductQuantity({ position, quantity, timeout }, subTotal, check) {
   cy.intercept('**/update').as('update')
-
+  cy.qe('Intercept update API')
+  cy.qe(`Focus product quantity input field and update quantity as ${quantity}`)
   cy.get(selectors.ProductQuantityInCheckout(position), { timeout: 15000 })
     .should('be.visible')
     .should('not.be.disabled')
@@ -41,8 +43,11 @@ function setProductQuantity({ position, quantity, timeout }, subTotal, check) {
   )
 
   cy.wait('@update', { timeout })
+  cy.qe('Wait for update API to get called')
 
   if (check) {
+    cy.qe('verify the subTotal in the right side of the cart items')
+    cy.qe(`SubTotal should be ${subTotal}`)
     cy.get(selectors.SubTotal, { timeout }).should('have.text', subTotal)
   }
 }
@@ -180,14 +185,23 @@ export function fillContactInfo(
   phoneNumber,
   checkoutcustom
 ) {
+  cy.qe('Found customer with no order history')
   phoneNumber = phoneNumber || PHONE_NUMBER
   cy.get(selectors.QuantityBadge).should('be.visible')
   cy.get(selectors.SummaryCart).should('be.visible')
+  cy.qe('Verify quantityBadge and summarycart should be visible')
   // Delay in ms
-  cy.get(selectors.FirstName).clear().type('Syed', {
+  const firstName = 'Syed'
+  const lastName = 'Mujeeb'
+
+  cy.qe(`Type firstName ${firstName}`)
+  cy.qe(`Type lastName ${lastName}`)
+  cy.qe(`Type phone ${phoneNumber}`)
+
+  cy.get(selectors.FirstName).clear().type(firstName, {
     delay: 50,
   })
-  cy.get(selectors.LastName).clear().type('Mujeeb', {
+  cy.get(selectors.LastName).clear().type(lastName, {
     delay: 50,
   })
   cy.get(selectors.Phone).clear().type(phoneNumber, {
@@ -195,16 +209,21 @@ export function fillContactInfo(
   })
 
   if (checkoutcustom) {
+    cy.qe('Wait for 5s')
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(5000)
   }
 
+  cy.qe(
+    'Click proceedtoShipping button and verify that button gets hidden from ui'
+  )
   cy.get(selectors.ProceedtoShipping).should('be.visible').click()
   cy.get(selectors.ProceedtoShipping, { timeout: 1000 }).should(
     'not.be.visible'
   )
 
   if (checkoutcustom) {
+    cy.qe('Wait for 5s')
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(5000)
   }
@@ -217,24 +236,35 @@ export function fillContactInfo(
       if (
         $shippingBlockForCheckoutCustom.find(selectors.ContinueShipping).length
       ) {
-        cy.get(selectors.StreetAddress).clear().type('19501 Biscayne Blvd')
-        cy.get(selectors.PostalCodeInput).clear().type('33301')
-        cy.get(selectors.ShipCity).clear().type('Aventura')
+        const streetAddress = '19501 Biscayne Blvd'
+        const postalCode = '33301'
+        const city = 'Aventura'
+        const state = 'CA'
+
+        cy.qe(`Type Street address - ${streetAddress}`)
+        cy.get(selectors.StreetAddress).clear().type(streetAddress)
+        cy.qe(`Type postalCode - ${postalCode}`)
+        cy.get(selectors.PostalCodeInput).clear().type(postalCode)
+        cy.qe(`Type shipCity - ${city}`)
+        cy.get(selectors.ShipCity).clear().type(city)
+        cy.qe(`Select shipState - ${state}`)
         cy.get(selectors.ShipState, { timeout: 5000 })
           .should('not.be.disabled')
-          .select('CA')
+          .select(state)
       }
     })
   }
 
   cy.get('body').then(($shippingBlock) => {
     if ($shippingBlock.find(selectors.ContinueShipping).length) {
+      cy.qe('Click continue shipping btn')
       cy.get(selectors.ContinueShipping, { timeout: 15000 })
         .should('be.visible')
         .click({ force: true })
     }
 
     if ($shippingBlock.find(selectors.ReceiverName).length) {
+      cy.qe('Type ReceiverName - Syed')
       cy.get(selectors.ReceiverName, { timeout: 5000 })
         .should('be.visible')
         .type('Syed', {
@@ -242,6 +272,7 @@ export function fillContactInfo(
         })
       shippingStrategySelector &&
         cy.get(shippingStrategySelector).should('be.visible').click()
+      cy.qe('Click GotoPaymentBtn')
       cy.get(selectors.GotoPaymentBtn).should('be.visible').click()
     } else {
       cy.log('Shipping block is not shown! May be ReceiverName already filled')
@@ -318,9 +349,7 @@ export function updateProductQuantity(
     timeout = 5000,
   } = {}
 ) {
-  cy.qe(`
-  Updating the product quantity to ${quantity} 
-  verify the subTotal in the right side of the cart items`)
+  cy.qe(`Updating the product quantity to ${quantity} `)
   cy.get(selectors.CartTimeline).should('be.visible').click({ force: true })
   if (multiProduct) {
     // Set First product quantity and don't verify subtotal because we passed false
@@ -415,11 +444,21 @@ export function saveOrderId(orderIdEnv = false, externalSeller = false) {
     // If we are ordering product
     // then store orderId in .orders.json
     if (orderIdEnv) {
-      cy.qe({ msg: `save the order id` })
+      cy.qe(`Set orderId ${orderIdEnv}:${orderId} in orders.json`)
       cy.setOrderItem(orderIdEnv, orderId)
     }
 
     if (externalSeller) {
+      cy.qe(
+        `Set orderId ${externalSeller.directSaleEnv}:${orderId} in orders.json`
+      )
+      cy.qe(
+        `Set orderId ${externalSeller.externalSaleEnv}:${orderId.slice(
+          0,
+          -1
+        )}2 in orders.json`
+      )
+
       cy.setOrderItem(externalSeller.directSaleEnv, orderId)
       cy.setOrderItem(
         externalSeller.externalSaleEnv,
@@ -436,18 +475,16 @@ export function promissoryPayment() {
 
 // Search Product
 export function searchProduct(searchKey) {
-  cy.qe(`
-  Adding intercept to wait for the events API to be completed before visting home page
-  Verify the store front page should contain 'Hello'
-  Verifying the search bar should be visible in the store front
-  searching product - ${searchKey} in the store front search bar
-  Verfiying the search result is visible and having the text ${searchKey} in lowercase
-  Verifying the filterHeading should be visible
-   `)
+  cy.qe(
+    `Adding intercept to wait for the events API to be completed before visting home page`
+  )
   cy.intercept('**/rc.vtex.com.br/api/events').as('events')
   cy.visit('/')
   cy.wait('@events')
+  cy.qe("Verify the store front page should contain 'Hello'")
   cy.get('body').should('contain', 'Hello')
+  cy.qe('Verifying the search bar should be visible in the store front')
+  cy.qe(`searching product - ${searchKey} in the store front search bar`)
   // Search product in search bar
   cy.get(selectors.Search)
     .should('be.visible')
@@ -455,9 +492,13 @@ export function searchProduct(searchKey) {
     .type(searchKey)
     .type('{enter}')
   // Page should load successfully now searchResult & Filter should be visible
+  cy.qe(
+    `Verfiying the search result is visible and having the text ${searchKey} in lowercase`
+  )
   cy.get(selectors.searchResult)
     .should('be.visible')
     .should('have.text', searchKey.toLowerCase())
+  cy.qe(`Verifying the filterHeading should be visible`)
   cy.get(selectors.FilterHeading).should('be.visible')
 }
 
@@ -467,6 +508,17 @@ export function stopTestCaseOnFailure() {
   // eslint-disable-next-line func-names
   afterEach(function () {
     cy.qe('================================================')
+
+    if (
+      this.currentTest.state === 'passed' ||
+      this.currentTest.currentRetry() === this.currentTest.retries()
+    ) {
+      cy.writeFile(getLogFile(), Cypress.env('logs'), { flag: 'a+' })
+      cy.clearLogs()
+    } else {
+      cy.clearLogs()
+    }
+
     if (
       this.currentTest.currentRetry() === this.currentTest.retries() &&
       this.currentTest.state === 'failed'
@@ -488,6 +540,7 @@ export function stopTestCaseOnFailure() {
 function logic(storeFrontCookie, stop) {
   before(() => {
     cy.qe()
+    cy.clearLogs()
     // Inject cookies
     cy.getVtexItems().then((vtex) => {
       cy.setCookie(vtex.authCookieName, vtex.adminAuthCookieValue, {
@@ -571,6 +624,8 @@ export function verifyTotal(totalAmount) {
           expect(totalText.replace(',', '').replace('$ ', '')).to.equal(
             (total / 2).toFixed(2).replace(',', '')
           )
+          cy.qe('Get total amount from TotalLabel')
+          cy.qe(`Verify ${totalText} should be equal to ${totalAmount}`)
           expect(totalText).to.equal(totalAmount)
         })
     })
