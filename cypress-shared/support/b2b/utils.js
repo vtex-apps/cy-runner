@@ -62,6 +62,7 @@ export const OTHER_ROLES = [
 ]
 
 export const ROLE_ID_EMAIL_MAPPING = {
+  // Below Roles should match with users roles in b2b/constants.js
   SalesAdmin: { role: OTHER_ROLES[0], suffixInEmail: 'sa' },
   SalesRepresentative: { role: OTHER_ROLES[1], suffixInEmail: 'sr' },
   SalesManager: { role: OTHER_ROLES[2], suffixInEmail: 'sm' },

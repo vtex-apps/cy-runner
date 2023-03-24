@@ -43,7 +43,7 @@ export function addUserFn(
   })
 }
 
-export function addUser({ organizationName, costCenter, role, gmailCreds }) {
+export function addUser({ organizationName, costCenter, role, email }) {
   const { suffixInEmail, dropDownText } = role
 
   it(
@@ -51,11 +51,6 @@ export function addUser({ organizationName, costCenter, role, gmailCreds }) {
     updateRetry(3),
     () => {
       const userName = generateName(suffixInEmail)
-      const email = generateEmailWithSuffix(
-        gmailCreds.email,
-        organizationName,
-        suffixInEmail
-      )
 
       addUserFn({ userName, email, costCenter }, dropDownText)
     }
@@ -237,14 +232,14 @@ export function updateCostCenterOftheUser({
   )
 }
 
-export function addUserViaGraphql(gmailCreds, roleKey) {
+export function addUserViaGraphql(users, roleKey) {
   const { organizationName, costCenter1 } = b2b.OrganizationA
 
   it(
     `Adding ${roleKey} in ${organizationName} with ${costCenter1.name}`,
     updateRetry(3),
     () => {
-      const { suffixInEmail, role } = ROLE_ID_EMAIL_MAPPING[roleKey]
+      const { role } = ROLE_ID_EMAIL_MAPPING[roleKey]
       // Define constants
       const APP_NAME = 'vtex.storefront-permissions'
       const APP_VERSION = '1.x'
@@ -264,11 +259,7 @@ export function addUserViaGraphql(gmailCreds, roleKey) {
             orgId: organizationItems[organizationName],
             costId: organizationItems[costCenter1.name],
             name: generateName(role),
-            email: generateEmailWithSuffix(
-              gmailCreds.email,
-              organizationName,
-              suffixInEmail
-            ),
+            email: users[roleKey],
           }
 
           expect(variables.roleId).to.not.be.undefined

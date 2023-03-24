@@ -43,7 +43,7 @@ export function storeUserCookie(email) {
 
 export function loginToStoreFront(email, role, gmailCreds) {
   it(
-    `Logging in to storefront as ${role}`,
+    `Logging in to storefront as ${role} with email - ${email}`,
     { defaultCommandTimeout: 60000, retries: 1 },
     () => {
       cy.qe(`Logging in to storefront as ${role}`)

@@ -41,20 +41,20 @@ describe('OrganizationA - Create a Buyer and Approver, associate Cost Center and
     organizationName,
     costCenter: costCenter1.name,
     role: role.Buyer1,
-    gmailCreds,
+    email: users.Buyer1,
   })
   addUser({
     organizationName,
     costCenter: costCenter1.name,
     role: role.Approver1,
-    gmailCreds,
+    email: users.Approver1,
   })
 
   addUser({
     organizationName,
     costCenter: costCenter2.name,
     role: role.Buyer2,
-    gmailCreds,
+    email: users.Buyer2,
   })
 
   // Add/Delete users in costcenter1 - Hold
@@ -64,13 +64,13 @@ describe('OrganizationA - Create a Buyer and Approver, associate Cost Center and
     organizationName,
     costCenter: costCenter2.name,
     role: role.OrganizationAdmin2,
-    gmailCreds,
+    email: users.OrganizationAdmin2,
   })
   addUser({
     organizationName,
     costCenter: costCenter2.name,
     role: role.Approver2,
-    gmailCreds,
+    email: users.Approver2,
   })
 
   createQuote({
