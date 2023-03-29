@@ -209,7 +209,6 @@ export function fillContactInfo(
   })
 
   if (checkoutcustom) {
-    cy.qe('Wait for 5s')
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(5000)
   }
