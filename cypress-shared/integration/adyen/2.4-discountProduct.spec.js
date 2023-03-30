@@ -24,6 +24,7 @@ describe(`${prefix} Scenarios`, () => {
     // Verify Total
     cy.verifyTotal(total)
     // Verify Discounts
+    cy.qe('Discounts should be visible')
     cy.get(selectors.Discounts).last().should('be.visible')
   })
 

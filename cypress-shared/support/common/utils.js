@@ -33,3 +33,9 @@ export function isValidDate(d) {
   // eslint-disable-next-line no-restricted-globals
   return d instanceof Date && !isNaN(d)
 }
+
+export function getLogFile() {
+  return `${
+    Cypress.spec.absolute.split('cy-runner')[0]
+  }cy-runner/logs/${Cypress.spec.name.split('/').at(-1)}.log`
+}

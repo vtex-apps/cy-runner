@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+### Changed
+
+- E2E Tests improvements
+
 ## [2.4.2] - 2023-03-12
 
 ### Changed

@@ -1,6 +1,6 @@
 import { updateRetry } from './support.js'
 import { workFlowAPI, startHandlingAPI } from './apis.js'
-import { FAIL_ON_STATUS_CODE, VTEX_AUTH_HEADER } from './constants.js'
+import { VTEX_AUTH_HEADER } from './constants.js'
 
 export function refund(
   { total, externalSeller, title, env },
@@ -13,12 +13,10 @@ export function refund(
     it('Start handling', () => {
       cy.getVtexItems().then((vtex) => {
         cy.getOrderItems().then((order) => {
-          cy.request({
-            method: 'POST',
+          cy.callRestAPIAndAddLogs({
             url: startHandlingAPI(vtex.baseUrl, order[env]),
-            headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
-            ...FAIL_ON_STATUS_CODE,
           }).then((response) => {
+            cy.qe('Verify response to be 204/409')
             expect(response.status).to.match(/204|409/)
           })
         })
@@ -43,6 +41,7 @@ export function refund(
           order[env],
           env === externalSeller.externalSaleEnv
         ).then((response) => {
+          cy.qe('Verify response to be 200')
           expect(response.status).to.equal(200)
         })
       })
@@ -60,7 +59,10 @@ export function refund(
             workFlowAPI(vtex.baseUrl, order[env]),
             VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken)
           ).then((response) => {
+            cy.qe('Verify response to be 200')
+            cy.qe('Verify response.body.currentState to be invoiced')
             expect(response.status).to.equal(200)
+            cy.qe('Expect response.body.currentState to equal invoiced')
             expect(response.body.currentState).to.equal('invoiced')
           })
         })
@@ -68,12 +70,13 @@ export function refund(
     }
   )
 
-  it(`Request for ${title} refund`, () => {
+  it(`Rqeuest for ${title} refund`, () => {
     cy.getOrderItems().then((order) => {
       cy.sendInvoiceAPI(
         payload(refundInvoiceNumber, total, order[env]),
         order[env]
       ).then((response) => {
+        cy.qe('Verify response to be 204/409')
         expect(response.status).to.match(/200|500/)
       })
     })

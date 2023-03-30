@@ -1,3 +1,8 @@
+import {
+  FAIL_ON_STATUS_CODE_STRING,
+  VTEX_AUTH_HEADER,
+  FAIL_ON_STATUS_CODE,
+} from './constants.js'
 import selectors from './selectors.js'
 import {
   addProduct,
@@ -8,31 +13,106 @@ import {
   updateShippingInformation,
   saveOrderId,
 } from './support.js'
-import { generateAddtoCartCardSelector } from './utils.js'
+import { generateAddtoCartCardSelector, getLogFile } from './utils.js'
+
+const config = Cypress.env()
+const { apiKey, apiToken, isCI } = config.base.vtex
 
 Cypress.Commands.add('qe', (msg = '') => {
-  const logFile = `${
-    Cypress.spec.absolute.split('cy-runner')[0]
-  }cy-runner/logs/${Cypress.spec.name.split('/').at(-1)}.log`
+  if (msg === '') {
+    cy.writeFile(getLogFile(), msg, { flag: 'w' })
+  }
 
-  cy.writeFile(logFile, msg ? `${msg}\n` : msg, { flag: msg ? 'a+' : 'w' })
+  const logs = Cypress.env('logs')
+
+  cy.setLogs(`${logs} ${msg}\n`)
+
   cy.log(msg)
+})
+
+Cypress.Commands.add('localqe', (msg = '') => {
+  if (!isCI) {
+    cy.qe('Running in non CI mode - writing full request information')
+    cy.writeFile(getLogFile(), msg ? `${msg}\n` : msg, {
+      flag: msg ? 'a+' : 'w',
+    })
+    cy.log(msg)
+  }
+})
+
+Cypress.Commands.add('clearLogs', () => {
+  Cypress.env('logs', '')
+})
+
+Cypress.Commands.add('setLogs', (msg) => {
+  Cypress.env('logs', msg)
 })
 
 Cypress.Commands.add('addGraphqlLogs', (query, variables) => {
   cy.qe(`Query - ${query}`)
-  if (variables && !process.env.CI) {
-    cy.qe(`Variables - ${JSON.stringify(variables)}`)
+  if (variables) {
+    // eslint-disable-next-line no-extra-boolean-cast
+    if (isCI) {
+      cy.qe(`We are in CI mode, Skip writting variables inside logs`)
+    } else {
+      cy.qe('Running in non CI mode - writing full request information')
+      cy.qe(`Variables - ${JSON.stringify(variables)}`)
+    }
   }
 })
 
 Cypress.Commands.add(
-  'addLogsForRestAPI',
-  ({ method = 'POST', url, body = null } = {}) => {
+  'callGraphqlAndAddLogs',
+  ({ url, query, variables, headers }) => {
+    cy.addGraphqlLogs(query, variables)
+    cy.request({
+      method: 'POST',
+      url,
+      body: {
+        query,
+        variables,
+      },
+      headers: headers || VTEX_AUTH_HEADER(apiKey, apiToken),
+      ...FAIL_ON_STATUS_CODE,
+    })
+  }
+)
+
+Cypress.Commands.add(
+  'callRestAPIAndAddLogs',
+  ({
+    method = 'POST',
+    url,
+    body = null,
+    headers = null,
+    auth = null,
+    form = false,
+  } = {}) => {
+    headers = headers || VTEX_AUTH_HEADER(apiKey, apiToken)
+
+    if (isCI) {
+      cy.qe(
+        `For full request run in local: \n cy.request({method: ${method},url: ${url},${FAIL_ON_STATUS_CODE_STRING}})`
+      )
+    } else {
+      cy.qe('Running in non CI mode - writing full request information')
+      cy.qe(
+        `cy.request({method: ${method},url: ${url},body:${JSON.stringify(
+          body
+        )},form:${form},auth:${JSON.stringify(auth)},headers:${JSON.stringify(
+          headers
+        )},form:${form},${FAIL_ON_STATUS_CODE_STRING}})`
+      )
+    }
+
     cy.request({
       url,
       method,
       body,
+      headers,
+      auth,
+      form,
+      ...FAIL_ON_STATUS_CODE,
     })
   }
 )

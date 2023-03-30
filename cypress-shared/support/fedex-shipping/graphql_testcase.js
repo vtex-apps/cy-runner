@@ -17,8 +17,6 @@ export function getAppSettings() {
     '{ getAppSettings @context(provider: "vtexus.fedex-shipping")' +
     '{defaultDeliveryEstimateInDays,userCredentialKey,userCredentialPassword,parentCredentialKey,parentCredentialPassword,clientDetailAccountNumber,clientDetailMeterNumber,isLive,residential,optimizeShippingType,unitWeight,unitDimension,packingAccessKey,slaSettings{sla,hidden,surchargePercent,surchargeFlatRate}}}'
 
-  cy.addGraphqlLogs(query)
-
   return {
     query,
   }
@@ -29,7 +27,6 @@ export function getDocks() {
     'query' + '{  getDocks{docksList{id,name,shippingRatesProviders}}}'
 
   cy.qe('Get Docks via graphQl')
-  cy.addGraphqlLogs(query)
 
   return {
     query,
@@ -49,8 +46,6 @@ export function saveAppSetting(appDatas, allSla) {
     '{saveAppSetting(appSetting: {userCredentialKey:$userCredentialKey,userCredentialPassword:$userCredentialPassword,defaultDeliveryEstimateInDays:$defaultDeliveryEstimateInDays,parentCredentialKey:$parentCredentialKey,parentCredentialPassword:$parentCredentialPassword,clientDetailMeterNumber:$clientDetailMeterNumber,clientDetailAccountNumber:$clientDetailAccountNumber,isLive:$isLive,residential:$residential,optimizeShippingType:$optimizeShippingType,unitWeight:$unitWeight,unitDimension:$unitDimension,packingAccessKey:$packingAccessKey,slaSettings:$slaSettings})' +
     '@context(provider: "vtexus.fedex-shipping")}'
 
-  cy.addGraphqlLogs(query, appDatas)
-
   return {
     query,
     queryVariables: appDatas,
@@ -65,8 +60,6 @@ export function savePackingOptimizationAppSetting(settings) {
     '($accessKey: String, $containerList: [ContainerInput])' +
     '{saveAppSetting(appSetting: {accessKey:$accessKey,containerList:$containerList})' +
     '@context(provider: "vtex.packing-optimization")}'
-
-  cy.addGraphqlLogs(query, settings)
 
   return {
     query,
@@ -84,8 +77,6 @@ export function updateDockConnection(id, remove = false) {
     '($dockId: String, $toRemove: Boolean)' +
     '{updateDockConnection(updateDock: {dockId:$dockId,toRemove:$toRemove})}'
 
-  cy.addGraphqlLogs(query, queryVariables)
-
   return {
     query,
     queryVariables,
@@ -97,8 +88,6 @@ export function loadingDock(id) {
 
   const query = 'query' + '($id: ID!)' + '{loadingDock(id:$id){isActive}}'
   const queryVariables = { id }
-
-  cy.addGraphqlLogs(query, queryVariables)
 
   return {
     query,
@@ -141,8 +130,6 @@ export function verifyInventoryIsUnlimitedForFedexWareHouse(warehouseId, sku) {
 
   const queryVariables = { sku, warehouseId }
 
-  cy.addGraphqlLogs(query, queryVariables)
-
   return {
     query,
     queryVariables,
@@ -166,8 +153,6 @@ export function warehouse(id) {
     '{warehouse(id:$id){isActive,warehouseDocks{dockId}}}'
 
   const queryVariables = { id }
-
-  cy.addGraphqlLogs(query, queryVariables)
 
   return {
     query,

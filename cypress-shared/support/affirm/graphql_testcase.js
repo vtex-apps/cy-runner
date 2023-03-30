@@ -1,5 +1,4 @@
 /* eslint-disable jest/expect-expect */
-
 import { FAIL_ON_STATUS_CODE } from '../common/constants'
 
 const config = Cypress.env()
@@ -24,12 +23,14 @@ export function graphql(getQuery, validateResponseFn = null) {
   cy.request({
     method: 'POST',
     url: CUSTOM_URL,
-    ...FAIL_ON_STATUS_CODE,
     body: {
       query,
       variables: queryVariables,
     },
+    ...FAIL_ON_STATUS_CODE,
   }).as('RESPONSE')
+
+  cy.addGraphqlLogs(query, queryVariables)
 
   if (validateResponseFn) {
     cy.get('@RESPONSE').then((response) => {

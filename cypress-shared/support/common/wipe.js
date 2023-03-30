@@ -1,4 +1,4 @@
-import { FAIL_ON_STATUS_CODE, VTEX_AUTH_HEADER } from './constants.js'
+import { VTEX_AUTH_HEADER } from './constants.js'
 
 const generateSearchURL = (baseUrl, entities, searchQuery) => {
   return `${baseUrl}/api/dataentities/${entities.id}/search?${entities.searchKey}=${searchQuery}`
@@ -10,11 +10,10 @@ const generateDeleteURL = (baseUrl, entities, documentId) => {
 
 export function searchInMasterData(entities, searchQuery) {
   cy.getVtexItems().then((vtex) => {
-    cy.request({
-      url: generateSearchURL(vtex.baseUrl, entities, searchQuery),
-      headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
-      ...FAIL_ON_STATUS_CODE,
-    }).then((response) => {
+    cy.getAPI(
+      generateSearchURL(vtex.baseUrl, entities, searchQuery),
+      VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken)
+    ).then((response) => {
       expect(response.status).to.equal(200)
 
       return cy.wrap(response.body, { log: false })
@@ -24,11 +23,9 @@ export function searchInMasterData(entities, searchQuery) {
 
 export function deleteDocumentInMasterData(entities, documentId) {
   cy.getVtexItems().then((vtex) => {
-    cy.request({
+    cy.callRestAPIAndAddLogs({
       method: 'DELETE',
       url: generateDeleteURL(vtex.baseUrl, entities, documentId),
-      headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
-      ...FAIL_ON_STATUS_CODE,
     })
       .its('status')
       .should('equal', 204)

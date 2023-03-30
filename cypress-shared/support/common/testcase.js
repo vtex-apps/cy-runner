@@ -1,4 +1,4 @@
-import { FAIL_ON_STATUS_CODE, VTEX_AUTH_HEADER, ENTITIES } from './constants.js'
+import { VTEX_AUTH_HEADER, ENTITIES } from './constants.js'
 import { updateRetry } from './support.js'
 import {
   cancelOrderAPI,
@@ -60,14 +60,10 @@ export function configureTargetWorkspace(app, version, workspace = 'master') {
           }
 
           // Mutating it to the new workspace
-          cy.request({
-            method: 'POST',
+          cy.callGraphqlAndAddLogs({
             url: CUSTOM_URL,
-            ...FAIL_ON_STATUS_CODE,
-            body: {
-              query: GRAPHQL_MUTATION,
-              variables: QUERY_VARIABLES,
-            },
+            query: GRAPHQL_MUTATION,
+            variables: QUERY_VARIABLES,
           })
             .its('body.data.saveAppSettings.message', { timeout: 10000 })
             .should('contain', workspace)
@@ -80,12 +76,7 @@ export function configureTargetWorkspace(app, version, workspace = 'master') {
 }
 
 function callOrderFormConfiguration() {
-  cy.request({
-    method: 'GET',
-    url: ORDER_FORM_CONFIG,
-    headers: VTEX_AUTH_HEADER(apiKey, apiToken),
-    ...FAIL_ON_STATUS_CODE,
-  })
+  cy.getAPI(ORDER_FORM_CONFIG, VTEX_AUTH_HEADER(apiKey, apiToken))
     .as('ORDERFORM')
     .its('status')
     .should('equal', 200)
@@ -127,11 +118,8 @@ export function configureTaxConfigurationInOrderForm(workspace = null) {
                 appId: new Date(),
               }
             : {}
-          cy.request({
-            method: 'POST',
+          cy.callRestAPIAndAddLogs({
             url: ORDER_FORM_CONFIG,
-            headers: VTEX_AUTH_HEADER(apiKey, apiToken),
-            ...FAIL_ON_STATUS_CODE,
             body: response.body,
           })
             .its('status')
@@ -148,11 +136,8 @@ export function configureTaxConfigurationInOrderForm(workspace = null) {
 export function cancelTheOrder(orderEnv) {
   it(`Cancel the Order`, () => {
     cy.getOrderItems().then((order) => {
-      cy.request({
-        method: 'POST',
+      cy.callRestAPIAndAddLogs({
         url: cancelOrderAPI(baseUrl, order[orderEnv]),
-        headers: VTEX_AUTH_HEADER(apiKey, apiToken),
-        ...FAIL_ON_STATUS_CODE,
         body: {
           reason: 'Customer bought it by mistake',
         },
@@ -252,11 +237,10 @@ export function setWorkspaceAndGatewayAffiliations({
     `In ${prefix} - Setting workspace value as "${workspace}" with payment capture ${autoSellementValue}`,
     updateRetry(3),
     () => {
-      cy.request({
-        url: affiliationAPI(affiliationId),
-        headers: VTEX_AUTH_HEADER(apiKey, apiToken),
-        ...FAIL_ON_STATUS_CODE,
-      }).then((response) => {
+      cy.getAPI(
+        affiliationAPI(affiliationId),
+        VTEX_AUTH_HEADER(apiKey, apiToken)
+      ).then((response) => {
         const { configuration } = response.body
         const workspaceIndex = configuration.findIndex(
           (obj) => obj.name === 'workspace'
@@ -276,14 +260,18 @@ export function setWorkspaceAndGatewayAffiliations({
 
         response.body.configuration[workspaceIndex].value = workspace
         response.body.configuration[autoSettleIndex].value = autoSellementValue
+        cy.qe(`Set workspace as ${workspace}`)
+        cy.qe(`Set autoSettle as ${autoSellementValue}`)
         response.body.configuration[appKeyIndex].value = appKey || ''
         response.body.configuration[appTokenIndex].value = appToken || ''
-        cy.request({
+        cy.localqe(`Set appKey as ${appKey}`)
+        cy.localqe(`Set appToken as ${appToken}`)
+        cy.qe('Now update affiliation using PUT method')
+        cy.qe('Verify the response status to equal 201')
+        cy.callRestAPIAndAddLogs({
           method: 'PUT',
           url: affiliationAPI(affiliationId),
-          headers: VTEX_AUTH_HEADER(apiKey, apiToken),
           body: response.body,
-          ...FAIL_ON_STATUS_CODE,
         })
           .its('status')
           .should('equal', 201)
@@ -312,13 +300,10 @@ export function syncCheckoutUICustom() {
         '($email: String, $workspace: String, $layout: CustomFields, $javascript: String, $css: String, $javascriptActive: Boolean, $cssActive: Boolean, $colors: CustomFields)' +
         '{saveChanges (email: $email, workspace: $workspace, layout: $layout, javascript: $javascript, css: $css, javascriptActive: $javascriptActive, cssActive: $cssActive, colors: $colors) @context(provider: "vtex.checkout-ui-custom@*.x")}'
 
-      cy.request({
-        method: 'POST',
+      cy.callGraphqlAndAddLogs({
         url: CUSTOM_URL,
-        body: {
-          query: GRAPHQL_MUTATION,
-          variables: getConfiguration(WORKSPACE),
-        },
+        query: GRAPHQL_MUTATION,
+        variables: getConfiguration(WORKSPACE),
       })
         .its('body.data.saveChanges', { timeout: 5000 })
         .should('contain', 'DocumentId')
@@ -395,6 +380,7 @@ export function sendInvoiceTestCase({
         item[orderIdEnv],
         orderIdEnv === product.externalSaleEnv
       ).then((response) => {
+        cy.qe('Verify response status to be 200')
         expect(response.status).to.equal(200)
       })
     })
@@ -422,16 +408,34 @@ export function invoiceAPITestCase({
           generateInvoiceAPIURL(product, item, env),
           VTEX_AUTH_HEADER(apiKey, apiToken)
         ).then((response) => {
+          cy.qe('Verify response status to equal 200')
           expect(response.status).to.equal(200)
+          expect(response)
+            .to.have.property('body')
+            .to.have.property('shippingData')
+            .to.have.property('address')
+            .to.have.property('postalCode')
           const postalCode = pickup
             ? product.pickUpPostalCode
             : product.postalCode
+
+          cy.qe(
+            `Verify response should have postalCode ${postalCode} in response.body.shippingData.address.postalCode`
+          )
 
           expect(response.body.shippingData.address.postalCode).to.equal(
             postalCode
           )
           // Setting Transaction Id in .orders.json
           if (transactionIdEnv) {
+            expect(response.body)
+              .to.have.property('paymentData')
+              .to.have.property('transactions')
+
+            cy.qe(
+              `Set transactionId - ${transactionIdEnv}:${response.body.paymentData.transactions[0].transactionId} in orders.json`
+            )
+
             cy.setOrderItem(
               transactionIdEnv,
               response.body.paymentData.transactions[0].transactionId
@@ -465,8 +469,11 @@ export function verifyTransactionPaymentsAPITestCase(
           `${transactionAPI(vtex.baseUrl)}/${order[transactionIdEnv]}/payments`,
           VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken)
         ).then((response) => {
+          cy.qe('Verify response status to equal 200')
           expect(response.status).to.equal(200)
+          expect(response.body[0].tid).to.not.equal(undefined)
           // Store payment tid in .orders.json
+          cy.qe(`Set paymentTid - ${response.body[0].tid} in orders.json `)
           cy.setOrderItem(paymentTidEnv, response.body[0].tid)
           fn && fn(response)
         })
@@ -479,12 +486,10 @@ export function startHandlingOrder(product, env) {
   it(`In ${product.prefix} - Start handling order`, updateRetry(3), () => {
     cy.addDelayBetweenRetries(5000)
     cy.getOrderItems().then((item) => {
-      cy.request({
-        method: 'POST',
+      cy.callRestAPIAndAddLogs({
         url: startHandlingAPI(baseUrl, item[env]),
-        headers: VTEX_AUTH_HEADER(apiKey, apiToken),
-        ...FAIL_ON_STATUS_CODE,
       }).then((response) => {
+        cy.qe(`Verify response status should be 200 or 409`)
         expect(response.status).to.match(/204|409/)
       })
     })
@@ -502,6 +507,9 @@ export function verifyOrderStatus({ product, env, status, timeout = 10000 }) {
           getOrderAPI(vtex.baseUrl, order[env]),
           VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken)
         ).then((response) => {
+          cy.qe(
+            `Verify response status should be 200 and body status should be ${status}`
+          )
           expect(response.status).to.equal(200)
           expect(response.body.status).to.match(status)
         })

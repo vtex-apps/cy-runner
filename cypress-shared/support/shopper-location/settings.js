@@ -1,4 +1,3 @@
-import { FAIL_ON_STATUS_CODE } from '../common/constants'
 import { updateRetry } from '../common/support'
 
 const version = '*.x'
@@ -21,6 +20,7 @@ export function updateSettings(
         const APP_VERSION = '3.x'
         const APP = `${APP_NAME}@${APP_VERSION}`
         const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${APP}`
+
         cy.qe(
           'Update a app settings via graphQl.The graphQl mutation we use in UI,mutation{($app:String,$version:String,$settings:String) {saveAppSettings(app:$app,version:$version,settings:$settings){message}}'
         )
@@ -36,14 +36,10 @@ export function updateSettings(
         }
 
         // Mutating it to the new workspace
-        cy.request({
-          method: 'POST',
+        cy.callGraphqlAndAddLogs({
           url: CUSTOM_URL,
-          ...FAIL_ON_STATUS_CODE,
-          body: {
-            query: GRAPHQL_MUTATION,
-            variables: QUERY_VARIABLES,
-          },
+          query: GRAPHQL_MUTATION,
+          variables: QUERY_VARIABLES,
         }).its('body.data.saveAppSettings.message', { timeout: 10000 })
       })
     }

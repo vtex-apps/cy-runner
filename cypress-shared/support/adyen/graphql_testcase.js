@@ -98,35 +98,49 @@ export function onboardingComplete(accountHolderCode) {
 }
 
 export function validateSellersResponse(response) {
+  cy.qe('Verify response have body.data property not equal to null')
   expect(response.body.data).to.not.equal(null)
 }
 
 export function validateGetAdyenAccountResponse(response) {
+  cy.qe('Verify response have body.data property not equal to null')
   expect(response.body.data).to.not.equal(null)
 }
 
 export function validateCreateAccountHolderResponse(response) {
+  cy.qe(
+    'Verify response have body.data.createAccountHolder.adyenAccountHolder property not equal to null'
+  )
   expect(
     response.body.data.createAccountHolder.adyenAccountHolder
   ).to.not.equal(null)
 }
 
 export function validateAdyenAccountHolderResponse(response) {
+  cy.qe('Verify response have body.data property not equal to null')
   expect(response.body.data).to.not.equal(null)
 }
 
 export function validateCloseAccountHolderResponse(response) {
+  cy.qe('Verify response have body.data property not equal to null')
   expect(response.body.data).to.not.equal(null)
 }
 
 export function validateRefreshOnboardingResponse(response) {
+  cy.qe(
+    'Verify response have body.data.refreshOnboarding property not equal to null'
+  )
   expect(response.body.data.refreshOnboarding).to.not.equal(null)
 }
 
 export function validateUpdateAccount(response) {
+  cy.qe('Verify response have body.data property not equal to null')
+
   expect(response.body.data).to.not.equal(null)
 }
 
 export function validateonboardingComplete(response) {
+  cy.qe('Verify response have body.data property not equal to null')
+
   expect(response.body.data).to.not.equal(null)
 }

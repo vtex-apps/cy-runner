@@ -1,9 +1,5 @@
 import { loadDocksAPI, calculateShippingAPI } from '../common/apis'
 import { updateRetry } from '../common/support'
-import {
-  FAIL_ON_STATUS_CODE,
-  FAIL_ON_STATUS_CODE_STRING,
-} from '../common/constants'
 
 export function loadDocks() {
   it('Load all dock connection', updateRetry(3), () => {
@@ -18,26 +14,12 @@ export function loadDocks() {
 
 export function loadCalculateShippingAPI(data, validateResponseFn) {
   return cy.getVtexItems().then((vtex) => {
-    cy.qe(`cy.request({
-        method: 'POST',
-        url: ${calculateShippingAPI(
-          vtex.account,
-          Cypress.env('workspace').name
-        )},
-        headers: {
-          VtexIdclientAutCookie: VtexIdclientAutCookie,
-        },
-        ${FAIL_ON_STATUS_CODE_STRING}
-        body: ${JSON.stringify(data)}
-      })`)
     cy.getAppSettingstoJSON().then((items) => {
-      cy.request({
-        method: 'POST',
+      cy.callRestAPIAndAddLogs({
         url: calculateShippingAPI(vtex.account, Cypress.env('workspace').name),
         headers: {
           VtexIdclientAutCookie: items[vtex.userAuthCookieName],
         },
-        ...FAIL_ON_STATUS_CODE,
         body: data,
       }).as('RESPONSE')
 
