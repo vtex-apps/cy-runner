@@ -49,7 +49,7 @@
     "@vtex/prettier-config": "^1.0.0",
     "eslint": "^7.4.0",
     "eslint-config-vtex": "^12.7.0",
-    "eslint-plugin-cypress": "^2.12.1",
+    "eslint-plugin-cypress": "^2.13.2",
     "husky": "^4.2.5",
     "lint-staged": "^13.1.2",
     "prettier": "^2.4.0",
