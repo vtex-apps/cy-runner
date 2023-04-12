@@ -6,22 +6,27 @@ function extractAccessCode(message) {
   if (message) {
     const regex = /<strong>(\d.*)<\/strong>/
 
-    return message.includes('access code') ? message.match(regex)[1] : '0'
+    return message.includes('access code') ? message.match(regex)[1] : null
   }
 
-  return '0'
+  return null
 }
 
-export async function getAccessToken(email, gmailCreds, accessToken = null) {
+export async function getAccessToken(
+  email,
+  gmailCreds,
+  totalRetry,
+  accessToken = null
+) {
+  /* eslint-disable no-await-in-loop */
   const gmail = new GmailAPI(gmailCreds)
-  const ToEmail = email.replace('+', '%2B')
-  let currentAccessToken
-  const totalRetry = 8
 
   await gmail.getAcceToken(gmailCreds)
+  const ToEmail = email.replace('+', '%2B')
+  let currentAccessToken = null
 
-  /* eslint-disable no-await-in-loop */
-  for (let currentRetry = 0; currentRetry <= totalRetry; currentRetry++) {
+  for (let currentRetry = 1; currentRetry <= totalRetry; currentRetry++) {
+    await delay(5500)
     currentAccessToken = extractAccessCode(
       await gmail.readInboxContent(
         new URLSearchParams(
@@ -30,10 +35,10 @@ export async function getAccessToken(email, gmailCreds, accessToken = null) {
         gmailCreds
       )
     )
-    if (accessToken === null || currentAccessToken !== accessToken) {
-      return currentAccessToken
+    if (currentAccessToken !== accessToken) {
+      break
     }
-
-    await delay(5500)
   }
+
+  return currentAccessToken
 }

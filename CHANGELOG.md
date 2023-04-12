@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 ### Changed
+- Improved/Fixed B2B new login user testcase
+
+### Changed
 
 - E2E Tests improvements
 
