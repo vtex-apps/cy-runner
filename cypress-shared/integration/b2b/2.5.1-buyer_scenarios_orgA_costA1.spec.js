@@ -32,7 +32,6 @@ describe('Organization A - Cost Center A1 - Buyer Scenarios', () => {
     users,
     product,
     quotes,
-    gmailCreds,
   } = b2b.OrganizationA
 
   const { organizationName: organizationB, quotes: organizationBQuote } =
@@ -44,7 +43,7 @@ describe('Organization A - Cost Center A1 - Buyer Scenarios', () => {
   userAndCostCenterShouldNotBeEditable({
     organizationName,
     costCenter: costCenter1.name,
-    gmailCreds,
+    email: users.Buyer1.email,
     role: role.Buyer1,
   })
   userShouldNotImpersonateThisUser(

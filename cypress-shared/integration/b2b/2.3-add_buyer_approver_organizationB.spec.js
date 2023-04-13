@@ -18,7 +18,7 @@ import { createQuote } from '../../support/b2b/quotes.js'
 describe('OrganizationB - Create a Buyer and Approver associate Cost Center and assign payment terms', () => {
   loginViaCookies({ storeFrontCookie: false })
 
-  const { organizationName, costCenter1, users, product, quotes, gmailCreds } =
+  const { organizationName, costCenter1, users, product, quotes } =
     b2b.OrganizationB
 
   loginToStoreFront(users.OrganizationAdmin1, ROLE_DROP_DOWN.OrganizationAdmin)
@@ -40,7 +40,7 @@ describe('OrganizationB - Create a Buyer and Approver associate Cost Center and 
     organizationName,
     costCenter: costCenter1.name,
     role: role.Approver1,
-    gmailCreds,
+    email: users.Approver1.email,
   })
   createQuote({
     product,
