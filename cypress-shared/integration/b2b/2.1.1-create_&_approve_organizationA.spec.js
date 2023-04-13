@@ -15,7 +15,7 @@ describe('Create & Approve OrganizationA', () => {
   createOrganizationTestCase(
     {
       name: organizationName,
-      email: users.OrganizationAdmin1,
+      email: users.OrganizationAdmin1.email,
     },
     {
       costCenterName: costCenter1.name,

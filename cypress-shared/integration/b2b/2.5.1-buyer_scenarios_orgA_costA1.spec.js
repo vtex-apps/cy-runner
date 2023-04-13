@@ -38,7 +38,7 @@ describe('Organization A - Cost Center A1 - Buyer Scenarios', () => {
   const { organizationName: organizationB, quotes: organizationBQuote } =
     b2b.OrganizationB
 
-  loginToStoreFront(users.Buyer1, ROLE_DROP_DOWN.Buyer, gmailCreds)
+  loginToStoreFront(users.Buyer1, ROLE_DROP_DOWN.Buyer)
   verifySession(b2b.OrganizationA, costCenter1.name, ROLE_DROP_DOWN.Buyer)
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
   userAndCostCenterShouldNotBeEditable({
@@ -50,7 +50,7 @@ describe('Organization A - Cost Center A1 - Buyer Scenarios', () => {
   userShouldNotImpersonateThisUser(
     ROLE_DROP_DOWN.Buyer,
     roleObject.SalesManager.role,
-    users.SalesManager
+    users.SalesManager.email
   )
   quoteShouldbeVisibleTestCase(
     organizationName,

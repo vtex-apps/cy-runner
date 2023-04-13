@@ -25,13 +25,12 @@ import { salesAdminQuotesAccess } from '../../support/b2b/impersonation_quote_ac
 describe('Organization A - Cost Center A1 - Sales Admin Basic Scenario', () => {
   loginViaCookies({ storeFrontCookie: false })
 
-  const { nonAvailableProduct, costCenter1, users, quotes, gmailCreds } =
-    b2b.OrganizationA
+  const { nonAvailableProduct, costCenter1, users, quotes } = b2b.OrganizationA
 
   const { organizationName: organizationB, quotes: organizationBQuote } =
     b2b.OrganizationB
 
-  loginToStoreFront(users.SalesAdmin, roleObject.SalesAdmin.role, gmailCreds)
+  loginToStoreFront(users.SalesAdmin, roleObject.SalesAdmin.role)
   verifySession(b2b.OrganizationA, costCenter1.name, roleObject.SalesAdmin.role)
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
 
@@ -39,7 +38,7 @@ describe('Organization A - Cost Center A1 - Sales Admin Basic Scenario', () => {
   userShouldNotImpersonateThisUser(
     roleObject.SalesAdmin.role,
     roleObject.SalesManager.role,
-    users.SalesManager
+    users.SalesManager.email
   )
   salesAdminQuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
 

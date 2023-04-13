@@ -8,7 +8,7 @@ import b2b from '../../support/b2b/constants.js'
 
 describe('Organization Negative TestCases', () => {
   loginViaCookies({ storeFrontCookie: false })
-  const email = b2b.OrganizationA.users.OrganizationAdmin1
+  const { email } = b2b.OrganizationA.users.OrganizationAdmin1
 
   createOrganizationWithoutCostCenterNameAndAddress(
     b2b.OrganizationA.organizationName,

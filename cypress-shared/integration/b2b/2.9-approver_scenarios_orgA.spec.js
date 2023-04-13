@@ -35,19 +35,13 @@ import {
 describe('Organization A - Cost Center A1 - Approver Scenario', () => {
   loginViaCookies({ storeFrontCookie: false })
 
-  const {
-    organizationName,
-    nonAvailableProduct,
-    users,
-    costCenter1,
-    quotes,
-    gmailCreds,
-  } = b2b.OrganizationA
+  const { organizationName, nonAvailableProduct, users, costCenter1, quotes } =
+    b2b.OrganizationA
 
   const { organizationName: organizationB, quotes: organizationBquotes } =
     b2b.OrganizationB
 
-  loginToStoreFront(users.Approver1, ROLE_DROP_DOWN.Approver, gmailCreds)
+  loginToStoreFront(users.Approver1, ROLE_DROP_DOWN.Approver)
   verifySession(b2b.OrganizationA, costCenter1.name, ROLE_DROP_DOWN.Approver)
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
   quoteShouldbeVisibleTestCase(

@@ -11,7 +11,7 @@ describe('Create, Decline OrganizationB', () => {
     cy.clearLocalStorage()
   })
   loginViaCookies({ storeFrontCookie: false })
-  const email = b2b.OrganizationB.users.OrganizationAdmin1
+  const { email } = b2b.OrganizationB.users.OrganizationAdmin1
   const name = b2b.OrganizationB.organizationName
   const costCenterName = b2b.OrganizationB.costCenter1.name
   const [costCenterAddress] = b2b.OrganizationB.costCenter1.addresses
@@ -31,7 +31,7 @@ describe('Create, Decline OrganizationB', () => {
   createOrganizationTestCase(
     {
       name: organizationName,
-      email: users.OrganizationAdmin1,
+      email: users.OrganizationAdmin1.email,
     },
     {
       costCenterName: costCenter1.name,

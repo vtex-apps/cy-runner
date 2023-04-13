@@ -41,7 +41,7 @@ export function storeUserCookie(email) {
   })
 }
 
-export function loginToStoreFront(email, role, gmailCreds) {
+export function loginToStoreFront({ email, gmailCreds }, role) {
   it(
     `Logging in to storefront with ${email} as ${role}`,
     { defaultCommandTimeout: 80000, retries: 1 },

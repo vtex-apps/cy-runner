@@ -21,24 +21,20 @@ describe('OrganizationB - Create a Buyer and Approver associate Cost Center and 
   const { organizationName, costCenter1, users, product, quotes, gmailCreds } =
     b2b.OrganizationB
 
-  loginToStoreFront(
-    users.OrganizationAdmin1,
-    ROLE_DROP_DOWN.OrganizationAdmin,
-    gmailCreds
-  )
+  loginToStoreFront(users.OrganizationAdmin1, ROLE_DROP_DOWN.OrganizationAdmin)
   setOrganizationIdInJSON(organizationName, costCenter1.name)
   addPaymentTermsCollectionPriceTablesTestCase(b2b.OrganizationB)
   addUser({
     organizationName,
     costCenter: costCenter1.name,
     role: role.Buyer1,
-    email: users.Buyer1,
+    email: users.Buyer1.email,
   })
   addUser({
     organizationName,
     costCenter: costCenter1.name,
     role: role.Approver1,
-    email: users.Approver1,
+    email: users.Approver1.email,
   })
   duplicateUserTestCase({
     organizationName,

@@ -25,7 +25,7 @@ import { salesRepQuotesAccess } from '../../support/b2b/impersonation_quote_acce
 describe('Organization A - Cost Center A1 - Sales Rep Impersonation Scenario', () => {
   loginViaCookies({ storeFrontCookie: false })
 
-  const { users, product, costCenter1, quotes, gmailCreds } = b2b.OrganizationA
+  const { users, product, costCenter1, quotes } = b2b.OrganizationA
 
   const { organizationName: organizationB, quotes: organizationBQuote } =
     b2b.OrganizationB
@@ -34,8 +34,7 @@ describe('Organization A - Cost Center A1 - Sales Rep Impersonation Scenario', (
 
   loginToStoreFront(
     users.SalesRepresentative,
-    roleObject.SalesRepresentative.role,
-    gmailCreds
+    roleObject.SalesRepresentative.role
   )
   verifySession(
     b2b.OrganizationA,
@@ -46,7 +45,7 @@ describe('Organization A - Cost Center A1 - Sales Rep Impersonation Scenario', (
   salesUserShouldImpersonateNonSalesUser(
     roleObject.SalesRepresentative.role,
     impersonatedRole,
-    users.Buyer1
+    users.Buyer1.email
   )
 
   searchQuote(quotes.SalesRep.updateQuote)
@@ -64,7 +63,7 @@ describe('Organization A - Cost Center A1 - Sales Rep Impersonation Scenario', (
     role: roleObject.SalesRepresentative.role,
     impersonatedRole,
   })
-  searchQuote(quote, users.Buyer1)
+  searchQuote(quote, users.Buyer1.email)
   stopImpersonation(
     b2b.OrganizationA,
     costCenter1.name,

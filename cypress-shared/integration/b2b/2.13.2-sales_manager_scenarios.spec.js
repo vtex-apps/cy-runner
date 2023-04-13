@@ -19,16 +19,12 @@ import { salesManagerQuotesAccess } from '../../support/b2b/impersonation_quote_
 describe('Organization A - Cost Center A1 - Sales Manager Impersonation Scenario', () => {
   loginViaCookies({ storeFrontCookie: false })
 
-  const { users, product, costCenter1, gmailCreds } = b2b.OrganizationA
+  const { users, product, costCenter1 } = b2b.OrganizationA
 
   const { organizationName: organizationB, quotes: organizationBQuote } =
     b2b.OrganizationB
 
-  loginToStoreFront(
-    users.SalesManager,
-    roleObject.SalesManager.role,
-    gmailCreds
-  )
+  loginToStoreFront(users.SalesManager, roleObject.SalesManager.role)
   verifySession(
     b2b.OrganizationA,
     costCenter1.name,
@@ -40,7 +36,7 @@ describe('Organization A - Cost Center A1 - Sales Manager Impersonation Scenario
   salesUserShouldImpersonateNonSalesUser(
     roleObject.SalesManager.role,
     impersonatedRole,
-    users.OrganizationAdmin1
+    users.OrganizationAdmin1.email
   )
   const quote = 'IMPERSONATE_QUOTE_2'
 
@@ -52,7 +48,7 @@ describe('Organization A - Cost Center A1 - Sales Manager Impersonation Scenario
     role: roleObject.SalesManager.role,
     impersonatedRole,
   })
-  searchQuote(quote, users.OrganizationAdmin1)
+  searchQuote(quote, users.OrganizationAdmin1.email)
   stopImpersonation(
     b2b.OrganizationA,
     costCenter1.name,
