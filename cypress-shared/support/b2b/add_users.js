@@ -259,7 +259,7 @@ export function addUserViaGraphql(users, roleKey) {
             orgId: organizationItems[organizationName],
             costId: organizationItems[costCenter1.name],
             name: generateName(role),
-            email: users[roleKey],
+            email: users[roleKey].email,
           }
 
           expect(variables.roleId).to.not.be.undefined
