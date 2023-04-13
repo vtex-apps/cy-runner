@@ -30,7 +30,7 @@ describe('Organization A - Cost Center A1 - Sales Rep Basic Scenario', () => {
     b2b.OrganizationB
 
   loginToStoreFront(
-    users.SalesRep,
+    users.SalesRepresentative,
     roleObject.SalesRepresentative.role,
     gmailCreds
   )

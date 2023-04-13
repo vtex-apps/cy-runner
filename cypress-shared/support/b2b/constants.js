@@ -131,6 +131,20 @@ const ORG_A_GMAIL_CREDS = {
   refreshToken: gmail.refreshToken1,
 }
 
+const ORG_A_GMAIL_CREDS3 = {
+  email: gmail.emailId3,
+  clientId: gmail.clientId3,
+  clientSecret: gmail.clientSecret3,
+  refreshToken: gmail.refreshToken3,
+}
+
+const ORG_A_GMAIL_CREDS4 = {
+  email: gmail.emailId4,
+  clientId: gmail.clientId4,
+  clientSecret: gmail.clientSecret4,
+  refreshToken: gmail.refreshToken4,
+}
+
 const ORG_B_GMAIL_CREDS = {
   email: gmail.emailId2,
   clientId: gmail.clientId2,
@@ -200,7 +214,7 @@ export default {
         ROLE_DROP_DOWN_EMAIL_MAPPING.OrganizationAdmin1.suffixInEmail
       ),
       OrganizationAdmin2: generateEmailWithSuffix(
-        ORG_A_GMAIL_CREDS.email,
+        ORG_A_GMAIL_CREDS4.email,
         ORGANIZATION_A,
         ROLE_DROP_DOWN_EMAIL_MAPPING.OrganizationAdmin2.suffixInEmail
       ),
@@ -210,7 +224,7 @@ export default {
         ROLE_DROP_DOWN_EMAIL_MAPPING.Buyer1.suffixInEmail
       ),
       Buyer2: generateEmailWithSuffix(
-        ORG_A_GMAIL_CREDS.email,
+        ORG_A_GMAIL_CREDS3.email,
         ORGANIZATION_A,
         ROLE_DROP_DOWN_EMAIL_MAPPING.Buyer2.suffixInEmail
       ),
@@ -230,7 +244,7 @@ export default {
         ROLE_DROP_DOWN_EMAIL_MAPPING.Approver1.suffixInEmail
       ),
       Approver2: generateEmailWithSuffix(
-        ORG_A_GMAIL_CREDS.email,
+        ORG_A_GMAIL_CREDS3.email,
         ORGANIZATION_A,
         ROLE_DROP_DOWN_EMAIL_MAPPING.Approver2.suffixInEmail
       ),
@@ -239,18 +253,18 @@ export default {
         ORGANIZATION_A,
         ROLE_DROP_DOWN_EMAIL_MAPPING.Approver3.suffixInEmail
       ),
-      SalesRep: generateEmailWithSuffix(
+      SalesRepresentative: generateEmailWithSuffix(
         ORG_A_GMAIL_CREDS.email,
         ORGANIZATION_A,
         ROLE_ID_EMAIL_MAPPING.SalesRepresentative.suffixInEmail
       ),
       SalesAdmin: generateEmailWithSuffix(
-        ORG_A_GMAIL_CREDS.email,
+        ORG_B_GMAIL_CREDS.email,
         ORGANIZATION_A,
         ROLE_ID_EMAIL_MAPPING.SalesAdmin.suffixInEmail
       ),
       SalesManager: generateEmailWithSuffix(
-        ORG_A_GMAIL_CREDS.email,
+        ORG_A_GMAIL_CREDS4.email,
         ORGANIZATION_A,
         ROLE_ID_EMAIL_MAPPING.SalesManager.suffixInEmail
       ),

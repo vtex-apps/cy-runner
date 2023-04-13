@@ -32,13 +32,13 @@ describe('OrganizationB - Create a Buyer and Approver associate Cost Center and 
     organizationName,
     costCenter: costCenter1.name,
     role: role.Buyer1,
-    gmailCreds,
+    email: users.Buyer1,
   })
   addUser({
     organizationName,
     costCenter: costCenter1.name,
     role: role.Approver1,
-    gmailCreds,
+    email: users.Approver1,
   })
   duplicateUserTestCase({
     organizationName,
