@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [2.4.3] - 2023-04-14
+
 ### Changed
 
 - Location availability - Fix 2.8 testcase
