@@ -17,7 +17,7 @@ describe('Verify distance not show in Home page', () => {
     'Go to home add location & verify distance not shows',
     updateRetry(3),
     () => {
-      cy.addNewLocation(country, postalCode, address, city)
+      cy.addNewLocation(country, postalCode, address, city, true)
       verifyHomePage(city, postalCode, true)
     }
   )

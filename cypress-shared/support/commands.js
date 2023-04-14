@@ -275,43 +275,52 @@ Cypress.Commands.add('openStoreFront', (login = false) => {
   scroll()
 })
 
-Cypress.Commands.add('addNewLocation', (country, postalCode, street, city) => {
-  cy.openStoreFront()
-  cy.qe('Address container should be visible in the top left of the home page')
-  cy.get(selectors.addressContainer, { timeout: 30000 })
-    .should('be.visible')
-    .click()
-  cy.qe('Select a country')
-  cy.get(selectors.countryDropdown).select(country)
-  cy.qe('Type a postalcode')
-  cy.get(selectors.addressInputContainer)
-    .first()
-    .clear()
-    .should('be.visible')
-    .type(postalCode, { delay: 10 })
-  cy.get(selectors.SaveButtonInChangeLocationPopUp).should('be.visible')
-  cy.qe('Type street address in address input')
-  cy.get(selectors.Address)
-    .contains('Address Line 1')
-    .parent()
-    .within(() => {
-      cy.get(selectors.InputText).should('be.visible').clear().type(street)
-    })
-  cy.qe('Type a city')
-  cy.get(selectors.Address)
-    .contains('City')
-    .parent()
-    .within(() => {
-      cy.get(selectors.InputText).should('be.visible').clear().type(city)
-    })
-  cy.get(selectors.addressInputContainer)
-    .first()
-    .clear()
-    .should('be.visible')
-    .type(postalCode, { delay: 10 })
-  cy.waitForGraphql('setRegionId', selectors.SaveButtonInChangeLocationPopUp)
-  cy.once('uncaught:exception', () => false)
-})
+Cypress.Commands.add(
+  'addNewLocation',
+  (country, postalCode, street, city, retypePostalCode = false) => {
+    cy.openStoreFront()
+    cy.qe(
+      'Address container should be visible in the top left of the home page'
+    )
+    cy.get(selectors.addressContainer, { timeout: 30000 })
+      .should('be.visible')
+      .click()
+    cy.qe('Select a country')
+    cy.get(selectors.countryDropdown).select(country)
+    cy.qe('Type a postalcode')
+    cy.get(selectors.addressInputContainer)
+      .first()
+      .clear()
+      .should('be.visible')
+      .type(postalCode, { delay: 10 })
+    cy.get(selectors.SaveButtonInChangeLocationPopUp).should('be.visible')
+    cy.qe('Type street address in address input')
+    cy.get(selectors.Address)
+      .contains('Address Line 1')
+      .parent()
+      .within(() => {
+        cy.get(selectors.InputText).should('be.visible').clear().type(street)
+      })
+    cy.qe('Type a city')
+    cy.get(selectors.Address)
+      .contains('City')
+      .parent()
+      .within(() => {
+        cy.get(selectors.InputText).should('be.visible').clear().type(city)
+      })
+
+    if (retypePostalCode) {
+      cy.get(selectors.addressInputContainer)
+        .first()
+        .clear()
+        .should('be.visible')
+        .type(postalCode, { delay: 10 })
+    }
+
+    cy.waitForGraphql('setRegionId', selectors.SaveButtonInChangeLocationPopUp)
+    cy.once('uncaught:exception', () => false)
+  }
+)
 
 Cypress.Commands.add(
   'openProduct',

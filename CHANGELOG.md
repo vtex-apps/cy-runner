@@ -4,6 +4,9 @@
 
 - Location availability - Fix 2.8 testcase
 
+- Location availability - Reenter postal code only for 2.8 testcase
+
+
 
 ### Changed
 
