@@ -275,6 +275,7 @@ Cypress.Commands.add('openStoreFront', (login = false) => {
   scroll()
 })
 
+
 Cypress.Commands.add(
   'addNewLocation',
   (country, postalCode, street, city, retypePostalCode = false) => {
