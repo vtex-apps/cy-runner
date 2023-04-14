@@ -2,6 +2,11 @@
 
 ### Changed
 
+- Location availability - Fix 2.8 testcase
+
+
+### Changed
+
 - E2E Tests improvements
 
 ## [2.4.2] - 2023-03-12

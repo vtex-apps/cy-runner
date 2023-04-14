@@ -304,6 +304,11 @@ Cypress.Commands.add('addNewLocation', (country, postalCode, street, city) => {
     .within(() => {
       cy.get(selectors.InputText).should('be.visible').clear().type(city)
     })
+  cy.get(selectors.addressInputContainer)
+    .first()
+    .clear()
+    .should('be.visible')
+    .type(postalCode, { delay: 10 })
   cy.waitForGraphql('setRegionId', selectors.SaveButtonInChangeLocationPopUp)
   cy.once('uncaught:exception', () => false)
 })
