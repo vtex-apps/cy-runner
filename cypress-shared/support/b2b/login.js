@@ -108,7 +108,6 @@ export function loginToStoreFront({ email, gmailCreds }, role) {
 
                   cy.qe(`Type ${newAccessToken} in token field`)
                   cy.get(selectors.Token).clear().type(newAccessToken)
-                  cy.get(selectors.Token).then
                   cy.qe(`Click Submit Btn`)
                   cy.get(selectors.Submit).click()
                   cy.waitForSession()

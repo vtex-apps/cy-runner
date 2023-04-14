@@ -33,7 +33,7 @@ describe('Organization A - Cost Center A1 - Sales Manager Basic Scenario', () =>
   userShouldNotImpersonateThisUser(
     roleObject.SalesManager.role,
     roleObject.SalesRepresentative.role,
-    users.SalesRep.email
+    users.SalesRepresentative.email
   )
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
   salesManagerQuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)
