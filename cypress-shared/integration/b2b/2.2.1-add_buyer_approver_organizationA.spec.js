@@ -21,22 +21,12 @@ import { verifyBindings } from '../../support/b2b/graphql.js'
 describe('OrganizationA - Create a Buyer and Approver, associate Cost Center and assign payment terms', () => {
   loginViaCookies({ storeFrontCookie: false })
 
-  const {
-    organizationName,
-    costCenter1,
-    costCenter2,
-    costCenter3,
-    users,
-    gmailCreds,
-  } = b2b.OrganizationA
+  const { organizationName, costCenter1, costCenter2, costCenter3, users } =
+    b2b.OrganizationA
 
-  verifyBindings(users.OrganizationAdmin1, true)
+  verifyBindings(users.OrganizationAdmin1.email, true)
 
-  loginToStoreFront(
-    users.OrganizationAdmin1,
-    ROLE_DROP_DOWN.OrganizationAdmin,
-    gmailCreds
-  )
+  loginToStoreFront(users.OrganizationAdmin1, ROLE_DROP_DOWN.OrganizationAdmin)
 
   setOrganizationIdInJSON(organizationName, costCenter1.name)
   addPaymentTermsCollectionPriceTablesTestCase(b2b.OrganizationA)

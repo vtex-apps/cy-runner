@@ -19,17 +19,12 @@ import { salesManagerQuotesAccess } from '../../support/b2b/impersonation_quote_
 describe('Organization A - Cost Center A1 - Sales Manager Basic Scenario', () => {
   loginViaCookies({ storeFrontCookie: false })
 
-  const { nonAvailableProduct, users, costCenter1, quotes, gmailCreds } =
-    b2b.OrganizationA
+  const { nonAvailableProduct, users, costCenter1, quotes } = b2b.OrganizationA
 
   const { organizationName: organizationB, quotes: organizationBQuote } =
     b2b.OrganizationB
 
-  loginToStoreFront(
-    users.SalesManager,
-    roleObject.SalesManager.role,
-    gmailCreds
-  )
+  loginToStoreFront(users.SalesManager, roleObject.SalesManager.role)
   verifySession(
     b2b.OrganizationA,
     costCenter1.name,
@@ -38,7 +33,7 @@ describe('Organization A - Cost Center A1 - Sales Manager Basic Scenario', () =>
   userShouldNotImpersonateThisUser(
     roleObject.SalesManager.role,
     roleObject.SalesRepresentative.role,
-    users.SalesRep
+    users.SalesRepresentative.email
   )
   productShouldNotbeAvailableTestCase(nonAvailableProduct)
   salesManagerQuotesAccess(b2b.OrganizationA, organizationB, organizationBQuote)

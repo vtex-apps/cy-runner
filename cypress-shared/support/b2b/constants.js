@@ -131,6 +131,20 @@ const ORG_A_GMAIL_CREDS = {
   refreshToken: gmail.refreshToken1,
 }
 
+const ORG_A_GMAIL_CREDS3 = {
+  email: gmail.emailId3,
+  clientId: gmail.clientId3,
+  clientSecret: gmail.clientSecret3,
+  refreshToken: gmail.refreshToken3,
+}
+
+const ORG_A_GMAIL_CREDS4 = {
+  email: gmail.emailId4,
+  clientId: gmail.clientId4,
+  clientSecret: gmail.clientSecret4,
+  refreshToken: gmail.refreshToken4,
+}
+
 const ORG_B_GMAIL_CREDS = {
   email: gmail.emailId2,
   clientId: gmail.clientId2,
@@ -192,68 +206,103 @@ export default {
     product3: PRODUCTS.tshirt,
     nonAvailableProduct: PRODUCTS.irobot,
     quotes: quotesListForOrganizationA(),
-    gmailCreds: ORG_A_GMAIL_CREDS,
     users: {
-      OrganizationAdmin1: generateEmailWithSuffix(
-        ORG_A_GMAIL_CREDS.email,
-        ORGANIZATION_A,
-        ROLE_DROP_DOWN_EMAIL_MAPPING.OrganizationAdmin1.suffixInEmail
-      ),
-      OrganizationAdmin2: generateEmailWithSuffix(
-        ORG_A_GMAIL_CREDS.email,
-        ORGANIZATION_A,
-        ROLE_DROP_DOWN_EMAIL_MAPPING.OrganizationAdmin2.suffixInEmail
-      ),
-      Buyer1: generateEmailWithSuffix(
-        ORG_A_GMAIL_CREDS.email,
-        ORGANIZATION_A,
-        ROLE_DROP_DOWN_EMAIL_MAPPING.Buyer1.suffixInEmail
-      ),
-      Buyer2: generateEmailWithSuffix(
-        ORG_A_GMAIL_CREDS.email,
-        ORGANIZATION_A,
-        ROLE_DROP_DOWN_EMAIL_MAPPING.Buyer2.suffixInEmail
-      ),
-      Buyer3: generateEmailWithSuffix(
-        ORG_A_GMAIL_CREDS.email,
-        ORGANIZATION_A,
-        ROLE_DROP_DOWN_EMAIL_MAPPING.Buyer3.suffixInEmail
-      ),
-      Buyer4: generateEmailWithSuffix(
-        ORG_A_GMAIL_CREDS.email,
-        ORGANIZATION_A,
-        ROLE_DROP_DOWN_EMAIL_MAPPING.Buyer4.suffixInEmail
-      ),
-      Approver1: generateEmailWithSuffix(
-        ORG_A_GMAIL_CREDS.email,
-        ORGANIZATION_A,
-        ROLE_DROP_DOWN_EMAIL_MAPPING.Approver1.suffixInEmail
-      ),
-      Approver2: generateEmailWithSuffix(
-        ORG_A_GMAIL_CREDS.email,
-        ORGANIZATION_A,
-        ROLE_DROP_DOWN_EMAIL_MAPPING.Approver2.suffixInEmail
-      ),
-      Approver3: generateEmailWithSuffix(
-        ORG_A_GMAIL_CREDS.email,
-        ORGANIZATION_A,
-        ROLE_DROP_DOWN_EMAIL_MAPPING.Approver3.suffixInEmail
-      ),
-      SalesRep: generateEmailWithSuffix(
-        ORG_A_GMAIL_CREDS.email,
-        ORGANIZATION_A,
-        ROLE_ID_EMAIL_MAPPING.SalesRepresentative.suffixInEmail
-      ),
-      SalesAdmin: generateEmailWithSuffix(
-        ORG_A_GMAIL_CREDS.email,
-        ORGANIZATION_A,
-        ROLE_ID_EMAIL_MAPPING.SalesAdmin.suffixInEmail
-      ),
-      SalesManager: generateEmailWithSuffix(
-        ORG_A_GMAIL_CREDS.email,
-        ORGANIZATION_A,
-        ROLE_ID_EMAIL_MAPPING.SalesManager.suffixInEmail
-      ),
+      OrganizationAdmin1: {
+        gmailCreds: ORG_A_GMAIL_CREDS,
+        email: generateEmailWithSuffix(
+          ORG_A_GMAIL_CREDS.email,
+          ORGANIZATION_A,
+          ROLE_DROP_DOWN_EMAIL_MAPPING.OrganizationAdmin1.suffixInEmail
+        ),
+      },
+      OrganizationAdmin2: {
+        gmailCreds: ORG_A_GMAIL_CREDS4,
+        email: generateEmailWithSuffix(
+          ORG_A_GMAIL_CREDS4.email,
+          ORGANIZATION_A,
+          ROLE_DROP_DOWN_EMAIL_MAPPING.OrganizationAdmin2.suffixInEmail
+        ),
+      },
+      Buyer1: {
+        gmailCreds: ORG_A_GMAIL_CREDS,
+        email: generateEmailWithSuffix(
+          ORG_A_GMAIL_CREDS.email,
+          ORGANIZATION_A,
+          ROLE_DROP_DOWN_EMAIL_MAPPING.Buyer1.suffixInEmail
+        ),
+      },
+      Buyer2: {
+        gmailCreds: ORG_A_GMAIL_CREDS3,
+        email: generateEmailWithSuffix(
+          ORG_A_GMAIL_CREDS3.email,
+          ORGANIZATION_A,
+          ROLE_DROP_DOWN_EMAIL_MAPPING.Buyer2.suffixInEmail
+        ),
+      },
+      Buyer3: {
+        gmailCreds: ORG_A_GMAIL_CREDS,
+        email: generateEmailWithSuffix(
+          ORG_A_GMAIL_CREDS.email,
+          ORGANIZATION_A,
+          ROLE_DROP_DOWN_EMAIL_MAPPING.Buyer3.suffixInEmail
+        ),
+      },
+      Buyer4: {
+        gmailCreds: ORG_A_GMAIL_CREDS,
+        email: generateEmailWithSuffix(
+          ORG_A_GMAIL_CREDS.email,
+          ORGANIZATION_A,
+          ROLE_DROP_DOWN_EMAIL_MAPPING.Buyer4.suffixInEmail
+        ),
+      },
+      Approver1: {
+        gmailCreds: ORG_A_GMAIL_CREDS,
+        email: generateEmailWithSuffix(
+          ORG_A_GMAIL_CREDS.email,
+          ORGANIZATION_A,
+          ROLE_DROP_DOWN_EMAIL_MAPPING.Approver1.suffixInEmail
+        ),
+      },
+      Approver2: {
+        gmailCreds: ORG_A_GMAIL_CREDS,
+        email: generateEmailWithSuffix(
+          ORG_A_GMAIL_CREDS3.email,
+          ORGANIZATION_A,
+          ROLE_DROP_DOWN_EMAIL_MAPPING.Approver2.suffixInEmail
+        ),
+      },
+      Approver3: {
+        gmailCreds: ORG_A_GMAIL_CREDS,
+        email: generateEmailWithSuffix(
+          ORG_A_GMAIL_CREDS.email,
+          ORGANIZATION_A,
+          ROLE_DROP_DOWN_EMAIL_MAPPING.Approver3.suffixInEmail
+        ),
+      },
+      SalesRepresentative: {
+        gmailCreds: ORG_A_GMAIL_CREDS,
+        email: generateEmailWithSuffix(
+          ORG_A_GMAIL_CREDS.email,
+          ORGANIZATION_A,
+          ROLE_ID_EMAIL_MAPPING.SalesRepresentative.suffixInEmail
+        ),
+      },
+      SalesAdmin: {
+        gmailCreds: ORG_B_GMAIL_CREDS,
+        email: generateEmailWithSuffix(
+          ORG_B_GMAIL_CREDS.email,
+          ORGANIZATION_A,
+          ROLE_ID_EMAIL_MAPPING.SalesAdmin.suffixInEmail
+        ),
+      },
+      SalesManager: {
+        gmailCreds: ORG_B_GMAIL_CREDS,
+        email: generateEmailWithSuffix(
+          ORG_A_GMAIL_CREDS4.email,
+          ORGANIZATION_A,
+          ROLE_ID_EMAIL_MAPPING.SalesManager.suffixInEmail
+        ),
+      },
     },
   },
   OrganizationB: {
@@ -282,24 +331,32 @@ export default {
     product: PRODUCTS.irobot,
     nonAvailableProduct: PRODUCTS.tshirt,
     quotes: quotesListForOrganizationB(),
-    gmailCreds: ORG_B_GMAIL_CREDS,
     users: {
-      OrganizationAdmin1: generateEmailWithSuffix(
-        ORG_B_GMAIL_CREDS.email,
-        ORGANIZATION_B,
-        ROLE_DROP_DOWN_EMAIL_MAPPING.OrganizationAdmin1.suffixInEmail
-      ),
+      OrganizationAdmin1: {
+        gmailCreds: ORG_B_GMAIL_CREDS,
+        email: generateEmailWithSuffix(
+          ORG_B_GMAIL_CREDS.email,
+          ORGANIZATION_B,
+          ROLE_DROP_DOWN_EMAIL_MAPPING.OrganizationAdmin1.suffixInEmail
+        ),
+      },
 
-      Buyer1: generateEmailWithSuffix(
-        ORG_B_GMAIL_CREDS.email,
-        ORGANIZATION_B,
-        ROLE_DROP_DOWN_EMAIL_MAPPING.Buyer1.suffixInEmail
-      ),
-      Approver1: generateEmailWithSuffix(
-        ORG_B_GMAIL_CREDS.email,
-        ORGANIZATION_B,
-        ROLE_DROP_DOWN_EMAIL_MAPPING.Approver1.suffixInEmail
-      ),
+      Buyer1: {
+        gmailCreds: ORG_B_GMAIL_CREDS,
+        email: generateEmailWithSuffix(
+          ORG_B_GMAIL_CREDS.email,
+          ORGANIZATION_B,
+          ROLE_DROP_DOWN_EMAIL_MAPPING.Buyer1.suffixInEmail
+        ),
+      },
+      Approver1: {
+        gmailCreds: ORG_B_GMAIL_CREDS,
+        email: generateEmailWithSuffix(
+          ORG_B_GMAIL_CREDS.email,
+          ORGANIZATION_B,
+          ROLE_DROP_DOWN_EMAIL_MAPPING.Approver1.suffixInEmail
+        ),
+      },
     },
   },
 }

@@ -14,16 +14,12 @@ import { syncCheckoutUICustom } from '../../support/common/testcase.js'
 import b2b from '../../support/b2b/constants.js'
 import { loginToStoreFront } from '../../support/b2b/login.js'
 
-const { users, gmailCreds } = b2b.OrganizationA
+const { users } = b2b.OrganizationA
 
 describe('Sync Checkout UI Custom & Add Sales Users via Graphql', () => {
   loginViaCookies({ storeFrontCookie: false })
 
-  loginToStoreFront(
-    users.OrganizationAdmin1,
-    ROLE_DROP_DOWN.OrganizationAdmin,
-    gmailCreds
-  )
+  loginToStoreFront(users.OrganizationAdmin1, ROLE_DROP_DOWN.OrganizationAdmin)
 
   it('Set roles in organization JSON', updateRetry(3), () => {
     cy.getVtexItems().then((vtex) => {
@@ -53,7 +49,7 @@ describe('Sync Checkout UI Custom & Add Sales Users via Graphql', () => {
   const roles = Object.keys(ROLE_ID_EMAIL_MAPPING)
 
   roles.forEach((r) => {
-    addUserViaGraphql(gmailCreds, r)
+    addUserViaGraphql(users, r)
   })
 
   preserveCookie()

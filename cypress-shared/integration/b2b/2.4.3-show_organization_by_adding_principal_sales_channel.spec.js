@@ -22,7 +22,7 @@ describe('Add binding which shows Organization in profile page', () => {
 
   verifySalesChannel(1)
 
-  verifyBindings(users.OrganizationAdmin1, true)
+  verifyBindings(users.OrganizationAdmin1.email, true)
 
   loginToStoreFront(
     users.OrganizationAdmin1,

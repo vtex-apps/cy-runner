@@ -1,5 +1,5 @@
 import selectors from '../common/selectors.js'
-import { generateEmailWithSuffix, validateToastMsg } from './utils.js'
+import { validateToastMsg } from './utils.js'
 import { BUTTON_LABEL, TOAST_MSG } from '../validation_text.js'
 import { GRAPHL_OPERATIONS } from '../graphql_operations.js'
 import { updateRetry } from '../common/support.js'
@@ -168,27 +168,19 @@ export function userAndCostCenterShouldNotBeEditable({
   organizationName,
   costCenter,
   role,
-  gmailCreds,
+  email,
 }) {
   it(
     `Trying to update user and cost center in ${organizationName} with role ${role.dropDownText}`,
     updateRetry(1),
     () => {
-      const { suffixInEmail } = role
-
       cy.gotoMyOrganization()
       cy.get(selectors.AddUser).should('be.visible')
       cy.get(
         '.vtex-table__container .ReactVirtualized__Grid__innerScrollContainer'
       )
         .last()
-        .contains(
-          generateEmailWithSuffix(
-            gmailCreds.email,
-            organizationName,
-            suffixInEmail
-          )
-        )
+        .contains(email)
         .should('have.class', 'c-disabled')
       cy.get(selectors.AddUser).should('be.visible').should('be.disabled')
       cy.get(selectors.AddCostCenter).should('be.visible').should('be.disabled')

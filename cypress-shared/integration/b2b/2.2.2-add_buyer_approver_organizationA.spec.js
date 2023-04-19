@@ -19,42 +19,31 @@ import { verifyBindings } from '../../support/b2b/graphql.js'
 describe('OrganizationA - Create a Buyer and Approver, associate Cost Center and assign payment terms', () => {
   loginViaCookies({ storeFrontCookie: false })
 
-  const {
-    organizationName,
-    costCenter1,
-    costCenter2,
-    users,
-    product,
-    quotes,
-    gmailCreds,
-  } = b2b.OrganizationA
+  const { organizationName, costCenter1, costCenter2, users, product, quotes } =
+    b2b.OrganizationA
 
-  verifyBindings(users.OrganizationAdmin1, true)
+  verifyBindings(users.OrganizationAdmin1.email, true)
 
-  loginToStoreFront(
-    users.OrganizationAdmin1,
-    ROLE_DROP_DOWN.OrganizationAdmin,
-    gmailCreds
-  )
+  loginToStoreFront(users.OrganizationAdmin1, ROLE_DROP_DOWN.OrganizationAdmin)
 
   addUser({
     organizationName,
     costCenter: costCenter1.name,
     role: role.Buyer1,
-    gmailCreds,
+    email: users.Buyer1.email,
   })
   addUser({
     organizationName,
     costCenter: costCenter1.name,
     role: role.Approver1,
-    gmailCreds,
+    email: users.Approver1.email,
   })
 
   addUser({
     organizationName,
     costCenter: costCenter2.name,
     role: role.Buyer2,
-    gmailCreds,
+    email: users.Buyer2.email,
   })
 
   // Add/Delete users in costcenter1 - Hold
@@ -64,13 +53,13 @@ describe('OrganizationA - Create a Buyer and Approver, associate Cost Center and
     organizationName,
     costCenter: costCenter2.name,
     role: role.OrganizationAdmin2,
-    gmailCreds,
+    email: users.OrganizationAdmin2.email,
   })
   addUser({
     organizationName,
     costCenter: costCenter2.name,
     role: role.Approver2,
-    gmailCreds,
+    email: users.Approver2.email,
   })
 
   createQuote({

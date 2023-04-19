@@ -14,9 +14,9 @@ import {
 
 describe('Organization A - Cost Center A2 - Buyer Scenarios', () => {
   loginViaCookies({ storeFrontCookie: false })
-  const { users, costCenter2, quotes, product3, gmailCreds } = b2b.OrganizationA
+  const { users, costCenter2, quotes, product3 } = b2b.OrganizationA
 
-  loginToStoreFront(users.Buyer2, ROLE_DROP_DOWN.Buyer, gmailCreds)
+  loginToStoreFront(users.Buyer2, ROLE_DROP_DOWN.Buyer)
   verifySession(b2b.OrganizationA, costCenter2.name, ROLE_DROP_DOWN.Buyer)
   quickOrderByCategory(ROLE_DROP_DOWN.Buyer, quotes.Buyer2.quotes1, '$84.60')
   quickOrderByCategoryNegativeTestCase(

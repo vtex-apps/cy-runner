@@ -18,33 +18,29 @@ import { createQuote } from '../../support/b2b/quotes.js'
 describe('OrganizationB - Create a Buyer and Approver associate Cost Center and assign payment terms', () => {
   loginViaCookies({ storeFrontCookie: false })
 
-  const { organizationName, costCenter1, users, product, quotes, gmailCreds } =
+  const { organizationName, costCenter1, users, product, quotes } =
     b2b.OrganizationB
 
-  loginToStoreFront(
-    users.OrganizationAdmin1,
-    ROLE_DROP_DOWN.OrganizationAdmin,
-    gmailCreds
-  )
+  loginToStoreFront(users.OrganizationAdmin1, ROLE_DROP_DOWN.OrganizationAdmin)
   setOrganizationIdInJSON(organizationName, costCenter1.name)
   addPaymentTermsCollectionPriceTablesTestCase(b2b.OrganizationB)
   addUser({
     organizationName,
     costCenter: costCenter1.name,
     role: role.Buyer1,
-    gmailCreds,
+    email: users.Buyer1.email,
   })
   addUser({
     organizationName,
     costCenter: costCenter1.name,
     role: role.Approver1,
-    gmailCreds,
+    email: users.Approver1.email,
   })
   duplicateUserTestCase({
     organizationName,
     costCenter: costCenter1.name,
     role: role.Approver1,
-    gmailCreds,
+    email: users.Approver1.email,
   })
   createQuote({
     product,

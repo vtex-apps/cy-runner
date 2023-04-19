@@ -26,13 +26,9 @@ import {
 describe('Organization A - Cost Center A1 - Organization Admin2 Scenario', () => {
   loginViaCookies({ storeFrontCookie: false })
 
-  const { product, costCenter2, users, quotes, gmailCreds } = b2b.OrganizationA
+  const { product, costCenter2, users, quotes } = b2b.OrganizationA
 
-  loginToStoreFront(
-    users.OrganizationAdmin2,
-    ROLE_DROP_DOWN.OrganizationAdmin,
-    gmailCreds
-  )
+  loginToStoreFront(users.OrganizationAdmin2, ROLE_DROP_DOWN.OrganizationAdmin)
   verifySession(
     b2b.OrganizationA,
     costCenter2.name,

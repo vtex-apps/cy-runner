@@ -14,7 +14,7 @@ import {
 } from '../../support/b2b/graphql.js'
 import { loginToStoreFront } from '../../support/b2b/login.js'
 
-const { users, gmailCreds } = b2b.OrganizationB
+const { users } = b2b.OrganizationB
 
 describe('Add Binding which hides Organization in profile page', () => {
   loginViaCookies({ storeFrontCookie: false })
@@ -23,13 +23,9 @@ describe('Add Binding which hides Organization in profile page', () => {
 
   verifySalesChannel(0)
 
-  verifyBindings(users.OrganizationAdmin1, false)
+  verifyBindings(users.OrganizationAdmin1.email, false)
 
-  loginToStoreFront(
-    users.OrganizationAdmin1,
-    ROLE_DROP_DOWN.OrganizationAdmin,
-    gmailCreds
-  )
+  loginToStoreFront(users.OrganizationAdmin1, ROLE_DROP_DOWN.OrganizationAdmin)
 
   it('Verify Organization is not showing up', updateRetry(2), () => {
     cy.reloadOnLastNAttempts(1)

@@ -15,10 +15,9 @@ import {
 describe('Organization A - Cost Center A1 - Buyer Create Quote Scenarios', () => {
   loginViaCookies({ storeFrontCookie: false })
 
-  const { costCenter1, users, product, product2, quotes, gmailCreds } =
-    b2b.OrganizationA
+  const { costCenter1, users, product, product2, quotes } = b2b.OrganizationA
 
-  loginToStoreFront(users.Buyer1, ROLE_DROP_DOWN.Buyer, gmailCreds)
+  loginToStoreFront(users.Buyer1, ROLE_DROP_DOWN.Buyer)
   verifySession(b2b.OrganizationA, costCenter1.name, ROLE_DROP_DOWN.Buyer)
   createQuote({
     product,
