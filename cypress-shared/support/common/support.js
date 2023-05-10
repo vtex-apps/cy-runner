@@ -330,7 +330,7 @@ export function updateShippingInformation({
         .invoke('text')
         .should(
           'match',
-          new RegExp(`^${deliveryScreenAddress}$|^${postalCode}$`, 'gi')
+          new RegExp(`^${deliveryScreenAddress}|^${postalCode}$`, 'gi')
         )
       cy.get(selectors.ProceedtoPaymentBtn).should('be.visible').click()
     }

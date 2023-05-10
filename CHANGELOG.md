@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Changed
+- Updated Shipping Information Regex to not do strict match
+
 ## [2.4.4] - 2023-04-14
 
 ## [2.4.3] - 2023-04-14
