@@ -298,15 +298,16 @@ export function syncCheckoutUICustom() {
       const GRAPHQL_MUTATION =
         'mutation' +
         '($email: String, $workspace: String, $layout: CustomFields, $javascript: String, $css: String, $javascriptActive: Boolean, $cssActive: Boolean, $colors: CustomFields)' +
-        '{saveChanges (email: $email, workspace: $workspace, layout: $layout, javascript: $javascript, css: $css, javascriptActive: $javascriptActive, cssActive: $cssActive, colors: $colors) @context(provider: "vtex.checkout-ui-custom@*.x")}'
+        '{saveChanges (email: $email, workspace: $workspace, layout: $layout, javascript: $javascript, css: $css, javascriptActive: $javascriptActive, cssActive: $cssActive, colors: $colors) @context(provider: "vtex.checkout-ui-custom")}'
 
       cy.callGraphqlAndAddLogs({
         url: CUSTOM_URL,
         query: GRAPHQL_MUTATION,
         variables: getConfiguration(WORKSPACE),
+      }).then(({ body }) => {
+        expect(body).to.not.have.own.property('errors')
+        expect(body.data.saveChanges).to.include('DocumentId')
       })
-        .its('body.data.saveChanges', { timeout: 5000 })
-        .should('contain', 'DocumentId')
     }
   )
 }

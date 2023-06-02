@@ -3,6 +3,9 @@
 ## [2.4.5] - 2023-05-10
 
 ### Changed
+- Fix syncCheckoutUICustom testcase
+
+### Changed
 - Updated Shipping Information Regex to not do strict match
 
 ## [2.4.4] - 2023-04-14
