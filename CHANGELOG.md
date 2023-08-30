@@ -1,6 +1,6 @@
 ## [Unreleased]
 
-# Removed
+### Removed
 
 - Remove scenario "Create quick order by uploading xls with one valid and one invalid sku line item"
 
