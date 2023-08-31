@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [2.5.0] - 2023-08-31
+
 ### Removed
 
 - Remove scenario "Create quick order by uploading xls with one valid and one invalid sku line item"
