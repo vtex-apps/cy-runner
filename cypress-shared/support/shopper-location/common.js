@@ -15,7 +15,7 @@ export function verifyShopperLocation() {
 }
 
 export function addLocation(data) {
-  cy.intercept('**/rc.vtex.com.br/api/events').as('events')
+  cy.intercept('**/event-api/v1/*/event').as('events')
   cy.qe('Visit Store frontend')
   cy.visit('/', mockLocation(data.lat, data.long))
   cy.wait('@events')
@@ -57,7 +57,7 @@ export function addLocation(data) {
 }
 
 export function verifyLocation(lat, long) {
-  cy.intercept('**/rc.vtex.com.br/api/events').as('events')
+  cy.intercept('**/event-api/v1/*/event').as('events')
   cy.qe(`${lat ? 'Enable' : 'Disable'} location permission in the browser`)
   cy.visit('/', mockLocation(lat, long))
   cy.qe('Visit store front')
@@ -80,7 +80,7 @@ export function addAddress(prefix, { address, lat, long }) {
     `${prefix} - Go to store front and add shipping address`,
     updateRetry(1),
     () => {
-      cy.intercept('**/rc.vtex.com.br/api/events').as('events')
+      cy.intercept('**/event-api/v1/*/event').as('events')
       cy.qe(
         'Visiting store front and using mocklocation function to setting the location'
       )
