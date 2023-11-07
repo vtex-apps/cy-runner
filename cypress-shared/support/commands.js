@@ -262,7 +262,7 @@ Cypress.Commands.add('orderProduct', () => {
 })
 
 Cypress.Commands.add('openStoreFront', (login = false) => {
-  cy.intercept('**/rc.vtex.com.br/api/events').as('events')
+  cy.intercept('**/event-api/v1/*/event').as('events')
   cy.qe('Visit store front')
   cy.visit('/')
   cy.wait('@events')

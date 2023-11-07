@@ -70,7 +70,7 @@ export function addProduct(
   Verfiying the search result is visible and having the text ${searchKey} in lowercase
   Verifying the ProfileLabel should be visible and contain the text Hello
   Verifying the BrandFilter should not be disabled
-  Adding product - ${searchKey} to cart 
+  Adding product - ${searchKey} to cart
   Verify the shipping and taxes in the mini cart
   click on proceed to checkout
   `)
@@ -291,10 +291,10 @@ export function updateShippingInformation({
   cy.qe(
     `Click on proceed to payment button
     Fill the contact information by filling the firstname,lastName and phone number
-    Adding intercept for shipping data 
+    Adding intercept for shipping data
     Select the country and fill the address in the shipping address
     Click on DeliveryAddressText and wait for shippingdata intercept be completed
-    Select pickup in store option in shipping preview container 
+    Select pickup in store option in shipping preview container
     Click on ProceedtoPaymentBtn
     `
   )
@@ -477,7 +477,7 @@ export function searchProduct(searchKey) {
   cy.qe(
     `Adding intercept to wait for the events API to be completed before visting home page`
   )
-  cy.intercept('**/rc.vtex.com.br/api/events').as('events')
+  cy.intercept('**/event-api/v1/*/event').as('events')
   cy.visit('/')
   cy.wait('@events')
   cy.qe("Verify the store front page should contain 'Hello'")

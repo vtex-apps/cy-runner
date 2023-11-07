@@ -42,7 +42,9 @@ function verifyOrganizationData(
         retryOnStatusCodeFailure: true,
         retryOnNetworkFailure: true,
       })
-      cy.intercept('POST', 'https://rc.vtex.com.br/api/events').as('EVENTS')
+      cy.intercept('POST', 'https://sp.vtex.com/event-api/v1/*/event').as(
+        'EVENTS'
+      )
       cy.wait('@EVENTS')
     }
 
