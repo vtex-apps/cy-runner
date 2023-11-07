@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [2.6.0] - 2023-11-07
+
 ### Fixed
 - URLs for Events to avoid timeouts
 
