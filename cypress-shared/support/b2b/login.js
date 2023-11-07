@@ -5,7 +5,7 @@ export function visitHomePage() {
   cy.getVtexItems().then((vtex) => {
     cy.url().then((url) => {
       if (url.includes('blank') || url !== vtex.baseUrl) {
-        cy.intercept('POST', 'https://rc.vtex.com.br/api/events').as('EVENTS')
+        cy.intercept('POST', 'https://sp.vtex.com/event-api/v1/*/event').as('EVENTS')
         cy.qe(
           'Visit home page/storefront and wait for EVENTS api to get called'
         )
